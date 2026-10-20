@@ -12,9 +12,9 @@ Un juego de vida acogedor: Sofía vive en su casita y su amigo real.fixer viene 
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it."
 
 ## Estado
-Hito 1 ✅ Primera piedra
+Hito 2 ✅ Mudanza
 
-## ⭐ Estrellas de inglés: 4
+## ⭐ Estrellas de inglés: 5
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -26,3 +26,17 @@ Hito 1 ✅ Primera piedra
 - trust: confiar
 - proceed: continuar
 - exit: salir
+- repository: repositorio, el terreno donde vive tu juego
+- commit: guardar la partida
+- GitHub Pages: tu link en vivo
+- game: juego
+- house: casa
+- kitchen: cocina
+- bedroom: dormitorio
+- living room: sala
+- bible files: archivos biblia, el diario de la familia que Claude Code lee cada vez
+- branch: rama, una copia de prueba de la casa
+- walk: caminar
+- select: seleccionar
+- move: mover
+- friend: amigo o amiga
