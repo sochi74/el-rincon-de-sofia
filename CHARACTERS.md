@@ -37,7 +37,7 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
   - Chiste: "Dormí tanto que soñé que dormía." · "¿Pizza en el desayuno? Es pan con tomate, ¡vale!"
   - Chocar los cinco: "¡Chócala!" · "¡Equipo!"
   - Hambre: "¿Qué hay de comer?" · "Mi panza está cantando."
-  - Sueño: "Cinco minutitos más… y después pinto algo." · "Mis ojos se cierran solos."
+  - Sueño: "Cinco minutitos más… y después pinto algo." · "Mis ojos se cierran solos." · "Time for a nap!" (¡Hora de la siesta!)
   - Aburrimiento: "Necesito pintar algo ya." · "¿Ponemos una peli?"
   - Feliz: "¡Pizza and a movie! Este día es perfecto." · "¡Qué lindo es mi rincón!"
 - Relaciones: real.fixer 0
