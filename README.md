@@ -14,7 +14,7 @@ Un juego de vida acogedor: Sofía vive en su casita y su amigo real.fixer viene 
 ## Estado
 Hito 6 ✅ Vida propia. ¡Parte A completa! 🎉
 
-## ⭐ Estrellas de inglés: 11
+## ⭐ Estrellas de inglés: 12
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -65,3 +65,4 @@ Hito 6 ✅ Vida propia. ¡Parte A completa! 🎉
 - mood: ánimo
 - free will: libre albedrío
 - That's what she said!: ¡Eso es lo que ella dijo!
+- bug: un bichito en el código; es normal y se arregla

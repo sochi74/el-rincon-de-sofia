@@ -395,6 +395,14 @@ var Sims = (function () {
 
   // ---------- Mood star: green, yellow or red by the average of the four needs ----------
 
+  function moodColor(id) {
+    var mood = Needs.average(id);
+    var colors = CONFIG.moodStar.colors;
+    if (mood > CONFIG.needLevels.good) return colors.good;
+    if (mood >= CONFIG.needLevels.low) return colors.ok;
+    return colors.low;
+  }
+
   function drawMoodStar(ctx, sim, time) {
     var r = CONFIG.moodStar.radius;
     var bob = Math.sin(time * 2 + sim.x * 0.01) * 1.5;
@@ -402,20 +410,24 @@ var Sims = (function () {
     ctx.save();
     ctx.beginPath();
     for (var i = 0; i < 10; i++) {
-      var radius = i % 2 === 0 ? r : r * 0.45;
+      var radius = i % 2 === 0 ? r : r * CONFIG.moodStar.inner;
       var angle = -Math.PI / 2 + i * Math.PI / 5;
       ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
     }
     ctx.closePath();
-    ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
+    ctx.lineJoin = "round";
+    // A cream halo first, so the star stands out on any floor or furniture.
+    ctx.shadowColor = "rgba(74, 52, 40, 0.3)";
     ctx.shadowBlur = 4;
     ctx.shadowOffsetY = 2;
-    ctx.fillStyle = Needs.colorFor(Needs.average(sim.data.id));
-    ctx.fill();
+    ctx.strokeStyle = C.cream;
+    ctx.lineWidth = 5;
+    ctx.stroke();
     ctx.shadowColor = "transparent";
+    ctx.fillStyle = moodColor(sim.data.id);
+    ctx.fill();
     ctx.strokeStyle = C.darkBrown;
-    ctx.lineWidth = 2;
-    ctx.lineJoin = "round";
+    ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.restore();
   }
