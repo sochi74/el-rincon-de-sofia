@@ -115,8 +115,14 @@ var CONFIG = {
   // It waits "pause" seconds after finishing something, and "retry" seconds if it could not go.
   freeWill: { threshold: 50, pause: 1, retry: 3 },
 
-  // Mood star over the head: its size, and the room it takes so bubbles go above it.
-  moodStar: { radius: 11, room: 28 },
+  // Mood star over the head: its size, how fat its points are, and the room it takes so
+  // bubbles go above it. Its colors are brighter than the bars so it stands out on any floor.
+  moodStar: {
+    radius: 14,
+    inner: 0.55,
+    room: 34,
+    colors: { good: "#5FB35A", ok: "#F2C230", low: "#E0533D" }
+  },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.
   save: { every: 10, key: "el-rincon-de-sofia-save" },

@@ -12,6 +12,7 @@
 - Si el navegador no deja guardar, el juego funciona igual, sin guardar.
 - Nuevo archivo js/save.js.
 - ⭐ Extra desbloqueado: un póster con marco de madera en la pared de la Sala que dice "That's what she said!".
+- Arreglo: la estrella de ánimo ahora se ve rellena de color
 - Problemas conocidos: Los personajes atraviesan los muebles. Mientras duermen o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar. Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar.
 
 ## 2026-10-20 · Hito 5: 💬 ¡A socializar!
