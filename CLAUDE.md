@@ -22,7 +22,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/sims.js: dibujo, selección y movimiento
 - js/ui.js: panel
 - js/main.js: arranque y bucle del juego
-- Más adelante: js/needs.js, objects.js, social.js
+- js/needs.js: necesidades y cómo bajan
+- Más adelante: objects.js, social.js
 - Orden de scripts: config, characters, house, sims, needs, objects, social, ui, main
 - Todo archivo nuevo se anota aquí.
 

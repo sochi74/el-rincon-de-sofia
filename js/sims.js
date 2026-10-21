@@ -241,6 +241,40 @@ var Sims = (function () {
     ctx.restore();
   }
 
+  // ---------- Thought bubble for needs in red ----------
+
+  function drawThoughtBubble(ctx, sim, time) {
+    var low = Needs.lowNeeds(sim.data.id);
+    if (low.length === 0) return;
+    var text = low.map(function (need) { return need.emoji; }).join(" ");
+    var bob = Math.sin(time * 2.5) * 2;
+    var headTop = sim.y - 78 * CONFIG.characterScale;
+    var cx = sim.x + 30, cy = headTop - 24 + bob;
+
+    ctx.save();
+    ctx.font = "22px " + CONFIG.fontFamily;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    var w = ctx.measureText(text).width + 22;
+    var h = 36;
+    ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 3;
+    ctx.strokeStyle = C.darkBrown;
+    ctx.lineWidth = 2.5;
+    // Two little puffs leading from the head to the bubble
+    [[sim.x + 10, headTop + 8 + bob / 2, 4], [sim.x + 18, headTop - 2 + bob, 6]].forEach(function (p) {
+      circle(ctx, p[0], p[1], p[2], C.white);
+      ctx.stroke();
+    });
+    fillRound(ctx, cx - w / 2, cy - h / 2, w, h, h / 2, C.white);
+    ctx.stroke();
+    ctx.shadowColor = "transparent";
+    ctx.fillStyle = C.darkBrown;
+    ctx.fillText(text, cx, cy + 1);
+    ctx.restore();
+  }
+
   function drawSim(ctx, sim, time) {
     if (sim === selected) drawGlow(ctx, sim, time);
     ellipse(ctx, sim.x, sim.y, 16 * CONFIG.characterScale, 6 * CONFIG.characterScale, "rgba(74, 52, 40, 0.25)");
@@ -254,6 +288,7 @@ var Sims = (function () {
     ctx.restore();
 
     drawNameTag(ctx, sim);
+    drawThoughtBubble(ctx, sim, time);
   }
 
   function draw(ctx, time) {

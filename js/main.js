@@ -41,6 +41,8 @@
     var dt = lastTime === null ? 0 : Math.min(0.1, time - lastTime);
     lastTime = time;
     Sims.update(dt);
+    Needs.update(dt);
+    UI.update();
     render(time);
     window.requestAnimationFrame(loop);
   }
@@ -61,6 +63,7 @@
     window.requestAnimationFrame(loop);
   }
 
+  Needs.init(CHARACTERS);
   UI.init();
   Sims.init(UI.showSelected);
 
