@@ -204,6 +204,24 @@ var CONFIG = {
     edge: "#B8862E"
   },
 
+  // Sofía's garden in the city, to the right of her house: the fence around it and the 6 plots inside (2 rows of 3).
+  // A watered seed takes "growTime" seconds of play to bloom. Planting, watering and harvesting take "actionTime"
+  // seconds; "Ocupado" stays "busyTime" seconds; the "+N" text after selling lasts "popTime" seconds.
+  // A character works a plot standing "standAbove" world units above it.
+  // Soil is wood colored when dry and darker when watered. "moonLight" is the halo of the moon flowers at night.
+  garden: {
+    fence: { x: 314, y: 386, w: 130, h: 78 },
+    plot: { w: 34, h: 28, gap: 6 },
+    growTime: 90,
+    actionTime: 2,
+    busyTime: 1.5,
+    popTime: 1.2,
+    standAbove: 36,
+    drySoil: "#B07A4F",
+    wetSoil: "#6E4A32",
+    moonLight: "190, 210, 245"
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   save: { every: 10, key: "el-rincon-de-sofia-save" },
 

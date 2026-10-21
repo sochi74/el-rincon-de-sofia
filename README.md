@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 12 ✅ Monedas mágicas
+Hito 13 ✅ Jardín y cosecha
 
-## ⭐ Estrellas de inglés: 18
+## ⭐ Estrellas de inglés: 19
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -102,3 +102,11 @@ Hito 12 ✅ Monedas mágicas
 - money: dinero
 - shiny: brillante
 - collect: recoger
+- garden: jardín
+- seed: semilla
+- flower: flor
+- tulip: tulipán
+- lily: lirio
+- rainbow: arcoíris
+- moon: luna
+- water: regar (y también agua)

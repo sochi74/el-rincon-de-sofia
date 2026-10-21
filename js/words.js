@@ -22,5 +22,14 @@ var WORDS = {
   tent: { es: "Carpa", en: "tent", say: "TENT" },
   campfire: { es: "Fogata", en: "campfire", say: "KÁMP-fáier" },
   firefly: { es: "Luciérnaga", en: "firefly", say: "FÁIER-flai" },
-  coin: { es: "Moneda", en: "coin", say: "KÓIN" }
+  coin: { es: "Moneda", en: "coin", say: "KÓIN" },
+
+  // Garden
+  garden: { es: "Jardín", en: "garden", say: "GÁR-den" },
+  seed: { es: "Semilla", en: "seed", say: "SÍID" },
+  flower: { es: "Flor", en: "flower", say: "FLÁU-er" },
+  tulip: { es: "Tulipán", en: "tulip", say: "TÚ-lip" },
+  lily: { es: "Lirio", en: "lily", say: "LÍ-li" },
+  rainbow: { es: "Flor arcoíris", en: "rainbow flower", say: "RÉIN-bou FLÁU-er" },
+  moon: { es: "Flor de luna", en: "moonflower", say: "MÚUN-flau-er" }
 };

@@ -1,5 +1,5 @@
 // Saves and loads the game in the browser: needs, where each character is (house or city) and stands, friendship,
-// the day and hour of the game clock, and the magic coins (the counter and the shiny coins on the ground).
+// the day and hour of the game clock, the magic coins (the counter and the shiny coins on the ground) and the garden plots.
 // Every use of localStorage is inside try/catch, so the game keeps working if it fails.
 var Save = (function () {
   var timer = 0;
@@ -8,7 +8,7 @@ var Save = (function () {
   var enabled = true;
 
   function snapshot() {
-    var data = { characters: {}, clock: Time.get(), coins: Coins.get() };
+    var data = { characters: {}, clock: Time.get(), coins: Coins.get(), garden: Garden.get() };
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var friendship = {};
@@ -45,6 +45,7 @@ var Save = (function () {
     if (!data || typeof data.characters !== "object") return;
     if (data.clock && typeof data.clock === "object") Time.set(data.clock.day, data.clock.minute);
     Coins.set(data.coins);
+    Garden.set(data.garden);
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var saved = data.characters[id];

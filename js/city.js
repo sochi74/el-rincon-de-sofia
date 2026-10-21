@@ -1,5 +1,5 @@
 // The fantasy city map seen from above: Sofía's house, the river and its bridge, the forest, the plaza,
-// and real.fixer's tent with its campfire and fireflies on the other side of the bridge.
+// real.fixer's tent with its campfire and fireflies on the other side of the bridge, and Sofía's garden next to her house.
 // At night the campfire, the house windows and the fireflies shine.
 // Also where characters may walk: never on the water (they cross on the bridge) and never off the map.
 var City = (function () {
@@ -145,9 +145,10 @@ var City = (function () {
   }
 
   // True if the spot is open grass where a character can walk: not on the river or the bridge,
-  // the house, the plaza, the stone paths, the tent, the campfire or under a tree (used for the shiny coins).
+  // the house, the garden, the plaza, the stone paths, the tent, the campfire or under a tree (used for the shiny coins).
   function isOpenGrass(x, y) {
     if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
+    if (Garden.isGardenAt(x, y)) return false;
     if (Math.abs(x - riverX(y)) < RIVER.half + RIVER.bank + 20) return false;
     if (houseAt(x, y) || (x > HOUSE.x - 20 && x < HOUSE.x + HOUSE.w + 20 && y > HOUSE.y - 70)) return false;
     if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20)) return false;
@@ -606,6 +607,10 @@ var City = (function () {
       ctx.fillRect(wx, WINDOW_Y + 10, 26, 2);
     });
 
+    // Moon flowers in the garden, with their blue-silver halo.
+    ctx.globalAlpha = 1;
+    Garden.drawNightLights(ctx, time, dark);
+
     // Fireflies, brighter than by day.
     ctx.globalAlpha = dark;
     drawFireflies(ctx, time, dark);
@@ -668,6 +673,7 @@ var City = (function () {
     drawBridge(ctx);
     drawPlaza(ctx, time);
     drawHouse(ctx, highlightHouse);
+    Garden.draw(ctx, time);
     drawTent(ctx);
     drawCampfire(ctx, time);
     CONFIG.cityObjects.forEach(function (f) {
@@ -683,6 +689,8 @@ var City = (function () {
     label(ctx, "Bosque", 270, 330, 24);
     label(ctx, "Plaza", PLAZA.x, PLAZA.y - 60, 22);
     label(ctx, "Carpa de real.fixer", TENT.x + TENT.w / 2, TENT.y - 30, 20);
+    var fence = CONFIG.garden.fence;
+    label(ctx, "Jardín de Sofía", fence.x + fence.w / 2, fence.y - 16, 16);
   }
 
   // ---------- What is under the mouse ----------
@@ -704,6 +712,8 @@ var City = (function () {
     }
     if (inBox(x, y, FIRE)) return "campfire";
     if (inBox(x, y, TENT)) return "tent";
+    var garden = Garden.wordAt(x, y);
+    if (garden) return garden;
     if (near(x, y, PLAZA.x, PLAZA.y, 42)) return "fountain";
     if (houseAt(x, y)) return "house";
     var half = RIVER.half + 34;

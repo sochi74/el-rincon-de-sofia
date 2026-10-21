@@ -1,5 +1,20 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 13: 🌸 Jardín y cosecha
+- En la ciudad, a la derecha de la Casa de Sofía, el "Jardín de Sofía": 6 parcelas de tierra (2 filas de 3) con una cerquita de madera, una entrada abajo y su cartel. No tapa caminos ni carteles.
+- Cuatro flores mágicas (semilla → venta): 🌷 Tulipán 5 → 12, 🌼 Lirio 8 → 18, 🌈 Flor arcoíris 12 → 28 (sus pétalos cambian de color poco a poco) y 🌙 Flor de luna 15 → 35 (de noche brilla con un halo azul plateado).
+- Plantar: con un personaje seleccionado, tocar una parcela vacía abre un menú con las 4 semillas, su emoji, lo que cuesta la semilla y lo que da la flor. Si no alcanzan las monedas, esa semilla se ve apagada. Al elegir, el personaje camina a la parcela, burbuja "Plantando 🌱" unos 2 segundos, y se descuentan las monedas.
+- Regar: la semilla no crece hasta que se riega. Tocar la parcela: "Regando 💧" unos 2 segundos, y la tierra se ve más oscura.
+- Crecer: después de regada pasa por semillita, brote (que se va estirando) y flor, en unos 90 segundos de juego.
+- Cosechar y vender: la flor lista se mece, brilla y tiene destellos. Tocarla: "Cosechando 🌷" unos 2 segundos, la parcela queda vacía, sale "+N 🪙" flotando y el contador sube.
+- Mismas reglas que los muebles: caminar hasta ahí, un nuevo clic cancela, Pausa congela todo (también el crecimiento), y si los dos van a la misma parcela, el segundo dice "Ocupado".
+- Las parcelas brillan al pasar el mouse, y sobre un personaje parado en el jardín el clic va a la parcela.
+- Las monedas brillantes ya no aparecen dentro del jardín.
+- El guardado recuerda cada parcela (vacía, qué flor, si está regada y cuánto creció). "Reiniciar" deja las 6 vacías.
+- Palabras nuevas al pasar el mouse: Jardín · garden (GÁR-den), Tulipán · tulip (TÚ-lip), Lirio · lily (LÍ-li), Flor arcoíris · rainbow flower (RÉIN-bou FLÁU-er), Flor de luna · moonflower (MÚUN-flau-er). Cada parcela muestra la palabra de su flor. También se agregaron Semilla · seed (SÍID) y Flor · flower (FLÁU-er) a js/words.js.
+- Nuevo archivo js/garden.js.
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa, la fogata y el jardín. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta), y si pasan sobre una moneda la recogen. Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. El panel puede tapar un poco la parte de arriba del mapa en pantallas chicas. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. De noche los carteles se ven un poco más oscuros. La tele brilla de noche aunque nadie la esté viendo. Al recargar la página, los personajes vuelven a mirar de frente. Al usar un mueble no se giran hacia él. Con el mouse sobre el panel, la etiqueta muestra lo que hay debajo del panel. real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima. Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien. Nadie cuida el jardín solo.
+
 ## 2026-10-21 · Hito 12: 🪙 Monedas mágicas
 - Monedas mágicas: un contador de la casa (compartido por los dos) que se ve en el panel, debajo del reloj, como "🪙 N". La partida nueva empieza con 20.
 - Monedas brillantes: cada 30 a 60 segundos de juego aparece una moneda dorada en el pasto de la ciudad, en un lugar al azar donde se puede caminar. Nunca sale en el río, el puente, la casa, la plaza, los caminos de piedra, la carpa, la fogata ni bajo los árboles. Como máximo hay 3 a la vez.

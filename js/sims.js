@@ -703,7 +703,7 @@ var Sims = (function () {
     drawNameTag(ctx, sim);
     drawMoodStar(ctx, sim, time);
     var lift = 0;
-    var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id);
+    var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) || Garden.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
       lift = drawSpeechBubble(ctx, sim, time, bubble);
     } else if (bubble) {
@@ -862,7 +862,7 @@ var Sims = (function () {
 
   function isIdle(sim) {
     var id = sim.data.id;
-    return sim.path.length === 0 && !Objects.isActive(id) && !Social.isInvolved(id);
+    return sim.path.length === 0 && !Objects.isActive(id) && !Garden.isActive(id) && !Social.isInvolved(id);
   }
 
   // Try to fix the lowest need; true if it found something to do.
@@ -1030,10 +1030,12 @@ var Sims = (function () {
   // A tap on a character selects it and stops what it was doing.
   // A tap on furniture sends the selected one to use it; a tap on the floor walks it there.
   // A tap on the front door takes it out to the city; in the city, a tap on the house takes it back in,
-  // and a tap on the tent or the campfire sends it to use them.
+  // a tap on the tent or the campfire sends it to use them, and a tap on a garden plot plants, waters or harvests.
   // While the menu is open, a tap anywhere else only closes it.
+  // In the city, garden plots win over characters, so a character working a plot never hides it from taps.
   function handleTap(x, y, screenX, screenY) {
-    var sim = simAt(x, y);
+    var onPlot = !!selected && selected.place === "city" && Garden.plotAt(x, y) >= 0;
+    var sim = onPlot ? null : simAt(x, y);
     var again = false;
     if (UI.isMenuOpen()) {
       UI.closeMenu();
@@ -1051,7 +1053,8 @@ var Sims = (function () {
       return;
     }
     if (sim) {
-      if (Objects.cancel(sim.data.id)) sim.path = [];
+      var wasBusy = Objects.cancel(sim.data.id);
+      if (Garden.cancel(sim.data.id) || wasBusy) sim.path = [];
       Social.cancel(sim.data.id);
       selected = sim;
       onSelect(sim.data);
@@ -1060,9 +1063,13 @@ var Sims = (function () {
     if (!selected) return;
     Social.cancel(selected.data.id);
     Objects.cancel(selected.data.id);
+    Garden.cancel(selected.data.id);
     if (selected.place === "city") {
       var thing = Objects.at(x, y, "city");
-      if (City.houseAt(x, y)) {
+      var plot = Garden.plotAt(x, y);
+      if (plot >= 0) {
+        Garden.tap(selected, plot, screenX, screenY);
+      } else if (City.houseAt(x, y)) {
         goHome(selected);
       } else if (thing) {
         Objects.start(selected, thing);

@@ -194,6 +194,50 @@ h1 {
   background: #C8664A;
 }
 
+#seed-menu {
+  position: fixed;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  background: #F5EBDD;
+  border: 3px solid #4A3428;
+  border-radius: 16px;
+  box-shadow: 0 4px 0 #4A3428;
+}
+
+#seed-menu[hidden] {
+  display: none;
+}
+
+#seed-menu button {
+  display: grid;
+  padding: 5px 16px;
+  font: inherit;
+  text-align: left;
+  color: #F5EBDD;
+  background: #8FA88A;
+  border: 3px solid #4A3428;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+#seed-menu button:hover:not(:disabled) {
+  background: #C8664A;
+}
+
+#seed-menu button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.seed-name {
+  font-weight: 700;
+}
+
+.seed-price {
+  font-size: 0.85em;
+}
+
 #word-tag {
   position: fixed;
   left: 0;
