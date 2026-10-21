@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Extra ✅ Menú que se abre y se cierra
+Hito 14 ✅ Pescar y recolectar
 
-## ⭐ Estrellas de inglés: 20
+## ⭐ Estrellas de inglés: 21
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -114,3 +114,12 @@ Extra ✅ Menú que se abre y se cierra
 - open: abrir
 - close: cerrar
 - butterfly: mariposa (butterflies: mariposas)
+- fish: pez (y también pescar)
+- fishing: pesca
+- crab: cangrejo
+- boot: bota
+- berry: baya
+- mushroom: hongo
+- crystal: cristal
+- backpack: mochila
+- sell: vender

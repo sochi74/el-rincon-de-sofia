@@ -12,6 +12,7 @@
 - "real.fixer es homeless y yo vivo sola"
 - "crear una ciudad de fantasia estilo dreamlight valley"
 - "podriamos agregar el menu al juego? (en la pantalla del juego) y yo poder abrir y cerar el menu?"
+- "quiero que fixer pueda alimentarse de las bayas" (solo real.fixer, y solo cuando tiene hambre; lo hace solo, con bayas de la mochila)
 
 ## Parte B: Diseño del juego completo
 Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para construir, explorar y hacer amigos.
@@ -27,7 +28,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 12: 🪙 Monedas mágicas. Un contador de monedas en el panel, que se guarda con la partida, y monedas brillantes para recoger en la ciudad.
 - ✅ Hito 13: 🌸 Jardín y cosecha. Jardín de Sofía con 6 parcelas: comprar semillas (tulipán, lirio, flor arcoíris, flor de luna), plantar, regar, ver crecer y vender.
 - ✅ Extra: ☰ Menú que se abre y se cierra, y mariposas en el jardín (desbloqueo de 20 ⭐)
-- ⬜ Hito 14: 🎣 Pescar y recolectar. Pescar en el río y recolectar frutos y cristales en el bosque.
+- ✅ Hito 14: 🎣 Pescar y recolectar. Pescar en el río (pez plateado, cangrejo, pez arcoíris, bota vieja, pez luna de noche) y recolectar bayas, hongos y cristales en el bosque; todo va a la mochila y se vende.
 - ⬜ Hito 15: 🍲 Cocinar. Recetas simples con lo cosechado y pescado; la comida cocinada sube más el Hambre.
 - ⬜ Hito 16: 🎁 Amistad y regalos. Niveles de amistad (conocidos, amigos, mejores amigos) y dar regalos que suben la Amistad.
 - ⬜ Hito 17: 🎵 Sonidos y música. Sonidos de botones, sonidos del mundo (río, pájaros, fogata, lluvia) y música de fondo tranquila, todo creado con código, con botón para silenciar.

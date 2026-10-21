@@ -1,5 +1,6 @@
 // The fantasy city map seen from above: Sofía's house, the river and its bridge, the forest, the plaza,
 // real.fixer's tent with its campfire and fireflies on the other side of the bridge, and Sofía's garden next to her house.
+// Berries, mushrooms and crystals from js/gather.js grow in the forest.
 // At night the campfire, the house windows and the fireflies shine.
 // Also where characters may walk: never on the water (they cross on the bridge) and never off the map.
 var City = (function () {
@@ -163,6 +164,19 @@ var City = (function () {
       }
       return false;
     });
+  }
+
+  // True if the spot is open forest floor between the trees, where berries, mushrooms and crystals
+  // can grow (not under a tree and not on the "Bosque" sign).
+  function isForestFloor(x, y) {
+    if (!inBox(x, y, FOREST) || !isOpenGrass(x, y)) return false;
+    return !inBox(x, y, { x: 190, y: 295, w: 160, h: 90 });
+  }
+
+  // True if the spot is on the water of the river, not on the bridge.
+  function riverAt(x, y) {
+    if (Math.abs(x - riverX(y)) > RIVER.half) return false;
+    return !(Math.abs(x - riverX(BRIDGE.y)) <= RIVER.half + 34 && Math.abs(y - BRIDGE.y) <= 28);
   }
 
   // ---------- Grass and stone paths ----------
@@ -611,6 +625,9 @@ var City = (function () {
     ctx.globalAlpha = 1;
     Garden.drawNightLights(ctx, time, dark);
 
+    // Crystals in the forest, shining more at night.
+    Gather.drawNightLights(ctx, time, dark);
+
     // Fireflies, brighter than by day.
     ctx.globalAlpha = dark;
     drawFireflies(ctx, time, dark);
@@ -680,6 +697,7 @@ var City = (function () {
       if (f.id === highlightId) drawThingHighlight(ctx, f);
     });
     TREES.forEach(function (t, i) { drawTree(ctx, t[0], t[1], t[2], i); });
+    Gather.draw(ctx, time);
     drawFireflies(ctx, time);
     ctx.restore();
 
@@ -736,6 +754,9 @@ var City = (function () {
     isWalkable: isWalkable,
     houseAt: houseAt,
     isOpenGrass: isOpenGrass,
+    isForestFloor: isForestFloor,
+    riverAt: riverAt,
+    riverX: riverX,
     doorSpot: doorSpot
   };
 })();
