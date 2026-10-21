@@ -111,6 +111,16 @@ var CONFIG = {
     waitBubbleTime: 1.2
   },
 
+  // Free will: the one not selected looks after a need below "threshold" when it is idle.
+  // It waits "pause" seconds after finishing something, and "retry" seconds if it could not go.
+  freeWill: { threshold: 50, pause: 1, retry: 3 },
+
+  // Mood star over the head: its size, and the room it takes so bubbles go above it.
+  moodStar: { radius: 11, room: 28 },
+
+  // Autosave: how often, in seconds, and the name of the save in the browser.
+  save: { every: 10, key: "el-rincon-de-sofia-save" },
+
   // Drawing colors and starting spot (in the Sala) for each character.
   characterLooks: {
     realfixer: {

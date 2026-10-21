@@ -1,5 +1,19 @@
 # CHANGELOG.md
 
+## 2026-10-20 · Hito 6: ✨ Vida propia
+- Libre albedrío: el personaje que no está seleccionado, cuando está quieto y tiene una necesidad por debajo de 50, va solo a resolver la más baja:
+  - Hambre → Refrigerador. Energía → Cama. Diversión → Sofá o Televisión. Social → "Charlar" con el otro.
+  - Usa las mismas acciones, multiplicadores y esperas de siempre.
+  - Si el mueble está ocupado o hay que esperar para charlar, espera unos segundos y vuelve a intentar.
+  - Si nadie está seleccionado, los dos actúan solos. Con Pausa, nadie decide nada.
+- Ánimo: una estrella flota sobre la cabeza de cada uno, según el promedio de sus cuatro necesidades: verde por encima de 60, amarilla de 30 a 60, roja por debajo de 30. Las burbujas de pensamiento, acción y diálogo se dibujan encima de la estrella.
+- Guardado: cada 10 segundos y al cerrar o recargar la página se guardan las necesidades, la posición de cada personaje y la amistad. Al abrir el juego, se carga la partida guardada.
+- Botón "🔄 Reiniciar" en el panel: borra lo guardado y vuelve a empezar.
+- Si el navegador no deja guardar, el juego funciona igual, sin guardar.
+- Nuevo archivo js/save.js.
+- ⭐ Extra desbloqueado: un póster con marco de madera en la pared de la Sala que dice "That's what she said!".
+- Problemas conocidos: Los personajes atraviesan los muebles. Mientras duermen o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar. Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar.
+
 ## 2026-10-20 · Hito 5: 💬 ¡A socializar!
 - Con un personaje seleccionado, tocar al otro abre un menú: "Charlar", "Contar un chiste" y "Chocar los cinco". Tocar al otro dos veces lo selecciona.
 - Al elegir, los dos caminan uno hacia el otro, se miran y alternan de 2 a 4 burbujas con sus frases de js/characters.js (saludo, charlar, chiste o chocar los cinco).

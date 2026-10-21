@@ -253,7 +253,7 @@ var Sims = (function () {
     if (low.length === 0) return;
     var text = low.map(function (need) { return need.emoji; }).join(" ");
     var bob = Math.sin(time * 2.5) * 2;
-    var headTop = sim.y - 78 * CONFIG.characterScale - lift;
+    var headTop = sim.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room - lift;
     var cx = sim.x + 30, cy = headTop - 24 + bob;
 
     ctx.save();
@@ -268,7 +268,7 @@ var Sims = (function () {
     ctx.strokeStyle = C.darkBrown;
     ctx.lineWidth = 2.5;
     // Two little puffs leading from the head to the bubble
-    [[sim.x + 10, headTop + 8 + bob / 2, 4], [sim.x + 18, headTop - 2 + bob, 6]].forEach(function (p) {
+    [[sim.x + 16, headTop + 8 + bob / 2, 4], [sim.x + 22, headTop - 2 + bob, 6]].forEach(function (p) {
       circle(ctx, p[0], p[1], p[2], C.white);
       ctx.stroke();
     });
@@ -314,7 +314,7 @@ var Sims = (function () {
     w += 26;
     var h = 16 + lines.length * 20 + (subLines.length ? 4 + subLines.length * 16 : 0);
 
-    var headTop = sim.y - 78 * CONFIG.characterScale;
+    var headTop = sim.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room;
     var cx = sim.x, bottom = headTop - 8, top = bottom - h;
     ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
     ctx.shadowBlur = 6;
@@ -357,7 +357,7 @@ var Sims = (function () {
   // ---------- Action bubble ("Comiendo 🍳") with a heart for favorites ----------
 
   function drawActionBubble(ctx, sim, time, bubble) {
-    var headTop = sim.y - 78 * CONFIG.characterScale;
+    var headTop = sim.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room;
     var cx = sim.x, cy = headTop - 22;
 
     ctx.save();
@@ -393,6 +393,33 @@ var Sims = (function () {
     ctx.restore();
   }
 
+  // ---------- Mood star: green, yellow or red by the average of the four needs ----------
+
+  function drawMoodStar(ctx, sim, time) {
+    var r = CONFIG.moodStar.radius;
+    var bob = Math.sin(time * 2 + sim.x * 0.01) * 1.5;
+    var cx = sim.x, cy = sim.y - 78 * CONFIG.characterScale - r - 4 + bob;
+    ctx.save();
+    ctx.beginPath();
+    for (var i = 0; i < 10; i++) {
+      var radius = i % 2 === 0 ? r : r * 0.45;
+      var angle = -Math.PI / 2 + i * Math.PI / 5;
+      ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
+    }
+    ctx.closePath();
+    ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 2;
+    ctx.fillStyle = Needs.colorFor(Needs.average(sim.data.id));
+    ctx.fill();
+    ctx.shadowColor = "transparent";
+    ctx.strokeStyle = C.darkBrown;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+    ctx.restore();
+  }
+
   function drawSim(ctx, sim, time) {
     if (sim === selected) drawGlow(ctx, sim, time);
     ellipse(ctx, sim.x, sim.y, 16 * CONFIG.characterScale, 6 * CONFIG.characterScale, "rgba(74, 52, 40, 0.25)");
@@ -409,6 +436,7 @@ var Sims = (function () {
     ctx.restore();
 
     drawNameTag(ctx, sim);
+    drawMoodStar(ctx, sim, time);
     var lift = 0;
     var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
@@ -490,6 +518,66 @@ var Sims = (function () {
     });
   }
 
+  // ---------- Free will ----------
+
+  // Seconds until each character may decide something on its own, by id.
+  var thinkTimer = {};
+
+  function isIdle(sim) {
+    var id = sim.data.id;
+    return sim.path.length === 0 && !Objects.isActive(id) && !Social.isInvolved(id);
+  }
+
+  // Try to fix the lowest need; true if it found something to do.
+  function lookAfter(sim) {
+    var values = Needs.get(sim.data.id);
+    var lowest = null;
+    CONFIG.needs.forEach(function (need) {
+      if (!lowest || values[need.id] < values[lowest.id]) lowest = need;
+    });
+    if (values[lowest.id] >= CONFIG.freeWill.threshold) return false;
+
+    if (lowest.id === "social") {
+      if (Social.isBusy()) return false;
+      var other = sims.filter(function (s) { return s !== sim; })[0];
+      Social.start(sim, other, "chat");
+      return true;
+    }
+    var free = Objects.freeFor(lowest.id, sim.data.id);
+    if (free.length === 0) return false;
+    Objects.start(sim, free[Math.floor(Math.random() * free.length)]);
+    return true;
+  }
+
+  // The ones not selected look after themselves when they are idle. With Pausa, nobody decides.
+  function think(dt) {
+    if (Needs.isPaused()) return;
+    sims.forEach(function (sim) {
+      var id = sim.data.id;
+      if (sim === selected || sim === menuFor || !isIdle(sim)) {
+        thinkTimer[id] = CONFIG.freeWill.pause;
+        return;
+      }
+      thinkTimer[id] = (thinkTimer[id] || 0) - dt;
+      if (thinkTimer[id] > 0) return;
+      thinkTimer[id] = lookAfter(sim) ? CONFIG.freeWill.pause : CONFIG.freeWill.retry;
+    });
+  }
+
+  // ---------- Saving ----------
+
+  function list() {
+    return sims;
+  }
+
+  // Put a character at a saved spot, if it is inside the house.
+  function place(sim, x, y) {
+    if (typeof x !== "number" || typeof y !== "number" || !roomAt(x, y)) return;
+    sim.x = x;
+    sim.y = y;
+    sim.path = [];
+  }
+
   // ---------- Tapping ----------
 
   function simAt(x, y) {
@@ -544,5 +632,16 @@ var Sims = (function () {
     }
   }
 
-  return { init: init, update: update, draw: draw, handleTap: handleTap, walkTo: walkTo, simAt: simAt, roomAt: roomAt };
+  return {
+    init: init,
+    update: update,
+    think: think,
+    draw: draw,
+    handleTap: handleTap,
+    walkTo: walkTo,
+    simAt: simAt,
+    roomAt: roomAt,
+    list: list,
+    place: place
+  };
 })();

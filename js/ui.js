@@ -1,4 +1,4 @@
-// Small panel that shows who is selected, their needs, friendship and the pause button.
+// Small panel that shows who is selected, their needs, friendship and the Pausa and Reiniciar buttons.
 // Also the little social menu that opens next to a character.
 var UI = (function () {
   var panel, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu;
@@ -43,6 +43,10 @@ var UI = (function () {
     pauseButton.addEventListener("click", function () {
       var paused = Needs.togglePause();
       pauseButton.textContent = paused ? "▶️ Continuar" : "⏸️ Pausa";
+    });
+
+    document.getElementById("reset-button").addEventListener("click", function () {
+      Save.reset();
     });
 
     showSelected(null);

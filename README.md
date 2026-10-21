@@ -12,9 +12,9 @@ Un juego de vida acogedor: Sofía vive en su casita y su amigo real.fixer viene 
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it."
 
 ## Estado
-Hito 5 ✅ ¡A socializar!
+Hito 6 ✅ Vida propia. ¡Parte A completa! 🎉
 
-## ⭐ Estrellas de inglés: 8
+## ⭐ Estrellas de inglés: 11
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -60,3 +60,8 @@ Hito 5 ✅ ¡A socializar!
 - high five: chocar los cinco
 - friendship: amistad
 - How are you?: ¿Cómo estás?
+- save: guardar
+- load: cargar
+- mood: ánimo
+- free will: libre albedrío
+- That's what she said!: ¡Eso es lo que ella dijo!
