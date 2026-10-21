@@ -49,5 +49,11 @@ var WORDS = {
   recipe: { es: "Receta", en: "recipe", say: "RÉ-si-pi" },
   dish: { es: "Plato", en: "dish", say: "DISH" },
   soup: { es: "Sopa", en: "soup", say: "SÚUP" },
-  pie: { es: "Tarta", en: "pie", say: "PÁI" }
+  pie: { es: "Tarta", en: "pie", say: "PÁI" },
+
+  // Friendship and gifts
+  gift: { es: "Regalo", en: "gift", say: "GUIFT" },
+  friend: { es: "Amigo", en: "friend", say: "FREND" },
+  bestFriends: { es: "Mejores amigos", en: "best friends", say: "BEST FRENDS" },
+  kitten: { es: "Gatito", en: "kitten", say: "KÍ-ten" }
 };

@@ -10,12 +10,12 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 
 ## Personajes
 - 💗 Sofía: dormilona, glotona y creativa; le encanta ver tele. "Pizza and a movie!" Lleva su Princess crown 👑
-- 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
+- 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río. Su gatito naranja se llama Krohna 🐱
 
 ## Estado
-Extra ✅ Pulido 2
+Hito 16 ✅ Amistad y regalos
 
-## ⭐ Estrellas de inglés: 24
+## ⭐ Estrellas de inglés: 26
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -138,3 +138,8 @@ Extra ✅ Pulido 2
 - lie down: acostarse
 - sit: sentarse
 - blanket: manta
+- gift: regalo
+- best friends: mejores amigos
+- level: nivel
+- kitten: gatito
+- cat: gato

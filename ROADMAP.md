@@ -32,7 +32,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 15: 🍲 Cocinar. Cocinar en la Estufa o en la Fogata: pescado con hongos, sopa de cangrejo, tarta de bayas y plato mágico; los platos se comen o se venden.
 - ✅ Extra: 🧹 Pulido 1 (arreglos pequeños)
 - ✅ Extra: 🧹 Pulido 2: rodear muebles, árboles y cosas al caminar; acostarse en la cama y la carpa; sentarse en el sofá y junto a la fogata
-- ⬜ Hito 16: 🎁 Amistad y regalos. Niveles de amistad (conocidos, amigos, mejores amigos) y dar regalos que suben la Amistad.
+- ✅ Hito 16: 🎁 Amistad y regalos. Niveles de amistad (conocidos, amigos, mejores amigos) y dar regalos que suben la Amistad.
 - ⬜ Hito 17: 🎵 Sonidos y música. Sonidos de botones, sonidos del mundo (río, pájaros, fogata, lluvia) y música de fondo tranquila, todo creado con código, con botón para silenciar.
 
 ### 🏡 Pack 3: Vecinos y hogar
