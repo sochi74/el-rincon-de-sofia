@@ -19,7 +19,7 @@ var Sims = (function () {
         path: [],
         stepPhase: 0,
         // "house" or "city"
-        place: "house",
+        place: look.start.place,
         // The place it goes to when it gets to the door it is walking to, or null.
         goal: null
       };
@@ -583,7 +583,8 @@ var Sims = (function () {
   }
 
   // Try to fix the lowest need; true if it found something to do.
-  // In the city, it goes back home first.
+  // If the character has its own place for that need ("goesTo"), it walks there, going out or in first.
+  // If not, in the city it goes back to the house first.
   function lookAfter(sim) {
     var values = Needs.get(sim.data.id);
     var lowest = null;
@@ -592,6 +593,20 @@ var Sims = (function () {
     });
     if (values[lowest.id] >= CONFIG.freeWill.threshold) return false;
 
+    var own = (CONFIG.freeWill.goesTo[sim.data.id] || {})[lowest.id];
+    if (own) {
+      var mine = Objects.freeFor(lowest.id, sim.data.id, sim.place, own);
+      if (mine.length === 0) return false;
+      var where = Objects.placeOf(mine[0]);
+      if (where === sim.place) {
+        Objects.start(sim, mine[0]);
+      } else if (where === "city") {
+        goOut(sim);
+      } else {
+        goHome(sim);
+      }
+      return true;
+    }
     if (sim.place === "city") {
       goHome(sim);
       return true;
@@ -602,13 +617,80 @@ var Sims = (function () {
       Social.start(sim, other, "chat");
       return true;
     }
-    var free = Objects.freeFor(lowest.id, sim.data.id);
+    var free = Objects.freeFor(lowest.id, sim.data.id, sim.place);
     if (free.length === 0) return false;
     Objects.start(sim, free[Math.floor(Math.random() * free.length)]);
     return true;
   }
 
-  // The ones not selected look after themselves when they are idle. With Pausa, nobody decides.
+  // ---------- Visits ----------
+
+  // The visitor's visit: phase null (at home), "going", "staying" or "leaving".
+  var visit = { phase: null, timer: randomWait(), stay: 0 };
+
+  function randomWait() {
+    var w = CONFIG.visit.wait;
+    return w.min + Math.random() * (w.max - w.min);
+  }
+
+  function needsAreFine(id) {
+    var values = Needs.get(id);
+    return CONFIG.needs.every(function (need) { return values[need.id] >= CONFIG.freeWill.threshold; });
+  }
+
+  function stopVisit() {
+    visit.phase = null;
+    visit.timer = randomWait();
+  }
+
+  // Every now and then the visitor walks to Sofía's house, stays a while in the Sala and goes back home.
+  // If it is already in the house with nothing to do, it stays a while and then goes home too.
+  function visitStep(dt) {
+    var sim = sims.filter(function (s) { return s.data.id === CONFIG.visit.who; })[0];
+    if (!sim) return;
+    if (sim === selected || sim === menuFor) {
+      stopVisit();
+      return;
+    }
+    if (visit.phase === "staying") visit.stay -= dt;
+    if (!isIdle(sim)) return;
+
+    if (!visit.phase) {
+      if (!needsAreFine(sim.data.id)) return;
+      if (sim.place === "house") {
+        visit.phase = "staying";
+        visit.stay = CONFIG.visit.stay;
+        return;
+      }
+      visit.timer -= dt;
+      if (visit.timer > 0) return;
+      visit.phase = "going";
+    }
+    if (visit.phase === "going") {
+      if (sim.place === "city") {
+        goHome(sim);
+        return;
+      }
+      walkTo(sim, CONFIG.visit.spot.x, CONFIG.visit.spot.y);
+      visit.phase = "staying";
+      visit.stay = CONFIG.visit.stay;
+      return;
+    }
+    if (visit.phase === "staying") {
+      if (visit.stay > 0) return;
+      visit.phase = "leaving";
+    }
+    // Leaving: out the front door, then back to the starting spot by home.
+    if (sim.place === "house") {
+      goOut(sim);
+      return;
+    }
+    walkTo(sim, sim.look.start.x, sim.look.start.y);
+    stopVisit();
+  }
+
+  // The ones not selected look after themselves when they are idle, and the visitor visits.
+  // With Pausa, nobody decides.
   function think(dt) {
     if (Needs.isPaused()) return;
     sims.forEach(function (sim) {
@@ -619,8 +701,12 @@ var Sims = (function () {
       }
       thinkTimer[id] = (thinkTimer[id] || 0) - dt;
       if (thinkTimer[id] > 0) return;
-      thinkTimer[id] = lookAfter(sim) ? CONFIG.freeWill.pause : CONFIG.freeWill.retry;
+      var busy = lookAfter(sim);
+      thinkTimer[id] = busy ? CONFIG.freeWill.pause : CONFIG.freeWill.retry;
+      // Looking after a need comes first and ends a visit.
+      if (busy && id === CONFIG.visit.who) stopVisit();
     });
+    visitStep(dt);
   }
 
   // ---------- Saving ----------
@@ -660,7 +746,8 @@ var Sims = (function () {
   // A tap on the other character opens the social menu; tapping it again selects it.
   // A tap on a character selects it and stops what it was doing.
   // A tap on furniture sends the selected one to use it; a tap on the floor walks it there.
-  // A tap on the front door takes it out to the city; in the city, a tap on the house takes it back in.
+  // A tap on the front door takes it out to the city; in the city, a tap on the house takes it back in,
+  // and a tap on the tent or the campfire sends it to use them.
   // While the menu is open, a tap anywhere else only closes it.
   function handleTap(x, y, screenX, screenY) {
     var sim = simAt(x, y);
@@ -691,8 +778,11 @@ var Sims = (function () {
     Social.cancel(selected.data.id);
     Objects.cancel(selected.data.id);
     if (selected.place === "city") {
+      var thing = Objects.at(x, y, "city");
       if (City.houseAt(x, y)) {
         goHome(selected);
+      } else if (thing) {
+        Objects.start(selected, thing);
       } else {
         walkTo(selected, x, y);
       }
@@ -702,7 +792,7 @@ var Sims = (function () {
       goOut(selected);
       return;
     }
-    var furniture = Objects.at(x, y);
+    var furniture = Objects.at(x, y, "house");
     if (furniture) {
       Objects.start(selected, furniture);
     } else {

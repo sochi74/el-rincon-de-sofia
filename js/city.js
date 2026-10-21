@@ -1,4 +1,5 @@
-// The fantasy city map seen from above: Sofía's house, the river and its bridge, the forest and the plaza.
+// The fantasy city map seen from above: Sofía's house, the river and its bridge, the forest, the plaza,
+// and real.fixer's tent with its campfire and fireflies on the other side of the bridge.
 // Also where characters may walk: never on the water (they cross on the bridge) and never off the map.
 var City = (function () {
   var C = CONFIG.colors;
@@ -364,6 +365,168 @@ var City = (function () {
     }
   }
 
+  // ---------- real.fixer's tent, campfire and fireflies ----------
+
+  var TENT = CONFIG.cityObjects[0], FIRE = CONFIG.cityObjects[1];
+
+  // A tent seen from above: two slopes with a ridge pole down the middle, ropes to stakes,
+  // and the entrance at the front with its flaps tied open.
+  function drawTent(ctx) {
+    var x = TENT.x, y = TENT.y, w = TENT.w, h = TENT.h;
+    var cx = x + w / 2, bottom = y + h;
+
+    // Ropes from the corners to little wooden stakes
+    ctx.save();
+    ctx.strokeStyle = C.cream;
+    ctx.lineWidth = 2;
+    [[x + 8, y + 14, x - 14, y - 2], [x + w - 8, y + 14, x + w + 14, y - 2],
+      [x + 8, bottom - 12, x - 14, bottom + 4], [x + w - 8, bottom - 12, x + w + 14, bottom + 4]]
+      .forEach(function (r) {
+        ctx.beginPath();
+        ctx.moveTo(r[0], r[1]);
+        ctx.lineTo(r[2], r[3]);
+        ctx.stroke();
+        circle(ctx, r[2], r[3], 3.5, C.wood);
+      });
+    ctx.restore();
+
+    // The two slopes: light on the left, in shade on the right
+    withShadow(ctx, function () {
+      fillRound(ctx, x, y, w, h, 12, C.terracotta);
+    });
+    ctx.save();
+    roundRect(ctx, x, y, w, h, 12);
+    ctx.clip();
+    ctx.fillStyle = "#D98168";
+    ctx.fillRect(x, y, w / 2, h);
+    // Seams across the cloth
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.2)";
+    ctx.lineWidth = 2;
+    for (var sy = y + 26; sy < bottom - 10; sy += 26) {
+      ctx.beginPath();
+      ctx.moveTo(x, sy + 6);
+      ctx.lineTo(cx, sy);
+      ctx.lineTo(x + w, sy + 6);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Entrance: a dark opening at the front with cream flaps tied to each side
+    ctx.fillStyle = C.darkBrown;
+    ctx.beginPath();
+    ctx.moveTo(cx - 28, bottom);
+    ctx.lineTo(cx, bottom - 46);
+    ctx.lineTo(cx + 28, bottom);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = C.cream;
+    [-1, 1].forEach(function (side) {
+      ctx.beginPath();
+      ctx.moveTo(cx, bottom - 46);
+      ctx.lineTo(cx + side * 28, bottom);
+      ctx.lineTo(cx + side * 40, bottom);
+      ctx.closePath();
+      ctx.fill();
+      circle(ctx, cx + side * 30, bottom - 10, 3, C.wood);
+    });
+
+    // Ridge pole with its ends sticking out
+    fillRound(ctx, cx - 3, y - 6, 6, h + 10, 3, C.darkBrown);
+    circle(ctx, cx, y - 6, 5, C.wood);
+  }
+
+  // A campfire: a ring of stones, crossed logs and flames that sway softly, with a warm glow.
+  function drawCampfire(ctx, time) {
+    var cx = FIRE.x + FIRE.w / 2, cy = FIRE.y + FIRE.h / 2;
+
+    // Warm light on the grass, breathing slowly
+    ctx.save();
+    var glow = ctx.createRadialGradient(cx, cy, 6, cx, cy, 70 + Math.sin(time * 3) * 4);
+    glow.addColorStop(0, "rgba(255, 214, 107, 0.45)");
+    glow.addColorStop(1, "rgba(255, 214, 107, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 80, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Stones
+    for (var i = 0; i < 10; i++) {
+      var a = i * Math.PI / 5;
+      circle(ctx, cx + Math.cos(a) * 28, cy + Math.sin(a) * 24, 7, i % 2 === 0 ? C.stone : C.stoneLight);
+    }
+    // Two crossed logs
+    [0.5, -0.5].forEach(function (angle) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      fillRound(ctx, -27, -6, 54, 12, 6, C.wood);
+      circle(ctx, -24, 0, 4.5, "#C99A6E");
+      circle(ctx, 24, 0, 4.5, "#C99A6E");
+      ctx.restore();
+    });
+
+    // Flames: three layers, each swaying and stretching a little
+    [[12, C.terracotta, 0], [8, "#E2B44B", 1.3], [4, C.cream, 2.6]].forEach(function (layer) {
+      var r = layer[0];
+      var sway = Math.sin(time * 5 + layer[2]) * 3;
+      var tall = r * (1.9 + Math.sin(time * 7 + layer[2]) * 0.2);
+      ctx.fillStyle = layer[1];
+      ctx.beginPath();
+      ctx.moveTo(cx - r, cy);
+      ctx.quadraticCurveTo(cx - r, cy - tall * 0.5, cx + sway, cy - tall);
+      ctx.quadraticCurveTo(cx + r, cy - tall * 0.5, cx + r, cy);
+      ctx.arc(cx, cy, r, 0, Math.PI);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // Little sparks rising and fading
+    for (var k = 0; k < 3; k++) {
+      var t = (time * 0.7 + k / 3) % 1;
+      ctx.save();
+      ctx.globalAlpha = 1 - t;
+      circle(ctx, cx + Math.sin(time * 2 + k * 2) * 8, cy - 20 - t * 40, 2, "#FFD66B");
+      ctx.restore();
+    }
+  }
+
+  // Fireflies: little yellow lights that float around the tent and the campfire and twinkle.
+  var FIREFLIES = [
+    [745, 300, 0], [940, 260, 1.7], [880, 450, 3.1], [730, 420, 4.4],
+    [950, 520, 2.3], [700, 520, 5.2], [860, 210, 0.8]
+  ];
+
+  function drawFireflies(ctx, time) {
+    FIREFLIES.forEach(function (f) {
+      var x = f[0] + Math.sin(time * 0.6 + f[2]) * 22 + Math.sin(time * 1.7 + f[2] * 2) * 6;
+      var y = f[1] + Math.cos(time * 0.5 + f[2] * 1.3) * 16;
+      var shine = 0.5 + 0.5 * Math.sin(time * 3 + f[2] * 2.7);
+      ctx.save();
+      ctx.globalAlpha = 0.25 + shine * 0.75;
+      ctx.shadowColor = "#FFE680";
+      ctx.shadowBlur = 12;
+      circle(ctx, x, y, 7, "rgba(255, 230, 128, 0.6)");
+      ctx.shadowBlur = 0;
+      circle(ctx, x, y, 3.2, "#FFF6C2");
+      ctx.restore();
+    });
+  }
+
+  // Soft glow around the tent or the campfire when the mouse is over it.
+  function drawThingHighlight(ctx, f) {
+    ctx.save();
+    ctx.shadowColor = C.cream;
+    ctx.shadowBlur = 18;
+    roundRect(ctx, f.x - 12, f.y - 12, f.w + 24, f.h + 24, 20);
+    ctx.fillStyle = "rgba(245, 235, 221, 0.25)";
+    ctx.fill();
+    ctx.strokeStyle = C.sage;
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.restore();
+  }
+
   // ---------- Forest ----------
 
   function drawTree(ctx, x, y, r) {
@@ -380,7 +543,7 @@ var City = (function () {
 
   // ---------- Main draw ----------
 
-  function draw(ctx, time, highlightHouse) {
+  function draw(ctx, time, highlightHouse, highlightId) {
     ctx.save();
     roundRect(ctx, 0, 0, W, H, 40);
     ctx.clip();
@@ -390,7 +553,13 @@ var City = (function () {
     drawBridge(ctx);
     drawPlaza(ctx, time);
     drawHouse(ctx, highlightHouse);
+    drawTent(ctx);
+    drawCampfire(ctx, time);
+    CONFIG.cityObjects.forEach(function (f) {
+      if (f.id === highlightId) drawThingHighlight(ctx, f);
+    });
     TREES.forEach(function (t) { drawTree(ctx, t[0], t[1], t[2]); });
+    drawFireflies(ctx, time);
     ctx.restore();
 
     label(ctx, "Casa de Sofía", HOUSE.x + HOUSE.w / 2, HOUSE.y - 34, 24);
@@ -398,6 +567,7 @@ var City = (function () {
     label(ctx, "Puente", riverX(BRIDGE.y), BRIDGE.y + 62, 22);
     label(ctx, "Bosque", 270, 330, 24);
     label(ctx, "Plaza", PLAZA.x, PLAZA.y - 60, 22);
+    label(ctx, "Carpa de real.fixer", TENT.x + TENT.w / 2, TENT.y - 30, 20);
   }
 
   return {

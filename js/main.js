@@ -32,7 +32,7 @@
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
     if (Sims.viewPlace() === "city") {
-      City.draw(ctx, time, hoveredHouse);
+      City.draw(ctx, time, hoveredHouse, hovered && hovered.id);
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
@@ -72,13 +72,13 @@
     Sims.handleTap(p.x, p.y, event.clientX, event.clientY);
   }
 
-  // Light up the usable furniture, or the house in the city, under the mouse (characters in front win).
+  // Light up the usable furniture, or in the city the house, tent or campfire, under the mouse (characters in front win).
   // The front door gets a pointer too.
   function handleHover(event) {
     var p = toWorld(event);
     var free = !Sims.simAt(p.x, p.y);
     var inCity = Sims.viewPlace() === "city";
-    hovered = free && !inCity ? Objects.at(p.x, p.y) : null;
+    hovered = free ? Objects.at(p.x, p.y, inCity ? "city" : "house") : null;
     hoveredHouse = free && inCity && City.houseAt(p.x, p.y);
     var door = free && !inCity && House.doorAt(p.x, p.y);
     canvas.style.cursor = hovered || hoveredHouse || door ? "pointer" : "";

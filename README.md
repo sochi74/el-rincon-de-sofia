@@ -10,10 +10,10 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 
 ## Personajes
 - 💗 Sofía: dormilona, glotona y creativa; le encanta ver tele. "Pizza and a movie!"
-- 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it."
+- 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 7 ✅ La puerta mágica
+Hito 8 ✅ La carpa de real.fixer
 
 ## ⭐ Estrellas de inglés: 12
 
@@ -77,3 +77,7 @@ Hito 7 ✅ La puerta mágica
 - bridge: puente
 - forest: bosque
 - square: plaza
+- tent: carpa
+- campfire: fogata
+- firefly: luciérnaga
+- visit: visitar

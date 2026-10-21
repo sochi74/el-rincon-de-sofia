@@ -7,7 +7,7 @@ Efectos de rasgos (se multiplican si se suman):
 Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/a: Energía baja ×0.7 · Fiestero/a: Social baja ×1.5, socializar da ×1.5 · Tímido/a: Social baja ×0.7, socializar da ×0.7 · Gamer: la tele da Diversión ×1.5 · Creativo/a: Diversión baja ×1.5 · Bromista: sus chistes dan Amistad ×1.5 · Conversador/a: Charlar da Social ×1.5 · Tranquilo/a: todas sus necesidades bajan ×0.85
 
 ## real.fixer
-- Nombre y apodo: real.fixer (siempre en minúscula, con el punto). Amigo de Sofía que viene de visita.
+- Nombre y apodo: real.fixer (siempre en minúscula, con el punto). Amigo de Sofía. Vive en una carpa junto al río, con fogata y luciérnagas, y a veces la visita.
 - Apariencia: piel clara; pelo oscuro corto bajo una gorra azul marino; barba completa oscura con canas; ojos verde azulados; camisa negra de manga corta con cuello, siempre por fuera del pantalón; pantalón azul oscuro; zapatillas negras; riñonera negra adelante; reloj dorado y anillos dorados.
 - Rasgos: 🧘 Tranquilo, 🎨 Creativo, 💬 Conversador
 - Actividad favorita: charlar
