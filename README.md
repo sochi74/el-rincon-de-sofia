@@ -12,9 +12,9 @@ Un juego de vida acogedor: Sofía vive en su casita y su amigo real.fixer viene 
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it."
 
 ## Estado
-Hito 2 ✅ Mudanza
+Hito 3 ✅ Necesidades
 
-## ⭐ Estrellas de inglés: 5
+## ⭐ Estrellas de inglés: 6
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -40,3 +40,12 @@ Hito 2 ✅ Mudanza
 - select: seleccionar
 - move: mover
 - friend: amigo o amiga
+- pull request: pedir permiso para mudar lo nuevo de la copia de prueba a la casa real
+- merge: aceptar la mudanza
+- acceptance criteria: criterios de aceptación, la lista para saber si quedó bien
+- needs: necesidades
+- hunger: hambre
+- hungry: con hambre
+- energy: energía
+- tired: cansada
+- fun: diversión

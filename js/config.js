@@ -56,6 +56,30 @@ var CONFIG = {
 
   glow: "#FFD66B",
 
+  // The four needs. Each one drains this many points per second before traits.
+  needs: [
+    { id: "hunger", name: "Hambre", emoji: "🍔", drain: 0.22 },
+    { id: "energy", name: "Energía", emoji: "😴", drain: 0.2 },
+    { id: "fun", name: "Diversión", emoji: "🎮", drain: 0.24 },
+    { id: "social", name: "Social", emoji: "💬", drain: 0.18 }
+  ],
+
+  // Needs start near this value, plus or minus a little.
+  needStart: 80,
+  needStartVariation: 5,
+
+  // Bar colors: green above 60, yellow from 30 to 60, red below 30.
+  needLevels: { good: 60, low: 30 },
+  needColors: { good: "#8FA88A", ok: "#E2B44B", low: "#C8664A" },
+
+  // How traits change the drain speed (from CHARACTERS.md). "all" means every need.
+  traitDrain: {
+    foodie: { hunger: 1.5 },
+    sleepy: { energy: 1.5 },
+    creative: { fun: 1.5 },
+    calm: { all: 0.85 }
+  },
+
   // Drawing colors and starting spot (in the Sala) for each character.
   characterLooks: {
     realfixer: {

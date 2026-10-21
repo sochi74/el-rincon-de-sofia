@@ -105,3 +105,61 @@ h1 {
   font-size: 0.9rem;
   color: #4A3428;
 }
+
+#needs {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+#needs[hidden] {
+  display: none;
+}
+
+.need-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.need-label {
+  width: 7.5em;
+  font-size: 0.95rem;
+}
+
+.need-track {
+  width: 140px;
+  height: 14px;
+  background: #EAD9C4;
+  border: 2px solid #4A3428;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.need-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+#pause-button {
+  margin-top: 10px;
+  padding: 6px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: #F5EBDD;
+  background: #B07A4F;
+  border: 3px solid #4A3428;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #4A3428;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#pause-button:hover {
+  background: #C8664A;
+}
+
+#pause-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #4A3428;
+}
