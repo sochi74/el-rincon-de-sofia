@@ -243,5 +243,10 @@ var Pet = (function () {
     return { es: "Krohna", en: WORDS.kitten.en, say: WORDS.kitten.say };
   }
 
-  return { init: init, update: update, draw: draw, at: at, word: word };
+  // Where the kitten is ("house" or "city"), for its meow.
+  function place() {
+    return pet ? pet.place : null;
+  }
+
+  return { init: init, update: update, draw: draw, at: at, word: word, place: place };
 })();

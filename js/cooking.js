@@ -150,6 +150,7 @@ var Cooking = (function () {
         a.phase = isCookingAt(a.station, id) ? "busy" : "doing";
         a.elapsed = 0;
         if (a.phase === "doing") Sims.face(a.sim, a.station.x + a.station.w / 2, a.station.y + a.station.h / 2);
+        if (a.phase === "doing") Sound.playAt(a.sim.place, "sizzle");
         return;
       }
       if (a.phase === "busy") {

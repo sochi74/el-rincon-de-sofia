@@ -24,7 +24,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 10: 🌬️ Mundo vivo. Los personajes parpadean y respiran, los árboles se mecen, y los personajes se ven de frente, de espalda o de costado según hacia dónde caminan.
 - ✅ Hito 11: 🔤 Palabras en las cosas. Al pasar el mouse sobre muebles y lugares aparece su nombre en español y en inglés (por ejemplo "Cama · bed").
 
-### 🌸 Pack 2: Vida en el valle
+### 🌸 Pack 2: Vida en el valle ✅ completo
 - ✅ Hito 12: 🪙 Monedas mágicas. Un contador de monedas en el panel, que se guarda con la partida, y monedas brillantes para recoger en la ciudad.
 - ✅ Hito 13: 🌸 Jardín y cosecha. Jardín de Sofía con 6 parcelas: comprar semillas (tulipán, lirio, flor arcoíris, flor de luna), plantar, regar, ver crecer y vender.
 - ✅ Extra: ☰ Menú que se abre y se cierra, y mariposas en el jardín (desbloqueo de 20 ⭐)
@@ -33,7 +33,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: 🧹 Pulido 1 (arreglos pequeños)
 - ✅ Extra: 🧹 Pulido 2: rodear muebles, árboles y cosas al caminar; acostarse en la cama y la carpa; sentarse en el sofá y junto a la fogata
 - ✅ Hito 16: 🎁 Amistad y regalos. Niveles de amistad (conocidos, amigos, mejores amigos) y dar regalos que suben la Amistad.
-- ⬜ Hito 17: 🎵 Sonidos y música. Sonidos de botones, sonidos del mundo (río, pájaros, fogata, lluvia) y música de fondo tranquila, todo creado con código, con botón para silenciar.
+- ✅ Hito 17: 🎵 Sonidos y música. Sonidos de botones, sonidos del mundo (río, pájaros, fogata, lluvia) y música de fondo tranquila, todo creado con código, con botón para silenciar.
 
 ### 🏡 Pack 3: Vecinos y hogar
 - ⬜ Hito 18: 🧚 Vecinos nuevos. 2 o 3 personajes mágicos con su ficha completa en CHARACTERS.md, cada uno con su casa en el mapa.

@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río. Su gatito naranja se llama Krohna 🐱
 
 ## Estado
-Hito 16 ✅ Amistad y regalos
+Hito 17 ✅ Sonidos y música. ¡Pack 2 completo! 🌸
 
-## ⭐ Estrellas de inglés: 26
+## ⭐ Estrellas de inglés: 28
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -143,3 +143,10 @@ Hito 16 ✅ Amistad y regalos
 - level: nivel
 - kitten: gatito
 - cat: gato
+- sound: sonido
+- music: música
+- bird: pájaro
+- cricket: grillo
+- meow: miau
+- mute: silenciar
+- Yes!: ¡Sí!

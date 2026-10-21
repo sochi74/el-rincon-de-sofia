@@ -179,6 +179,7 @@ var Gather = (function () {
       var it = Inventory.item(c.id);
       Inventory.add(c.id, 1);
       popOver(a.sim, c.text + " " + it.emoji);
+      Sound.playAt("city", "blup");
       var values = Needs.get(id);
       values.fun = Math.min(100, values.fun + K.fishFun);
       return;

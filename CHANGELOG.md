@@ -1,5 +1,19 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 17: 🎵 Sonidos y música
+- Todos los sonidos y la música se crean con código, con el audio del navegador (Web Audio). No hay archivos de sonido ni librerías.
+- El sonido empieza recién al tocar "Jugar".
+- Botón 🔊 redondo, siempre visible, al lado del botón ☰. Cada toque cambia el modo: 🔊 Todo → 🎵 Solo música apagada (solo efectos y sonidos del lugar) → 🔇 Silencio. El juego recuerda el modo al recargar.
+- Al pasar el mouse sobre el botón 🔊: "Sonido · sound (SÁUND)" (palabra nueva en js/words.js).
+- Efectos cortos y suaves: "pling" al tocar cualquier botón y al abrir los menús (charla, semillas y cocina); "cling" al recoger una moneda brillante y al vender en la mochila; chapoteo al regar; "blup" al pescar algo; campanita al cosechar; chisporroteo al empezar a cocinar; brillitos al regalar; y una pequeña fanfarria al subir de nivel de amistad.
+- Krohna maúlla bajito cada 1 a 3 minutos cuando está en el mismo lugar que el personaje seleccionado.
+- Sonidos del lugar, muy suaves: en la ciudad, el murmullo del río, pájaros de día, grillos de noche y el crujido de la fogata. En la casa, silencio tranquilo, y un murmullo suave de tele mientras alguien la ve.
+- Música de fondo: una melodía tranquila de cajita de música, con acordes suaves y dos melodías que se turnan con una parte de descanso. De noche va más lenta y más suave, con menos notas.
+- Los efectos solo suenan si pasan en el lugar que se ve en la pantalla.
+- Pausa silencia los sonidos del lugar y la música; al continuar, vuelven.
+- Nuevo archivo js/audio.js.
+- Problemas conocidos: El crujido de la fogata se escucha igual en toda la ciudad, no solo cerca de la carpa. Todavía no hay sonido de lluvia (llega con el clima). Si cambias de pestaña, la música se detiene, pero el río o la tele pueden seguir sonando bajito. En la Televisión (de pie, sin el Sofá) se sigue viendo tele de pie. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima. Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien. Nadie cuida el jardín solo. Las mariposas vuelan por encima de las flores y a veces tapan un poquito una. Con el panel abierto, en pantallas chicas todavía puede tapar un poco la parte de arriba del mapa (ciérralo con ✕ para ver todo). Con el panel abierto se tapa casi todo el bosque: ciérralo con ✕ para recolectar. La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta. Nadie pesca ni recolecta solo. Si recargas mientras alguien pesca o recolecta, esa acción se pierde. Nadie cocina solo. Nadie regala solo. Cuando real.fixer pasa por la puerta, Krohna aparece de golpe del otro lado, junto a él. Krohna puede quedar un poquito detrás de un personaje. Con el panel abierto, el cartel "¡Ahora son…!" puede quedar tapado si los personajes están arriba del mapa.
+
 ## 2026-10-21 · Hito 16: 🎁 Amistad y regalos
 - Niveles de amistad según el valor de Amistad: 😐 Distantes (menos de 0), 👋 Conocidos (0 a 29), 😊 Amigos (30 a 69) y 💛 Mejores amigos (70 o más).
 - El panel muestra el nivel junto al valor, por ejemplo "Amistad con real.fixer: 58 · 😊 Amigos".

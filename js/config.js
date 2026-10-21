@@ -289,7 +289,20 @@ var CONFIG = {
 
   // Autosave: how often, in seconds, and the name of the save in the browser.
   // "menuKey" remembers whether the panel was open or closed.
-  save: { every: 10, key: "el-rincon-de-sofia-save", menuKey: "el-rincon-de-sofia-menu" },
+  save: { every: 10, key: "el-rincon-de-sofia-save", menuKey: "el-rincon-de-sofia-menu", soundKey: "el-rincon-de-sofia-sound" },
+
+  // Sounds and music made with code (js/audio.js). Volumes go from 0 to 1: "master" is for everything,
+  // then each group: effects, place sounds and music (softer at night). The tempo is seconds per music step.
+  // Krohna meows every "meow.min" to "meow.max" seconds while it is where the selected one is.
+  sound: {
+    master: 0.7,
+    effects: 0.35,
+    ambience: 0.22,
+    music: { day: 0.16, night: 0.09 },
+    tempo: { day: 0.42, night: 0.56 },
+    fade: 0.6,
+    meow: { min: 60, max: 180 }
+  },
 
   // Drawing colors and starting place and spot for each character: real.fixer next to his tent, Sofía in the Sala.
   characterLooks: {
