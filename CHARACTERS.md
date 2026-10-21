@@ -26,7 +26,7 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
 
 ## Sofía
 - Nombre y apodo: Sofía. Vive sola en su casita acogedora.
-- Apariencia: piel clara; pelo castaño, largo; sin vello facial; blusa rosa; pantalón rosa claro; collar dorado con una cuentita; mejillas sonrosadas.
+- Apariencia: piel clara; pelo castaño, largo; sin vello facial; blusa rosa; pantalón rosa claro; collar dorado con una cuentita; mejillas sonrosadas; corona de princesa dorada, Princess crown.
 - Rasgos: 😴 Dormilona, 🍕 Glotona, 🎨 Creativa
 - Actividad favorita: ver tele
 - Frase típica: "Pizza and a movie!" (¡Pizza y una peli!)

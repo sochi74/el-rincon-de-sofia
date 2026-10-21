@@ -69,7 +69,7 @@ var CHARACTERS = [
       top: "blusa rosa",
       bottom: "pantalón rosa claro",
       accessory: "collar dorado con una cuentita",
-      details: "mejillas sonrosadas"
+      details: "mejillas sonrosadas; corona de princesa dorada, Princess crown"
     },
     traits: [
       { id: "sleepy", name: "Dormilona", emoji: "😴" },

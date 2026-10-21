@@ -585,16 +585,28 @@ var City = (function () {
 
   // ---------- Forest ----------
 
-  function drawTree(ctx, x, y, r) {
+  // Seconds of wind so far; it stops while the game is paused, so the trees stand still.
+  var wind = 0;
+
+  function update(dt) {
+    if (!Needs.isPaused()) wind += dt;
+  }
+
+  // Each tree sways with the wind at its own speed; the top moves a little more than the middle.
+  // The shadow stays still, like the trunk.
+  function drawTree(ctx, x, y, r, i) {
+    var s = CONFIG.alive.sway;
+    var speed = s.slow + (s.fast - s.slow) * ((i * 7) % 10) / 9;
+    var sway = Math.sin(wind * speed + i * 1.9) * s.amount * r / 34;
     ctx.save();
     ctx.fillStyle = "rgba(74, 52, 40, 0.22)";
     ctx.beginPath();
     ctx.ellipse(x + 6, y + r * 0.55, r, r * 0.5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
-    circle(ctx, x, y, r, C.cityGrassDark);
-    circle(ctx, x - r * 0.25, y - r * 0.25, r * 0.62, C.sage);
-    circle(ctx, x - r * 0.38, y - r * 0.4, r * 0.22, C.cityGrassLight);
+    circle(ctx, x + sway * 0.6, y, r, C.cityGrassDark);
+    circle(ctx, x - r * 0.25 + sway, y - r * 0.25, r * 0.62, C.sage);
+    circle(ctx, x - r * 0.38 + sway * 1.3, y - r * 0.4, r * 0.22, C.cityGrassLight);
   }
 
   // ---------- Main draw ----------
@@ -614,7 +626,7 @@ var City = (function () {
     CONFIG.cityObjects.forEach(function (f) {
       if (f.id === highlightId) drawThingHighlight(ctx, f);
     });
-    TREES.forEach(function (t) { drawTree(ctx, t[0], t[1], t[2]); });
+    TREES.forEach(function (t, i) { drawTree(ctx, t[0], t[1], t[2], i); });
     drawFireflies(ctx, time);
     ctx.restore();
 
@@ -627,6 +639,7 @@ var City = (function () {
   }
 
   return {
+    update: update,
     draw: draw,
     drawNightLights: drawNightLights,
     path: path,

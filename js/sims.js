@@ -9,9 +9,15 @@ var Sims = (function () {
 
   function init(selectCallback) {
     onSelect = selectCallback || onSelect;
-    sims = CHARACTERS.map(function (data) {
+    sims = CHARACTERS.map(function (data, i) {
       var look = CONFIG.characterLooks[data.id];
       return {
+        // "front", "back", "left" or "right"
+        facing: "front",
+        // Seconds left with the eyes closed, and until the next blink (each one starts at a different time).
+        blink: 0,
+        blinkWait: 1 + i * 1.5 + Math.random() * 2,
+        breath: Math.random() * Math.PI * 2,
         data: data,
         look: look,
         x: look.start.x,
@@ -60,8 +66,17 @@ var Sims = (function () {
   }
 
   // ---------- Body parts (origin at the feet, up is negative y) ----------
+  // "view" is "front", "back" or "side". Side views are drawn looking right; drawSim mirrors them for the left.
 
-  function drawLegs(ctx, look, step) {
+  function drawLegs(ctx, look, step, view) {
+    if (view === "side") {
+      var stride = Math.sin(step) * 4;
+      fillRound(ctx, -4 - stride, -16, 7, 14, 3, look.pants);
+      fillRound(ctx, -3 + stride, -16, 7, 14, 3, look.pants);
+      ellipse(ctx, 1 - stride, -2, 5.5, 3.5, look.shoes);
+      ellipse(ctx, 2 + stride, -2, 5.5, 3.5, look.shoes);
+      return;
+    }
     var lift = Math.sin(step) * 2.5;
     fillRound(ctx, -9, -16, 7, 14 - lift, 3, look.pants);
     fillRound(ctx, 2, -16, 7, 14 + lift, 3, look.pants);
@@ -81,27 +96,69 @@ var Sims = (function () {
     return swing;
   }
 
-  function drawTorso(ctx, look) {
-    fillRound(ctx, -12, -40, 24, 28, 8, look.shirt);
+  // One arm seen from the side, swinging forward and back from the shoulder.
+  // "extra" draws something on it (like a watch), in the arm's own coordinates.
+  function drawSideArm(ctx, look, step, extra) {
+    ctx.save();
+    ctx.translate(0, -35);
+    ctx.rotate(-Math.sin(step) * 0.35);
+    fillRound(ctx, -3, -2, 6, 16, 3, look.skin);
+    fillRound(ctx, -3, -2, 6, 7, 3, look.shirt);
+    circle(ctx, 0, 15, 3.2, look.skin);
+    if (extra) extra();
+    ctx.restore();
+  }
+
+  function drawTorso(ctx, look, view) {
+    if (view === "side") {
+      fillRound(ctx, -8, -40, 16, 28, 7, look.shirt);
+    } else {
+      fillRound(ctx, -12, -40, 24, 28, 8, look.shirt);
+    }
   }
 
   function drawHead(ctx, look) {
     circle(ctx, 0, -54, 16, look.skin);
   }
 
-  // "side" moves the eyes a little to one side (-1 left, 1 right).
-  function drawEyes(ctx, look, y, side) {
-    var dx = (side || 0) * 2;
-    circle(ctx, -5.5 + dx, y, 2.2, look.eyes);
-    circle(ctx, 5.5 + dx, y, 2.2, look.eyes);
-    circle(ctx, -4.8 + dx, y - 0.8, 0.8, C.white);
-    circle(ctx, 6.2 + dx, y - 0.8, 0.8, C.white);
+  // An open eye, or a little curved line when it blinks.
+  function drawEye(ctx, look, x, y, closed) {
+    if (closed) {
+      ctx.strokeStyle = look.eyes;
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(x - 2.4, y);
+      ctx.quadraticCurveTo(x, y + 1.4, x + 2.4, y);
+      ctx.stroke();
+      return;
+    }
+    circle(ctx, x, y, 2.2, look.eyes);
+    circle(ctx, x + 0.7, y - 0.8, 0.8, C.white);
   }
 
-  function drawRealFixer(ctx, look, step, side) {
-    drawLegs(ctx, look, step);
+  function drawEyes(ctx, look, y, closed) {
+    drawEye(ctx, look, -5.5, y, closed);
+    drawEye(ctx, look, 5.5, y, closed);
+  }
+
+  function strokeLine(ctx, color, width, points) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    points.forEach(function (p, i) {
+      if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+    });
+    ctx.stroke();
+  }
+
+  // ---------- real.fixer ----------
+
+  function drawRealFixerFront(ctx, look, step, closed) {
+    drawLegs(ctx, look, step, "front");
     var swing = drawArms(ctx, look, step);
-    drawTorso(ctx, look);
+    drawTorso(ctx, look, "front");
 
     // Collar
     ctx.fillStyle = look.collar;
@@ -113,11 +170,7 @@ var Sims = (function () {
     ctx.closePath(); ctx.fill();
 
     // Fanny pack in front, with its strap
-    ctx.strokeStyle = "#4A4A4A";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(-12, -19); ctx.lineTo(12, -19);
-    ctx.stroke();
+    strokeLine(ctx, "#4A4A4A", 1.5, [[-12, -19], [12, -19]]);
     fillRound(ctx, -8, -23, 16, 9, 4, look.pack);
     ctx.strokeStyle = "#6B6B6B";
     ctx.lineWidth = 1;
@@ -135,7 +188,7 @@ var Sims = (function () {
     fillRound(ctx, -16.5, -58, 5, 10, 2, look.hair);
     fillRound(ctx, 11.5, -58, 5, 10, 2, look.hair);
 
-    drawEyes(ctx, look, -49, side);
+    drawEyes(ctx, look, -49, closed);
 
     // Full dark beard with gray hairs
     ctx.fillStyle = look.beard;
@@ -169,13 +222,141 @@ var Sims = (function () {
     circle(ctx, 0, -72, 2, look.capBrim);
   }
 
-  function drawSofia(ctx, look, step, side) {
+  // From behind: the back of the cap and the black shirt; no face and no beard.
+  function drawRealFixerBack(ctx, look, step) {
+    drawLegs(ctx, look, step, "back");
+    var swing = drawArms(ctx, look, step);
+    drawTorso(ctx, look, "back");
+
+    // Back of the collar, and the fanny pack strap across the back
+    fillRound(ctx, -9, -42, 18, 5, 2.5, look.collar);
+    strokeLine(ctx, "#4A4A4A", 1.5, [[-12, -19], [12, -19]]);
+
+    // The watch is on the other side when seen from behind
+    fillRound(ctx, 11.5, -25 + swing, 7, 3.2, 1.2, look.gold);
+
+    // Back of the head: short dark hair, with the ears peeking out
+    drawHead(ctx, look);
+    circle(ctx, 0, -55, 15, look.hair);
+    circle(ctx, -15.5, -52, 3, look.skin);
+    circle(ctx, 15.5, -52, 3, look.skin);
+
+    // Back of the navy cap, with the opening and its little strap
+    ctx.fillStyle = look.cap;
+    ctx.beginPath();
+    ctx.arc(0, -56, 17, Math.PI, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = look.hair;
+    ctx.beginPath();
+    ctx.ellipse(0, -56, 5, 4, 0, Math.PI, 0);
+    ctx.fill();
+    fillRound(ctx, -6, -59.5, 12, 2.5, 1.2, look.capBrim);
+    circle(ctx, 0, -72, 2, look.capBrim);
+  }
+
+  // From the side, looking right: brim toward the front, beard in profile and the fanny pack sideways.
+  function drawRealFixerSide(ctx, look, step, closed) {
+    drawSideArm(ctx, look, step + Math.PI);
+    drawLegs(ctx, look, step, "side");
+    drawTorso(ctx, look, "side");
+
+    // Collar from the side
+    ctx.fillStyle = look.collar;
+    ctx.beginPath();
+    ctx.moveTo(-6, -40); ctx.lineTo(5, -40); ctx.lineTo(7, -34); ctx.lineTo(1, -37);
+    ctx.closePath(); ctx.fill();
+
+    // Fanny pack seen from the side, sticking out in front, with its strap
+    strokeLine(ctx, "#4A4A4A", 1.5, [[-8, -19], [6, -19]]);
+    fillRound(ctx, 4, -24, 9, 10, 4, look.pack);
+    ctx.strokeStyle = "#6B6B6B";
+    ctx.lineWidth = 1;
+    roundRect(ctx, 4, -24, 9, 10, 4);
+    ctx.stroke();
+    circle(ctx, 10.5, -19, 1.1, look.gold);
+
+    // Near arm, with the gold watch
+    drawSideArm(ctx, look, step, function () {
+      fillRound(ctx, -3.5, 9.5, 7, 3.2, 1.2, look.gold);
+    });
+
+    drawHead(ctx, look);
+    // Nose
+    circle(ctx, 16, -49, 2.2, look.skin);
+    // Short dark hair at the back of the head, under the cap
+    fillRound(ctx, -16.5, -60, 9, 14, 4, look.hair);
+
+    drawEye(ctx, look, 8.5, -49, closed);
+
+    // Full beard in profile, from the sideburn along the jaw to the chin
+    ctx.fillStyle = look.beard;
+    ctx.beginPath();
+    ctx.moveTo(-1, -56);
+    ctx.lineTo(3, -56);
+    ctx.quadraticCurveTo(4, -46, 12, -45.5);
+    ctx.quadraticCurveTo(17.5, -47, 17.5, -43);
+    ctx.quadraticCurveTo(16, -33, 6, -33);
+    ctx.quadraticCurveTo(-3, -35, -3, -45);
+    ctx.quadraticCurveTo(-2, -52, -1, -56);
+    ctx.closePath();
+    ctx.fill();
+    [[2, -38], [8, -36], [13, -39], [0, -44], [6, -42], [15, -45]].forEach(function (p) {
+      circle(ctx, p[0], p[1], 1, look.beardGray);
+    });
+    // Mouth
+    ctx.strokeStyle = "#C98A7A";
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(12.5, -42.5);
+    ctx.quadraticCurveTo(14.5, -41.5, 16.5, -42.8);
+    ctx.stroke();
+    // Ear
+    circle(ctx, -3, -50, 3.2, look.skin);
+
+    // Navy cap with its brim toward the front
+    ctx.fillStyle = look.cap;
+    ctx.beginPath();
+    ctx.arc(0, -56, 17, Math.PI, 0);
+    ctx.closePath();
+    ctx.fill();
+    fillRound(ctx, 10, -58, 15, 4.5, 2.2, look.capBrim);
+    circle(ctx, 0, -72, 2, look.capBrim);
+  }
+
+  // ---------- Sofía ----------
+
+  // Sofía's little gold Princess crown, on top of her head. "w" is half its width.
+  function drawCrown(ctx, look, w) {
+    var base = -67, top = -80;
+    ctx.fillStyle = look.crown;
+    ctx.beginPath();
+    ctx.moveTo(-w, base);
+    ctx.lineTo(-w, top + 4);
+    ctx.lineTo(-w / 2, base - 6);
+    ctx.lineTo(0, top);
+    ctx.lineTo(w / 2, base - 6);
+    ctx.lineTo(w, top + 4);
+    ctx.lineTo(w, base);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = look.crownEdge;
+    ctx.lineWidth = 1;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+    [[-w, top + 4], [0, top], [w, top + 4]].forEach(function (p) {
+      circle(ctx, p[0], p[1], 1.4, look.crown);
+    });
+    circle(ctx, 0, base - 3, 1.9, look.gem);
+  }
+
+  function drawSofiaFront(ctx, look, step, closed) {
     // Long brown hair falling down her back
     fillRound(ctx, -20, -68, 40, 46, 16, look.hair);
 
-    drawLegs(ctx, look, step);
+    drawLegs(ctx, look, step, "front");
     drawArms(ctx, look, step);
-    drawTorso(ctx, look);
+    drawTorso(ctx, look, "front");
 
     // Gold necklace with a little bead
     ctx.strokeStyle = look.gold;
@@ -201,7 +382,7 @@ var Sims = (function () {
     ctx.closePath();
     ctx.fill();
 
-    drawEyes(ctx, look, -48, side);
+    drawEyes(ctx, look, -48, closed);
     circle(ctx, -9.5, -44, 3, look.cheeks);
     circle(ctx, 9.5, -44, 3, look.cheeks);
     // Smile
@@ -211,9 +392,73 @@ var Sims = (function () {
     ctx.beginPath();
     ctx.arc(0, -44, 3.5, 0.2 * Math.PI, 0.8 * Math.PI);
     ctx.stroke();
+
+    drawCrown(ctx, look, 9);
   }
 
-  var bodies = { realfixer: drawRealFixer, sofia: drawSofia };
+  // From behind: her long brown hair covers her head and her back.
+  function drawSofiaBack(ctx, look, step) {
+    drawLegs(ctx, look, step, "back");
+    drawArms(ctx, look, step);
+    drawTorso(ctx, look, "back");
+    drawHead(ctx, look);
+
+    circle(ctx, 0, -55, 17, look.hair);
+    fillRound(ctx, -14, -60, 28, 40, 12, look.hair);
+    // A few strands
+    [[[-6, -62], [-7, -23]], [[0, -66], [0, -21]], [[6, -62], [7, -23]]].forEach(function (line) {
+      strokeLine(ctx, "rgba(74, 52, 40, 0.35)", 1, line);
+    });
+
+    drawCrown(ctx, look, 9);
+  }
+
+  // From the side, looking right: her profile, with her hair falling down her back.
+  function drawSofiaSide(ctx, look, step, closed) {
+    // Long hair falling down her back, behind the body
+    fillRound(ctx, -18, -64, 22, 44, 10, look.hair);
+
+    drawSideArm(ctx, look, step + Math.PI);
+    drawLegs(ctx, look, step, "side");
+    drawTorso(ctx, look, "side");
+    // The necklace bead, in front
+    strokeLine(ctx, look.gold, 1.3, [[1, -40], [6, -36]]);
+    circle(ctx, 6.5, -35, 1.8, look.gold);
+    drawSideArm(ctx, look, step);
+
+    drawHead(ctx, look);
+    // Nose
+    circle(ctx, 15.8, -49, 2, look.skin);
+
+    // Hair over the top and back of the head, with bangs over the forehead
+    ctx.fillStyle = look.hair;
+    ctx.beginPath();
+    ctx.arc(0, -55, 17, -0.25 * Math.PI, 0.6 * Math.PI, true);
+    ctx.quadraticCurveTo(-3, -45, -2, -51);
+    ctx.quadraticCurveTo(4, -62, 16, -57);
+    ctx.closePath();
+    ctx.fill();
+    // A lock falling over her shoulder
+    fillRound(ctx, -13, -52, 9, 30, 4, look.hair);
+
+    drawEye(ctx, look, 8.5, -48, closed);
+    circle(ctx, 8, -43.5, 3, look.cheeks);
+    // Smile
+    ctx.strokeStyle = "#B0566A";
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(11.5, -43);
+    ctx.quadraticCurveTo(13.5, -41, 15.5, -43.5);
+    ctx.stroke();
+
+    drawCrown(ctx, look, 6.5);
+  }
+
+  var bodies = {
+    realfixer: { front: drawRealFixerFront, back: drawRealFixerBack, side: drawRealFixerSide },
+    sofia: { front: drawSofiaFront, back: drawSofiaBack, side: drawSofiaSide }
+  };
 
   // ---------- Selection glow and name tag ----------
 
@@ -442,13 +687,17 @@ var Sims = (function () {
 
     var walking = sim.path.length > 0;
     var bounce = walking ? -Math.abs(Math.sin(sim.stepPhase)) * 5 : 0;
-    // While talking they look at each other and lean in a little.
-    var side = Social.facing(sim.data.id);
+    // While standing still the body rises and falls a little with each breath.
+    var breath = walking ? 1 : 1 + Math.sin(sim.breath) * CONFIG.alive.breathe.amount;
+    // While talking they lean in a little toward each other.
+    var lean = Social.facing(sim.data.id);
+    var k = CONFIG.characterScale;
+    var view = sim.facing === "left" || sim.facing === "right" ? "side" : sim.facing;
     ctx.save();
     ctx.translate(sim.x, sim.y + bounce);
-    ctx.rotate(side * 0.06);
-    ctx.scale(CONFIG.characterScale, CONFIG.characterScale);
-    bodies[sim.data.id](ctx, sim.look, walking ? sim.stepPhase : 0, side);
+    ctx.rotate(lean * 0.06);
+    ctx.scale(sim.facing === "left" ? -k : k, k * breath);
+    bodies[sim.data.id][view](ctx, sim.look, walking ? sim.stepPhase : 0, sim.blink > 0);
     ctx.restore();
 
     drawNameTag(ctx, sim);
@@ -551,6 +800,7 @@ var Sims = (function () {
 
   function update(dt) {
     sims.forEach(function (sim) {
+      var fromX = sim.x, fromY = sim.y;
       var step = CONFIG.walkSpeed * dt;
       while (sim.path.length > 0 && step > 0) {
         var p = sim.path[0];
@@ -568,8 +818,41 @@ var Sims = (function () {
         }
       }
       sim.stepPhase = sim.path.length > 0 ? sim.stepPhase + dt * 11 : 0;
+      turn(sim, sim.x - fromX, sim.y - fromY);
       if (sim.path.length === 0 && sim.goal) goThrough(sim);
+      live(sim, dt);
     });
+  }
+
+  // Look the way it walks: to the side when it goes more sideways than up or down, else front or back.
+  // Standing still while talking, it looks at the other one. Otherwise it keeps the last way.
+  function turn(sim, dx, dy) {
+    if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
+      if (Math.abs(dx) > Math.abs(dy)) {
+        sim.facing = dx > 0 ? "right" : "left";
+      } else {
+        sim.facing = dy > 0 ? "front" : "back";
+      }
+      return;
+    }
+    var side = Social.facing(sim.data.id);
+    if (side) sim.facing = side > 0 ? "right" : "left";
+  }
+
+  // Blinking and breathing, each character with its own rhythm. They go on even with Pausa.
+  function live(sim, dt) {
+    var a = CONFIG.alive;
+    sim.breath += dt * a.breathe.speed;
+    if (sim.blink > 0) sim.blink -= dt;
+    sim.blinkWait -= dt;
+    if (sim.blinkWait <= 0) {
+      sim.blink = a.blink.length;
+      sim.blinkWait = between(a.blink.min, a.blink.max);
+    }
+  }
+
+  function between(min, max) {
+    return min + Math.random() * (max - min);
   }
 
   // ---------- Free will ----------
