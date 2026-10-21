@@ -17,7 +17,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 
 ### 🏰 Pack 1: Bienvenida a la ciudad
 - ✅ Hito 7: 🚪 La puerta mágica. Tocar la puerta de la casa lleva a un mapa de la ciudad visto desde arriba, con río, puente, bosque y plaza. Los personajes caminan por el mapa. Tocar la casa vuelve adentro. Se guarda dónde está cada uno.
-- ⬜ Hito 8: ⛺ La carpa de real.fixer. Junto al río, una carpa con fogata y luciérnagas. real.fixer vive ahí y a veces visita la casa de Sofía. Sentarse junto a la fogata da Diversión.
+- ✅ Hito 8: ⛺ La carpa de real.fixer. Junto al río, una carpa con fogata y luciérnagas. real.fixer vive ahí y a veces visita la casa de Sofía. Sentarse junto a la fogata da Diversión.
 - ⬜ Hito 9: 🕰️ Reloj, día y noche. Un reloj del juego (un día dura unos minutos reales) y un contador de días. De noche el mundo se oscurece y se encienden la fogata, las ventanas y las luciérnagas. De noche la Energía baja un poco más rápido.
 - ⬜ Hito 10: 🌬️ Mundo vivo. Los personajes parpadean y respiran, los árboles se mecen, y los personajes se ven de frente, de espalda o de costado según hacia dónde caminan.
 - ⬜ Hito 11: 🔤 Palabras en las cosas. Al pasar el mouse sobre muebles y lugares aparece su nombre en español y en inglés (por ejemplo "Cama · bed").

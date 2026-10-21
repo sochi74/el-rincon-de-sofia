@@ -1,5 +1,20 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 8: ⛺ La carpa de real.fixer
+- En la ciudad, del otro lado del puente, junto al río, real.fixer tiene su hogar, dibujado con código:
+  - Una carpa terracota vista desde arriba, con palo central, cuerdas, estacas y la entrada abierta adelante.
+  - Una fogata con piedras, troncos cruzados, llamas que se mueven suavemente, chispitas y una luz cálida.
+  - 7 luciérnagas que flotan y titilan alrededor de la carpa y la fogata.
+  - Un cartel: "Carpa de real.fixer".
+- Dos cosas nuevas para usar, como los muebles (brillan al pasar el mouse):
+  - Carpa: "Durmiendo en la carpa 💤", Energía +50 en 6 segundos. Solo la usa real.fixer; si Sofía la toca, dice "Es la carpa de real.fixer".
+  - Fogata: "Junto a la fogata 🔥", Diversión +30 en 4 segundos. La usan los dos.
+- Al empezar una partida nueva (o con "Reiniciar"), real.fixer aparece junto a su carpa. Sofía sigue empezando en la Sala.
+- Libre albedrío de real.fixer: Energía → su Carpa, Diversión → la Fogata, Hambre → el Refrigerador de la casa de Sofía (sale o entra por la puerta si hace falta). Para Sofía no cambia nada.
+- Visitas: cuando real.fixer no está seleccionado, está quieto y todas sus necesidades están en 50 o más, cada 1 a 2 minutos camina a la casa de Sofía, entra, se queda unos 30 segundos en la Sala y vuelve a su carpa. Si está en la casa sin nada que hacer, también se queda un rato y luego vuelve.
+- El guardado sigue funcionando: recuerda si real.fixer está en la ciudad o en la casa.
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa y la fogata. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta). Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. El panel puede tapar un poco la parte de arriba del mapa en pantallas chicas. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa.
+
 ## 2026-10-21 · Hito 7: 🚪 La puerta mágica
 - Cada personaje está en un lugar: la casa o la ciudad. La pantalla muestra el lugar del personaje seleccionado.
 - Con un personaje seleccionado, tocar la puerta (el tapete terracota abajo a la izquierda de la Sala) lo hace caminar hasta ella y salir: aparece en la ciudad, frente a la puerta de su casa.

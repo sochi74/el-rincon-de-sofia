@@ -46,6 +46,12 @@ var CONFIG = {
     { id: "sofa", name: "Sofá", x: 390, y: 560, w: 260, h: 90 }
   ],
 
+  // Things to use in the city, by real.fixer's tent on the other side of the bridge.
+  cityObjects: [
+    { id: "tent", name: "Carpa", x: 775, y: 225, w: 150, h: 130 },
+    { id: "campfire", name: "Fogata", x: 762, y: 440, w: 76, h: 64 }
+  ],
+
   // Doorways between rooms; characters walk through their centers.
   doorways: [
     { rooms: ["kitchen", "bedroom"], x: 420, y: 195 },
@@ -125,7 +131,17 @@ var CONFIG = {
 
   // Free will: the one not selected looks after a need below "threshold" when it is idle.
   // It waits "pause" seconds after finishing something, and "retry" seconds if it could not go.
-  freeWill: { threshold: 50, pause: 1, retry: 3 },
+  // "goesTo" says where a character goes for some needs; for the rest it does as always.
+  freeWill: {
+    threshold: 50,
+    pause: 1,
+    retry: 3,
+    goesTo: { realfixer: { energy: "tent", fun: "campfire", hunger: "fridge" } }
+  },
+
+  // Visits: when "who" is idle and all its needs are fine, every "wait" seconds or so it walks to
+  // Sofía's house, stands at "spot" in the Sala, stays "stay" seconds and goes back home.
+  visit: { who: "realfixer", wait: { min: 60, max: 120 }, stay: 30, spot: { x: 790, y: 540 } },
 
   // Mood star over the head: its size, how fat its points are, and the room it takes so
   // bubbles go above it. Its colors are brighter than the bars so it stands out on any floor.
@@ -139,11 +155,11 @@ var CONFIG = {
   // Autosave: how often, in seconds, and the name of the save in the browser.
   save: { every: 10, key: "el-rincon-de-sofia-save" },
 
-  // Drawing colors and starting spot (in the Sala) for each character.
+  // Drawing colors and starting place and spot for each character: real.fixer next to his tent, Sofía in the Sala.
   characterLooks: {
     realfixer: {
       icon: "🧢",
-      start: { x: 790, y: 540 },
+      start: { place: "city", x: 930, y: 400 },
       skin: "#F1CDB3",
       hair: "#2E2420",
       beard: "#2E2420",
@@ -160,7 +176,7 @@ var CONFIG = {
     },
     sofia: {
       icon: "💗",
-      start: { x: 270, y: 480 },
+      start: { place: "house", x: 270, y: 480 },
       skin: "#F6D3BC",
       hair: "#7A4B2E",
       eyes: "#4A3428",

@@ -88,7 +88,7 @@ var UI = (function () {
   function hintFor(character) {
     var other = otherOf(character);
     var where = Sims.placeOf(character.id) === "city"
-      ? "Toca el suelo para caminar, la Casa de Sofía para entrar"
+      ? "Toca el suelo para caminar, la Carpa o la Fogata para usarlas, la Casa de Sofía para entrar"
       : "Toca el piso para caminar, un mueble para usarlo, la puerta para salir";
     return where + " o a " + other.name + " para socializar (dos veces para elegirlo)";
   }

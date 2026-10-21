@@ -4,7 +4,7 @@ var CHARACTERS = [
   {
     id: "realfixer",
     name: "real.fixer",
-    nickname: "real.fixer (siempre en minúscula, con el punto). Amigo de Sofía que viene de visita.",
+    nickname: "real.fixer (siempre en minúscula, con el punto). Amigo de Sofía. Vive en una carpa junto al río, con fogata y luciérnagas, y a veces la visita.",
     appearance: {
       skin: "piel clara",
       hair: "pelo oscuro corto bajo una gorra azul marino",
