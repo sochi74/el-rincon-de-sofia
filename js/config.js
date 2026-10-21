@@ -85,8 +85,31 @@ var CONFIG = {
     gamer: { watchTv: 1.5 }
   },
 
+  // How traits change the Social that socializing gives (from CHARACTERS.md). "all" means every interaction.
+  traitSocial: {
+    party: { all: 1.5 },
+    shy: { all: 0.7 },
+    chatty: { chat: 1.5 }
+  },
+
+  // How the traits of the one who starts change the Amistad it gives (from CHARACTERS.md).
+  traitFriendship: {
+    jokester: { joke: 1.5 }
+  },
+
   // Extra for doing your favorite activity.
   favoriteBonus: 1.25,
+
+  // Conversations: times in seconds, and how far apart the two stand.
+  social: {
+    gap: 38,
+    lineMin: 2.2,
+    lineMax: 4,
+    lineExtraPerLetter: 0.04,
+    cheerTime: 1.4,
+    cooldown: 3,
+    waitBubbleTime: 1.2
+  },
 
   // Drawing colors and starting spot (in the Sala) for each character.
   characterLooks: {

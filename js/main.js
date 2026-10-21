@@ -32,6 +32,7 @@
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
     House.draw(ctx, hovered && hovered.id);
     Sims.draw(ctx, time);
+    Social.draw(ctx, time);
   }
 
   var lastTime = null;
@@ -44,6 +45,7 @@
     Sims.update(dt);
     Needs.update(dt);
     Objects.update(dt);
+    Social.update(dt);
     UI.update();
     render(time);
     window.requestAnimationFrame(loop);
@@ -60,7 +62,7 @@
 
   function handleTap(event) {
     var p = toWorld(event);
-    Sims.handleTap(p.x, p.y);
+    Sims.handleTap(p.x, p.y, event.clientX, event.clientY);
   }
 
   // Light up the usable furniture under the mouse (characters in front win).
@@ -79,6 +81,7 @@
   }
 
   Needs.init(CHARACTERS);
+  Social.init(CHARACTERS);
   UI.init();
   Sims.init(UI.showSelected);
 
