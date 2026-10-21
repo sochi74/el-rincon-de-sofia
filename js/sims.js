@@ -243,12 +243,13 @@ var Sims = (function () {
 
   // ---------- Thought bubble for needs in red ----------
 
-  function drawThoughtBubble(ctx, sim, time) {
+  // "lift" moves it higher when an action bubble is showing too.
+  function drawThoughtBubble(ctx, sim, time, lift) {
     var low = Needs.lowNeeds(sim.data.id);
     if (low.length === 0) return;
     var text = low.map(function (need) { return need.emoji; }).join(" ");
     var bob = Math.sin(time * 2.5) * 2;
-    var headTop = sim.y - 78 * CONFIG.characterScale;
+    var headTop = sim.y - 78 * CONFIG.characterScale - lift;
     var cx = sim.x + 30, cy = headTop - 24 + bob;
 
     ctx.save();
@@ -275,6 +276,45 @@ var Sims = (function () {
     ctx.restore();
   }
 
+  // ---------- Action bubble ("Comiendo 🍳") with a heart for favorites ----------
+
+  function drawActionBubble(ctx, sim, time, bubble) {
+    var headTop = sim.y - 78 * CONFIG.characterScale;
+    var cx = sim.x, cy = headTop - 22;
+
+    ctx.save();
+    ctx.font = "700 17px " + CONFIG.fontFamily;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    var w = ctx.measureText(bubble.text).width + 24;
+    var h = 32;
+    ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 3;
+    ctx.strokeStyle = C.darkBrown;
+    ctx.lineWidth = 2.5;
+    // Bubble with a little tail pointing at the head
+    roundRect(ctx, cx - w / 2, cy - h / 2, w, h, h / 2);
+    ctx.moveTo(cx - 7, cy + h / 2 - 1);
+    ctx.lineTo(cx, cy + h / 2 + 9);
+    ctx.lineTo(cx + 7, cy + h / 2 - 1);
+    ctx.fillStyle = C.cream;
+    ctx.fill();
+    ctx.stroke();
+    // Hide the line between the bubble and its tail
+    ctx.shadowColor = "transparent";
+    ctx.fillRect(cx - 5.5, cy + h / 2 - 3, 11, 4);
+    ctx.fillStyle = C.darkBrown;
+    ctx.fillText(bubble.text, cx, cy + 1);
+
+    if (bubble.heart) {
+      var beat = 1 + Math.sin(time * 6) * 0.12;
+      ctx.font = Math.round(22 * beat) + "px " + CONFIG.fontFamily;
+      ctx.fillText("❤️", cx - w / 2 - 16, cy - 4);
+    }
+    ctx.restore();
+  }
+
   function drawSim(ctx, sim, time) {
     if (sim === selected) drawGlow(ctx, sim, time);
     ellipse(ctx, sim.x, sim.y, 16 * CONFIG.characterScale, 6 * CONFIG.characterScale, "rgba(74, 52, 40, 0.25)");
@@ -288,7 +328,9 @@ var Sims = (function () {
     ctx.restore();
 
     drawNameTag(ctx, sim);
-    drawThoughtBubble(ctx, sim, time);
+    var bubble = Objects.bubbleFor(sim.data.id);
+    if (bubble) drawActionBubble(ctx, sim, time, bubble);
+    drawThoughtBubble(ctx, sim, time, bubble ? 44 : 0);
   }
 
   function draw(ctx, time) {
@@ -375,16 +417,25 @@ var Sims = (function () {
     return hit;
   }
 
-  // A tap on a character selects it; a tap on the floor walks the selected one there.
+  // A tap on a character selects it and stops what it was doing.
+  // A tap on furniture sends the selected one to use it; a tap on the floor walks it there.
   function handleTap(x, y) {
     var sim = simAt(x, y);
     if (sim) {
+      if (Objects.cancel(sim.data.id)) sim.path = [];
       selected = sim;
       onSelect(sim.data);
-    } else if (selected) {
+      return;
+    }
+    if (!selected) return;
+    Objects.cancel(selected.data.id);
+    var furniture = Objects.at(x, y);
+    if (furniture) {
+      Objects.start(selected, furniture);
+    } else {
       walkTo(selected, x, y);
     }
   }
 
-  return { init: init, update: update, draw: draw, handleTap: handleTap };
+  return { init: init, update: update, draw: draw, handleTap: handleTap, walkTo: walkTo, simAt: simAt };
 })();
