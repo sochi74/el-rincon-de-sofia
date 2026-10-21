@@ -1,12 +1,14 @@
 // Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons.
-// Also the little social menu that opens next to a character, and the word tag that shows
+// Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
+// and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
   var coinsEl;
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
+  var seedMenu, seedButtons = [], onSeedPick = null;
   var current = null;
   var bars = {};
 
@@ -30,6 +32,28 @@ var UI = (function () {
       button.addEventListener("click", function () {
         Sims.select(button.getAttribute("data-id"));
       });
+    });
+
+    // One button per seed: emoji and name, what the seed costs and what the flower sells for.
+    seedMenu = document.getElementById("seed-menu");
+    Garden.FLOWERS.forEach(function (f) {
+      var button = document.createElement("button");
+      button.type = "button";
+      var name = document.createElement("span");
+      name.className = "seed-name";
+      name.textContent = f.emoji + " " + f.name;
+      var price = document.createElement("span");
+      price.className = "seed-price";
+      price.textContent = "Semilla " + f.price + " 🪙 · Vende " + f.sell + " 🪙";
+      button.appendChild(name);
+      button.appendChild(price);
+      button.addEventListener("click", function () {
+        var pick = onSeedPick;
+        closeMenu();
+        if (pick) pick(f.id);
+      });
+      seedMenu.appendChild(button);
+      seedButtons.push({ button: button, price: f.price });
     });
 
     Array.prototype.forEach.call(menu.querySelectorAll("button"), function (button) {
@@ -97,7 +121,7 @@ var UI = (function () {
   function hintFor(character) {
     var other = otherOf(character);
     var where = Sims.placeOf(character.id) === "city"
-      ? "Toca el suelo para caminar, la Carpa o la Fogata para usarlas, la Casa de Sofía para entrar"
+      ? "Toca el suelo para caminar, la Carpa o la Fogata para usarlas, una parcela del Jardín para plantar, regar o cosechar, la Casa de Sofía para entrar"
       : "Toca el piso para caminar, un mueble para usarlo, la puerta para salir";
     return where + " o a " + other.name + " para socializar (dos veces para elegirlo)";
   }
@@ -108,6 +132,7 @@ var UI = (function () {
     if (clockEl.textContent !== clock) clockEl.textContent = clock;
     var coins = Coins.text();
     if (coinsEl.textContent !== coins) coinsEl.textContent = coins;
+    if (!seedMenu.hidden) updateSeeds();
     if (!current) return;
     var hint = hintFor(current);
     if (hintEl.textContent !== hint) hintEl.textContent = hint;
@@ -125,18 +150,42 @@ var UI = (function () {
   function openMenu(x, y, onPick) {
     onMenuPick = onPick;
     menu.hidden = false;
-    var w = menu.offsetWidth, h = menu.offsetHeight;
-    menu.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x + 14)) + "px";
-    menu.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, y - h / 2)) + "px";
+    place(menu, x, y);
   }
 
+  // Open the seed menu next to a spot on the screen. Seeds that cost more coins than there are look faded.
+  function openSeedMenu(x, y, onPick) {
+    onSeedPick = onPick;
+    updateSeeds();
+    seedMenu.hidden = false;
+    place(seedMenu, x, y);
+  }
+
+  function updateSeeds() {
+    var coins = Coins.amount();
+    seedButtons.forEach(function (s) {
+      var off = coins < s.price;
+      if (s.button.disabled !== off) s.button.disabled = off;
+    });
+  }
+
+  // Keep a menu next to a spot on the screen, inside the window.
+  function place(el, x, y) {
+    var w = el.offsetWidth, h = el.offsetHeight;
+    el.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x + 14)) + "px";
+    el.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, y - h / 2)) + "px";
+  }
+
+  // Close the social menu and the seed menu.
   function closeMenu() {
     onMenuPick = null;
+    onSeedPick = null;
     menu.hidden = true;
+    seedMenu.hidden = true;
   }
 
   function isMenuOpen() {
-    return !menu.hidden;
+    return !menu.hidden || !seedMenu.hidden;
   }
 
   // Show the word for a thing near a spot on the screen, kept inside the window.
@@ -191,6 +240,7 @@ var UI = (function () {
     showSelected: showSelected,
     update: update,
     openMenu: openMenu,
+    openSeedMenu: openSeedMenu,
     closeMenu: closeMenu,
     isMenuOpen: isMenuOpen
   };

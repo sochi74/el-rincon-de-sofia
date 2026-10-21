@@ -185,6 +185,21 @@ var Coins = (function () {
     return "🪙 " + count;
   }
 
+  function amount() {
+    return count;
+  }
+
+  // Pay for something; false (and nothing paid) if there are not enough coins.
+  function spend(n) {
+    if (n > count) return false;
+    count -= n;
+    return true;
+  }
+
+  function add(n) {
+    count += n;
+  }
+
   function get() {
     return { count: count, ground: ground.map(function (c) { return { x: c.x, y: c.y }; }) };
   }
@@ -202,5 +217,5 @@ var Coins = (function () {
     }
   }
 
-  return { update: update, draw: draw, wordAt: wordAt, text: text, get: get, set: set };
+  return { update: update, draw: draw, wordAt: wordAt, text: text, amount: amount, spend: spend, add: add, get: get, set: set };
 })();

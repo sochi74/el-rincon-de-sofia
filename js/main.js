@@ -39,7 +39,10 @@
       House.draw(ctx, hovered && hovered.id);
     }
     drawNight(time);
-    if (Sims.viewPlace() === "city") Coins.draw(ctx, time, Time.darkness());
+    if (Sims.viewPlace() === "city") {
+      Garden.drawTop(ctx, time);
+      Coins.draw(ctx, time, Time.darkness());
+    }
     Sims.draw(ctx, time);
     Social.draw(ctx, time);
   }
@@ -83,6 +86,7 @@
     Time.update(dt);
     City.update(dt);
     Coins.update(dt);
+    Garden.update(dt);
     Sims.update(dt);
     Needs.update(dt);
     Objects.update(dt);
@@ -115,8 +119,11 @@
   // The word for the furniture, room or place at a spot on the screen (characters in front hide it).
   function wordAt(spot) {
     var p = toWorld(spot);
+    var inCity = Sims.viewPlace() === "city";
+    // Garden plots win over characters, like for taps.
+    if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
     if (Sims.simAt(p.x, p.y)) return null;
-    if (Sims.viewPlace() === "city") return Coins.wordAt(p.x, p.y) || City.wordAt(p.x, p.y);
+    if (inCity) return Coins.wordAt(p.x, p.y) || City.wordAt(p.x, p.y);
     return House.wordAt(p.x, p.y);
   }
 
@@ -129,7 +136,7 @@
     }
   }
 
-  // Light up the usable furniture, or in the city the house, tent or campfire, under the mouse (characters in front win).
+  // Light up the usable furniture, or in the city the house, tent, campfire or a garden plot, under the mouse (characters in front win).
   // The front door gets a pointer too.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
@@ -138,8 +145,10 @@
     var inCity = Sims.viewPlace() === "city";
     hovered = free ? Objects.at(p.x, p.y, inCity ? "city" : "house") : null;
     hoveredHouse = free && inCity && City.houseAt(p.x, p.y);
+    var plot = inCity ? Garden.plotAt(p.x, p.y) : -1;
+    Garden.setHover(plot);
     var door = free && !inCity && House.doorAt(p.x, p.y);
-    canvas.style.cursor = hovered || hoveredHouse || door ? "pointer" : "";
+    canvas.style.cursor = hovered || hoveredHouse || door || plot >= 0 ? "pointer" : "";
   }
 
   function startGame() {
@@ -163,6 +172,7 @@
   canvas.addEventListener("pointerleave", function () {
     hovered = null;
     hoveredHouse = false;
+    Garden.setHover(-1);
     mouse = null;
   });
   window.addEventListener("resize", resize);

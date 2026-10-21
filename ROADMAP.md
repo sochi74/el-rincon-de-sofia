@@ -24,7 +24,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 
 ### 🌸 Pack 2: Vida en el valle
 - ✅ Hito 12: 🪙 Monedas mágicas. Un contador de monedas en el panel, que se guarda con la partida, y monedas brillantes para recoger en la ciudad.
-- ⬜ Hito 13: 🌸 Jardín y cosecha. Plantar flores mágicas, regarlas, verlas crecer, cosecharlas y venderlas por monedas.
+- ✅ Hito 13: 🌸 Jardín y cosecha. Jardín de Sofía con 6 parcelas: comprar semillas (tulipán, lirio, flor arcoíris, flor de luna), plantar, regar, ver crecer y vender.
 - ⬜ Hito 14: 🎣 Pescar y recolectar. Pescar en el río y recolectar frutos y cristales en el bosque.
 - ⬜ Hito 15: 🍲 Cocinar. Recetas simples con lo cosechado y pescado; la comida cocinada sube más el Hambre.
 - ⬜ Hito 16: 🎁 Amistad y regalos. Niveles de amistad (conocidos, amigos, mejores amigos) y dar regalos que suben la Amistad.
