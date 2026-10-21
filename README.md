@@ -13,8 +13,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it."
 
 ## Estado
-Hito 6 ✅ Vida propia. ¡Parte A completa! 🎉
-Parte B planeada, próximo: Hito 7
+Hito 7 ✅ La puerta mágica
 
 ## ⭐ Estrellas de inglés: 12
 
@@ -72,3 +71,9 @@ Parte B planeada, próximo: Hito 7
 - roadmap: el mapa del camino de tu juego
 - expansion pack: paquete de expansión
 - priority: prioridad, qué va primero
+- door: puerta
+- city: ciudad
+- river: río
+- bridge: puente
+- forest: bosque
+- square: plaza

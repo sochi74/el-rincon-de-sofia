@@ -80,7 +80,9 @@ var Social = (function () {
   }
 
   // "a" goes to talk with "b". If they are using furniture, they leave it.
+  // They only socialize when both are in the same place.
   function start(a, b, typeId) {
+    if (a.place !== b.place) return;
     if (isBusy()) {
       wait(a.data.id);
       return;
@@ -204,7 +206,7 @@ var Social = (function () {
 
   // The 🙌 between them after a high five.
   function draw(ctx, time) {
-    if (!convo || convo.phase !== "cheer") return;
+    if (!convo || convo.phase !== "cheer" || convo.a.place !== Sims.viewPlace()) return;
     var t = convo.elapsed / CONFIG.social.cheerTime;
     var pop = Math.min(1, t * 4);
     var x = (convo.a.x + convo.b.x) / 2;

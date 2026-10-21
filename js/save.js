@@ -1,4 +1,4 @@
-// Saves and loads the game in the browser: needs, where each character stands and friendship.
+// Saves and loads the game in the browser: needs, where each character is (house or city) and stands, and friendship.
 // Every use of localStorage is inside try/catch, so the game keeps working if it fails.
 var Save = (function () {
   var timer = 0;
@@ -17,7 +17,7 @@ var Save = (function () {
       var needs = {};
       var values = Needs.get(id);
       CONFIG.needs.forEach(function (need) { needs[need.id] = values[need.id]; });
-      data.characters[id] = { x: sim.x, y: sim.y, needs: needs, friendship: friendship };
+      data.characters[id] = { place: sim.place, x: sim.x, y: sim.y, needs: needs, friendship: friendship };
     });
     return data;
   }
@@ -46,7 +46,7 @@ var Save = (function () {
       var id = sim.data.id;
       var saved = data.characters[id];
       if (!saved || typeof saved !== "object") return;
-      Sims.place(sim, saved.x, saved.y);
+      Sims.place(sim, saved.x, saved.y, saved.place);
       var values = Needs.get(id);
       CONFIG.needs.forEach(function (need) {
         var v = saved.needs && saved.needs[need.id];
