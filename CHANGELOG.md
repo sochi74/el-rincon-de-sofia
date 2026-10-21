@@ -1,5 +1,23 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 16: 🎁 Amistad y regalos
+- Niveles de amistad según el valor de Amistad: 😐 Distantes (menos de 0), 👋 Conocidos (0 a 29), 😊 Amigos (30 a 69) y 💛 Mejores amigos (70 o más).
+- El panel muestra el nivel junto al valor, por ejemplo "Amistad con real.fixer: 58 · 😊 Amigos".
+- Al subir de nivel (por una charla, un chiste, chocar los cinco o un regalo), entre los dos cae una lluvia de corazones y flota el cartel "¡Ahora son Amigos! 😊" (o el nivel que corresponda) unos segundos. Al bajar de nivel no pasa nada.
+- Regalos favoritos (nuevo campo en CHARACTERS.md y js/characters.js): real.fixer: Sopa de cangrejo y Cristal. Sofía: Tarta de bayas y Plato mágico.
+- Regalar: en la 🎒 Mochila cada cosa tiene un botón "Regalar". Funciona si hay alguien seleccionado, libre, y el otro está en el mismo lugar (casa o ciudad); si no, se ve apagado. El seleccionado camina hasta el otro, burbuja "Regalando 🎁" unos 2 segundos, y la cosa sale de la mochila. El que recibe deja lo que hacía y reacciona:
+  - Favorito: Amistad +15, un ❤️ y una de sus frases de feliz.
+  - Bota vieja: Amistad -3, un 😒 y "¿Una bota?…" (real.fixer: "A boot?…" con subtítulo).
+  - Cualquier otra cosa: Amistad +6 y un 😊.
+  - La Amistad cambia para los dos. Ningún rasgo actual cambia lo que da un regalo.
+- Cada uno acepta hasta 3 regalos por día del juego. Después dice "Ya me diste mucho hoy 😊" (real.fixer: "That's enough for today 😊" con subtítulo) y el regalo vuelve a la mochila.
+- Un nuevo clic cancela el regalo y la cosa vuelve a la mochila. Pausa congela todo.
+- El guardado recuerda cuántos regalos recibió cada uno en el día (y un regalo en camino vuelve a la mochila).
+- Palabras nuevas en js/words.js: Regalo · gift (GUIFT), Amigo · friend (FREND), Mejores amigos · best friends (BEST FRENDS) y Gatito · kitten (KÍ-ten).
+- ⭐ Extra desbloqueado: Krohna, el gatito naranja de real.fixer, dibujado con código, con rayitas. Lo sigue a poca distancia en el mismo lugar, rodeando obstáculos. Cuando real.fixer se queda quieto, se sienta a su lado y mueve la cola. Cuando duerme en la carpa, Krohna duerme enroscado en la entrada con una "z" chiquita. No tiene necesidades, no se puede seleccionar y en Pausa se queda quieto. Al pasar el mouse: "Krohna · kitten (KÍ-ten)".
+- Nuevos archivos js/gifts.js y js/pet.js.
+- Problemas conocidos: En la Televisión (de pie, sin el Sofá) se sigue viendo tele de pie. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima. Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien. Nadie cuida el jardín solo. Las mariposas vuelan por encima de las flores y a veces tapan un poquito una. Con el panel abierto, en pantallas chicas todavía puede tapar un poco la parte de arriba del mapa (ciérralo con ✕ para ver todo). Con el panel abierto se tapa casi todo el bosque: ciérralo con ✕ para recolectar. La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta. Nadie pesca ni recolecta solo. Si recargas mientras alguien pesca o recolecta, esa acción se pierde. Nadie cocina solo. Nadie regala solo. Cuando real.fixer pasa por la puerta, Krohna aparece de golpe del otro lado, junto a él. Krohna puede quedar un poquito detrás de un personaje. Con el panel abierto, el cartel "¡Ahora son…!" puede quedar tapado si los personajes están arriba del mapa.
+
 ## 2026-10-21 · Extra: 🧹 Pulido 2
 - Caminos que rodean: los personajes ya no atraviesan nada sólido. Buscan el camino más corto y lo recorren con curvas suaves, sin zigzag y a la misma velocidad de siempre.
   - Casa: no cruzan paredes (solo pasan por las puertas) y rodean el Refrigerador, la Estufa, la Cama, la Televisión y el Sofá.

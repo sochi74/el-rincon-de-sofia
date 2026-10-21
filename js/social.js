@@ -1,5 +1,14 @@
-// Social interactions between the two characters, and their friendship.
+// Social interactions between the two characters, and their friendship with its levels.
+// When the friendship goes up a level, hearts rain between the two and a sign floats over them.
 var Social = (function () {
+  // Friendship levels, from the highest down: the first one whose "min" the (rounded) value reaches.
+  var LEVELS = [
+    { min: 70, name: "Mejores amigos", emoji: "💛" },
+    { min: 30, name: "Amigos", emoji: "😊" },
+    { min: 0, name: "Conocidos", emoji: "👋" },
+    { min: -Infinity, name: "Distantes", emoji: "😐" }
+  ];
+
   // What each interaction gives to both characters.
   // "category" is the group of phrases used; "favorite" is how it is written in a favorite activity.
   var TYPES = {
@@ -152,8 +161,9 @@ var Social = (function () {
       waiting[id] -= dt;
       if (waiting[id] <= 0) delete waiting[id];
     });
-    // The pause button freezes conversations too.
+    // The pause button freezes conversations and the level celebration too.
     if (Needs.isPaused()) return;
+    checkLevel(dt);
     cooldown = Math.max(0, cooldown - dt);
     if (!convo) return;
 
@@ -206,6 +216,7 @@ var Social = (function () {
 
   // The 🙌 between them after a high five.
   function draw(ctx, time) {
+    drawParty(ctx, time);
     if (!convo || convo.phase !== "cheer" || convo.a.place !== Sims.viewPlace()) return;
     var t = convo.elapsed / CONFIG.social.cheerTime;
     var pop = Math.min(1, t * 4);
@@ -230,6 +241,97 @@ var Social = (function () {
     friendship[id][otherId] = Math.max(-100, Math.min(100, value));
   }
 
+  // Add (or take away) friendship of one character toward the other, kept between -100 and 100 (used by gifts).
+  function addFriendship(id, otherId, amount) {
+    setFriendship(id, otherId, friendshipWith(id, otherId) + amount);
+  }
+
+  // ---------- Levels ----------
+
+  // The level of a friendship value, as written in the panel.
+  function levelOf(value) {
+    var v = Math.round(value);
+    return LEVELS.filter(function (l) { return v >= l.min; })[0];
+  }
+
+  // The highest level between the two (each one has its own value; they are almost always the same level).
+  // "known" is the last one seen, null until the first frame, so loading a saved game never celebrates.
+  var known = null;
+  // The celebration going on, or null: { level, elapsed, hearts: [{ dx, delay, speed, size, sway }] }
+  var party = null;
+
+  function pairRank() {
+    var best = LEVELS.length - 1;
+    Object.keys(friendship).forEach(function (id) {
+      Object.keys(friendship[id]).forEach(function (otherId) {
+        best = Math.min(best, LEVELS.indexOf(levelOf(friendship[id][otherId])));
+      });
+    });
+    return best;
+  }
+
+  // Going up a level starts the hearts and the sign; going down does not.
+  function checkLevel(dt) {
+    var rank = pairRank();
+    if (known !== null && rank < known) {
+      var hearts = [];
+      for (var i = 0; i < CONFIG.friendLevel.hearts; i++) {
+        hearts.push({ dx: (Math.random() * 2 - 1) * 90, delay: Math.random() * 1.6, speed: 60 + Math.random() * 50,
+          size: 16 + Math.random() * 12, sway: Math.random() * Math.PI * 2 });
+      }
+      party = { level: LEVELS[rank], elapsed: 0, hearts: hearts };
+    }
+    known = rank;
+    if (party) {
+      party.elapsed += dt;
+      if (party.elapsed >= CONFIG.friendLevel.time) party = null;
+    }
+  }
+
+  // Hearts falling between the two and "¡Ahora son Amigos! 😊" floating over them, only when they are on screen together.
+  function drawParty(ctx, time) {
+    var two = Sims.list();
+    if (!party || two[0].place !== two[1].place || two[0].place !== Sims.viewPlace()) return;
+    var k = CONFIG.characterScale;
+    var x = (two[0].x + two[1].x) / 2;
+    var top = Math.min(two[0].y, two[1].y) - 78 * k - 40;
+    var bottom = Math.max(two[0].y, two[1].y);
+    var t = party.elapsed / CONFIG.friendLevel.time;
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    party.hearts.forEach(function (h) {
+      var age = party.elapsed - h.delay;
+      if (age < 0) return;
+      var y = top + age * h.speed;
+      if (y > bottom) return;
+      ctx.globalAlpha = Math.min(1, (bottom - y) / 40);
+      ctx.font = Math.round(h.size) + "px " + CONFIG.fontFamily;
+      ctx.fillText("❤️", x + h.dx + Math.sin(time * 3 + h.sway) * 8, y);
+    });
+
+    var text = "¡Ahora son " + party.level.name + "! " + party.level.emoji;
+    var pop = Math.min(1, party.elapsed * 5);
+    var sy = top - 14 - t * 12;
+    ctx.globalAlpha = t > 0.85 ? (1 - t) / 0.15 : 1;
+    ctx.font = "700 " + Math.round(22 * pop) + "px " + CONFIG.fontFamily;
+    var w = ctx.measureText(text).width + 30, h = 44 * pop;
+    ctx.shadowColor = "rgba(74, 52, 40, 0.3)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 3;
+    ctx.beginPath();
+    ctx.roundRect(x - w / 2, sy - h / 2, w, h, h / 2);
+    ctx.fillStyle = CONFIG.colors.cream;
+    ctx.fill();
+    ctx.shadowColor = "transparent";
+    ctx.strokeStyle = CONFIG.colors.terracotta;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.fillStyle = CONFIG.colors.darkBrown;
+    ctx.fillText(text, x, sy + 1);
+    ctx.restore();
+  }
+
   // True if this character is in the conversation going on right now.
   function isInvolved(id) {
     return !!convo && (convo.a.data.id === id || convo.b.data.id === id);
@@ -245,6 +347,8 @@ var Social = (function () {
     draw: draw,
     friendshipWith: friendshipWith,
     setFriendship: setFriendship,
+    addFriendship: addFriendship,
+    levelOf: levelOf,
     isInvolved: isInvolved,
     isBusy: isBusy
   };

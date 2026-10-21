@@ -805,8 +805,8 @@ var Sims = (function () {
     drawNameTag(ctx, sim, at);
     drawMoodStar(ctx, sim, at, time);
     var lift = 0;
-    var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) || Garden.bubbleFor(sim.data.id) ||
-      Gather.bubbleFor(sim.data.id) || Cooking.bubbleFor(sim.data.id);
+    var bubble = Social.bubbleFor(sim.data.id) || Gifts.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) ||
+      Garden.bubbleFor(sim.data.id) || Gather.bubbleFor(sim.data.id) || Cooking.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
       lift = drawSpeechBubble(ctx, at, time, bubble);
     } else if (bubble) {
@@ -951,7 +951,7 @@ var Sims = (function () {
   function isIdle(sim) {
     var id = sim.data.id;
     return sim.path.length === 0 && !Objects.isActive(id) && !Garden.isActive(id) && !Gather.isActive(id) && !Cooking.isActive(id) &&
-      !Social.isInvolved(id);
+      !Social.isInvolved(id) && !Gifts.isInvolved(id);
   }
 
   // Try to fix the lowest need; true if it found something to do.
@@ -992,7 +992,8 @@ var Sims = (function () {
       if (Social.isBusy() || other.place !== sim.place) return false;
       // If the other one is using something, wait until it finishes instead of interrupting.
       var otherId = other.data.id;
-      if (Objects.isActive(otherId) || Garden.isActive(otherId) || Gather.isActive(otherId) || Cooking.isActive(otherId)) return false;
+      if (Objects.isActive(otherId) || Garden.isActive(otherId) || Gather.isActive(otherId) || Cooking.isActive(otherId) ||
+        Gifts.isInvolved(otherId)) return false;
       Social.start(sim, other, "chat");
       return true;
     }
@@ -1165,6 +1166,7 @@ var Sims = (function () {
       var wasBusy = Objects.cancel(sim.data.id);
       if (Gather.cancel(sim.data.id)) wasBusy = true;
       if (Cooking.cancel(sim.data.id)) wasBusy = true;
+      if (Gifts.cancel(sim.data.id)) wasBusy = true;
       if (Garden.cancel(sim.data.id) || wasBusy) sim.path = [];
       Social.cancel(sim.data.id);
       selected = sim;
@@ -1177,6 +1179,7 @@ var Sims = (function () {
     Garden.cancel(selected.data.id);
     Gather.cancel(selected.data.id);
     Cooking.cancel(selected.data.id);
+    Gifts.cancel(selected.data.id);
     if (selected.place === "city") {
       var thing = Objects.at(x, y, "city");
       var plot = Garden.plotAt(x, y);

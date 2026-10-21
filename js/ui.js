@@ -2,7 +2,7 @@
 // and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕).
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
 // the recipe menu that opens next to the Estufa or the Fogata,
-// the backpack window with everything in it and its sell and eat buttons, and the word tag that shows
+// the backpack window with everything in it and its sell, eat and gift buttons, and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
   var coinsEl;
@@ -12,7 +12,7 @@ var UI = (function () {
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
   var cookMenu, cookButtons = [], campfireButton, onCookPick = null, onCookClose = null;
-  var backpack, backpackList, backpackShown = null, eatButtons = [];
+  var backpack, backpackList, backpackShown = null, eatButtons = [], giftButtons = [];
   var current = null;
   var bars = {};
 
@@ -209,7 +209,10 @@ var UI = (function () {
       bars[need.id].style.background = Needs.colorFor(value);
     });
     var other = otherOf(current);
-    friendshipEl.textContent = "Amistad con " + other.name + ": " + Math.round(Social.friendshipWith(current.id, other.id));
+    var value = Social.friendshipWith(current.id, other.id);
+    var level = Social.levelOf(value);
+    var text = "Amistad con " + other.name + ": " + Math.round(value) + " · " + level.emoji + " " + level.name;
+    if (friendshipEl.textContent !== text) friendshipEl.textContent = text;
   }
 
   // Open the social menu next to a spot on the screen, kept inside the window.
@@ -293,11 +296,16 @@ var UI = (function () {
 
   // Rebuild the list only when what is in the backpack changes (it can change while it is open, when fishing).
   // The "Comer" buttons are faded while nobody is selected or the selected one is busy.
+  // The "Regalar" buttons too, and also while the other one is in another place.
   function updateBackpack() {
     var sim = Sims.selectedSim();
     var canEat = !!sim && Sims.isIdle(sim);
+    var canGive = Gifts.canGive(sim);
     eatButtons.forEach(function (button) {
       if (button.disabled === canEat) button.disabled = !canEat;
+    });
+    giftButtons.forEach(function (button) {
+      if (button.disabled === canGive) button.disabled = !canGive;
     });
     var things = Inventory.list();
     var shown = things.map(function (t) { return t.item.id + ":" + t.count; }).join(",");
@@ -305,6 +313,7 @@ var UI = (function () {
     backpackShown = shown;
     backpackList.textContent = "";
     eatButtons = [];
+    giftButtons = [];
     if (things.length === 0) {
       var none = document.createElement("p");
       none.className = "backpack-empty";
@@ -324,6 +333,7 @@ var UI = (function () {
       row.appendChild(name);
       row.appendChild(price);
       if (Cooking.isDish(t.item.id)) row.appendChild(eatButton(t.item.id, canEat));
+      row.appendChild(giftButton(t.item.id, canGive));
       row.appendChild(sellButton("Vender 1", t.item.id, false));
       row.appendChild(sellButton("Vender todo", t.item.id, true));
       backpackList.appendChild(row);
@@ -343,6 +353,21 @@ var UI = (function () {
       updateBackpack();
     });
     eatButtons.push(button);
+    return button;
+  }
+
+  // The selected one walks to the other and gives it one of this thing.
+  function giftButton(id, canGive) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Regalar";
+    button.className = "gift-button";
+    button.disabled = !canGive;
+    button.addEventListener("click", function () {
+      Gifts.give(Sims.selectedSim(), id);
+      updateBackpack();
+    });
+    giftButtons.push(button);
     return button;
   }
 
@@ -383,10 +408,11 @@ var UI = (function () {
   }
 
   // Show the word for a thing near a spot on the screen, kept inside the window.
+  // "id" is a word of js/words.js, or a word itself as { es, en, say } (like Krohna's).
   // With the mouse it goes below and to the right so it never covers the cursor;
   // with a finger it goes above, and hides by itself after "seconds".
   function showWord(id, x, y, seconds) {
-    var word = WORDS[id];
+    var word = typeof id === "string" ? WORDS[id] : id;
     if (!word) {
       hideWord();
       return;

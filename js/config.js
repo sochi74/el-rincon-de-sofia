@@ -130,6 +130,30 @@ var CONFIG = {
     waitBubbleTime: 1.2
   },
 
+  // Going up a friendship level: how many hearts rain and how long it all lasts, in seconds.
+  friendLevel: { hearts: 22, time: 3.5 },
+
+  // Gifts from the backpack: the Amistad each kind of gift gives, how many gifts each one takes per day of the game,
+  // how far from the other the giver stands, and how long "Regalando 🎁" and the answer stay, in seconds.
+  gifts: {
+    favorite: 15,
+    boot: -3,
+    other: 6,
+    perDay: 3,
+    gap: 70,
+    giveTime: 2,
+    answerTime: 2.6
+  },
+
+  // Krohna, real.fixer's kitten: how fast it walks, how close it stays to him and where it sleeps by the Carpa.
+  pet: {
+    speed: 200,
+    side: 42,
+    farther: 70,
+    repath: 0.4,
+    sleepSpot: { x: 812, y: 390 }
+  },
+
   // Free will: the one not selected looks after a need below "threshold" when it is idle.
   // It waits "pause" seconds after finishing something, and "retry" seconds if it could not go.
   // "goesTo" says where a character goes for some needs; for the rest it does as always.

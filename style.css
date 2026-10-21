@@ -383,6 +383,14 @@ h1 {
   background: #B07A4F;
 }
 
+.backpack-row .gift-button {
+  background: #C8664A;
+}
+
+.backpack-row .gift-button:hover:not(:disabled) {
+  background: #B07A4F;
+}
+
 .backpack-row button:hover:not(:disabled),
 #backpack-close:hover {
   background: #C8664A;

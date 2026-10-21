@@ -50,9 +50,11 @@
       Gather.drawTop(ctx, time);
       Coins.draw(ctx, time, Time.darkness());
     }
+    Pet.draw(ctx);
     Sims.draw(ctx, time);
     if (Sims.viewPlace() === "city") Gather.drawPops(ctx);
     Cooking.drawPops(ctx);
+    Gifts.draw(ctx, time);
     Social.draw(ctx, time);
   }
 
@@ -98,7 +100,9 @@
     Garden.update(dt);
     Gather.update(dt);
     Cooking.update(dt);
+    Gifts.update(dt);
     Sims.update(dt);
+    Pet.update(dt);
     Needs.update(dt);
     Objects.update(dt);
     Social.update(dt);
@@ -135,6 +139,7 @@
     if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
     if (inCity && Gather.thingAt(p.x, p.y)) return Gather.wordAt(p.x, p.y);
     if (Sims.simAt(p.x, p.y)) return null;
+    if (Pet.at(p.x, p.y)) return Pet.word();
     if (inCity) return Coins.wordAt(p.x, p.y) || City.wordAt(p.x, p.y);
     return House.wordAt(p.x, p.y);
   }
@@ -183,6 +188,7 @@
   UI.init();
   Sims.init(UI.showSelected);
   Save.load();
+  Pet.init();
 
   playButton.addEventListener("click", startGame);
   canvas.addEventListener("pointerdown", handleTap);

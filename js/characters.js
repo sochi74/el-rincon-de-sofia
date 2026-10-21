@@ -56,7 +56,12 @@ var CHARACTERS = [
         { text: "Life is good.", subtitle: "La vida es buena." }
       ]
     },
-    relationships: { sofia: 0 }
+    relationships: { sofia: 0 },
+    favoriteGifts: [
+      { id: "crabSoup", name: "Sopa de cangrejo" },
+      { id: "crystal", name: "Cristal" }
+    ],
+    pet: "Krohna, un gatito naranja"
   },
   {
     id: "sofia",
@@ -114,6 +119,10 @@ var CHARACTERS = [
         { text: "¡Qué lindo es mi rincón!", subtitle: null }
       ]
     },
-    relationships: { realfixer: 0 }
+    relationships: { realfixer: 0 },
+    favoriteGifts: [
+      { id: "berryPie", name: "Tarta de bayas" },
+      { id: "magicDish", name: "Plato mágico" }
+    ]
   }
 ];
