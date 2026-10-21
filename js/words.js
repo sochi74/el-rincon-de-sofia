@@ -31,5 +31,6 @@ var WORDS = {
   tulip: { es: "Tulipán", en: "tulip", say: "TÚ-lip" },
   lily: { es: "Lirio", en: "lily", say: "LÍ-li" },
   rainbow: { es: "Flor arcoíris", en: "rainbow flower", say: "RÉIN-bou FLÁU-er" },
-  moon: { es: "Flor de luna", en: "moonflower", say: "MÚUN-flau-er" }
+  moon: { es: "Flor de luna", en: "moonflower", say: "MÚUN-flau-er" },
+  butterfly: { es: "Mariposa", en: "butterfly", say: "BÁ-ter-flai" }
 };

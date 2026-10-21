@@ -219,11 +219,24 @@ var CONFIG = {
     standAbove: 36,
     drySoil: "#B07A4F",
     wetSoil: "#6E4A32",
-    moonLight: "190, 210, 245"
+    moonLight: "190, 210, 245",
+    // Butterflies (only decoration): they flutter over the garden by day, hide at night and stand still with Pausa.
+    // Each one has its wing color and where it floats, as "dx", "dy" from the middle of the fence.
+    butterflies: {
+      size: 7,
+      roam: { x: 62, y: 34 },
+      list: [
+        { color: "#C8664A", dx: -30, dy: -8, phase: 0 },
+        { color: "#F5EBDD", dx: 26, dy: 4, phase: 2.1 },
+        { color: "#B07A4F", dx: 4, dy: -20, phase: 4.2 },
+        { color: "#8FA88A", dx: -12, dy: 16, phase: 1.3 }
+      ]
+    }
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.
-  save: { every: 10, key: "el-rincon-de-sofia-save" },
+  // "menuKey" remembers whether the panel was open or closed.
+  save: { every: 10, key: "el-rincon-de-sofia-save", menuKey: "el-rincon-de-sofia-menu" },
 
   // Drawing colors and starting place and spot for each character: real.fixer next to his tent, Sofía in the Sala.
   characterLooks: {
