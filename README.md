@@ -2,6 +2,7 @@
 
 # El Rincón de Sofía 🛋️
 Un juego de vida acogedor: Sofía vive en su casita y su amigo real.fixer viene de visita.
+Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para construir, explorar y hacer amigos.
 
 ## Cómo jugar
 - En internet: https://sochi74.github.io/el-rincon-de-sofia/
@@ -13,6 +14,7 @@ Un juego de vida acogedor: Sofía vive en su casita y su amigo real.fixer viene 
 
 ## Estado
 Hito 6 ✅ Vida propia. ¡Parte A completa! 🎉
+Parte B planeada, próximo: Hito 7
 
 ## ⭐ Estrellas de inglés: 12
 
@@ -66,3 +68,7 @@ Hito 6 ✅ Vida propia. ¡Parte A completa! 🎉
 - free will: libre albedrío
 - That's what she said!: ¡Eso es lo que ella dijo!
 - bug: un bichito en el código; es normal y se arregla
+- vision: visión, cómo quieres que se sienta tu juego
+- roadmap: el mapa del camino de tu juego
+- expansion pack: paquete de expansión
+- priority: prioridad, qué va primero

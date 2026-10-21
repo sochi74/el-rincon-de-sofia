@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## 2026-10-20 · Plan de la Parte B
+- Se escribió el roadmap del juego completo en paquetes
+
 ## 2026-10-20 · Hito 6: ✨ Vida propia
 - Libre albedrío: el personaje que no está seleccionado, cuando está quieto y tiene una necesidad por debajo de 50, va solo a resolver la más baja:
   - Hambre → Refrigerador. Energía → Cama. Diversión → Sofá o Televisión. Social → "Charlar" con el otro.
