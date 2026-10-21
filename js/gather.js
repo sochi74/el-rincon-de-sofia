@@ -112,8 +112,9 @@ var Gather = (function () {
   function tapRiver(sim, x, y) {
     var side = sim.x < City.riverX(sim.y) ? -1 : 1;
     current[sim.data.id] = { sim: sim, kind: "fish", thing: null, phase: "walking", elapsed: 0 };
-    // A spot just past the middle of the river on this side: walking there stops at the bank.
-    Sims.walkTo(sim, City.riverX(y) + side, y);
+    // A spot just past the middle of the river on this side: it moves to the bank.
+    var bank = City.walkableSpot(City.riverX(y) + side, y);
+    Sims.walkTo(sim, bank.x, bank.y);
   }
 
   // A tap on a forest thing: walk next to it, on the side the character comes from, and gather it.

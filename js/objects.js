@@ -10,18 +10,26 @@ var Objects = (function () {
     campfire: { text: "Junto a la fogata 🔥", need: "fun", amount: 30, duration: 4, favorite: "sentarse junto a la fogata" }
   };
 
-  // Usable furniture: its action and the spot where the character stands to use it.
+  // Usable furniture: its action and the free spot next to it where the character walks to use it,
+  // and where it stands up again when it finishes.
   // "look" is where it looks while using it (on the Sofá, at the Televisión); otherwise it looks at the piece.
   // "owner" is the only one who may use it; anyone else gets the "notYours" bubble.
+  // "pose" is how it is drawn while using it (js/sims.js): lying in the Cama with its head on the pillow, sitting on
+  // the Sofá, inside the Carpa (only the "Zzz" are seen) or sitting on the log by the Fogata. "x", "y" is where its feet go.
   // The Estufa has no action of its own: tapping it opens the recipe menu (js/cooking.js), like the Fogata.
+  // Cooking at the Fogata uses another spot, on the other side of the fire (js/cooking.js).
+  var SEAT = City.campfireSeat;
   var USABLE = {
     stove: {},
     fridge: { action: "eat", spot: { x: 115, y: 200 } },
-    bed: { action: "sleep", spot: { x: 815, y: 190 } },
-    tv: { action: "watchTv", spot: { x: 450, y: 500 } },
-    sofa: { action: "watchTv", spot: { x: 520, y: 615 }, look: { x: 520, y: 387 } },
-    tent: { action: "sleepTent", spot: { x: 850, y: 395 }, owner: "realfixer", notYours: "Es la carpa de real.fixer" },
-    campfire: { action: "campfire", spot: { x: 870, y: 490 } }
+    bed: { action: "sleep", spot: { x: 690, y: 200 }, pose: { kind: "lie", x: 774, y: 204 } },
+    tv: { action: "watchTv", spot: { x: 600, y: 495 } },
+    sofa: { action: "watchTv", spot: { x: 720, y: 532 }, look: { x: 720, y: 387 }, pose: { kind: "sofa", x: 720, y: 652 } },
+    tent: {
+      action: "sleepTent", spot: { x: 850, y: 395 }, owner: "realfixer", notYours: "Es la carpa de real.fixer",
+      pose: { kind: "tent", zzz: { x: 856, y: 318 } }
+    },
+    campfire: { action: "campfire", spot: { x: SEAT.x, y: SEAT.y + 34 }, pose: { kind: "log", x: SEAT.x, y: SEAT.y + 10 } }
   };
 
   // How long the "Ocupado" bubble stays, in seconds.
@@ -100,12 +108,12 @@ var Objects = (function () {
     return had;
   }
 
-  // Someone else is using it, or cooking at it.
+  // Someone else is using it. Cooking at the Fogata does not count: it has its own spot.
   function isTaken(furniture, id) {
     return Object.keys(current).some(function (other) {
       var a = current[other];
       return other !== id && a.furniture === furniture && a.phase === "doing";
-    }) || Cooking.isCookingAt(furniture, id);
+    });
   }
 
   // Usable furniture in a place whose action raises a need, that this character may use,
@@ -134,6 +142,13 @@ var Objects = (function () {
     var b = placeOf(f) === "city" ? f : House.bounds(f);
     if (look) Sims.face(a.sim, look.x, look.y);
     else Sims.face(a.sim, b.x + b.w / 2, b.y + b.h / 2);
+  }
+
+  // How a character is drawn while it uses something (see "pose" above), or null when it just stands.
+  function poseFor(id) {
+    var a = current[id];
+    if (!a || a.phase !== "doing") return null;
+    return USABLE[a.furniture.id].pose || null;
   }
 
   // True if someone is watching tele right now, on the Sofá or at the Televisión.
@@ -196,6 +211,7 @@ var Objects = (function () {
     cancel: cancel,
     update: update,
     bubbleFor: bubbleFor,
+    poseFor: poseFor,
     freeFor: freeFor,
     isActive: isActive,
     isWatchingTv: isWatchingTv

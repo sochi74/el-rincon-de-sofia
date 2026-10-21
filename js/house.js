@@ -1,5 +1,6 @@
 // Draws the house seen from above: floors, walls, room names and furniture.
 // At night the Televisión gives a soft glow while someone watches it.
+// Also where characters may walk: inside the rooms, through the doorways, and never on the furniture.
 var House = (function () {
   var C = CONFIG.colors;
 
@@ -159,18 +160,20 @@ var House = (function () {
 
   // ---------- Poster on the Sala wall ----------
 
+  // Between the two doorways of the Sala, in two lines.
   function drawPoster(ctx) {
-    var x = 710, y = 352, w = 210, h = 46;
+    var x = 335, y = 352, w = 120, h = 60;
     withShadow(ctx, function () {
       fillRound(ctx, x, y, w, h, 6, C.wood);
     });
     fillRound(ctx, x + 5, y + 5, w - 10, h - 10, 4, C.cream);
     ctx.save();
-    ctx.font = "700 16px " + CONFIG.fontFamily;
+    ctx.font = "700 15px " + CONFIG.fontFamily;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = C.terracotta;
-    ctx.fillText("That's what she said!", x + w / 2, y + h / 2 + 1);
+    ctx.fillText("That's what", x + w / 2, y + h / 2 - 9);
+    ctx.fillText("she said!", x + w / 2, y + h / 2 + 10);
     ctx.restore();
   }
 
@@ -276,7 +279,7 @@ var House = (function () {
       fillRound(ctx, f.x, f.y, f.w, f.h, 22, C.terracotta);
     });
     // Backrest (sofa faces up, toward the TV)
-    fillRound(ctx, f.x + 6, f.y + f.h - 30, f.w - 12, 24, 12, "#A9533C");
+    drawBackrest(ctx, f);
     // Armrests
     fillRound(ctx, f.x + 6, f.y + 6, 30, f.h - 12, 14, "#B85A41");
     fillRound(ctx, f.x + f.w - 36, f.y + 6, 30, f.h - 12, 14, "#B85A41");
@@ -287,6 +290,30 @@ var House = (function () {
     }
     // Cushion pillow
     fillRound(ctx, f.x + 48, f.y + 30, 34, 28, 10, C.sage);
+  }
+
+  function drawBackrest(ctx, f) {
+    fillRound(ctx, f.x + 6, f.y + f.h - 30, f.w - 12, 24, 12, "#A9533C");
+  }
+
+  // The backrest again, over someone sitting on the Sofá, so they look sunk into it.
+  // Characters are drawn after the night tint, so here the backrest gets the tint again by itself.
+  function drawSofaBackrest(ctx) {
+    var f = piece("sofa");
+    drawBackrest(ctx, f);
+    var dark = Time.darkness();
+    if (dark <= 0) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "multiply";
+    ctx.globalAlpha = dark;
+    roundRect(ctx, f.x + 6, f.y + f.h - 30, f.w - 12, 24, 12);
+    ctx.fillStyle = CONFIG.night.tint;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function piece(id) {
+    return CONFIG.furniture.filter(function (f) { return f.id === id; })[0];
   }
 
   var drawers = { fridge: drawFridge, stove: drawStove, bed: drawBed, tv: drawTv, sofa: drawSofa };
@@ -330,12 +357,12 @@ var House = (function () {
 
     CONFIG.rooms.forEach(function (room) { drawFloor(ctx, room); });
 
-    // Living room rug
-    fillRound(ctx, 360, 455, 320, 92, 46, C.sage);
+    // Living room rug, between the Televisión and the Sofá
+    fillRound(ctx, 560, 455, 320, 92, 46, C.sage);
     ctx.strokeStyle = C.cream;
     ctx.lineWidth = 4;
     ctx.setLineDash([10, 8]);
-    roundRect(ctx, 370, 465, 300, 72, 36);
+    roundRect(ctx, 570, 465, 300, 72, 36);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -372,7 +399,7 @@ var House = (function () {
   // "dark" goes from 0 (day) to 1 (night).
   function drawNightLights(ctx, time, dark) {
     if (!Objects.isWatchingTv()) return;
-    var tv = CONFIG.furniture.filter(function (f) { return f.id === "tv"; })[0];
+    var tv = piece("tv");
     var cx = tv.x + tv.w / 2, cy = tv.y + 20;
     // The light flickers a tiny bit, like a show is on.
     var flicker = 0.9 + Math.sin(time * 4.1) * 0.05 + Math.sin(time * 9.7) * 0.05;
@@ -414,5 +441,47 @@ var House = (function () {
     return null;
   }
 
-  return { draw: draw, drawLabels: drawLabels, drawNightLights: drawNightLights, bounds: bounds, doorAt: doorAt, wordAt: wordAt };
+  // ---------- Where characters can walk ----------
+
+  // How close a character's feet may get to furniture: on the sides, above it and below it.
+  var CLEAR = { side: 22, top: 12, bottom: 14 };
+
+  function inBox(x, y, b) {
+    return x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
+  }
+
+  // The way through a doorway, from one room to the other, a little narrower than the gap in the wall.
+  function doorPassage(d) {
+    var m = CONFIG.walkMargin;
+    var half = CONFIG.doorWidth / 2 - 14;
+    var rooms = CONFIG.rooms.filter(function (r) { return d.rooms.indexOf(r.id) >= 0; });
+    // Rooms side by side: the doorway is on a wall going up and down.
+    if (rooms[0].y === rooms[1].y) return { x: d.x - m.side - 2, y: d.y - half, w: (m.side + 2) * 2, h: half * 2 };
+    return { x: d.x - half, y: d.y - m.bottom - 2, w: half * 2, h: m.bottom + m.top + 4 };
+  }
+
+  // True if a character cannot stand here: outside the rooms (walls are only crossed at the doorways)
+  // or on a piece of furniture. Used by js/path.js.
+  function isSolid(x, y) {
+    var m = CONFIG.walkMargin;
+    var inRoom = CONFIG.rooms.some(function (r) {
+      return inBox(x, y, { x: r.x + m.side, y: r.y + m.top, w: r.w - m.side * 2, h: r.h - m.top - m.bottom });
+    }) || CONFIG.doorways.some(function (d) { return inBox(x, y, doorPassage(d)); });
+    if (!inRoom) return true;
+    return CONFIG.furniture.some(function (f) {
+      var b = bounds(f);
+      return inBox(x, y, { x: b.x - CLEAR.side, y: b.y - CLEAR.top, w: b.w + CLEAR.side * 2, h: b.h + CLEAR.top + CLEAR.bottom });
+    });
+  }
+
+  return {
+    draw: draw,
+    drawLabels: drawLabels,
+    drawNightLights: drawNightLights,
+    drawSofaBackrest: drawSofaBackrest,
+    bounds: bounds,
+    doorAt: doorAt,
+    wordAt: wordAt,
+    isSolid: isSolid
+  };
 })();
