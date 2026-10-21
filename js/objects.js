@@ -75,6 +75,21 @@ var Objects = (function () {
     });
   }
 
+  // Usable furniture whose action raises a need, and that nobody else is using or walking to.
+  function freeFor(needId, id) {
+    return CONFIG.furniture.filter(function (f) {
+      var use = USABLE[f.id];
+      if (!use || ACTIONS[use.action].need !== needId) return false;
+      return !Object.keys(current).some(function (other) {
+        return other !== id && current[other].furniture === f;
+      });
+    });
+  }
+
+  function isActive(id) {
+    return !!current[id];
+  }
+
   function update(dt) {
     Object.keys(current).forEach(function (id) {
       var a = current[id];
@@ -116,5 +131,13 @@ var Objects = (function () {
     return { text: a.action.text, heart: a.favorite };
   }
 
-  return { at: at, start: start, cancel: cancel, update: update, bubbleFor: bubbleFor };
+  return {
+    at: at,
+    start: start,
+    cancel: cancel,
+    update: update,
+    bubbleFor: bubbleFor,
+    freeFor: freeFor,
+    isActive: isActive
+  };
 })();

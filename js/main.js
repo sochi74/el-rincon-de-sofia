@@ -46,6 +46,8 @@
     Needs.update(dt);
     Objects.update(dt);
     Social.update(dt);
+    Sims.think(dt);
+    Save.update(dt);
     UI.update();
     render(time);
     window.requestAnimationFrame(loop);
@@ -76,6 +78,7 @@
     titleScreen.hidden = true;
     canvas.hidden = false;
     UI.show();
+    Save.start();
     resize();
     window.requestAnimationFrame(loop);
   }
@@ -84,10 +87,13 @@
   Social.init(CHARACTERS);
   UI.init();
   Sims.init(UI.showSelected);
+  Save.load();
 
   playButton.addEventListener("click", startGame);
   canvas.addEventListener("pointerdown", handleTap);
   canvas.addEventListener("pointermove", handleHover);
   canvas.addEventListener("pointerleave", function () { hovered = null; });
   window.addEventListener("resize", resize);
+  window.addEventListener("pagehide", Save.onLeave);
+  window.addEventListener("beforeunload", Save.onLeave);
 })();

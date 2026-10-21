@@ -182,8 +182,14 @@ h1 {
   background: #C8664A;
 }
 
-#pause-button {
+.panel-buttons {
+  display: flex;
+  gap: 8px;
   margin-top: 10px;
+}
+
+#pause-button,
+#reset-button {
   padding: 6px 16px;
   font: inherit;
   font-weight: 700;
@@ -196,11 +202,17 @@ h1 {
   pointer-events: auto;
 }
 
-#pause-button:hover {
+#reset-button {
+  background: #8FA88A;
+}
+
+#pause-button:hover,
+#reset-button:hover {
   background: #C8664A;
 }
 
-#pause-button:active {
+#pause-button:active,
+#reset-button:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #4A3428;
 }

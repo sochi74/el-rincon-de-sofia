@@ -222,6 +222,17 @@ var Social = (function () {
     return (friendship[id] && friendship[id][otherId]) || 0;
   }
 
+  // Used when loading a saved game.
+  function setFriendship(id, otherId, value) {
+    if (!friendship[id]) return;
+    friendship[id][otherId] = Math.max(-100, Math.min(100, value));
+  }
+
+  // True if this character is in the conversation going on right now.
+  function isInvolved(id) {
+    return !!convo && (convo.a.data.id === id || convo.b.data.id === id);
+  }
+
   return {
     init: init,
     start: start,
@@ -230,6 +241,9 @@ var Social = (function () {
     facing: facing,
     bubbleFor: bubbleFor,
     draw: draw,
-    friendshipWith: friendshipWith
+    friendshipWith: friendshipWith,
+    setFriendship: setFriendship,
+    isInvolved: isInvolved,
+    isBusy: isBusy
   };
 })();

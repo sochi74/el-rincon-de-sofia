@@ -156,6 +156,23 @@ var House = (function () {
     fillRound(ctx, 108, 690, 74, 22, 8, C.terracotta);
   }
 
+  // ---------- Poster on the Sala wall ----------
+
+  function drawPoster(ctx) {
+    var x = 710, y = 352, w = 210, h = 46;
+    withShadow(ctx, function () {
+      fillRound(ctx, x, y, w, h, 6, C.wood);
+    });
+    fillRound(ctx, x + 5, y + 5, w - 10, h - 10, 4, C.cream);
+    ctx.save();
+    ctx.font = "700 16px " + CONFIG.fontFamily;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = C.terracotta;
+    ctx.fillText("That's what she said!", x + w / 2, y + h / 2 + 1);
+    ctx.restore();
+  }
+
   // ---------- Furniture ----------
 
   function drawFridge(ctx, f) {
@@ -291,6 +308,7 @@ var House = (function () {
     ctx.setLineDash([]);
 
     drawWalls(ctx);
+    drawPoster(ctx);
 
     CONFIG.furniture.forEach(function (f) {
       drawers[f.id](ctx, f);

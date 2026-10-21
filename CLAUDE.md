@@ -25,7 +25,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/needs.js: necesidades y cómo bajan
 - js/objects.js: muebles que se pueden usar y sus acciones
 - js/social.js: interacciones y amistad
-- Orden de scripts: config, characters, house, sims, needs, objects, social, ui, main
+- js/save.js: guardado y carga de la partida
+- Orden de scripts: config, characters, house, sims, needs, objects, social, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

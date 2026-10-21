@@ -25,7 +25,8 @@ var Needs = (function () {
         state[character.id][need.id] = CONFIG.needStart + (Math.random() * 2 - 1) * v;
         rates[character.id][need.id] = drainRate(character, need);
       });
-    });  }
+    });
+  }
 
   function update(dt) {
     if (paused) return;
@@ -55,6 +56,14 @@ var Needs = (function () {
     });
   }
 
+  // Average of the four needs, for the mood star.
+  function average(id) {
+    var values = state[id];
+    var sum = 0;
+    CONFIG.needs.forEach(function (need) { sum += values[need.id]; });
+    return sum / CONFIG.needs.length;
+  }
+
   function togglePause() {
     paused = !paused;
     return paused;
@@ -70,6 +79,7 @@ var Needs = (function () {
     get: get,
     colorFor: colorFor,
     lowNeeds: lowNeeds,
+    average: average,
     togglePause: togglePause,
     isPaused: isPaused
   };
