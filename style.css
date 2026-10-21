@@ -101,6 +101,12 @@ h1 {
   color: #4A3428;
 }
 
+#coins {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #B07A4F;
+}
+
 #selection-name {
   font-size: 1.25rem;
   font-weight: 700;

@@ -136,6 +136,34 @@ var City = (function () {
     return x >= HOUSE.x - 8 && x <= HOUSE.x + HOUSE.w + 8 && y >= HOUSE.y - 8 && y <= HOUSE.y + HOUSE.h + 8;
   }
 
+  // How far a spot is from the segment between points a and b.
+  function distanceToSegment(x, y, a, b) {
+    var dx = b[0] - a[0], dy = b[1] - a[1];
+    var t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy)));
+    var px = a[0] + dx * t - x, py = a[1] + dy * t - y;
+    return Math.sqrt(px * px + py * py);
+  }
+
+  // True if the spot is open grass where a character can walk: not on the river or the bridge,
+  // the house, the plaza, the stone paths, the tent, the campfire or under a tree (used for the shiny coins).
+  function isOpenGrass(x, y) {
+    if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
+    if (Math.abs(x - riverX(y)) < RIVER.half + RIVER.bank + 20) return false;
+    if (houseAt(x, y) || (x > HOUSE.x - 20 && x < HOUSE.x + HOUSE.w + 20 && y > HOUSE.y - 70)) return false;
+    if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20)) return false;
+    if (inBox(x, y, { x: TENT.x - 25, y: TENT.y - 50, w: TENT.w + 50, h: TENT.h + 75 })) return false;
+    if (inBox(x, y, { x: FIRE.x - 25, y: FIRE.y - 25, w: FIRE.w + 50, h: FIRE.h + 50 })) return false;
+    for (var t = 0; t < TREES.length; t++) {
+      if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] + 20)) return false;
+    }
+    return !pathLines().some(function (line) {
+      for (var i = 1; i < line.length; i++) {
+        if (distanceToSegment(x, y, line[i - 1], line[i]) < 40) return true;
+      }
+      return false;
+    });
+  }
+
   // ---------- Grass and stone paths ----------
 
   function drawGrass(ctx) {
@@ -157,11 +185,16 @@ var City = (function () {
     ctx.globalAlpha = 1;
   }
 
-  function drawPaths(ctx) {
-    var lines = [
+  // The stone paths, as lists of points: from the house door to the plaza, and from the plaza to the bridge.
+  function pathLines() {
+    return [
       [[doorSpot.x, HOUSE.y + HOUSE.h], [doorSpot.x + 30, doorSpot.y + 8], [PLAZA.x - PLAZA.r + 10, PLAZA.y + 20]],
       [[PLAZA.x + 40, PLAZA.y - PLAZA.r + 10], [bridgeEnd("west").x + 10, BRIDGE.y]]
     ];
+  }
+
+  function drawPaths(ctx) {
+    var lines = pathLines();
     ctx.save();
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -692,6 +725,7 @@ var City = (function () {
     path: path,
     isWalkable: isWalkable,
     houseAt: houseAt,
+    isOpenGrass: isOpenGrass,
     doorSpot: doorSpot
   };
 })();

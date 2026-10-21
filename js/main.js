@@ -39,6 +39,7 @@
       House.draw(ctx, hovered && hovered.id);
     }
     drawNight(time);
+    if (Sims.viewPlace() === "city") Coins.draw(ctx, time, Time.darkness());
     Sims.draw(ctx, time);
     Social.draw(ctx, time);
   }
@@ -81,6 +82,7 @@
     lastTime = time;
     Time.update(dt);
     City.update(dt);
+    Coins.update(dt);
     Sims.update(dt);
     Needs.update(dt);
     Objects.update(dt);
@@ -114,7 +116,8 @@
   function wordAt(spot) {
     var p = toWorld(spot);
     if (Sims.simAt(p.x, p.y)) return null;
-    return Sims.viewPlace() === "city" ? City.wordAt(p.x, p.y) : House.wordAt(p.x, p.y);
+    if (Sims.viewPlace() === "city") return Coins.wordAt(p.x, p.y) || City.wordAt(p.x, p.y);
+    return House.wordAt(p.x, p.y);
   }
 
   // Every frame, so the tag follows things that move (like the fireflies) and changes when the view does.
