@@ -46,6 +46,7 @@
     }
     Sims.draw(ctx, time);
     if (Sims.viewPlace() === "city") Gather.drawPops(ctx);
+    Cooking.drawPops(ctx);
     Social.draw(ctx, time);
   }
 
@@ -90,6 +91,7 @@
     Coins.update(dt);
     Garden.update(dt);
     Gather.update(dt);
+    Cooking.update(dt);
     Sims.update(dt);
     Needs.update(dt);
     Objects.update(dt);

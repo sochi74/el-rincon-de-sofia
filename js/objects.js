@@ -12,7 +12,9 @@ var Objects = (function () {
 
   // Usable furniture: its action and the spot where the character stands to use it.
   // "owner" is the only one who may use it; anyone else gets the "notYours" bubble.
+  // The Estufa has no action of its own: tapping it opens the recipe menu (js/cooking.js), like the Fogata.
   var USABLE = {
+    stove: {},
     fridge: { action: "eat", spot: { x: 115, y: 200 } },
     bed: { action: "sleep", spot: { x: 815, y: 190 } },
     tv: { action: "watchTv", spot: { x: 450, y: 500 } },
@@ -59,6 +61,15 @@ var Objects = (function () {
     return m;
   }
 
+  // A tap on a piece of furniture: the Estufa and the Fogata open the recipe menu, the rest are used right away.
+  function tap(sim, furniture, screenX, screenY) {
+    if (Cooking.isStation(furniture.id)) {
+      Cooking.tap(sim, furniture, screenX, screenY);
+    } else {
+      start(sim, furniture);
+    }
+  }
+
   // Send a character to a piece of furniture; the action starts when it gets there.
   // If it belongs to someone else, it only shows a short bubble.
   function start(sim, furniture) {
@@ -88,11 +99,12 @@ var Objects = (function () {
     return had;
   }
 
+  // Someone else is using it, or cooking at it.
   function isTaken(furniture, id) {
     return Object.keys(current).some(function (other) {
       var a = current[other];
       return other !== id && a.furniture === furniture && a.phase === "doing";
-    });
+    }) || Cooking.isCookingAt(furniture, id);
   }
 
   // Usable furniture in a place whose action raises a need, that this character may use,
@@ -102,7 +114,7 @@ var Objects = (function () {
     return list.filter(function (f) {
       var use = USABLE[f.id];
       if (onlyId && f.id !== onlyId) return false;
-      if (!use || ACTIONS[use.action].need !== needId) return false;
+      if (!use || !use.action || ACTIONS[use.action].need !== needId) return false;
       if (use.owner && use.owner !== id) return false;
       return !Object.keys(current).some(function (other) {
         return other !== id && current[other].furniture === f;
@@ -159,7 +171,9 @@ var Objects = (function () {
   return {
     at: at,
     placeOf: placeOf,
+    tap: tap,
     start: start,
+    isTaken: isTaken,
     cancel: cancel,
     update: update,
     bubbleFor: bubbleFor,

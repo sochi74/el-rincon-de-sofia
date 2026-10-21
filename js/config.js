@@ -41,6 +41,7 @@ var CONFIG = {
 
   furniture: [
     { id: "fridge", name: "Refrigerador", x: 70, y: 80, w: 90, h: 80 },
+    { id: "stove", name: "Estufa", x: 240, y: 72, w: 100, h: 70 },
     { id: "bed", name: "Cama", x: 720, y: 80, w: 190, h: 220 },
     { id: "tv", name: "Televisión", x: 420, y: 370, w: 200, h: 34 },
     { id: "sofa", name: "Sofá", x: 390, y: 560, w: 260, h: 90 }
@@ -251,6 +252,15 @@ var CONFIG = {
     fishGap: 50,
     crystal: "#B5DCEC",
     crystalLight: "181, 220, 236"
+  },
+
+  // Cooking at the Estufa or the Fogata takes "cookTime" seconds and eating a dish "eatTime" seconds.
+  // "Ocupado" stays "busyTime" seconds, and the floating text when a dish is ready lasts "popTime" seconds.
+  cooking: {
+    cookTime: 4,
+    eatTime: 3,
+    busyTime: 1.5,
+    popTime: 1.8
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.

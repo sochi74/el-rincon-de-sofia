@@ -244,7 +244,8 @@ h1 {
   background: #C8664A;
 }
 
-#seed-menu {
+#seed-menu,
+#cook-menu {
   position: fixed;
   display: grid;
   gap: 6px;
@@ -255,11 +256,14 @@ h1 {
   box-shadow: 0 4px 0 #4A3428;
 }
 
-#seed-menu[hidden] {
+#seed-menu[hidden],
+#cook-menu[hidden],
+#cook-menu button[hidden] {
   display: none;
 }
 
-#seed-menu button {
+#seed-menu button,
+#cook-menu button {
   display: grid;
   padding: 5px 16px;
   font: inherit;
@@ -271,11 +275,13 @@ h1 {
   cursor: pointer;
 }
 
-#seed-menu button:hover:not(:disabled) {
+#seed-menu button:hover:not(:disabled),
+#cook-menu button:hover:not(:disabled) {
   background: #C8664A;
 }
 
-#seed-menu button:disabled {
+#seed-menu button:disabled,
+#cook-menu button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -373,9 +379,18 @@ h1 {
   cursor: pointer;
 }
 
-.backpack-row button:hover,
+.backpack-row .eat-button {
+  background: #B07A4F;
+}
+
+.backpack-row button:hover:not(:disabled),
 #backpack-close:hover {
   background: #C8664A;
+}
+
+.backpack-row button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .coin-pop {

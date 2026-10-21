@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 14 ✅ Pescar y recolectar
+Hito 15 ✅ Cocinar
 
-## ⭐ Estrellas de inglés: 21
+## ⭐ Estrellas de inglés: 22
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -123,3 +123,10 @@ Hito 14 ✅ Pescar y recolectar
 - crystal: cristal
 - backpack: mochila
 - sell: vender
+- cook: cocinar
+- stove: estufa
+- recipe: receta
+- dish: plato
+- soup: sopa
+- pie: tarta
+- delicious: delicioso

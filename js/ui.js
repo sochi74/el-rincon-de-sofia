@@ -1,7 +1,8 @@
 // Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕).
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
-// the backpack window with everything in it and its sell buttons, and the word tag that shows
+// the recipe menu that opens next to the Estufa or the Fogata,
+// the backpack window with everything in it and its sell and eat buttons, and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
   var coinsEl;
@@ -10,7 +11,8 @@ var UI = (function () {
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
-  var backpack, backpackList, backpackShown = null;
+  var cookMenu, cookButtons = [], campfireButton, onCookPick = null;
+  var backpack, backpackList, backpackShown = null, eatButtons = [];
   var current = null;
   var bars = {};
 
@@ -58,6 +60,46 @@ var UI = (function () {
       seedMenu.appendChild(button);
       seedButtons.push({ button: button, price: f.price });
     });
+
+    // One button per recipe: emoji and name, its ingredients with how many there are, and what eating it gives.
+    // At the Fogata there is also a button to sit by the fire.
+    cookMenu = document.getElementById("cook-menu");
+    Cooking.RECIPES.forEach(function (r) {
+      var dish = Inventory.item(r.id);
+      var button = document.createElement("button");
+      button.type = "button";
+      var name = document.createElement("span");
+      name.className = "seed-name";
+      name.textContent = dish.emoji + " " + dish.name;
+      var needs = document.createElement("span");
+      needs.className = "seed-price";
+      var effect = document.createElement("span");
+      effect.className = "seed-price";
+      effect.textContent = Object.keys(r.effect).map(function (id) {
+        var need = CONFIG.needs.filter(function (n) { return n.id === id; })[0];
+        return need.name + " +" + r.effect[id];
+      }).join(" · ") + " · Vale " + dish.price + " 🪙";
+      button.appendChild(name);
+      button.appendChild(needs);
+      button.appendChild(effect);
+      button.addEventListener("click", function () {
+        var pick = onCookPick;
+        closeMenu();
+        if (pick) pick(r.id);
+      });
+      cookMenu.appendChild(button);
+      cookButtons.push({ button: button, recipe: r, needs: needs });
+    });
+    campfireButton = document.createElement("button");
+    campfireButton.type = "button";
+    campfireButton.className = "seed-name";
+    campfireButton.textContent = "Junto a la fogata 🔥";
+    campfireButton.addEventListener("click", function () {
+      var pick = onCookPick;
+      closeMenu();
+      if (pick) pick("campfire");
+    });
+    cookMenu.appendChild(campfireButton);
 
     Array.prototype.forEach.call(menu.querySelectorAll("button"), function (button) {
       button.addEventListener("click", function () {
@@ -155,6 +197,7 @@ var UI = (function () {
     var coins = Coins.text();
     if (coinsEl.textContent !== coins) coinsEl.textContent = coins;
     if (!seedMenu.hidden) updateSeeds();
+    if (!cookMenu.hidden) updateCook();
     if (!backpack.hidden) updateBackpack();
     if (!current) return;
     var values = Needs.get(current.id);
@@ -190,6 +233,29 @@ var UI = (function () {
     });
   }
 
+  // Open the recipe menu next to a spot on the screen. Recipes without enough ingredients look faded.
+  // "atCampfire" adds "Junto a la fogata 🔥".
+  function openCookMenu(x, y, atCampfire, onPick) {
+    onCookPick = onPick;
+    campfireButton.hidden = !atCampfire;
+    updateCook();
+    cookMenu.hidden = false;
+    place(cookMenu, x, y);
+  }
+
+  // Each ingredient with how many there are, like "🍒 Bayas 2 (tienes 3)".
+  function updateCook() {
+    cookButtons.forEach(function (c) {
+      var text = Object.keys(c.recipe.ingredients).map(function (id) {
+        var it = Inventory.item(id);
+        return it.emoji + " " + it.name + " " + c.recipe.ingredients[id] + " (tienes " + Inventory.count(id) + ")";
+      }).join(" + ");
+      if (c.needs.textContent !== text) c.needs.textContent = text;
+      var off = !Cooking.canMake(c.recipe);
+      if (c.button.disabled !== off) c.button.disabled = off;
+    });
+  }
+
   // Keep a menu next to a spot on the screen, inside the window.
   function place(el, x, y) {
     var w = el.offsetWidth, h = el.offsetHeight;
@@ -197,16 +263,18 @@ var UI = (function () {
     el.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, y - h / 2)) + "px";
   }
 
-  // Close the social menu and the seed menu.
+  // Close the social menu, the seed menu and the recipe menu.
   function closeMenu() {
     onMenuPick = null;
     onSeedPick = null;
+    onCookPick = null;
     menu.hidden = true;
     seedMenu.hidden = true;
+    cookMenu.hidden = true;
   }
 
   function isMenuOpen() {
-    return !menu.hidden || !seedMenu.hidden;
+    return !menu.hidden || !seedMenu.hidden || !cookMenu.hidden;
   }
 
   // ---------- Backpack ----------
@@ -218,12 +286,19 @@ var UI = (function () {
   }
 
   // Rebuild the list only when what is in the backpack changes (it can change while it is open, when fishing).
+  // The "Comer" buttons are faded while nobody is selected or the selected one is busy.
   function updateBackpack() {
+    var sim = Sims.selectedSim();
+    var canEat = !!sim && Sims.isIdle(sim);
+    eatButtons.forEach(function (button) {
+      if (button.disabled === canEat) button.disabled = !canEat;
+    });
     var things = Inventory.list();
     var shown = things.map(function (t) { return t.item.id + ":" + t.count; }).join(",");
     if (shown === backpackShown) return;
     backpackShown = shown;
     backpackList.textContent = "";
+    eatButtons = [];
     if (things.length === 0) {
       var none = document.createElement("p");
       none.className = "backpack-empty";
@@ -242,10 +317,27 @@ var UI = (function () {
       price.textContent = t.item.price + " 🪙";
       row.appendChild(name);
       row.appendChild(price);
+      if (Cooking.isDish(t.item.id)) row.appendChild(eatButton(t.item.id, canEat));
       row.appendChild(sellButton("Vender 1", t.item.id, false));
       row.appendChild(sellButton("Vender todo", t.item.id, true));
       backpackList.appendChild(row);
     });
+  }
+
+  // The selected one eats the dish right where it stands.
+  function eatButton(id, canEat) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Comer";
+    button.className = "eat-button";
+    button.disabled = !canEat;
+    button.addEventListener("click", function () {
+      var sim = Sims.selectedSim();
+      if (sim) Cooking.eat(sim, id);
+      updateBackpack();
+    });
+    eatButtons.push(button);
+    return button;
   }
 
   function sellButton(text, id, all) {
@@ -327,6 +419,7 @@ var UI = (function () {
     update: update,
     openMenu: openMenu,
     openSeedMenu: openSeedMenu,
+    openCookMenu: openCookMenu,
     closeMenu: closeMenu,
     isMenuOpen: isMenuOpen
   };

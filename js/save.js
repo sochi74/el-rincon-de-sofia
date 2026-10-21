@@ -1,6 +1,6 @@
 // Saves and loads the game in the browser: needs, where each character is (house or city) and stands, friendship,
 // the day and hour of the game clock, the magic coins (the counter and the shiny coins on the ground), the garden plots,
-// the backpack and the things in the forest.
+// the backpack (with its dishes) and the things in the forest.
 // It also remembers, apart from the game, whether the panel was open or closed.
 // Every use of localStorage is inside try/catch, so the game keeps working if it fails.
 var Save = (function () {
@@ -11,7 +11,7 @@ var Save = (function () {
 
   function snapshot() {
     var data = { characters: {}, clock: Time.get(), coins: Coins.get(), garden: Garden.get(),
-      inventory: Inventory.get(), forest: Gather.get() };
+      inventory: Cooking.withPending(Inventory.get()), forest: Gather.get() };
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var friendship = {};
