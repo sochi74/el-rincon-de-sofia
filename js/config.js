@@ -152,6 +152,31 @@ var CONFIG = {
     colors: { good: "#5FB35A", ok: "#F2C230", low: "#E0533D" }
   },
 
+  // Game clock: a whole day lasts "dayLength" real seconds. A new game starts on day "startDay" at "startMinute".
+  // Times are minutes after midnight. Day goes from "dayStart" to "nightStart"; the world darkens from
+  // "duskStart" to "duskEnd" and brightens again from "dawnStart" to "dawnEnd". At night Energía drains
+  // "nightEnergy" times faster. "speed" makes the clock run faster (1 is normal).
+  clock: {
+    dayLength: 480,
+    startDay: 1,
+    startMinute: 8 * 60,
+    dayStart: 7 * 60,
+    nightStart: 19 * 60,
+    duskStart: 19 * 60,
+    duskEnd: 20 * 60,
+    dawnStart: 6 * 60,
+    dawnEnd: 7 * 60,
+    nightEnergy: 1.3,
+    speed: 1
+  },
+
+  // Night look: the blue-violet tint the world is multiplied by when it is fully dark, and the warm light colors.
+  night: {
+    tint: "#6E6AAE",
+    warmLight: "255, 196, 110",
+    windowLight: "#FFD66B"
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   save: { every: 10, key: "el-rincon-de-sofia-save" },
 

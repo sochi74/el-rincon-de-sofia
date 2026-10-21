@@ -36,8 +36,38 @@
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
+    drawNight(time);
     Sims.draw(ctx, time);
     Social.draw(ctx, time);
+  }
+
+  // Mix two "#RRGGBB" colors: t = 0 gives a, t = 1 gives b.
+  function mix(a, b, t) {
+    var out = "#";
+    for (var i = 1; i < 7; i += 2) {
+      var x = parseInt(a.substr(i, 2), 16), y = parseInt(b.substr(i, 2), 16);
+      var v = Math.round(x + (y - x) * t).toString(16);
+      out += v.length < 2 ? "0" + v : v;
+    }
+    return out;
+  }
+
+  // Dusk, night and dawn: tint the whole world blue-violet, then light up what glows at night.
+  // Characters are drawn afterwards, so they are always easy to see.
+  function drawNight(time) {
+    var dark = Time.darkness();
+    if (dark <= 0) return;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "multiply";
+    ctx.fillStyle = mix("#FFFFFF", CONFIG.night.tint, dark);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    if (Sims.viewPlace() === "city") {
+      City.drawNightLights(ctx, time, dark);
+    } else {
+      House.drawNightLights(ctx, time, dark);
+    }
   }
 
   var lastTime = null;
@@ -47,6 +77,7 @@
     // Cap the step so a hidden tab does not make characters jump.
     var dt = lastTime === null ? 0 : Math.min(0.1, time - lastTime);
     lastTime = time;
+    Time.update(dt);
     Sims.update(dt);
     Needs.update(dt);
     Objects.update(dt);

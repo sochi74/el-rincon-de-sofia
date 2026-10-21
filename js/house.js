@@ -1,4 +1,5 @@
 // Draws the house seen from above: floors, walls, room names and furniture.
+// At night the Televisión gives a soft glow.
 var House = (function () {
   var C = CONFIG.colors;
 
@@ -333,11 +334,35 @@ var House = (function () {
     });
   }
 
+  // Drawn over the darkened house: a soft light from the TV screen. "dark" goes from 0 (day) to 1 (night).
+  function drawNightLights(ctx, time, dark) {
+    var tv = CONFIG.furniture.filter(function (f) { return f.id === "tv"; })[0];
+    var cx = tv.x + tv.w / 2, cy = tv.y + 20;
+    // The light flickers a tiny bit, like a show is on.
+    var flicker = 0.9 + Math.sin(time * 4.1) * 0.05 + Math.sin(time * 9.7) * 0.05;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.translate(cx, cy);
+    ctx.scale(1.6, 1);
+    var g = ctx.createRadialGradient(0, 0, 0, 0, 0, 130);
+    g.addColorStop(0, "rgba(181, 220, 236, " + 0.4 * dark * flicker + ")");
+    g.addColorStop(1, "rgba(181, 220, 236, 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(0, 0, 130, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.globalAlpha = dark;
+    fillRound(ctx, tv.x + 8, tv.y + 18, tv.w - 16, 4, 2, C.waterLight);
+    ctx.restore();
+  }
+
   // The front door: the welcome mat and the doorway above it. Tapping it takes a character outside.
   function doorAt(x, y) {
     var d = CONFIG.frontDoor.tap;
     return x >= d.x && x <= d.x + d.w && y >= d.y && y <= d.y + d.h;
   }
 
-  return { draw: draw, bounds: bounds, doorAt: doorAt };
+  return { draw: draw, drawNightLights: drawNightLights, bounds: bounds, doorAt: doorAt };
 })();

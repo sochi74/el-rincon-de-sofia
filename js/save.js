@@ -1,4 +1,5 @@
-// Saves and loads the game in the browser: needs, where each character is (house or city) and stands, and friendship.
+// Saves and loads the game in the browser: needs, where each character is (house or city) and stands, friendship,
+// and the day and hour of the game clock.
 // Every use of localStorage is inside try/catch, so the game keeps working if it fails.
 var Save = (function () {
   var timer = 0;
@@ -7,7 +8,7 @@ var Save = (function () {
   var enabled = true;
 
   function snapshot() {
-    var data = { characters: {} };
+    var data = { characters: {}, clock: Time.get() };
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var friendship = {};
@@ -42,6 +43,7 @@ var Save = (function () {
       return;
     }
     if (!data || typeof data.characters !== "object") return;
+    if (data.clock && typeof data.clock === "object") Time.set(data.clock.day, data.clock.minute);
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var saved = data.characters[id];

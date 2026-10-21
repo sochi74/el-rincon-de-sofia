@@ -1,14 +1,15 @@
-// Small panel that shows who is selected, their needs, friendship, a button to pick each character,
+// Small panel that shows the game clock, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons.
 // Also the little social menu that opens next to a character.
 var UI = (function () {
-  var panel, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
+  var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var current = null;
   var bars = {};
 
   function init() {
     panel = document.getElementById("selection-panel");
+    clockEl = document.getElementById("clock");
     nameEl = document.getElementById("selection-name");
     hintEl = document.getElementById("selection-hint");
     needsEl = document.getElementById("needs");
@@ -93,8 +94,10 @@ var UI = (function () {
     return where + " o a " + other.name + " para socializar (dos veces para elegirlo)";
   }
 
-  // Refresh the hint, bars and friendship of the selected character.
+  // Refresh the clock, and the hint, bars and friendship of the selected character.
   function update() {
+    var clock = Time.text();
+    if (clockEl.textContent !== clock) clockEl.textContent = clock;
     if (!current) return;
     var hint = hintFor(current);
     if (hintEl.textContent !== hint) hintEl.textContent = hint;
