@@ -1,7 +1,9 @@
 // Small panel that shows the game clock, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons.
-// Also the little social menu that opens next to a character.
+// Also the little social menu that opens next to a character, and the word tag that shows
+// the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
+  var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var current = null;
@@ -17,6 +19,10 @@ var UI = (function () {
     pauseButton = document.getElementById("pause-button");
     menu = document.getElementById("social-menu");
     characterButtons = document.querySelectorAll(".character-button");
+    wordTag = document.getElementById("word-tag");
+    wordEs = wordTag.querySelector(".word-es");
+    wordEn = wordTag.querySelector(".word-en");
+    wordSay = wordTag.querySelector(".word-say");
 
     Array.prototype.forEach.call(characterButtons, function (button) {
       button.addEventListener("click", function () {
@@ -129,8 +135,54 @@ var UI = (function () {
     return !menu.hidden;
   }
 
+  // Show the word for a thing near a spot on the screen, kept inside the window.
+  // With the mouse it goes below and to the right so it never covers the cursor;
+  // with a finger it goes above, and hides by itself after "seconds".
+  function showWord(id, x, y, seconds) {
+    var word = WORDS[id];
+    if (!word) {
+      hideWord();
+      return;
+    }
+    if (wordEs.textContent !== word.es) {
+      wordEs.textContent = word.es;
+      wordEn.textContent = word.en;
+      wordSay.textContent = "(" + word.say + ")";
+    }
+    wordTag.hidden = false;
+    var w = wordTag.offsetWidth, h = wordTag.offsetHeight;
+    var left, top;
+    if (seconds) {
+      left = x - w / 2;
+      top = y - h - 36;
+      if (top < 8) top = y + 36;
+    } else {
+      left = x + 16;
+      top = y + 22;
+      if (left + w > window.innerWidth - 8) left = x - w - 12;
+      if (top + h > window.innerHeight - 8) top = y - h - 12;
+    }
+    wordTag.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, left)) + "px";
+    wordTag.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, top)) + "px";
+    window.clearTimeout(wordTimer);
+    wordTimer = seconds ? window.setTimeout(hideWord, seconds * 1000) : null;
+  }
+
+  function hideWord() {
+    window.clearTimeout(wordTimer);
+    wordTimer = null;
+    wordTag.hidden = true;
+  }
+
+  function isWordTimed() {
+    return wordTimer !== null;
+  }
+
   return {
     init: init,
+    showWord: showWord,
+    hideWord: hideWord,
+    isWordTimed: isWordTimed,
     show: show,
     showSelected: showSelected,
     update: update,

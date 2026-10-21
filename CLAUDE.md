@@ -17,6 +17,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - style.css: estilos
 - .nojekyll: GitHub Pages sin Jekyll
 - js/config.js: colores, tamaños y constantes
+- js/words.js: palabras en español e inglés con pronunciación
 - js/characters.js: datos de los personajes
 - js/time.js: reloj del juego, día y noche
 - js/house.js: dibujo de la casa y los muebles
@@ -28,7 +29,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/objects.js: muebles que se pueden usar y sus acciones
 - js/social.js: interacciones y amistad
 - js/save.js: guardado y carga de la partida
-- Orden de scripts: config, characters, time, house, city, sims, needs, objects, social, ui, save, main
+- Orden de scripts: config, words, characters, time, house, city, sims, needs, objects, social, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

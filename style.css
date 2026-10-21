@@ -188,6 +188,30 @@ h1 {
   background: #C8664A;
 }
 
+#word-tag {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 4px 10px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  color: #4A3428;
+  background: #F5EBDD;
+  border: 2px solid #4A3428;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 #4A3428;
+  pointer-events: none;
+}
+
+#word-tag[hidden] {
+  display: none;
+}
+
+.word-say {
+  color: #9A8676;
+  font-size: 0.85em;
+}
+
 .panel-buttons {
   display: flex;
   gap: 8px;

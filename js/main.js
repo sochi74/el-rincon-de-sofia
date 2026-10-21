@@ -8,6 +8,8 @@
   var view = { width: 0, height: 0, dpr: 1, scale: 1, offsetX: 0, offsetY: 0 };
   var hovered = null;
   var hoveredHouse = false;
+  // Last spot of the mouse on the screen, for the word tag (null when it is away or with a finger).
+  var mouse = null;
 
   // Match the canvas to the window and keep it sharp on high-resolution screens.
   function resize() {
@@ -87,6 +89,7 @@
     Save.update(dt);
     UI.update();
     render(time);
+    updateWord();
     window.requestAnimationFrame(loop);
   }
 
@@ -102,11 +105,31 @@
   function handleTap(event) {
     var p = toWorld(event);
     Sims.handleTap(p.x, p.y, event.clientX, event.clientY);
+    if (event.pointerType === "touch") {
+      UI.showWord(wordAt(event), event.clientX, event.clientY, CONFIG.wordTag.touchSeconds);
+    }
+  }
+
+  // The word for the furniture, room or place at a spot on the screen (characters in front hide it).
+  function wordAt(spot) {
+    var p = toWorld(spot);
+    if (Sims.simAt(p.x, p.y)) return null;
+    return Sims.viewPlace() === "city" ? City.wordAt(p.x, p.y) : House.wordAt(p.x, p.y);
+  }
+
+  // Every frame, so the tag follows things that move (like the fireflies) and changes when the view does.
+  function updateWord() {
+    if (mouse) {
+      UI.showWord(wordAt(mouse), mouse.clientX, mouse.clientY);
+    } else if (!UI.isWordTimed()) {
+      UI.hideWord();
+    }
   }
 
   // Light up the usable furniture, or in the city the house, tent or campfire, under the mouse (characters in front win).
   // The front door gets a pointer too.
   function handleHover(event) {
+    mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
     var p = toWorld(event);
     var free = !Sims.simAt(p.x, p.y);
     var inCity = Sims.viewPlace() === "city";
@@ -137,6 +160,7 @@
   canvas.addEventListener("pointerleave", function () {
     hovered = null;
     hoveredHouse = false;
+    mouse = null;
   });
   window.addEventListener("resize", resize);
   window.addEventListener("pagehide", Save.onLeave);
