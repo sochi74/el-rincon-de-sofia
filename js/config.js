@@ -43,8 +43,8 @@ var CONFIG = {
     { id: "fridge", name: "Refrigerador", x: 70, y: 80, w: 90, h: 80 },
     { id: "stove", name: "Estufa", x: 240, y: 72, w: 100, h: 70 },
     { id: "bed", name: "Cama", x: 720, y: 80, w: 190, h: 220 },
-    { id: "tv", name: "Televisión", x: 420, y: 370, w: 200, h: 34 },
-    { id: "sofa", name: "Sofá", x: 390, y: 560, w: 260, h: 90 }
+    { id: "tv", name: "Televisión", x: 620, y: 370, w: 200, h: 34 },
+    { id: "sofa", name: "Sofá", x: 590, y: 560, w: 260, h: 90 }
   ],
 
   // Things to use in the city, by real.fixer's tent on the other side of the bridge.
@@ -142,7 +142,7 @@ var CONFIG = {
 
   // Visits: when "who" is idle and all its needs are fine, every "wait" seconds or so it walks to
   // Sofía's house, stands at "spot" in the Sala, stays "stay" seconds and goes back home.
-  visit: { who: "realfixer", wait: { min: 60, max: 120 }, stay: 30, spot: { x: 790, y: 540 } },
+  visit: { who: "realfixer", wait: { min: 60, max: 120 }, stay: 30, spot: { x: 420, y: 540 } },
 
   // Mood star over the head: its size, how fat its points are, and the room it takes so
   // bubbles go above it. Its colors are brighter than the bars so it stands out on any floor.

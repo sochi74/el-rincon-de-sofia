@@ -1,5 +1,22 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Extra: 🧹 Pulido 2
+- Caminos que rodean: los personajes ya no atraviesan nada sólido. Buscan el camino más corto y lo recorren con curvas suaves, sin zigzag y a la misma velocidad de siempre.
+  - Casa: no cruzan paredes (solo pasan por las puertas) y rodean el Refrigerador, la Estufa, la Cama, la Televisión y el Sofá.
+  - Ciudad: cruzan el río solo por el puente y rodean la Casa de Sofía, los árboles, la fuente, la carpa, la fogata y la cerca del jardín. Al jardín se entra por la abertura de abajo, que ahora es un poco más ancha.
+  - Las monedas, las bayas, los hongos, los cristales y las flores de las parcelas no estorban.
+- Al ir a usar algo, el personaje camina a un lugar libre junto a eso, no encima. Si tocas un lugar al que no se llega (dentro de un mueble, en el agua, en la fuente), camina al punto más cercano al que sí se llega.
+- Todo usa los caminos nuevos: tus clics, el libre albedrío, las visitas de real.fixer, las charlas, el jardín, la pesca, el bosque y la cocina.
+- Al caminar en curva, el personaje ya no gira la cara de un lado a otro: cambia hacia dónde mira solo cuando la dirección nueva gana claramente.
+- Acostarse: en la Cama, el personaje se acuesta con la cabeza en la almohada, los ojos cerrados y una manta encima, y le salen "Zzz". En la Carpa, real.fixer entra y no se ve, y los "Zzz" salen de la carpa.
+- Sentarse: en el Sofá, el personaje se sienta mirando a la Televisión (se le ve la espalda detrás del respaldo). Junto a la Fogata hay un tronco nuevo, y con "Junto a la fogata 🔥" se sienta en él con las rodillas hacia el fuego.
+- Cocinar en la Fogata y sentarse en el tronco usan lugares distintos, así que se pueden hacer los dos a la vez.
+- Al terminar o cancelar, el personaje se levanta junto al mueble y sigue.
+- La Sala cambió un poco: la Televisión, el Sofá y la alfombra están más a la derecha, para que la Televisión no tape la puerta del Dormitorio. El póster "That's what she said!" está ahora en la pared entre las dos puertas, en dos líneas. real.fixer espera sus visitas en otro lugar de la Sala.
+- Si una partida guardada deja a alguien encima de un mueble, aparece en el lugar libre más cercano.
+- Nuevo archivo js/path.js.
+- Problemas conocidos: En la Televisión (de pie, sin el Sofá) se sigue viendo tele de pie. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima. Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien. Nadie cuida el jardín solo. Las mariposas vuelan por encima de las flores y a veces tapan un poquito una. Con el panel abierto, en pantallas chicas todavía puede tapar un poco la parte de arriba del mapa (ciérralo con ✕ para ver todo). Con el panel abierto se tapa casi todo el bosque: ciérralo con ✕ para recolectar. La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta. Nadie pesca ni recolecta solo. Si recargas mientras alguien pesca o recolecta, esa acción se pierde. Nadie cocina solo.
+
 ## 2026-10-21 · Extra: 🧹 Pulido 1
 - Pausa: con Pausa los personajes también dejan de caminar y se quedan donde están (ya no salen ni entran por la puerta ni recogen monedas). Al tocar Continuar, siguen su camino.
 - Etiquetas de palabras: con el mouse sobre el panel, el botón ☰, la mochila o un menú abierto, ya no aparece la etiqueta de lo que hay debajo.

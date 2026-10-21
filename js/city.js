@@ -2,7 +2,8 @@
 // real.fixer's tent with its campfire and fireflies on the other side of the bridge, and Sofía's garden next to her house.
 // Berries, mushrooms and crystals from js/gather.js grow in the forest.
 // At night the campfire, the house windows and the fireflies shine.
-// Also where characters may walk: never on the water (they cross on the bridge) and never off the map.
+// Also where characters may walk: never on the water (they cross on the bridge), never off the map,
+// and around the house, the trees, the fountain, the tent, the campfire and the garden fence.
 var City = (function () {
   var C = CONFIG.colors;
   var W = CONFIG.world.width, H = CONFIG.world.height;
@@ -26,6 +27,9 @@ var City = (function () {
   var FOREST = { x: 0, y: 0, w: 505, h: 370 };
   // How close a character's feet may get to the edges of the map.
   var MARGIN = { side: 30, top: 130, bottom: 20 };
+  // How close a character's feet may get to solid things, and the radius of the fountain's stone rim.
+  var CLEAR = 14;
+  var FOUNTAIN = 42;
 
   // Where a character stands outside, in front of the house door.
   var doorSpot = { x: HOUSE.x + HOUSE.w / 2, y: HOUSE.y + HOUSE.h + 35 };
@@ -112,24 +116,28 @@ var City = (function () {
     return { x: riverX(BRIDGE.y) + (side === "west" ? -reach : reach), y: BRIDGE.y };
   }
 
-  // Points to walk through to get to a spot. Each side of the river is open ground,
-  // so a straight line works there; to reach the other side they go over the bridge.
-  function path(fromX, fromY, x, y) {
-    var target = walkableSpot(x, y);
-    var from = areaAt(fromX, fromY), to = areaAt(target.x, target.y);
-    var points = [];
-    if (from !== to) {
-      if (from === "west" || from === "east") points.push(bridgeEnd(from));
-      if (to !== "bridge") points.push(bridgeEnd(to));
-    }
-    points.push(target);
-    return points;
-  }
-
-  // True if a character may stand here (used when loading a saved game).
+  // True if the spot is inside the map and out of the water (used when loading a saved game).
   function isWalkable(x, y) {
     if (x < MARGIN.side || x > W - MARGIN.side || y < MARGIN.top || y > H - MARGIN.bottom) return false;
     return areaAt(x, y) !== "water";
+  }
+
+  function grow(b, by) {
+    return { x: b.x - by, y: b.y - by, w: b.w + by * 2, h: b.h + by * 2 };
+  }
+
+  // True if a character cannot stand here: off the map, in the water, or on something solid
+  // (the house, the fountain, the tent, the campfire, a tree or the garden fence). Used by js/path.js.
+  // Small things (coins, berries, mushrooms, crystals, the flowers in the plots and the log) are not solid.
+  function isSolid(x, y) {
+    if (!isWalkable(x, y)) return true;
+    if (inBox(x, y, grow(HOUSE, CLEAR))) return true;
+    if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN + CLEAR)) return true;
+    if (inBox(x, y, grow(TENT, CLEAR)) || inBox(x, y, grow(FIRE, 10))) return true;
+    for (var t = 0; t < TREES.length; t++) {
+      if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] * 0.6 + CLEAR)) return true;
+    }
+    return Garden.isFenceAt(x, y);
   }
 
   // True if the spot is on Sofía's house, roof included.
@@ -155,6 +163,7 @@ var City = (function () {
     if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20)) return false;
     if (inBox(x, y, { x: TENT.x - 25, y: TENT.y - 50, w: TENT.w + 50, h: TENT.h + 75 })) return false;
     if (inBox(x, y, { x: FIRE.x - 25, y: FIRE.y - 25, w: FIRE.w + 50, h: FIRE.h + 50 })) return false;
+    if (inBox(x, y, { x: SEAT.x - 45, y: SEAT.y - 40, w: 90, h: 70 })) return false;
     for (var t = 0; t < TREES.length; t++) {
       if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] + 20)) return false;
     }
@@ -311,7 +320,7 @@ var City = (function () {
 
     // Fountain: stone rim, water, and a little column in the middle.
     withShadow(ctx, function () {
-      circle(ctx, x, y, 42, C.stone);
+      circle(ctx, x, y, FOUNTAIN, C.stone);
     });
     circle(ctx, x, y, 34, C.water);
     // A ripple that grows and fades
@@ -423,6 +432,8 @@ var City = (function () {
   // ---------- real.fixer's tent, campfire and fireflies ----------
 
   var TENT = CONFIG.cityObjects[0], FIRE = CONFIG.cityObjects[1];
+  // The log to sit on by the campfire, on the side away from the cooking spot. This is its middle.
+  var SEAT = { x: 722, y: 494 };
 
   // A tent seen from above: two slopes with a ridge pole down the middle, ropes to stakes,
   // and the entrance at the front with its flaps tied open.
@@ -505,6 +516,8 @@ var City = (function () {
     ctx.fill();
     ctx.restore();
 
+    drawLog(ctx);
+
     // Stones
     for (var i = 0; i < 10; i++) {
       var a = i * Math.PI / 5;
@@ -531,6 +544,34 @@ var City = (function () {
       circle(ctx, cx + Math.sin(time * 2 + k * 2) * 8, cy - 20 - t * 40, 2, "#FFD66B");
       ctx.restore();
     }
+  }
+
+  // A log lying on the grass beside the fire, pointing down the screen, with its cut end showing the rings.
+  function drawLog(ctx) {
+    var x = SEAT.x, y = SEAT.y;
+    withShadow(ctx, function () {
+      fillRound(ctx, x - 11, y - 24, 22, 48, 10, C.wood);
+    });
+    ctx.save();
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.35)";
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = "round";
+    [[-4, -18, -4, -4], [3, -12, 3, 6], [-2, 2, -2, 12]].forEach(function (l) {
+      ctx.beginPath();
+      ctx.moveTo(x + l[0], y + l[1]);
+      ctx.lineTo(x + l[2], y + l[3]);
+      ctx.stroke();
+    });
+    ctx.restore();
+    ctx.fillStyle = "#C99A6E";
+    ctx.beginPath();
+    ctx.ellipse(x, y + 19, 10, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = C.wood;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.ellipse(x, y + 19, 5, 3, 0, 0, Math.PI * 2);
+    ctx.stroke();
   }
 
   // Flames: three layers, each swaying and stretching a little
@@ -735,7 +776,7 @@ var City = (function () {
     if (inBox(x, y, TENT)) return "tent";
     var garden = Garden.wordAt(x, y);
     if (garden) return garden;
-    if (near(x, y, PLAZA.x, PLAZA.y, 42)) return "fountain";
+    if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN)) return "fountain";
     if (houseAt(x, y)) return "house";
     var half = RIVER.half + 34;
     if (Math.abs(x - riverX(BRIDGE.y)) <= half && Math.abs(y - BRIDGE.y) <= 28) return "bridge";
@@ -754,8 +795,10 @@ var City = (function () {
     drawLabels: drawLabels,
     wordAt: wordAt,
     drawNightLights: drawNightLights,
-    path: path,
     isWalkable: isWalkable,
+    isSolid: isSolid,
+    walkableSpot: walkableSpot,
+    campfireSeat: SEAT,
     houseAt: houseAt,
     isOpenGrass: isOpenGrass,
     isForestFloor: isForestFloor,

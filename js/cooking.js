@@ -13,6 +13,7 @@ var Cooking = (function () {
   ];
 
   // Where the character stands to cook at each place, by the id of the furniture or city thing.
+  // At the Fogata it is on the other side of the fire from the log, so one can cook while the other sits.
   var STATIONS = {
     stove: { place: "house", spot: { x: 280, y: 200 } },
     campfire: { place: "city", spot: { x: 870, y: 490 } }
@@ -64,7 +65,7 @@ var Cooking = (function () {
     });
   }
 
-  // True if someone else is cooking at this place. Objects.isTaken also counts who sits by the fire.
+  // True if someone else is cooking at this place.
   function isCookingAt(station, id) {
     return Object.keys(current).some(function (other) {
       var a = current[other];
@@ -146,7 +147,7 @@ var Cooking = (function () {
       }
       if (a.phase === "walking") {
         if (a.sim.path.length > 0) return;
-        a.phase = Objects.isTaken(a.station, id) ? "busy" : "doing";
+        a.phase = isCookingAt(a.station, id) ? "busy" : "doing";
         a.elapsed = 0;
         if (a.phase === "doing") Sims.face(a.sim, a.station.x + a.station.w / 2, a.station.y + a.station.h / 2);
         return;

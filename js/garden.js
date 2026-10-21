@@ -22,7 +22,9 @@ var Garden = (function () {
   };
 
   // The fence around the garden and the 6 plots inside it, 2 rows of 3.
+  // "GATE" is how wide the opening at the bottom is; characters walk in and out through it.
   var FENCE = G.fence;
+  var GATE = 34;
   var PLOTS = [];
   (function () {
     var p = G.plot;
@@ -84,6 +86,25 @@ var Garden = (function () {
   // True if the spot is inside the fence or on the sign (used so coins never fall in the garden).
   function isGardenAt(x, y) {
     return x >= FENCE.x - 10 && x <= FENCE.x + FENCE.w + 10 && y >= FENCE.y - 34 && y <= FENCE.y + FENCE.h + 10;
+  }
+
+  // The pieces of the fence as [x1, y1, x2, y2], going around from the left side of the gate to its right side.
+  function fencePieces() {
+    var x = FENCE.x, y = FENCE.y, w = FENCE.w, h = FENCE.h, mid = x + w / 2;
+    return [
+      [mid - GATE / 2, y + h, x, y + h], [x, y + h, x, y], [x, y, x + w, y],
+      [x + w, y, x + w, y + h], [x + w, y + h, mid + GATE / 2, y + h]
+    ];
+  }
+
+  // True if the spot is on the fence or too close to it to stand there (used by js/city.js for walking).
+  function isFenceAt(x, y) {
+    return fencePieces().some(function (s) {
+      var dx = s[2] - s[0], dy = s[3] - s[1];
+      var t = Math.max(0, Math.min(1, ((x - s[0]) * dx + (y - s[1]) * dy) / (dx * dx + dy * dy)));
+      var px = s[0] + dx * t - x, py = s[1] + dy * t - y;
+      return px * px + py * py < 7 * 7;
+    });
   }
 
   // The word for what is at a spot: a butterfly, the flower in a plot, or the garden itself.
@@ -273,23 +294,21 @@ var Garden = (function () {
   // A little wooden fence around the garden, open at the bottom in the middle like a gate.
   function drawFence(ctx) {
     var x = FENCE.x, y = FENCE.y, w = FENCE.w, h = FENCE.h;
-    var gate = 26, mid = x + w / 2;
+    var mid = x + w / 2;
     ctx.save();
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = C.wood;
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.moveTo(mid - gate / 2, y + h);
-    ctx.lineTo(x, y + h);
-    ctx.lineTo(x, y);
-    ctx.lineTo(x + w, y);
-    ctx.lineTo(x + w, y + h);
-    ctx.lineTo(mid + gate / 2, y + h);
+    fencePieces().forEach(function (s, i) {
+      if (i === 0) ctx.moveTo(s[0], s[1]);
+      ctx.lineTo(s[2], s[3]);
+    });
     ctx.stroke();
     ctx.restore();
     // Posts along the fence, and one on each side of the gate.
-    var posts = [[x, y + h / 2], [x + w, y + h / 2], [mid - gate / 2, y + h], [mid + gate / 2, y + h]];
+    var posts = [[x, y + h / 2], [x + w, y + h / 2], [mid - GATE / 2, y + h], [mid + GATE / 2, y + h]];
     for (var k = 0; k <= 4; k++) {
       var px = x + w * k / 4;
       posts.push([px, y]);
@@ -608,6 +627,7 @@ var Garden = (function () {
     FLOWERS: FLOWERS,
     plotAt: plotAt,
     isGardenAt: isGardenAt,
+    isFenceAt: isFenceAt,
     wordAt: wordAt,
     tap: tap,
     cancel: cancel,

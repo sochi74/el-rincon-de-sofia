@@ -68,7 +68,11 @@ var Sims = (function () {
   // ---------- Body parts (origin at the feet, up is negative y) ----------
   // "view" is "front", "back" or "side". Side views are drawn looking right; drawSim mirrors them for the left.
 
+  // True while drawing someone lying or sitting: the legs are hidden or drawn by the pose instead.
+  var noLegs = false;
+
   function drawLegs(ctx, look, step, view) {
+    if (noLegs) return;
     if (view === "side") {
       var stride = Math.sin(step) * 4;
       fillRound(ctx, -4 - stride, -16, 7, 14, 3, look.pants);
@@ -460,21 +464,104 @@ var Sims = (function () {
     sofia: { front: drawSofiaFront, back: drawSofiaBack, side: drawSofiaSide }
   };
 
-  // ---------- Selection glow and name tag ----------
+  // ---------- Lying down and sitting ----------
 
-  function drawGlow(ctx, sim, time) {
+  // Sitting on the log: the thighs forward at the height of the seat and the shins down to the grass (seen from the side).
+  function drawSittingLegs(ctx, look) {
+    [-2, 1].forEach(function (dx) {
+      fillRound(ctx, -6 + dx, -9, 23, 8, 4, look.pants);
+      fillRound(ctx, 11 + dx, -6, 7, 11, 3, look.pants);
+      ellipse(ctx, 17 + dx, 4, 5.5, 3.5, look.shoes);
+    });
+  }
+
+  // At night the furniture is tinted blue-violet, but characters are drawn after the tint:
+  // a blanket gets the same tint here, so it looks like the rest of the Cama.
+  function nightShade(ctx, shape) {
+    var dark = Time.darkness();
+    if (dark <= 0) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "multiply";
+    ctx.globalAlpha = dark;
+    shape();
+    ctx.fillStyle = CONFIG.night.tint;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // A blanket like the one of the Cama, from the shoulders down, with its folded edge and little dots.
+  function drawBlanket(ctx) {
+    fillRound(ctx, -25, -38, 50, 54, 10, C.terracotta);
+    fillRound(ctx, -25, -38, 50, 10, 5, "#D98168");
+    [[-12, -16], [10, -14], [-2, 0], [-14, 10], [12, 9]].forEach(function (p) {
+      circle(ctx, p[0], p[1], 2.6, "rgba(245, 235, 221, 0.6)");
+    });
+    nightShade(ctx, function () { roundRect(ctx, -25, -38, 50, 54, 10); });
+  }
+
+  // How a character looks while it uses something (see "pose" in js/objects.js):
+  // lying in the Cama seen from above, face up with closed eyes under a blanket; sitting on the Sofá seen from behind,
+  // looking at the Televisión (the backrest goes on top afterwards); or sitting on the log by the Fogata, from the side.
+  function drawPose(ctx, sim, pose) {
+    var body = bodies[sim.data.id];
+    noLegs = true;
+    if (pose.kind === "lie") {
+      body.front(ctx, sim.look, 0, true);
+      drawBlanket(ctx);
+    } else if (pose.kind === "sofa") {
+      body.back(ctx, sim.look, 0);
+    } else {
+      drawSittingLegs(ctx, sim.look);
+      // The body sits lower than when standing.
+      ctx.translate(0, 10);
+      body.side(ctx, sim.look, 0, sim.blink > 0);
+    }
+    noLegs = false;
+  }
+
+  // Little "Z" letters floating up and fading, for someone asleep.
+  function drawZzz(ctx, x, y, time) {
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.lineJoin = "round";
+    for (var i = 0; i < 3; i++) {
+      var t = (time * 0.45 + i / 3) % 1;
+      var zx = x + t * 18 + Math.sin(t * 6 + i) * 3, zy = y - t * 40;
+      ctx.globalAlpha = t < 0.15 ? t / 0.15 : 1 - (t - 0.15) / 0.85;
+      ctx.font = "700 " + Math.round(13 + t * 9) + "px " + CONFIG.fontFamily;
+      ctx.strokeStyle = C.cream;
+      ctx.lineWidth = 4;
+      ctx.strokeText("Z", zx, zy);
+      ctx.fillStyle = C.darkBrown;
+      ctx.fillText("Z", zx, zy);
+    }
+    ctx.restore();
+  }
+
+  // Where a character is drawn: where it stands, or on the furniture while it lies or sits on it.
+  function drawnAt(sim) {
+    var pose = Objects.poseFor(sim.data.id);
+    if (pose && pose.x !== undefined) return { x: pose.x, y: pose.y };
+    return { x: sim.x, y: sim.y };
+  }
+
+  // ---------- Selection glow and name tag ----------
+  // "at" is where the character is drawn (see drawnAt).
+
+  function drawGlow(ctx, at, time) {
     var pulse = (1 + Math.sin(time * 4) * 0.08) * CONFIG.characterScale;
     ctx.save();
     ctx.shadowColor = CONFIG.glow;
     ctx.shadowBlur = 16;
-    ellipse(ctx, sim.x, sim.y, 26 * pulse, 10 * pulse, "rgba(255, 214, 107, 0.45)");
+    ellipse(ctx, at.x, at.y, 26 * pulse, 10 * pulse, "rgba(255, 214, 107, 0.45)");
     ctx.strokeStyle = CONFIG.glow;
     ctx.lineWidth = 3;
     ctx.stroke();
     ctx.restore();
   }
 
-  function drawNameTag(ctx, sim) {
+  function drawNameTag(ctx, sim, at) {
     var isSelected = sim === selected;
     var size = 15;
     ctx.save();
@@ -483,27 +570,27 @@ var Sims = (function () {
     ctx.textBaseline = "middle";
     var w = ctx.measureText(sim.data.name).width + size * 1.2;
     var h = size * 1.6;
-    var cy = sim.y + 24;
+    var cy = at.y + 24;
     ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
     ctx.shadowBlur = 6;
     ctx.shadowOffsetY = 3;
-    fillRound(ctx, sim.x - w / 2, cy - h / 2, w, h, h / 2, isSelected ? C.terracotta : C.cream);
+    fillRound(ctx, at.x - w / 2, cy - h / 2, w, h, h / 2, isSelected ? C.terracotta : C.cream);
     ctx.shadowColor = "transparent";
     ctx.fillStyle = isSelected ? C.cream : C.darkBrown;
-    ctx.fillText(sim.data.name, sim.x, cy + 1);
+    ctx.fillText(sim.data.name, at.x, cy + 1);
     ctx.restore();
   }
 
   // ---------- Thought bubble for needs in red ----------
 
   // "lift" moves it higher when an action bubble is showing too.
-  function drawThoughtBubble(ctx, sim, time, lift) {
+  function drawThoughtBubble(ctx, sim, at, time, lift) {
     var low = Needs.lowNeeds(sim.data.id);
     if (low.length === 0) return;
     var text = low.map(function (need) { return need.emoji; }).join(" ");
     var bob = Math.sin(time * 2.5) * 2;
-    var headTop = sim.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room - lift;
-    var cx = sim.x + 30, cy = headTop - 24 + bob;
+    var headTop = at.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room - lift;
+    var cx = at.x + 30, cy = headTop - 24 + bob;
 
     ctx.save();
     ctx.font = "22px " + CONFIG.fontFamily;
@@ -517,7 +604,7 @@ var Sims = (function () {
     ctx.strokeStyle = C.darkBrown;
     ctx.lineWidth = 2.5;
     // Two little puffs leading from the head to the bubble
-    [[sim.x + 16, headTop + 8 + bob / 2, 4], [sim.x + 22, headTop - 2 + bob, 6]].forEach(function (p) {
+    [[at.x + 16, headTop + 8 + bob / 2, 4], [at.x + 22, headTop - 2 + bob, 6]].forEach(function (p) {
       circle(ctx, p[0], p[1], p[2], C.white);
       ctx.stroke();
     });
@@ -548,7 +635,7 @@ var Sims = (function () {
   }
 
   // Returns how much room it takes above the head, so the thought bubble can go higher.
-  function drawSpeechBubble(ctx, sim, time, bubble) {
+  function drawSpeechBubble(ctx, at, time, bubble) {
     var maxWidth = 210;
     var textFont = "700 16px " + CONFIG.fontFamily;
     var subFont = "italic 13px " + CONFIG.fontFamily;
@@ -563,8 +650,8 @@ var Sims = (function () {
     w += 26;
     var h = 16 + lines.length * 20 + (subLines.length ? 4 + subLines.length * 16 : 0);
 
-    var headTop = sim.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room;
-    var cx = sim.x, bottom = headTop - 8, top = bottom - h;
+    var headTop = at.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room;
+    var cx = at.x, bottom = headTop - 8, top = bottom - h;
     ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
     ctx.shadowBlur = 6;
     ctx.shadowOffsetY = 3;
@@ -605,9 +692,9 @@ var Sims = (function () {
 
   // ---------- Action bubble ("Comiendo 🍳") with a heart for favorites ----------
 
-  function drawActionBubble(ctx, sim, time, bubble) {
-    var headTop = sim.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room;
-    var cx = sim.x, cy = headTop - 22;
+  function drawActionBubble(ctx, at, time, bubble) {
+    var headTop = at.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room;
+    var cx = at.x, cy = headTop - 22;
 
     ctx.save();
     ctx.font = "700 17px " + CONFIG.fontFamily;
@@ -652,10 +739,10 @@ var Sims = (function () {
     return colors.low;
   }
 
-  function drawMoodStar(ctx, sim, time) {
+  function drawMoodStar(ctx, sim, at, time) {
     var r = CONFIG.moodStar.radius;
-    var bob = Math.sin(time * 2 + sim.x * 0.01) * 1.5;
-    var cx = sim.x, cy = sim.y - 78 * CONFIG.characterScale - r - 4 + bob;
+    var bob = Math.sin(time * 2 + at.x * 0.01) * 1.5;
+    var cx = at.x, cy = at.y - 78 * CONFIG.characterScale - r - 4 + bob;
     ctx.save();
     ctx.beginPath();
     for (var i = 0; i < 10; i++) {
@@ -682,8 +769,16 @@ var Sims = (function () {
   }
 
   function drawSim(ctx, sim, time) {
-    if (sim === selected) drawGlow(ctx, sim, time);
-    ellipse(ctx, sim.x, sim.y, 16 * CONFIG.characterScale, 6 * CONFIG.characterScale, "rgba(74, 52, 40, 0.25)");
+    var pose = Objects.poseFor(sim.data.id);
+    // Sleeping in the Carpa: it is inside, so only the "Zzz" coming out of the tent are seen.
+    if (pose && pose.kind === "tent") {
+      drawZzz(ctx, pose.zzz.x, pose.zzz.y, time);
+      return;
+    }
+    var at = drawnAt(sim);
+    var k = CONFIG.characterScale;
+    if (sim === selected) drawGlow(ctx, at, time);
+    if (!pose) ellipse(ctx, at.x, at.y, 16 * k, 6 * k, "rgba(74, 52, 40, 0.25)");
 
     var walking = sim.path.length > 0;
     var bounce = walking ? -Math.abs(Math.sin(sim.stepPhase)) * 5 : 0;
@@ -691,27 +786,34 @@ var Sims = (function () {
     var breath = walking ? 1 : 1 + Math.sin(sim.breath) * CONFIG.alive.breathe.amount;
     // While talking they lean in a little toward each other.
     var lean = Social.facing(sim.data.id);
-    var k = CONFIG.characterScale;
     var view = sim.facing === "left" || sim.facing === "right" ? "side" : sim.facing;
+    // Lying and sitting on the Sofá always face the same way; on the log it looks at the fire.
+    var flip = sim.facing === "left" && (!pose || pose.kind === "log");
     ctx.save();
-    ctx.translate(sim.x, sim.y + bounce);
+    ctx.translate(at.x, at.y + bounce);
     ctx.rotate(lean * 0.06);
-    ctx.scale(sim.facing === "left" ? -k : k, k * breath);
-    bodies[sim.data.id][view](ctx, sim.look, walking ? sim.stepPhase : 0, sim.blink > 0);
+    ctx.scale(flip ? -k : k, k * breath);
+    if (pose) {
+      drawPose(ctx, sim, pose);
+    } else {
+      bodies[sim.data.id][view](ctx, sim.look, walking ? sim.stepPhase : 0, sim.blink > 0);
+    }
     ctx.restore();
+    if (pose && pose.kind === "sofa") House.drawSofaBackrest(ctx);
+    if (pose && pose.kind === "lie") drawZzz(ctx, at.x + 22, at.y - 62 * k, time);
 
-    drawNameTag(ctx, sim);
-    drawMoodStar(ctx, sim, time);
+    drawNameTag(ctx, sim, at);
+    drawMoodStar(ctx, sim, at, time);
     var lift = 0;
     var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) || Garden.bubbleFor(sim.data.id) ||
       Gather.bubbleFor(sim.data.id) || Cooking.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
-      lift = drawSpeechBubble(ctx, sim, time, bubble);
+      lift = drawSpeechBubble(ctx, at, time, bubble);
     } else if (bubble) {
-      drawActionBubble(ctx, sim, time, bubble);
+      drawActionBubble(ctx, at, time, bubble);
       lift = 44;
     }
-    drawThoughtBubble(ctx, sim, time, lift);
+    drawThoughtBubble(ctx, sim, at, time, lift);
   }
 
   // The place the screen shows: where the selected character is, or the house when nobody is.
@@ -724,7 +826,7 @@ var Sims = (function () {
     var view = viewPlace();
     // Whoever is lower on screen is drawn last, so they appear in front.
     sims.filter(function (s) { return s.place === view; })
-      .sort(function (a, b) { return a.y - b.y; })
+      .sort(function (a, b) { return drawnAt(a).y - drawnAt(b).y; })
       .forEach(function (sim) { drawSim(ctx, sim, time); });
   }
 
@@ -738,41 +840,11 @@ var Sims = (function () {
     return null;
   }
 
-  function clampToRoom(room, x, y) {
-    var m = CONFIG.walkMargin;
-    return {
-      x: Math.max(room.x + m.side, Math.min(room.x + room.w - m.side, x)),
-      y: Math.max(room.y + m.top, Math.min(room.y + room.h - m.bottom, y))
-    };
-  }
-
-  function doorwayBetween(a, b) {
-    for (var i = 0; i < CONFIG.doorways.length; i++) {
-      var d = CONFIG.doorways[i];
-      if (d.rooms.indexOf(a.id) >= 0 && d.rooms.indexOf(b.id) >= 0) return d;
-    }
-    return null;
-  }
-
-  // Straight line to the target. In the house it passes through a doorway when the target is
-  // in another room; in the city it crosses the river on the bridge.
+  // Walk to a spot going around everything solid (js/path.js): in the house through the doorways and around
+  // the furniture; in the city over the bridge and around the house, the trees, the fountain, the tent, the
+  // campfire and the garden fence. If the spot cannot be reached, it walks to the closest spot it can reach.
   function walkTo(sim, x, y) {
-    if (sim.place === "city") {
-      sim.path = City.path(sim.x, sim.y, x, y);
-      sim.goal = null;
-      return;
-    }
-    var targetRoom = roomAt(x, y);
-    if (!targetRoom) return;
-    var target = clampToRoom(targetRoom, x, y);
-    var fromRoom = roomAt(sim.x, sim.y);
-    var path = [];
-    if (fromRoom && fromRoom !== targetRoom) {
-      var door = doorwayBetween(fromRoom, targetRoom);
-      if (door) path.push({ x: door.x, y: door.y });
-    }
-    path.push(target);
-    sim.path = path;
+    sim.path = Path.find(sim.place, sim.x, sim.y, x, y);
     sim.goal = null;
   }
 
@@ -828,10 +900,12 @@ var Sims = (function () {
   }
 
   // Look the way it walks: to the side when it goes more sideways than up or down, else front or back.
+  // It keeps looking the way it looks until the other way clearly wins, so on a curve or a slanted line it does not flicker.
   // Standing still while talking, it looks at the other one. Otherwise it keeps the last way.
   function turn(sim, dx, dy) {
     if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
-      if (Math.abs(dx) > Math.abs(dy)) {
+      var sideways = sim.facing === "left" || sim.facing === "right";
+      if (Math.abs(dx) > Math.abs(dy) * (sideways ? 0.8 : 1.25)) {
         sim.facing = dx > 0 ? "right" : "left";
       } else {
         sim.facing = dy > 0 ? "front" : "back";
@@ -1023,30 +1097,36 @@ var Sims = (function () {
   var FACINGS = ["front", "back", "left", "right"];
 
   // Put a character at a saved spot, if it is inside the house or on dry ground in the city,
-  // looking the way it looked when it was saved.
+  // looking the way it looked when it was saved. A spot on something solid moves to the closest free spot.
   function place(sim, x, y, where, facing) {
     if (FACINGS.indexOf(facing) >= 0) sim.facing = facing;
     where = where === "city" ? "city" : "house";
     if (typeof x !== "number" || typeof y !== "number") return;
     if (where === "city" ? !City.isWalkable(x, y) : !roomAt(x, y)) return;
+    var spot = Path.free(where, x, y);
     sim.place = where;
-    sim.x = x;
-    sim.y = y;
+    sim.x = spot.x;
+    sim.y = spot.y;
     sim.path = [];
   }
 
   // ---------- Tapping ----------
 
-  // The character at a spot of the place on screen, or null.
+  // The character at a spot of the place on screen, or null. Lying or sitting, it is where it is drawn;
+  // inside the Carpa, at the entrance.
   function simAt(x, y) {
-    var hit = null;
+    var hit = null, hitY = 0;
     var view = viewPlace();
     sims.forEach(function (sim) {
       if (sim.place !== view) return;
-      var dx = x - sim.x, dy = y - sim.y;
+      var at = drawnAt(sim);
+      var dx = x - at.x, dy = y - at.y;
       var k = CONFIG.characterScale;
       if (dx >= -22 * k && dx <= 22 * k && dy >= -76 * k && dy <= 34) {
-        if (!hit || sim.y > hit.y) hit = sim;
+        if (!hit || at.y > hitY) {
+          hit = sim;
+          hitY = at.y;
+        }
       }
     });
     return hit;

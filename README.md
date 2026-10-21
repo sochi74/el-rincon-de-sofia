@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Extra ✅ Pulido 1
+Extra ✅ Pulido 2
 
-## ⭐ Estrellas de inglés: 23
+## ⭐ Estrellas de inglés: 24
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -133,3 +133,8 @@ Extra ✅ Pulido 1
 - polish: pulir, dejar algo más lindo
 - fix: arreglar
 - wait: esperar
+- path: camino
+- around: alrededor
+- lie down: acostarse
+- sit: sentarse
+- blanket: manta
