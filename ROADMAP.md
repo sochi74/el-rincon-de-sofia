@@ -30,6 +30,8 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: ☰ Menú que se abre y se cierra, y mariposas en el jardín (desbloqueo de 20 ⭐)
 - ✅ Hito 14: 🎣 Pescar y recolectar. Pescar en el río (pez plateado, cangrejo, pez arcoíris, bota vieja, pez luna de noche) y recolectar bayas, hongos y cristales en el bosque; todo va a la mochila y se vende.
 - ✅ Hito 15: 🍲 Cocinar. Cocinar en la Estufa o en la Fogata: pescado con hongos, sopa de cangrejo, tarta de bayas y plato mágico; los platos se comen o se venden.
+- ✅ Extra: 🧹 Pulido 1 (arreglos pequeños)
+- ⬜ Extra: 🧹 Pulido 2: rodear muebles, árboles y cosas al caminar; acostarse en la cama y la carpa; sentarse en el sofá y junto a la fogata
 - ⬜ Hito 16: 🎁 Amistad y regalos. Niveles de amistad (conocidos, amigos, mejores amigos) y dar regalos que suben la Amistad.
 - ⬜ Hito 17: 🎵 Sonidos y música. Sonidos de botones, sonidos del mundo (río, pájaros, fogata, lluvia) y música de fondo tranquila, todo creado con código, con botón para silenciar.
 

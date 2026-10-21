@@ -700,7 +700,10 @@ var City = (function () {
     Gather.draw(ctx, time);
     drawFireflies(ctx, time);
     ctx.restore();
+  }
 
+  // The signs of the places, drawn over the night tint so they always read well.
+  function drawLabels(ctx) {
     label(ctx, "Casa de Sofía", HOUSE.x + HOUSE.w / 2, HOUSE.y - 34, 24);
     label(ctx, "Río", riverX(600), 600, 24);
     label(ctx, "Puente", riverX(BRIDGE.y), BRIDGE.y + 62, 22);
@@ -748,6 +751,7 @@ var City = (function () {
   return {
     update: update,
     draw: draw,
+    drawLabels: drawLabels,
     wordAt: wordAt,
     drawNightLights: drawNightLights,
     path: path,

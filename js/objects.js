@@ -11,6 +11,7 @@ var Objects = (function () {
   };
 
   // Usable furniture: its action and the spot where the character stands to use it.
+  // "look" is where it looks while using it (on the Sofá, at the Televisión); otherwise it looks at the piece.
   // "owner" is the only one who may use it; anyone else gets the "notYours" bubble.
   // The Estufa has no action of its own: tapping it opens the recipe menu (js/cooking.js), like the Fogata.
   var USABLE = {
@@ -18,7 +19,7 @@ var Objects = (function () {
     fridge: { action: "eat", spot: { x: 115, y: 200 } },
     bed: { action: "sleep", spot: { x: 815, y: 190 } },
     tv: { action: "watchTv", spot: { x: 450, y: 500 } },
-    sofa: { action: "watchTv", spot: { x: 520, y: 615 } },
+    sofa: { action: "watchTv", spot: { x: 520, y: 615 }, look: { x: 520, y: 387 } },
     tent: { action: "sleepTent", spot: { x: 850, y: 395 }, owner: "realfixer", notYours: "Es la carpa de real.fixer" },
     campfire: { action: "campfire", spot: { x: 870, y: 490 } }
   };
@@ -126,6 +127,23 @@ var Objects = (function () {
     return !!current[id];
   }
 
+  // Turn the character toward what it uses.
+  function lookAt(a) {
+    var f = a.furniture;
+    var look = USABLE[f.id].look;
+    var b = placeOf(f) === "city" ? f : House.bounds(f);
+    if (look) Sims.face(a.sim, look.x, look.y);
+    else Sims.face(a.sim, b.x + b.w / 2, b.y + b.h / 2);
+  }
+
+  // True if someone is watching tele right now, on the Sofá or at the Televisión.
+  function isWatchingTv() {
+    return Object.keys(current).some(function (id) {
+      var a = current[id];
+      return a.phase === "doing" && a.action === ACTIONS.watchTv;
+    });
+  }
+
   function update(dt) {
     Object.keys(current).forEach(function (id) {
       var a = current[id];
@@ -138,6 +156,7 @@ var Objects = (function () {
         } else {
           a.phase = "doing";
           a.elapsed = 0;
+          lookAt(a);
         }
         return;
       }
@@ -178,6 +197,7 @@ var Objects = (function () {
     update: update,
     bubbleFor: bubbleFor,
     freeFor: freeFor,
-    isActive: isActive
+    isActive: isActive,
+    isWatchingTv: isWatchingTv
   };
 })();

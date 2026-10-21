@@ -799,10 +799,12 @@ var Sims = (function () {
     sim.goal = null;
   }
 
+  // With Pausa nobody walks: they stay where they are and go on when the game continues.
   function update(dt) {
+    var paused = Needs.isPaused();
     sims.forEach(function (sim) {
       var fromX = sim.x, fromY = sim.y;
-      var step = CONFIG.walkSpeed * dt;
+      var step = paused ? 0 : CONFIG.walkSpeed * dt;
       while (sim.path.length > 0 && step > 0) {
         var p = sim.path[0];
         var dx = p.x - sim.x, dy = p.y - sim.y;
@@ -818,9 +820,9 @@ var Sims = (function () {
           step = 0;
         }
       }
-      sim.stepPhase = sim.path.length > 0 ? sim.stepPhase + dt * 11 : 0;
+      if (!paused) sim.stepPhase = sim.path.length > 0 ? sim.stepPhase + dt * 11 : 0;
       turn(sim, sim.x - fromX, sim.y - fromY);
-      if (sim.path.length === 0 && sim.goal) goThrough(sim);
+      if (!paused && sim.path.length === 0 && sim.goal) goThrough(sim);
       live(sim, dt);
     });
   }
@@ -838,6 +840,17 @@ var Sims = (function () {
     }
     var side = Social.facing(sim.data.id);
     if (side) sim.facing = side > 0 ? "right" : "left";
+  }
+
+  // Turn toward a spot, like the thing it starts using: to the side when it is more sideways than up or down.
+  // Right on top of it, it looks to the front.
+  function face(sim, x, y) {
+    var dx = x - sim.x, dy = y - sim.y;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      sim.facing = dx > 0 ? "right" : "left";
+    } else {
+      sim.facing = dy < -1 ? "back" : "front";
+    }
   }
 
   // Blinking and breathing, each character with its own rhythm. They go on even with Pausa.
@@ -903,6 +916,9 @@ var Sims = (function () {
     if (lowest.id === "social") {
       var other = sims.filter(function (s) { return s !== sim; })[0];
       if (Social.isBusy() || other.place !== sim.place) return false;
+      // If the other one is using something, wait until it finishes instead of interrupting.
+      var otherId = other.data.id;
+      if (Objects.isActive(otherId) || Garden.isActive(otherId) || Gather.isActive(otherId) || Cooking.isActive(otherId)) return false;
       Social.start(sim, other, "chat");
       return true;
     }
@@ -1004,8 +1020,12 @@ var Sims = (function () {
     return sims;
   }
 
-  // Put a character at a saved spot, if it is inside the house or on dry ground in the city.
-  function place(sim, x, y, where) {
+  var FACINGS = ["front", "back", "left", "right"];
+
+  // Put a character at a saved spot, if it is inside the house or on dry ground in the city,
+  // looking the way it looked when it was saved.
+  function place(sim, x, y, where, facing) {
+    if (FACINGS.indexOf(facing) >= 0) sim.facing = facing;
     where = where === "city" ? "city" : "house";
     if (typeof x !== "number" || typeof y !== "number") return;
     if (where === "city" ? !City.isWalkable(x, y) : !roomAt(x, y)) return;
@@ -1132,6 +1152,7 @@ var Sims = (function () {
     draw: draw,
     handleTap: handleTap,
     walkTo: walkTo,
+    face: face,
     simAt: simAt,
     roomAt: roomAt,
     list: list,

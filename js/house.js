@@ -1,5 +1,5 @@
 // Draws the house seen from above: floors, walls, room names and furniture.
-// At night the Televisión gives a soft glow.
+// At night the Televisión gives a soft glow while someone watches it.
 var House = (function () {
   var C = CONFIG.colors;
 
@@ -346,7 +346,10 @@ var House = (function () {
       drawers[f.id](ctx, f);
       if (f.id === highlightId) drawHighlight(ctx, f);
     });
+  }
 
+  // Room and furniture names, drawn over the night tint so they always read well.
+  function drawLabels(ctx) {
     // Room names
     var roomLabels = {
       kitchen: { x: 250, y: 260 },
@@ -365,8 +368,10 @@ var House = (function () {
     });
   }
 
-  // Drawn over the darkened house: a soft light from the TV screen. "dark" goes from 0 (day) to 1 (night).
+  // Drawn over the darkened house: a soft light from the TV screen while someone is watching it.
+  // "dark" goes from 0 (day) to 1 (night).
   function drawNightLights(ctx, time, dark) {
+    if (!Objects.isWatchingTv()) return;
     var tv = CONFIG.furniture.filter(function (f) { return f.id === "tv"; })[0];
     var cx = tv.x + tv.w / 2, cy = tv.y + 20;
     // The light flickers a tiny bit, like a show is on.
@@ -409,5 +414,5 @@ var House = (function () {
     return null;
   }
 
-  return { draw: draw, drawNightLights: drawNightLights, bounds: bounds, doorAt: doorAt, wordAt: wordAt };
+  return { draw: draw, drawLabels: drawLabels, drawNightLights: drawNightLights, bounds: bounds, doorAt: doorAt, wordAt: wordAt };
 })();

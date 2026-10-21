@@ -1,5 +1,18 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Extra: 🧹 Pulido 1
+- Pausa: con Pausa los personajes también dejan de caminar y se quedan donde están (ya no salen ni entran por la puerta ni recogen monedas). Al tocar Continuar, siguen su camino.
+- Etiquetas de palabras: con el mouse sobre el panel, el botón ☰, la mochila o un menú abierto, ya no aparece la etiqueta de lo que hay debajo.
+- Libre albedrío y platos: el personaje no seleccionado se come el plato más barato de la mochila, así guarda el Plato mágico si hay algo más simple.
+- Libre albedrío y charla: si real.fixer quiere charlar solo mientras Sofía usa algo (un mueble, el jardín, la pesca, la recolección o la cocina), espera a que ella termine. Desde el menú social sí se puede interrumpir, como antes.
+- El Pescado con hongos ahora usa 🍛 (en la mochila, el menú de cocina y el cartel flotante), y ya no se confunde con el Pez plateado 🐟.
+- Mirar al usar: al usar un mueble, la carpa, la fogata, el jardín, el río o el bosque, el personaje se gira hacia eso. En el Sofá mira a la Televisión. La dirección en que mira cada uno se guarda y se recupera al recargar.
+- Tele: de noche la Televisión brilla solo mientras alguien la está viendo.
+- Menú de cocina: si abres el menú de la Estufa o la Fogata y lo cierras sin elegir, el personaje se detiene donde está.
+- Carteles de noche: los carteles de lugares, habitaciones y muebles se dibujan encima de la oscuridad, así se leen igual de noche que de día.
+- Monedas brillantes: nunca aparecen encima de una cosa del bosque, del jardín, de la carpa ni de la fogata (y las cosas del bosque no crecen debajo de una moneda).
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa, la fogata y el jardín. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima. Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien. Nadie cuida el jardín solo. Las mariposas vuelan por encima de las flores y a veces tapan un poquito una. Con el panel abierto, en pantallas chicas todavía puede tapar un poco la parte de arriba del mapa (ciérralo con ✕ para ver todo). Con el panel abierto se tapa casi todo el bosque: ciérralo con ✕ para recolectar. La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta. Nadie pesca ni recolecta solo. Si recargas mientras alguien pesca o recolecta, esa acción se pierde. Cocinar en la Fogata y sentarse junto a ella usan el mismo lugar, así que no se pueden hacer los dos a la vez ("Ocupado"). Nadie cocina solo.
+
 ## 2026-10-21 · Hito 15: 🍲 Cocinar
 - 🍳 Estufa nueva en la Cocina, al lado del Refrigerador, dibujada con código (cuatro hornallas y perillas) y con su cartel "Estufa". No tapa el Refrigerador, la puerta ni los carteles.
 - Recetas (ingredientes → al comer → precio): 🐟 Pescado con hongos (1 pez plateado + 1 hongo → Hambre +60 → 18 🪙), 🦀 Sopa de cangrejo (1 cangrejo + 1 hongo → Hambre +70 → 25 🪙), 🥧 Tarta de bayas (2 bayas → Hambre +40 y Diversión +15 → 12 🪙) y ✨ Plato mágico (1 pez arcoíris + 1 cristal → Hambre +60 y Energía +40 → 50 🪙).

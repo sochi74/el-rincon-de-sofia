@@ -39,6 +39,12 @@
       House.draw(ctx, hovered && hovered.id);
     }
     drawNight(time);
+    // Signs go over the night tint, so they read the same by night as by day.
+    if (Sims.viewPlace() === "city") {
+      City.drawLabels(ctx);
+    } else {
+      House.drawLabels(ctx);
+    }
     if (Sims.viewPlace() === "city") {
       Garden.drawTop(ctx, time);
       Gather.drawTop(ctx, time);
@@ -134,8 +140,11 @@
   }
 
   // Every frame, so the tag follows things that move (like the fireflies) and changes when the view does.
+  // Over the panel, the ☰ button, the backpack or a menu there is no tag.
   function updateWord() {
-    if (mouse) {
+    if (mouse && UI.coversSpot(mouse.clientX, mouse.clientY)) {
+      UI.hideWord();
+    } else if (mouse) {
       UI.showWord(wordAt(mouse), mouse.clientX, mouse.clientY);
     } else if (!UI.isWordTimed()) {
       UI.hideWord();

@@ -12,7 +12,7 @@ var Inventory = (function () {
     { id: "mushroom", name: "Hongo", emoji: "🍄", price: 5 },
     { id: "crystal", name: "Cristal", emoji: "💎", price: 15 },
     // Dishes
-    { id: "fishMushroom", name: "Pescado con hongos", emoji: "🐟", price: 18 },
+    { id: "fishMushroom", name: "Pescado con hongos", emoji: "🍛", price: 18 },
     { id: "crabSoup", name: "Sopa de cangrejo", emoji: "🦀", price: 25 },
     { id: "berryPie", name: "Tarta de bayas", emoji: "🥧", price: 12 },
     { id: "magicDish", name: "Plato mágico", emoji: "✨", price: 50 }
