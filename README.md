@@ -9,13 +9,13 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - En tu computadora: abre index.html
 
 ## Personajes
-- 💗 Sofía: dormilona, glotona y creativa; le encanta ver tele. "Pizza and a movie!"
+- 💗 Sofía: dormilona, glotona y creativa; le encanta ver tele. "Pizza and a movie!" Lleva su Princess crown 👑
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 9 ✅ Reloj, día y noche
+Hito 10 ✅ Mundo vivo
 
-## ⭐ Estrellas de inglés: 13
+## ⭐ Estrellas de inglés: 15
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -87,3 +87,11 @@ Hito 9 ✅ Reloj, día y noche
 - morning: mañana
 - Good night!: ¡Buenas noches!
 - Sweet dreams!: ¡Dulces sueños!
+- blink: parpadear
+- breathe: respirar
+- wind: viento
+- front: frente
+- back: espalda
+- side: costado
+- Princess crown: corona de princesa
+- Let's go!: ¡Vamos!

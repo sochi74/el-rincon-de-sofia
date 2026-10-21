@@ -177,6 +177,15 @@ var CONFIG = {
     windowLight: "#FFD66B"
   },
 
+  // Living world: characters blink every "min" to "max" seconds, keeping the eyes closed "length" seconds,
+  // and breathe "speed" radians per second, growing "amount" taller. Trees sway up to "amount" world units,
+  // each one at its own speed between "slow" and "fast".
+  alive: {
+    blink: { min: 3, max: 6, length: 0.15 },
+    breathe: { speed: 2.4, amount: 0.02 },
+    sway: { amount: 3, slow: 0.7, fast: 1.4 }
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   save: { every: 10, key: "el-rincon-de-sofia-save" },
 
@@ -209,7 +218,11 @@ var CONFIG = {
       shirt: "#E795AE",
       pants: "#F6C8D4",
       shoes: "#C8664A",
-      gold: "#E2B44B"
+      gold: "#E2B44B",
+      // Her Princess crown
+      crown: "#E8BE4F",
+      crownEdge: "#B8862E",
+      gem: "#E8607E"
     }
   }
 };

@@ -78,6 +78,7 @@
     var dt = lastTime === null ? 0 : Math.min(0.1, time - lastTime);
     lastTime = time;
     Time.update(dt);
+    City.update(dt);
     Sims.update(dt);
     Needs.update(dt);
     Objects.update(dt);

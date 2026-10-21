@@ -1,5 +1,16 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 10: 🌬️ Mundo vivo
+- Parpadeo: cada personaje cierra los ojos un instante cada 3 a 6 segundos, en momentos distintos uno del otro.
+- Respiración: cuando un personaje está quieto, su cuerpo sube y baja muy suavemente.
+- Direcciones: cada personaje se ve de frente, de espalda o de costado (izquierda y derecha) según hacia dónde camina. Al detenerse mantiene la última dirección. Mientras charlan quietos, se miran de costado.
+  - real.fixer de espalda: gorra por detrás con su abertura y correa, pelo oscuro, camisa negra y la correa de la riñonera (sin cara ni barba). De costado: visera hacia adelante, barba de perfil, riñonera de lado y reloj dorado.
+  - Sofía de espalda: su pelo castaño largo cubre la cabeza y la espalda. De costado: su perfil, con el pelo cayendo por la espalda y un mechón sobre el hombro.
+- Árboles: los árboles del bosque se mecen suavemente con el viento, cada uno a su ritmo. En Pausa se quedan quietos.
+- Todo funciona en la casa y en la ciudad, de día y de noche. En Pausa siguen parpadeando y respirando.
+- ⭐ Extra desbloqueado: Sofía lleva una pequeña corona de princesa dorada, su "Princess crown", visible desde todos los lados.
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa y la fogata. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta). Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. El panel puede tapar un poco la parte de arriba del mapa en pantallas chicas. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. De noche los carteles se ven un poco más oscuros. La tele brilla de noche aunque nadie la esté viendo. Al recargar la página, los personajes vuelven a mirar de frente. Al usar un mueble no se giran hacia él.
+
 ## 2026-10-21 · Hito 9: 🕰️ Reloj, día y noche
 - Reloj del juego: un día completo dura unos 8 minutos reales. La partida nueva empieza el Día 1 a las 08:00.
 - El panel muestra arriba "☀️ Día N · HH:MM" de día y "🌙 Día N · HH:MM" de noche.
