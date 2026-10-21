@@ -1,7 +1,7 @@
 // Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕).
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
-// and the word tag that shows
+// the backpack window with everything in it and its sell buttons, and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
   var coinsEl;
@@ -10,6 +10,7 @@ var UI = (function () {
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
+  var backpack, backpackList, backpackShown = null;
   var current = null;
   var bars = {};
 
@@ -88,6 +89,15 @@ var UI = (function () {
       pauseButton.textContent = paused ? "▶️ Continuar" : "⏸️ Pausa";
     });
 
+    backpack = document.getElementById("backpack");
+    backpackList = document.getElementById("backpack-list");
+    document.getElementById("backpack-button").addEventListener("click", function () {
+      setBackpackOpen(backpack.hidden);
+    });
+    document.getElementById("backpack-close").addEventListener("click", function () {
+      setBackpackOpen(false);
+    });
+
     document.getElementById("reset-button").addEventListener("click", function () {
       Save.reset();
     });
@@ -145,6 +155,7 @@ var UI = (function () {
     var coins = Coins.text();
     if (coinsEl.textContent !== coins) coinsEl.textContent = coins;
     if (!seedMenu.hidden) updateSeeds();
+    if (!backpack.hidden) updateBackpack();
     if (!current) return;
     var values = Needs.get(current.id);
     CONFIG.needs.forEach(function (need) {
@@ -196,6 +207,71 @@ var UI = (function () {
 
   function isMenuOpen() {
     return !menu.hidden || !seedMenu.hidden;
+  }
+
+  // ---------- Backpack ----------
+
+  function setBackpackOpen(open) {
+    backpack.hidden = !open;
+    backpackShown = null;
+    if (open) updateBackpack();
+  }
+
+  // Rebuild the list only when what is in the backpack changes (it can change while it is open, when fishing).
+  function updateBackpack() {
+    var things = Inventory.list();
+    var shown = things.map(function (t) { return t.item.id + ":" + t.count; }).join(",");
+    if (shown === backpackShown) return;
+    backpackShown = shown;
+    backpackList.textContent = "";
+    if (things.length === 0) {
+      var none = document.createElement("p");
+      none.className = "backpack-empty";
+      none.textContent = "Tu mochila está vacía";
+      backpackList.appendChild(none);
+      return;
+    }
+    things.forEach(function (t) {
+      var row = document.createElement("div");
+      row.className = "backpack-row";
+      var name = document.createElement("span");
+      name.className = "backpack-name";
+      name.textContent = t.item.emoji + " " + t.item.name + " ×" + t.count;
+      var price = document.createElement("span");
+      price.className = "backpack-price";
+      price.textContent = t.item.price + " 🪙";
+      row.appendChild(name);
+      row.appendChild(price);
+      row.appendChild(sellButton("Vender 1", t.item.id, false));
+      row.appendChild(sellButton("Vender todo", t.item.id, true));
+      backpackList.appendChild(row);
+    });
+  }
+
+  function sellButton(text, id, all) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.textContent = text;
+    button.addEventListener("click", function () {
+      var rect = button.getBoundingClientRect();
+      var coins = Inventory.sell(id, all);
+      if (coins > 0) coinPop(coins, rect.left + rect.width / 2, rect.top);
+      updateBackpack();
+    });
+    return button;
+  }
+
+  // "+N 🪙" floating up from a spot on the screen, then gone.
+  function coinPop(n, x, y) {
+    var pop = document.createElement("div");
+    pop.className = "coin-pop";
+    pop.textContent = "+" + n + " 🪙";
+    pop.style.left = x + "px";
+    pop.style.top = y + "px";
+    document.body.appendChild(pop);
+    window.setTimeout(function () {
+      if (pop.parentNode) pop.parentNode.removeChild(pop);
+    }, 1200);
   }
 
   // Show the word for a thing near a spot on the screen, kept inside the window.

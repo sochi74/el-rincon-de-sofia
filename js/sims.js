@@ -703,7 +703,8 @@ var Sims = (function () {
     drawNameTag(ctx, sim);
     drawMoodStar(ctx, sim, time);
     var lift = 0;
-    var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) || Garden.bubbleFor(sim.data.id);
+    var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) || Garden.bubbleFor(sim.data.id) ||
+      Gather.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
       lift = drawSpeechBubble(ctx, sim, time, bubble);
     } else if (bubble) {
@@ -862,7 +863,7 @@ var Sims = (function () {
 
   function isIdle(sim) {
     var id = sim.data.id;
-    return sim.path.length === 0 && !Objects.isActive(id) && !Garden.isActive(id) && !Social.isInvolved(id);
+    return sim.path.length === 0 && !Objects.isActive(id) && !Garden.isActive(id) && !Gather.isActive(id) && !Social.isInvolved(id);
   }
 
   // Try to fix the lowest need; true if it found something to do.
@@ -1030,11 +1031,13 @@ var Sims = (function () {
   // A tap on a character selects it and stops what it was doing.
   // A tap on furniture sends the selected one to use it; a tap on the floor walks it there.
   // A tap on the front door takes it out to the city; in the city, a tap on the house takes it back in,
-  // a tap on the tent or the campfire sends it to use them, and a tap on a garden plot plants, waters or harvests.
+  // a tap on the tent or the campfire sends it to use them, a tap on a garden plot plants, waters or harvests,
+  // a tap on the river sends it to fish, and a tap on a berry bush, a mushroom or a crystal sends it to gather it.
   // While the menu is open, a tap anywhere else only closes it.
-  // In the city, garden plots win over characters, so a character working a plot never hides it from taps.
+  // In the city, garden plots and forest things win over characters, so a character working there never hides them from taps.
   function handleTap(x, y, screenX, screenY) {
-    var onPlot = !!selected && selected.place === "city" && Garden.plotAt(x, y) >= 0;
+    var inCity = !!selected && selected.place === "city";
+    var onPlot = inCity && (Garden.plotAt(x, y) >= 0 || !!Gather.thingAt(x, y));
     var sim = onPlot ? null : simAt(x, y);
     var again = false;
     if (UI.isMenuOpen()) {
@@ -1054,6 +1057,7 @@ var Sims = (function () {
     }
     if (sim) {
       var wasBusy = Objects.cancel(sim.data.id);
+      if (Gather.cancel(sim.data.id)) wasBusy = true;
       if (Garden.cancel(sim.data.id) || wasBusy) sim.path = [];
       Social.cancel(sim.data.id);
       selected = sim;
@@ -1064,15 +1068,21 @@ var Sims = (function () {
     Social.cancel(selected.data.id);
     Objects.cancel(selected.data.id);
     Garden.cancel(selected.data.id);
+    Gather.cancel(selected.data.id);
     if (selected.place === "city") {
       var thing = Objects.at(x, y, "city");
       var plot = Garden.plotAt(x, y);
+      var wild = Gather.thingAt(x, y);
       if (plot >= 0) {
         Garden.tap(selected, plot, screenX, screenY);
+      } else if (wild) {
+        Gather.tapThing(selected, wild);
       } else if (City.houseAt(x, y)) {
         goHome(selected);
       } else if (thing) {
         Objects.start(selected, thing);
+      } else if (City.riverAt(x, y)) {
+        Gather.tapRiver(selected, x, y);
       } else {
         walkTo(selected, x, y);
       }

@@ -32,5 +32,14 @@ var WORDS = {
   lily: { es: "Lirio", en: "lily", say: "LÍ-li" },
   rainbow: { es: "Flor arcoíris", en: "rainbow flower", say: "RÉIN-bou FLÁU-er" },
   moon: { es: "Flor de luna", en: "moonflower", say: "MÚUN-flau-er" },
-  butterfly: { es: "Mariposa", en: "butterfly", say: "BÁ-ter-flai" }
+  butterfly: { es: "Mariposa", en: "butterfly", say: "BÁ-ter-flai" },
+
+  // River and forest
+  fish: { es: "Pez", en: "fish", say: "FISH" },
+  crab: { es: "Cangrejo", en: "crab", say: "KRAB" },
+  boot: { es: "Bota", en: "boot", say: "BÚUT" },
+  berry: { es: "Baya", en: "berry", say: "BÉ-ri" },
+  mushroom: { es: "Hongo", en: "mushroom", say: "MÁSH-rum" },
+  crystal: { es: "Cristal", en: "crystal", say: "KRÍS-tal" },
+  backpack: { es: "Mochila", en: "backpack", say: "BÁK-pak" }
 };

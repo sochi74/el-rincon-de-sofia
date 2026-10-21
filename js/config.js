@@ -234,6 +234,25 @@ var CONFIG = {
     }
   },
 
+  // Fishing in the river and gathering in the forest. Fishing takes "fishTime" seconds and gives "fishFun" Diversión;
+  // gathering takes "gatherTime" seconds. The forest keeps "forestMin" to "forestMax" things at once, and after one is
+  // gathered a new one appears "regrow.min" to "regrow.max" seconds of play later. "Ocupado" stays "busyTime" seconds,
+  // and the floating text after a catch lasts "popTime" seconds. Two fishers closer than "fishGap" are at the same spot.
+  // "crystal" is the light blue of the crystals and "crystalLight" their glow.
+  gather: {
+    fishTime: 4,
+    fishFun: 10,
+    gatherTime: 2,
+    forestMin: 3,
+    forestMax: 5,
+    regrow: { min: 45, max: 90 },
+    busyTime: 1.5,
+    popTime: 1.8,
+    fishGap: 50,
+    crystal: "#B5DCEC",
+    crystalLight: "181, 220, 236"
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   // "menuKey" remembers whether the panel was open or closed.
   save: { every: 10, key: "el-rincon-de-sofia-save", menuKey: "el-rincon-de-sofia-menu" },

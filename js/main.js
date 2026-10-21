@@ -41,9 +41,11 @@
     drawNight(time);
     if (Sims.viewPlace() === "city") {
       Garden.drawTop(ctx, time);
+      Gather.drawTop(ctx, time);
       Coins.draw(ctx, time, Time.darkness());
     }
     Sims.draw(ctx, time);
+    if (Sims.viewPlace() === "city") Gather.drawPops(ctx);
     Social.draw(ctx, time);
   }
 
@@ -87,6 +89,7 @@
     City.update(dt);
     Coins.update(dt);
     Garden.update(dt);
+    Gather.update(dt);
     Sims.update(dt);
     Needs.update(dt);
     Objects.update(dt);
@@ -120,8 +123,9 @@
   function wordAt(spot) {
     var p = toWorld(spot);
     var inCity = Sims.viewPlace() === "city";
-    // Garden plots win over characters, like for taps.
+    // Garden plots and forest things win over characters, like for taps.
     if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
+    if (inCity && Gather.thingAt(p.x, p.y)) return Gather.wordAt(p.x, p.y);
     if (Sims.simAt(p.x, p.y)) return null;
     if (inCity) return Coins.wordAt(p.x, p.y) || City.wordAt(p.x, p.y);
     return House.wordAt(p.x, p.y);
@@ -136,8 +140,8 @@
     }
   }
 
-  // Light up the usable furniture, or in the city the house, tent, campfire or a garden plot, under the mouse (characters in front win).
-  // The front door gets a pointer too.
+  // Light up the usable furniture, or in the city the house, tent, campfire, a garden plot or a forest thing, under the mouse
+  // (characters in front win). The front door and the river get a pointer too.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
     var p = toWorld(event);
@@ -147,8 +151,11 @@
     hoveredHouse = free && inCity && City.houseAt(p.x, p.y);
     var plot = inCity ? Garden.plotAt(p.x, p.y) : -1;
     Garden.setHover(plot);
+    var wild = inCity ? Gather.thingAt(p.x, p.y) : null;
+    Gather.setHover(wild);
     var door = free && !inCity && House.doorAt(p.x, p.y);
-    canvas.style.cursor = hovered || hoveredHouse || door || plot >= 0 ? "pointer" : "";
+    var river = free && inCity && City.riverAt(p.x, p.y);
+    canvas.style.cursor = hovered || hoveredHouse || door || river || plot >= 0 || wild ? "pointer" : "";
   }
 
   function startGame() {
@@ -173,6 +180,7 @@
     hovered = null;
     hoveredHouse = false;
     Garden.setHover(-1);
+    Gather.setHover(null);
     mouse = null;
   });
   window.addEventListener("resize", resize);
