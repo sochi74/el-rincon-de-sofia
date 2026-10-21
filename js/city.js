@@ -21,6 +21,8 @@ var City = (function () {
     [80, 150, 38], [185, 165, 34], [290, 150, 38], [395, 175, 30], [470, 210, 26],
     [45, 245, 30], [140, 260, 36], [245, 250, 30], [350, 270, 32], [60, 340, 26]
   ];
+  // The ground of the forest, around the trees and its sign.
+  var FOREST = { x: 0, y: 0, w: 505, h: 370 };
   // How close a character's feet may get to the edges of the map.
   var MARGIN = { side: 30, top: 130, bottom: 20 };
 
@@ -506,12 +508,20 @@ var City = (function () {
     [950, 520, 2.3], [700, 520, 5.2], [860, 210, 0.8]
   ];
 
+  // Where a firefly is at a given time: it floats around its home spot.
+  function fireflySpot(f, time) {
+    return {
+      x: f[0] + Math.sin(time * 0.6 + f[2]) * 22 + Math.sin(time * 1.7 + f[2] * 2) * 6,
+      y: f[1] + Math.cos(time * 0.5 + f[2] * 1.3) * 16
+    };
+  }
+
   // "bright" goes from 0 (day) to 1 (night): at night they are bigger and glow more.
   function drawFireflies(ctx, time, bright) {
     bright = bright || 0;
     FIREFLIES.forEach(function (f) {
-      var x = f[0] + Math.sin(time * 0.6 + f[2]) * 22 + Math.sin(time * 1.7 + f[2] * 2) * 6;
-      var y = f[1] + Math.cos(time * 0.5 + f[2] * 1.3) * 16;
+      var p = fireflySpot(f, time);
+      var x = p.x, y = p.y;
       var shine = 0.5 + 0.5 * Math.sin(time * 3 + f[2] * 2.7);
       ctx.save();
       ctx.globalAlpha = 0.25 + shine * 0.75;
@@ -611,7 +621,11 @@ var City = (function () {
 
   // ---------- Main draw ----------
 
+  // The time of the last drawing, so we know where the fireflies are.
+  var lastTime = 0;
+
   function draw(ctx, time, highlightHouse, highlightId) {
+    lastTime = time;
     ctx.save();
     roundRect(ctx, 0, 0, W, H, 40);
     ctx.clip();
@@ -638,9 +652,42 @@ var City = (function () {
     label(ctx, "Carpa de real.fixer", TENT.x + TENT.w / 2, TENT.y - 30, 20);
   }
 
+  // ---------- What is under the mouse ----------
+
+  function near(x, y, cx, cy, r) {
+    return (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r;
+  }
+
+  function inBox(x, y, b) {
+    return x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
+  }
+
+  // The id of the word for what is at a spot of the map, or null. Small things win over big places.
+  function wordAt(x, y) {
+    if (x < 0 || x > W || y < 0 || y > H) return null;
+    for (var i = 0; i < FIREFLIES.length; i++) {
+      var p = fireflySpot(FIREFLIES[i], lastTime);
+      if (near(x, y, p.x, p.y, 14)) return "firefly";
+    }
+    if (inBox(x, y, FIRE)) return "campfire";
+    if (inBox(x, y, TENT)) return "tent";
+    if (near(x, y, PLAZA.x, PLAZA.y, 42)) return "fountain";
+    if (houseAt(x, y)) return "house";
+    var half = RIVER.half + 34;
+    if (Math.abs(x - riverX(BRIDGE.y)) <= half && Math.abs(y - BRIDGE.y) <= 28) return "bridge";
+    for (var t = 0; t < TREES.length; t++) {
+      if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2])) return "tree";
+    }
+    if (Math.abs(x - riverX(y)) <= RIVER.half) return "river";
+    if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r)) return "square";
+    if (inBox(x, y, FOREST)) return "forest";
+    return null;
+  }
+
   return {
     update: update,
     draw: draw,
+    wordAt: wordAt,
     drawNightLights: drawNightLights,
     path: path,
     isWalkable: isWalkable,

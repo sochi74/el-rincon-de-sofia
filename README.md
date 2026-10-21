@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 10 ✅ Mundo vivo
+Hito 11 ✅ Palabras en las cosas. ¡Pack 1 completo! 🏰
 
-## ⭐ Estrellas de inglés: 15
+## ⭐ Estrellas de inglés: 17
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -95,3 +95,6 @@ Hito 10 ✅ Mundo vivo
 - side: costado
 - Princess crown: corona de princesa
 - Let's go!: ¡Vamos!
+- tree: árbol
+- fountain: fuente
+- Let's finish it!: ¡Terminémoslo!

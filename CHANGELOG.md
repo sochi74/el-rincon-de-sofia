@@ -1,5 +1,16 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 11: 🔤 Palabras en las cosas
+- Al pasar el mouse sobre un mueble, una habitación o un lugar, aparece cerca del cursor una etiqueta pequeña con su nombre en español (en negrita), en inglés (en cursiva) y cómo se pronuncia (entre paréntesis, más clarito). Por ejemplo: "Cama · bed (BED)".
+- Palabras de la casa: Cocina · kitchen (KÍ-chen), Dormitorio · bedroom (BÉD-rum), Sala · living room (LÍ-ving rum), Refrigerador · fridge (FRICH), Cama · bed (BED), Televisión · TV (ti-VÍ), Sofá · couch (KÁUCH), Puerta · door (DOR).
+- Palabras de la ciudad: Casa de Sofía · Sofía's house (so-FÍ-as JÁUS), Río · river (RÍ-ver), Puente · bridge (BRICH), Bosque · forest (FÓ-rest), Árbol · tree (TRÍI), Plaza · square (SKUÉR), Fuente · fountain (FÁUN-ten), Carpa · tent (TENT), Fogata · campfire (KÁMP-fáier), Luciérnaga · firefly (FÁIER-flai).
+- La etiqueta va abajo a la derecha del cursor para no taparlo; cerca de los bordes se da vuelta para no salirse de la pantalla. Tiene fondo crema, así que se lee igual de día y de noche.
+- Las luciérnagas se pueden "atrapar" con el mouse aunque se muevan. Si un personaje está bajo el mouse, no aparece etiqueta.
+- En celular o tablet, al tocar una cosa la etiqueta aparece arriba del dedo durante 2 segundos.
+- Tocar las cosas sigue haciendo lo mismo de antes, y los carteles que ya existían no cambiaron.
+- Nuevo archivo js/words.js.
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa y la fogata. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta). Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. El panel puede tapar un poco la parte de arriba del mapa en pantallas chicas. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. De noche los carteles se ven un poco más oscuros. La tele brilla de noche aunque nadie la esté viendo. Al recargar la página, los personajes vuelven a mirar de frente. Al usar un mueble no se giran hacia él. Con el mouse sobre el panel, la etiqueta muestra lo que hay debajo del panel.
+
 ## 2026-10-21 · Hito 10: 🌬️ Mundo vivo
 - Parpadeo: cada personaje cierra los ojos un instante cada 3 a 6 segundos, en momentos distintos uno del otro.
 - Respiración: cuando un personaje está quieto, su cuerpo sube y baja muy suavemente.

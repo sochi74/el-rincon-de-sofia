@@ -186,6 +186,9 @@ var CONFIG = {
     sway: { amount: 3, slow: 0.7, fast: 1.4 }
   },
 
+  // Word tag: on a phone or tablet, how many seconds it stays after touching a thing.
+  wordTag: { touchSeconds: 2 },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   save: { every: 10, key: "el-rincon-de-sofia-save" },
 

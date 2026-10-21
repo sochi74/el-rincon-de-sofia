@@ -364,5 +364,19 @@ var House = (function () {
     return x >= d.x && x <= d.x + d.w && y >= d.y && y <= d.y + d.h;
   }
 
-  return { draw: draw, drawNightLights: drawNightLights, bounds: bounds, doorAt: doorAt };
+  // The id of the word for what is at a spot: a piece of furniture, the front door or a room, or null.
+  function wordAt(x, y) {
+    for (var i = CONFIG.furniture.length - 1; i >= 0; i--) {
+      var b = bounds(CONFIG.furniture[i]);
+      if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) return CONFIG.furniture[i].id;
+    }
+    if (doorAt(x, y)) return "door";
+    for (var j = 0; j < CONFIG.rooms.length; j++) {
+      var r = CONFIG.rooms[j];
+      if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return r.id;
+    }
+    return null;
+  }
+
+  return { draw: draw, drawNightLights: drawNightLights, bounds: bounds, doorAt: doorAt, wordAt: wordAt };
 })();
