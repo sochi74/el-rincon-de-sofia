@@ -1,5 +1,20 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 9: 🕰️ Reloj, día y noche
+- Reloj del juego: un día completo dura unos 8 minutos reales. La partida nueva empieza el Día 1 a las 08:00.
+- El panel muestra arriba "☀️ Día N · HH:MM" de día y "🌙 Día N · HH:MM" de noche.
+- De 07:00 a 19:00 es de día. De 19:00 a 20:00 el mundo se oscurece poco a poco con un tono azul-violeta, y de 06:00 a 07:00 se aclara poco a poco. Vale para la casa y para la ciudad. Los personajes siempre se ven bien.
+- De noche brillan:
+  - La fogata, con un halo de luz cálida que titila.
+  - Las ventanas de la Casa de Sofía en el mapa, con luz amarilla.
+  - Las luciérnagas, más grandes y brillantes.
+  - Dentro de la casa, un brillo suave alrededor de la Televisión.
+- De noche (de 19:00 a 07:00), la Energía de los dos baja ×1.3, además de los rasgos.
+- Pausa también congela el reloj.
+- El guardado recuerda el día y la hora. "Reiniciar" vuelve al Día 1, 08:00.
+- Nuevo archivo js/time.js.
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa y la fogata. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta). Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. El panel puede tapar un poco la parte de arriba del mapa en pantallas chicas. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. De noche los carteles se ven un poco más oscuros. La tele brilla de noche aunque nadie la esté viendo.
+
 ## 2026-10-21 · Hito 8: ⛺ La carpa de real.fixer
 - En la ciudad, del otro lado del puente, junto al río, real.fixer tiene su hogar, dibujado con código:
   - Una carpa terracota vista desde arriba, con palo central, cuerdas, estacas y la entrada abierta adelante.

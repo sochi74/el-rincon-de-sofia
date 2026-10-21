@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 8 ✅ La carpa de real.fixer
+Hito 9 ✅ Reloj, día y noche
 
-## ⭐ Estrellas de inglés: 12
+## ⭐ Estrellas de inglés: 13
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -81,3 +81,9 @@ Hito 8 ✅ La carpa de real.fixer
 - campfire: fogata
 - firefly: luciérnaga
 - visit: visitar
+- day: día
+- night: noche
+- clock: reloj
+- morning: mañana
+- Good night!: ¡Buenas noches!
+- Sweet dreams!: ¡Dulces sueños!

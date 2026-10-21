@@ -30,9 +30,12 @@ var Needs = (function () {
 
   function update(dt) {
     if (paused) return;
+    // At night Energía drains a little faster, on top of the traits.
+    var night = Time.energyFactor();
     Object.keys(state).forEach(function (id) {
       CONFIG.needs.forEach(function (need) {
-        state[id][need.id] = Math.max(0, state[id][need.id] - rates[id][need.id] * dt);
+        var rate = rates[id][need.id] * (need.id === "energy" ? night : 1);
+        state[id][need.id] = Math.max(0, state[id][need.id] - rate * dt);
       });
     });
   }

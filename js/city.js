@@ -1,5 +1,6 @@
 // The fantasy city map seen from above: Sofía's house, the river and its bridge, the forest, the plaza,
 // and real.fixer's tent with its campfire and fireflies on the other side of the bridge.
+// At night the campfire, the house windows and the fireflies shine.
 // Also where characters may walk: never on the water (they cross on the bridge) and never off the map.
 var City = (function () {
   var C = CONFIG.colors;
@@ -289,6 +290,10 @@ var City = (function () {
 
   // ---------- Sofía's house seen from outside ----------
 
+  // Left edge of the two front windows of the house, and the height of their glass.
+  var WINDOWS = [HOUSE.x + 30, HOUSE.x + HOUSE.w - 56];
+  var WINDOW_Y = HOUSE.y + 92 + 25;
+
   function drawHouse(ctx, highlight) {
     var x = HOUSE.x, y = HOUSE.y, w = HOUSE.w, h = HOUSE.h;
     var wallTop = y + 92, bottom = y + h, cx = x + w / 2;
@@ -300,7 +305,7 @@ var City = (function () {
     fillRound(ctx, x + 8, bottom - 8, w - 16, 8, 4, C.wood);
 
     // Windows on both sides of the door
-    [x + 30, x + w - 56].forEach(function (wx) {
+    WINDOWS.forEach(function (wx) {
       fillRound(ctx, wx - 3, wallTop + 22, 32, 28, 5, C.wood);
       fillRound(ctx, wx, wallTop + 25, 26, 22, 3, "#BFE0EA");
       ctx.fillStyle = C.wood;
@@ -466,7 +471,20 @@ var City = (function () {
       ctx.restore();
     });
 
-    // Flames: three layers, each swaying and stretching a little
+    drawFlames(ctx, time, cx, cy);
+
+    // Little sparks rising and fading
+    for (var k = 0; k < 3; k++) {
+      var t = (time * 0.7 + k / 3) % 1;
+      ctx.save();
+      ctx.globalAlpha = 1 - t;
+      circle(ctx, cx + Math.sin(time * 2 + k * 2) * 8, cy - 20 - t * 40, 2, "#FFD66B");
+      ctx.restore();
+    }
+  }
+
+  // Flames: three layers, each swaying and stretching a little
+  function drawFlames(ctx, time, cx, cy) {
     [[12, C.terracotta, 0], [8, "#E2B44B", 1.3], [4, C.cream, 2.6]].forEach(function (layer) {
       var r = layer[0];
       var sway = Math.sin(time * 5 + layer[2]) * 3;
@@ -480,15 +498,6 @@ var City = (function () {
       ctx.closePath();
       ctx.fill();
     });
-
-    // Little sparks rising and fading
-    for (var k = 0; k < 3; k++) {
-      var t = (time * 0.7 + k / 3) % 1;
-      ctx.save();
-      ctx.globalAlpha = 1 - t;
-      circle(ctx, cx + Math.sin(time * 2 + k * 2) * 8, cy - 20 - t * 40, 2, "#FFD66B");
-      ctx.restore();
-    }
   }
 
   // Fireflies: little yellow lights that float around the tent and the campfire and twinkle.
@@ -497,7 +506,9 @@ var City = (function () {
     [950, 520, 2.3], [700, 520, 5.2], [860, 210, 0.8]
   ];
 
-  function drawFireflies(ctx, time) {
+  // "bright" goes from 0 (day) to 1 (night): at night they are bigger and glow more.
+  function drawFireflies(ctx, time, bright) {
+    bright = bright || 0;
     FIREFLIES.forEach(function (f) {
       var x = f[0] + Math.sin(time * 0.6 + f[2]) * 22 + Math.sin(time * 1.7 + f[2] * 2) * 6;
       var y = f[1] + Math.cos(time * 0.5 + f[2] * 1.3) * 16;
@@ -505,12 +516,57 @@ var City = (function () {
       ctx.save();
       ctx.globalAlpha = 0.25 + shine * 0.75;
       ctx.shadowColor = "#FFE680";
-      ctx.shadowBlur = 12;
-      circle(ctx, x, y, 7, "rgba(255, 230, 128, 0.6)");
+      ctx.shadowBlur = 12 + bright * 14;
+      circle(ctx, x, y, 7 + bright * 3, "rgba(255, 230, 128, 0.6)");
       ctx.shadowBlur = 0;
-      circle(ctx, x, y, 3.2, "#FFF6C2");
+      circle(ctx, x, y, 3.2 + bright, "#FFF6C2");
       ctx.restore();
     });
+  }
+
+  // A soft round light that fades out at the edge, added on top of what is there.
+  function halo(ctx, x, y, r, rgb, alpha) {
+    var g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, "rgba(" + rgb + ", " + alpha + ")");
+    g.addColorStop(1, "rgba(" + rgb + ", 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Drawn over the darkened map: "dark" goes from 0 (day) to 1 (night).
+  function drawNightLights(ctx, time, dark) {
+    var N = CONFIG.night;
+    ctx.save();
+    roundRect(ctx, 0, 0, W, H, 40);
+    ctx.clip();
+
+    // Warm halo around the campfire, flickering a little, and the flames bright again on top.
+    var cx = FIRE.x + FIRE.w / 2, cy = FIRE.y + FIRE.h / 2;
+    ctx.globalCompositeOperation = "lighter";
+    halo(ctx, cx, cy, 150 + Math.sin(time * 3) * 6 + Math.sin(time * 7.3) * 3, N.warmLight, 0.45 * dark);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = dark;
+    drawFlames(ctx, time, cx, cy);
+
+    // Yellow light in the house windows, with a little glow around them.
+    WINDOWS.forEach(function (wx) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 1;
+      halo(ctx, wx + 13, WINDOW_Y + 11, 40, N.warmLight, 0.35 * dark);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = dark;
+      fillRound(ctx, wx, WINDOW_Y, 26, 22, 3, N.windowLight);
+      ctx.fillStyle = C.wood;
+      ctx.fillRect(wx + 12, WINDOW_Y, 2, 22);
+      ctx.fillRect(wx, WINDOW_Y + 10, 26, 2);
+    });
+
+    // Fireflies, brighter than by day.
+    ctx.globalAlpha = dark;
+    drawFireflies(ctx, time, dark);
+    ctx.restore();
   }
 
   // Soft glow around the tent or the campfire when the mouse is over it.
@@ -572,6 +628,7 @@ var City = (function () {
 
   return {
     draw: draw,
+    drawNightLights: drawNightLights,
     path: path,
     isWalkable: isWalkable,
     houseAt: houseAt,
