@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 13 ✅ Jardín y cosecha
+Extra ✅ Menú que se abre y se cierra
 
-## ⭐ Estrellas de inglés: 19
+## ⭐ Estrellas de inglés: 20
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -110,3 +110,7 @@ Hito 13 ✅ Jardín y cosecha
 - rainbow: arcoíris
 - moon: luna
 - water: regar (y también agua)
+- menu: menú
+- open: abrir
+- close: cerrar
+- butterfly: mariposa (butterflies: mariposas)

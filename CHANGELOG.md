@@ -1,5 +1,16 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Extra: ☰ Menú plegable
+- Un botón redondo siempre visible arriba a la izquierda: muestra "✕" cuando el panel está abierto y "☰" cuando está cerrado.
+- Tocar "✕" cierra el panel con una animación suave (se desvanece y se achica hacia el botón) y queda solo el botón, para ver todo el mapa. Tocar "☰" lo abre otra vez.
+- Con el panel cerrado todo sigue funcionando igual: caminar, muebles, jardín, menú social, menú de semillas y etiquetas de palabras.
+- El juego recuerda si el panel estaba abierto o cerrado al recargar. Si el navegador no deja guardar, empieza abierto. "Reiniciar" no cambia esto.
+- El panel ahora está justo debajo del botón. En pantallas chicas los botones del panel bajan a otra fila y las barras son más cortas, para que quepa.
+- A pedido de Sofía: el panel ya no muestra la ayuda larga ("Toca el piso para caminar…") cuando hay alguien seleccionado. "Toca a Sofía o a real.fixer" sigue apareciendo cuando nadie está seleccionado.
+- ⭐ Extra desbloqueado: 4 mariposas pequeñas (terracota, crema, madera y verde salvia) revolotean suavemente sobre el Jardín de Sofía durante el día, abriendo y cerrando las alas. Al atardecer se desvanecen y de noche no se ven. En Pausa se quedan quietas. Solo son decoración.
+- Palabra nueva al pasar el mouse sobre una mariposa: Mariposa · butterfly (BÁ-ter-flai).
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa, la fogata y el jardín. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta), y si pasan sobre una moneda la recogen. Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. De noche los carteles se ven un poco más oscuros. La tele brilla de noche aunque nadie la esté viendo. Al recargar la página, los personajes vuelven a mirar de frente. Al usar un mueble no se giran hacia él. Con el mouse sobre el panel, la etiqueta muestra lo que hay debajo del panel. real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima. Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien. Nadie cuida el jardín solo. Las mariposas vuelan por encima de las flores y a veces tapan un poquito una. Con el panel abierto, en pantallas chicas todavía puede tapar un poco la parte de arriba del mapa (ciérralo con ✕ para ver todo).
+
 ## 2026-10-21 · Hito 13: 🌸 Jardín y cosecha
 - En la ciudad, a la derecha de la Casa de Sofía, el "Jardín de Sofía": 6 parcelas de tierra (2 filas de 3) con una cerquita de madera, una entrada abajo y su cartel. No tapa caminos ni carteles.
 - Cuatro flores mágicas (semilla → venta): 🌷 Tulipán 5 → 12, 🌼 Lirio 8 → 18, 🌈 Flor arcoíris 12 → 28 (sus pétalos cambian de color poco a poco) y 🌙 Flor de luna 15 → 35 (de noche brilla con un halo azul plateado).

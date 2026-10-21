@@ -1,6 +1,7 @@
 // Sofía's garden in the city: 6 plots of soil behind a little wooden fence, with a sign.
 // Buy a seed with magic coins and plant it, water it, watch it grow (seed, sprout, flower)
 // and harvest the flower to sell it for more coins. Pausa freezes the growing too.
+// Butterflies flutter over the garden by day, just for decoration.
 var Garden = (function () {
   var C = CONFIG.colors;
   var G = CONFIG.garden;
@@ -51,6 +52,9 @@ var Garden = (function () {
   // Which plot the mouse is over, or -1.
   var hover = -1;
 
+  // The butterflies' own clock: it stops with Pausa, so they stand still.
+  var flutter = 0;
+
   function flower(id) {
     return FLOWERS.filter(function (f) { return f.id === id; })[0] || null;
   }
@@ -82,8 +86,9 @@ var Garden = (function () {
     return x >= FENCE.x - 10 && x <= FENCE.x + FENCE.w + 10 && y >= FENCE.y - 34 && y <= FENCE.y + FENCE.h + 10;
   }
 
-  // The word for what is at a spot: the flower in a plot, or the garden itself.
+  // The word for what is at a spot: a butterfly, the flower in a plot, or the garden itself.
   function wordAt(x, y) {
+    if (butterflyAt(x, y)) return "butterfly";
     var i = plotAt(x, y);
     if (i >= 0 && plots[i].flower) return plots[i].flower;
     if (i >= 0 || isGardenAt(x, y)) return "garden";
@@ -169,6 +174,7 @@ var Garden = (function () {
   }
 
   function update(dt) {
+    if (!Needs.isPaused()) flutter += dt;
     pops.forEach(function (p) { p.age += dt; });
     pops = pops.filter(function (p) { return p.age < G.popTime; });
 
@@ -503,12 +509,81 @@ var Garden = (function () {
     ctx.restore();
   }
 
-  // Drawn over the city after the night tint: sparkles of ready flowers and the "+N 🪙" texts.
+  // Drawn over the city after the night tint: sparkles of ready flowers, the butterflies and the "+N 🪙" texts.
   function drawTop(ctx, time) {
     PLOTS.forEach(function (p, i) {
       if (isReady(plots[i])) drawSparkles(ctx, p, time);
     });
+    drawButterflies(ctx);
     pops.forEach(function (pop) { drawPop(ctx, pop); });
+  }
+
+  // ---------- Butterflies ----------
+
+  // Where a butterfly is: it wanders in slow loops over the garden, bobbing up and down a little.
+  function butterflySpot(b) {
+    var B = G.butterflies, t = flutter;
+    var cx = FENCE.x + FENCE.w / 2 + b.dx, cy = FENCE.y + FENCE.h / 2 + b.dy;
+    return {
+      x: cx + Math.sin(t * 0.45 + b.phase) * B.roam.x * 0.6 + Math.sin(t * 1.1 + b.phase * 2) * B.roam.x * 0.15,
+      y: cy + Math.cos(t * 0.38 + b.phase * 1.4) * B.roam.y * 0.6 + Math.sin(t * 2.2 + b.phase) * 4,
+      // Which way it flies, so it faces left or right.
+      dir: Math.cos(t * 0.45 + b.phase) >= 0 ? 1 : -1
+    };
+  }
+
+  // How much they show: all of them by day, fading at dusk, none at night.
+  function butterflyAlpha() {
+    return Math.max(0, 1 - Time.darkness() * 1.5);
+  }
+
+  function butterflyAt(x, y) {
+    if (butterflyAlpha() < 0.5) return false;
+    return G.butterflies.list.some(function (b) {
+      var p = butterflySpot(b);
+      return (x - p.x) * (x - p.x) + (y - p.y) * (y - p.y) <= 14 * 14;
+    });
+  }
+
+  // A small butterfly seen from above: four round wings that open and close, and a dark body.
+  function drawButterfly(ctx, b, alpha) {
+    var p = butterflySpot(b), s = G.butterflies.size;
+    var open = 0.35 + 0.65 * Math.abs(Math.sin(flutter * 9 + b.phase * 3));
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(p.x, p.y);
+    ctx.scale(p.dir, 1);
+    ctx.fillStyle = "rgba(74, 52, 40, 0.18)";
+    ctx.beginPath();
+    ctx.ellipse(3, 14, s * open, s * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = b.color;
+    ctx.strokeStyle = C.darkBrown;
+    ctx.lineWidth = 1;
+    [-1, 1].forEach(function (side) {
+      ctx.save();
+      ctx.scale(side * open, 1);
+      ctx.beginPath();
+      ctx.ellipse(s * 0.6, -s * 0.35, s * 0.65, s * 0.5, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(s * 0.45, s * 0.4, s * 0.42, s * 0.36, 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    });
+    ctx.fillStyle = C.darkBrown;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 1.4, s * 0.7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawButterflies(ctx) {
+    var alpha = butterflyAlpha();
+    if (alpha <= 0) return;
+    G.butterflies.list.forEach(function (b) { drawButterfly(ctx, b, alpha); });
   }
 
   // ---------- Saving ----------

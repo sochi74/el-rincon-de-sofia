@@ -1,5 +1,6 @@
 // Saves and loads the game in the browser: needs, where each character is (house or city) and stands, friendship,
 // the day and hour of the game clock, the magic coins (the counter and the shiny coins on the ground) and the garden plots.
+// It also remembers, apart from the game, whether the panel was open or closed.
 // Every use of localStorage is inside try/catch, so the game keeps working if it fails.
 var Save = (function () {
   var timer = 0;
@@ -94,5 +95,22 @@ var Save = (function () {
     window.location.reload();
   }
 
-  return { load: load, start: start, update: update, onLeave: onLeave, reset: reset };
+  // Whether the panel was open last time. If nothing was saved or it fails, it starts open.
+  function loadMenuOpen() {
+    try {
+      return window.localStorage.getItem(CONFIG.save.menuKey) !== "closed";
+    } catch (e) {
+      return true;
+    }
+  }
+
+  function saveMenuOpen(open) {
+    try {
+      window.localStorage.setItem(CONFIG.save.menuKey, open ? "open" : "closed");
+    } catch (e) {
+      // Not remembered this time; the game goes on.
+    }
+  }
+
+  return { loadMenuOpen: loadMenuOpen, saveMenuOpen: saveMenuOpen, load: load, start: start, update: update, onLeave: onLeave, reset: reset };
 })();

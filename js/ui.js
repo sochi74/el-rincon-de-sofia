@@ -1,11 +1,12 @@
 // Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
-// and the Pausa and Reiniciar buttons.
+// and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕).
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
 // and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
   var coinsEl;
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
+  var menuToggle, panelOpen = true;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
@@ -14,6 +15,7 @@ var UI = (function () {
 
   function init() {
     panel = document.getElementById("selection-panel");
+    menuToggle = document.getElementById("menu-toggle");
     clockEl = document.getElementById("clock");
     coinsEl = document.getElementById("coins");
     nameEl = document.getElementById("selection-name");
@@ -90,11 +92,28 @@ var UI = (function () {
       Save.reset();
     });
 
+    menuToggle.addEventListener("click", function () {
+      setPanelOpen(!panelOpen);
+      Save.saveMenuOpen(panelOpen);
+    });
+
     showSelected(null);
   }
 
+  // When the game starts: the panel opens or stays closed as it was last time.
   function show() {
+    setPanelOpen(Save.loadMenuOpen());
     panel.hidden = false;
+    menuToggle.hidden = false;
+  }
+
+  // Open or close the panel; the round button shows ✕ when it is open and ☰ when it is closed.
+  function setPanelOpen(open) {
+    panelOpen = open;
+    panel.classList.toggle("closed", !open);
+    menuToggle.textContent = open ? "✕" : "☰";
+    menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    menuToggle.setAttribute("aria-label", open ? "Cerrar el menú" : "Abrir el menú");
   }
 
   function showSelected(character) {
@@ -104,6 +123,8 @@ var UI = (function () {
     Array.prototype.forEach.call(characterButtons, function (button) {
       button.classList.toggle("selected", !!character && button.getAttribute("data-id") === character.id);
     });
+    // The hint only shows while nobody is selected.
+    hintEl.hidden = !!character;
     if (!character) {
       nameEl.textContent = "Nadie seleccionado";
       hintEl.textContent = "Toca a Sofía o a real.fixer";
@@ -117,16 +138,7 @@ var UI = (function () {
     return CHARACTERS.filter(function (c) { return c.id !== character.id; })[0];
   }
 
-  // What the selected character can do where it is.
-  function hintFor(character) {
-    var other = otherOf(character);
-    var where = Sims.placeOf(character.id) === "city"
-      ? "Toca el suelo para caminar, la Carpa o la Fogata para usarlas, una parcela del Jardín para plantar, regar o cosechar, la Casa de Sofía para entrar"
-      : "Toca el piso para caminar, un mueble para usarlo, la puerta para salir";
-    return where + " o a " + other.name + " para socializar (dos veces para elegirlo)";
-  }
-
-  // Refresh the clock, the magic coins, and the hint, bars and friendship of the selected character.
+  // Refresh the clock, the magic coins, and the bars and friendship of the selected character.
   function update() {
     var clock = Time.text();
     if (clockEl.textContent !== clock) clockEl.textContent = clock;
@@ -134,8 +146,6 @@ var UI = (function () {
     if (coinsEl.textContent !== coins) coinsEl.textContent = coins;
     if (!seedMenu.hidden) updateSeeds();
     if (!current) return;
-    var hint = hintFor(current);
-    if (hintEl.textContent !== hint) hintEl.textContent = hint;
     var values = Needs.get(current.id);
     CONFIG.needs.forEach(function (need) {
       var value = values[need.id];
