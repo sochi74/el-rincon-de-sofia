@@ -1,5 +1,5 @@
 // The backpack: one for the whole house, shared by Sofía and real.fixer. It keeps what they fish in the river
-// and gather in the forest, and sells it for magic coins. Flowers from the garden are still sold when harvested.
+// and gather in the forest and the dishes they cook (js/cooking.js), and sells it for magic coins. Flowers from the garden are still sold when harvested.
 var Inventory = (function () {
   // Everything that can go in the backpack, in the order the backpack shows it: name, emoji and price in coins.
   var ITEMS = [
@@ -10,7 +10,12 @@ var Inventory = (function () {
     { id: "boot", name: "Bota vieja", emoji: "👢", price: 1 },
     { id: "berry", name: "Bayas", emoji: "🍒", price: 3 },
     { id: "mushroom", name: "Hongo", emoji: "🍄", price: 5 },
-    { id: "crystal", name: "Cristal", emoji: "💎", price: 15 }
+    { id: "crystal", name: "Cristal", emoji: "💎", price: 15 },
+    // Dishes
+    { id: "fishMushroom", name: "Pescado con hongos", emoji: "🐟", price: 18 },
+    { id: "crabSoup", name: "Sopa de cangrejo", emoji: "🦀", price: 25 },
+    { id: "berryPie", name: "Tarta de bayas", emoji: "🥧", price: 12 },
+    { id: "magicDish", name: "Plato mágico", emoji: "✨", price: 50 }
   ];
 
   // How many of each thing there are, by id.
@@ -27,6 +32,15 @@ var Inventory = (function () {
 
   function count(id) {
     return counts[id] || 0;
+  }
+
+  // Take some of a thing out (to cook or eat it); false if there are not enough.
+  function take(id, n) {
+    var have = count(id);
+    if (have < n) return false;
+    counts[id] = have - n;
+    if (counts[id] === 0) delete counts[id];
+    return true;
   }
 
   // The things there are, in the backpack's order, as { item, count }.
@@ -67,5 +81,5 @@ var Inventory = (function () {
     });
   }
 
-  return { ITEMS: ITEMS, item: item, add: add, count: count, list: list, sell: sell, get: get, set: set };
+  return { ITEMS: ITEMS, item: item, add: add, take: take, count: count, list: list, sell: sell, get: get, set: set };
 })();

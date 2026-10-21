@@ -197,6 +197,37 @@ var House = (function () {
     ctx.fill();
   }
 
+  // The Estufa seen from above: white top, four dark burners and knobs along the front.
+  function drawStove(ctx, f) {
+    withShadow(ctx, function () {
+      fillRound(ctx, f.x, f.y, f.w, f.h, 10, C.white);
+    });
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.3)";
+    ctx.lineWidth = 2;
+    roundRect(ctx, f.x, f.y, f.w, f.h, 10);
+    ctx.stroke();
+    [[0.28, 0.32], [0.72, 0.32], [0.28, 0.68], [0.72, 0.68]].forEach(function (p, i) {
+      var cx = f.x + f.w * p[0], cy = f.y + (f.h - 12) * p[1];
+      ctx.fillStyle = C.darkBrown;
+      ctx.beginPath();
+      ctx.arc(cx, cy, i < 2 ? 13 : 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = C.wood;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, i < 2 ? 8 : 6, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+    // Knobs
+    fillRound(ctx, f.x + 6, f.y + f.h - 14, f.w - 12, 9, 4, "#E3EEF0");
+    [0.2, 0.4, 0.6, 0.8].forEach(function (k) {
+      ctx.fillStyle = C.terracotta;
+      ctx.beginPath();
+      ctx.arc(f.x + f.w * k, f.y + f.h - 9.5, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
   function drawBed(ctx, f) {
     withShadow(ctx, function () {
       fillRound(ctx, f.x, f.y, f.w, f.h, 18, C.wood);
@@ -258,7 +289,7 @@ var House = (function () {
     fillRound(ctx, f.x + 48, f.y + 30, 34, 28, 10, C.sage);
   }
 
-  var drawers = { fridge: drawFridge, bed: drawBed, tv: drawTv, sofa: drawSofa };
+  var drawers = { fridge: drawFridge, stove: drawStove, bed: drawBed, tv: drawTv, sofa: drawSofa };
 
   // Area a piece of furniture covers on the floor, including the TV stand.
   function bounds(f) {

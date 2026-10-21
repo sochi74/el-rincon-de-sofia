@@ -33,7 +33,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/garden.js: jardín, semillas, crecimiento y cosecha
 - js/inventory.js: mochila compartida y venta
 - js/gather.js: pescar en el río y recolectar en el bosque
-- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, sims, needs, objects, social, ui, save, main
+- js/cooking.js: recetas, estufa y fogata para cocinar
+- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, cooking, sims, needs, objects, social, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

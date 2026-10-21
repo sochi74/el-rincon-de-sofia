@@ -41,5 +41,13 @@ var WORDS = {
   berry: { es: "Baya", en: "berry", say: "BÉ-ri" },
   mushroom: { es: "Hongo", en: "mushroom", say: "MÁSH-rum" },
   crystal: { es: "Cristal", en: "crystal", say: "KRÍS-tal" },
-  backpack: { es: "Mochila", en: "backpack", say: "BÁK-pak" }
+  backpack: { es: "Mochila", en: "backpack", say: "BÁK-pak" },
+
+  // Cooking
+  stove: { es: "Estufa", en: "stove", say: "STÓUV" },
+  cook: { es: "Cocinar", en: "cook", say: "KUK" },
+  recipe: { es: "Receta", en: "recipe", say: "RÉ-si-pi" },
+  dish: { es: "Plato", en: "dish", say: "DISH" },
+  soup: { es: "Sopa", en: "soup", say: "SÚUP" },
+  pie: { es: "Tarta", en: "pie", say: "PÁI" }
 };
