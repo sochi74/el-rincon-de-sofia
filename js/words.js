@@ -21,5 +21,6 @@ var WORDS = {
   fountain: { es: "Fuente", en: "fountain", say: "FÁUN-ten" },
   tent: { es: "Carpa", en: "tent", say: "TENT" },
   campfire: { es: "Fogata", en: "campfire", say: "KÁMP-fáier" },
-  firefly: { es: "Luciérnaga", en: "firefly", say: "FÁIER-flai" }
+  firefly: { es: "Luciérnaga", en: "firefly", say: "FÁIER-flai" },
+  coin: { es: "Moneda", en: "coin", say: "KÓIN" }
 };

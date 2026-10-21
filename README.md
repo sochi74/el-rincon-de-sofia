@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 11 ✅ Palabras en las cosas. ¡Pack 1 completo! 🏰
+Hito 12 ✅ Monedas mágicas
 
-## ⭐ Estrellas de inglés: 17
+## ⭐ Estrellas de inglés: 18
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -98,3 +98,7 @@ Hito 11 ✅ Palabras en las cosas. ¡Pack 1 completo! 🏰
 - tree: árbol
 - fountain: fuente
 - Let's finish it!: ¡Terminémoslo!
+- coin: moneda
+- money: dinero
+- shiny: brillante
+- collect: recoger

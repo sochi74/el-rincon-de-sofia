@@ -1,5 +1,16 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 12: 🪙 Monedas mágicas
+- Monedas mágicas: un contador de la casa (compartido por los dos) que se ve en el panel, debajo del reloj, como "🪙 N". La partida nueva empieza con 20.
+- Monedas brillantes: cada 30 a 60 segundos de juego aparece una moneda dorada en el pasto de la ciudad, en un lugar al azar donde se puede caminar. Nunca sale en el río, el puente, la casa, la plaza, los caminos de piedra, la carpa, la fogata ni bajo los árboles. Como máximo hay 3 a la vez.
+- Las monedas brillan, flotan un poquito y giran suavemente, con una estrellita que titila. De noche brillan un poco más.
+- Cuando Sofía o real.fixer (seleccionado o no) pasa sobre una moneda, la recoge: desaparece con un destello, sale "+5 🪙" flotando hacia arriba y el contador suma 5.
+- En Pausa no aparecen monedas nuevas.
+- El guardado recuerda el contador y las monedas que hay en el suelo. "Reiniciar" vuelve a 20 y sin monedas en el suelo.
+- Palabra nueva al pasar el mouse sobre una moneda: Moneda · coin (KÓIN).
+- Nuevo archivo js/coins.js.
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles, la fuente, la carpa y la fogata. Mientras duermen (también en la carpa) o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta), y si pasan sobre una moneda la recogen. Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. El panel puede tapar un poco la parte de arriba del mapa en pantallas chicas. Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa. De noche los carteles se ven un poco más oscuros. La tele brilla de noche aunque nadie la esté viendo. Al recargar la página, los personajes vuelven a mirar de frente. Al usar un mueble no se giran hacia él. Con el mouse sobre el panel, la etiqueta muestra lo que hay debajo del panel. Las monedas todavía no se pueden gastar (eso llega en el Hito 13). real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima.
+
 ## 2026-10-21 · Hito 11: 🔤 Palabras en las cosas
 - Al pasar el mouse sobre un mueble, una habitación o un lugar, aparece cerca del cursor una etiqueta pequeña con su nombre en español (en negrita), en inglés (en cursiva) y cómo se pronuncia (entre paréntesis, más clarito). Por ejemplo: "Cama · bed (BED)".
 - Palabras de la casa: Cocina · kitchen (KÍ-chen), Dormitorio · bedroom (BÉD-rum), Sala · living room (LÍ-ving rum), Refrigerador · fridge (FRICH), Cama · bed (BED), Televisión · TV (ti-VÍ), Sofá · couch (KÁUCH), Puerta · door (DOR).

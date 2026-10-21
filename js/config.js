@@ -189,6 +189,21 @@ var CONFIG = {
   // Word tag: on a phone or tablet, how many seconds it stays after touching a thing.
   wordTag: { touchSeconds: 2 },
 
+  // Magic coins: a new game starts with "start". Every "every.min" to "every.max" seconds of play a shiny coin
+  // appears on the city grass, never more than "maxOnGround" at once. Walking within "reach" of one picks it up
+  // and adds "value". "popTime" is how long the sparkle and the "+5" text last.
+  coins: {
+    start: 20,
+    value: 5,
+    every: { min: 30, max: 60 },
+    maxOnGround: 3,
+    reach: 26,
+    radius: 11,
+    popTime: 1.2,
+    gold: "#E2B44B",
+    edge: "#B8862E"
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   save: { every: 10, key: "el-rincon-de-sofia-save" },
 

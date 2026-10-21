@@ -1,8 +1,9 @@
-// Small panel that shows the game clock, who is selected, their needs, friendship, a button to pick each character,
+// Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons.
 // Also the little social menu that opens next to a character, and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
+  var coinsEl;
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
@@ -12,6 +13,7 @@ var UI = (function () {
   function init() {
     panel = document.getElementById("selection-panel");
     clockEl = document.getElementById("clock");
+    coinsEl = document.getElementById("coins");
     nameEl = document.getElementById("selection-name");
     hintEl = document.getElementById("selection-hint");
     needsEl = document.getElementById("needs");
@@ -100,10 +102,12 @@ var UI = (function () {
     return where + " o a " + other.name + " para socializar (dos veces para elegirlo)";
   }
 
-  // Refresh the clock, and the hint, bars and friendship of the selected character.
+  // Refresh the clock, the magic coins, and the hint, bars and friendship of the selected character.
   function update() {
     var clock = Time.text();
     if (clockEl.textContent !== clock) clockEl.textContent = clock;
+    var coins = Coins.text();
+    if (coinsEl.textContent !== coins) coinsEl.textContent = coins;
     if (!current) return;
     var hint = hintFor(current);
     if (hintEl.textContent !== hint) hintEl.textContent = hint;

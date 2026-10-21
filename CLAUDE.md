@@ -22,6 +22,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/time.js: reloj del juego, día y noche
 - js/house.js: dibujo de la casa y los muebles
 - js/city.js: mapa de la ciudad y sus lugares
+- js/coins.js: monedas mágicas y monedas brillantes
 - js/sims.js: dibujo, selección y movimiento
 - js/ui.js: panel
 - js/main.js: arranque y bucle del juego
@@ -29,7 +30,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/objects.js: muebles que se pueden usar y sus acciones
 - js/social.js: interacciones y amistad
 - js/save.js: guardado y carga de la partida
-- Orden de scripts: config, words, characters, time, house, city, sims, needs, objects, social, ui, save, main
+- Orden de scripts: config, words, characters, time, house, city, coins, sims, needs, objects, social, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones
