@@ -1,4 +1,4 @@
-// Saves and loads the game in the browser: needs, where each character is (house or city) and stands, friendship,
+// Saves and loads the game in the browser: needs, where each character is (house or city), stands and looks, friendship,
 // the day and hour of the game clock, the magic coins (the counter and the shiny coins on the ground), the garden plots,
 // the backpack (with its dishes) and the things in the forest.
 // It also remembers, apart from the game, whether the panel was open or closed.
@@ -21,7 +21,7 @@ var Save = (function () {
       var needs = {};
       var values = Needs.get(id);
       CONFIG.needs.forEach(function (need) { needs[need.id] = values[need.id]; });
-      data.characters[id] = { place: sim.place, x: sim.x, y: sim.y, needs: needs, friendship: friendship };
+      data.characters[id] = { place: sim.place, x: sim.x, y: sim.y, facing: sim.facing, needs: needs, friendship: friendship };
     });
     return data;
   }
@@ -47,15 +47,16 @@ var Save = (function () {
     }
     if (!data || typeof data.characters !== "object") return;
     if (data.clock && typeof data.clock === "object") Time.set(data.clock.day, data.clock.minute);
+    // The forest first, so the coins can stay off its things.
+    Gather.set(data.forest);
     Coins.set(data.coins);
     Garden.set(data.garden);
     Inventory.set(data.inventory);
-    Gather.set(data.forest);
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var saved = data.characters[id];
       if (!saved || typeof saved !== "object") return;
-      Sims.place(sim, saved.x, saved.y, saved.place);
+      Sims.place(sim, saved.x, saved.y, saved.place, saved.facing);
       var values = Needs.get(id);
       CONFIG.needs.forEach(function (need) {
         var v = saved.needs && saved.needs[need.id];

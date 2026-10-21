@@ -13,9 +13,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río.
 
 ## Estado
-Hito 15 ✅ Cocinar
+Extra ✅ Pulido 1
 
-## ⭐ Estrellas de inglés: 22
+## ⭐ Estrellas de inglés: 23
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -130,3 +130,6 @@ Hito 15 ✅ Cocinar
 - soup: sopa
 - pie: tarta
 - delicious: delicioso
+- polish: pulir, dejar algo más lindo
+- fix: arreglar
+- wait: esperar

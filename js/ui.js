@@ -11,7 +11,7 @@ var UI = (function () {
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
-  var cookMenu, cookButtons = [], campfireButton, onCookPick = null;
+  var cookMenu, cookButtons = [], campfireButton, onCookPick = null, onCookClose = null;
   var backpack, backpackList, backpackShown = null, eatButtons = [];
   var current = null;
   var bars = {};
@@ -84,6 +84,7 @@ var UI = (function () {
       button.appendChild(effect);
       button.addEventListener("click", function () {
         var pick = onCookPick;
+        onCookClose = null;
         closeMenu();
         if (pick) pick(r.id);
       });
@@ -96,6 +97,7 @@ var UI = (function () {
     campfireButton.textContent = "Junto a la fogata 🔥";
     campfireButton.addEventListener("click", function () {
       var pick = onCookPick;
+      onCookClose = null;
       closeMenu();
       if (pick) pick("campfire");
     });
@@ -234,9 +236,10 @@ var UI = (function () {
   }
 
   // Open the recipe menu next to a spot on the screen. Recipes without enough ingredients look faded.
-  // "atCampfire" adds "Junto a la fogata 🔥".
-  function openCookMenu(x, y, atCampfire, onPick) {
+  // "atCampfire" adds "Junto a la fogata 🔥". "onClose" runs if it closes without a pick.
+  function openCookMenu(x, y, atCampfire, onClose, onPick) {
     onCookPick = onPick;
+    onCookClose = onClose;
     campfireButton.hidden = !atCampfire;
     updateCook();
     cookMenu.hidden = false;
@@ -265,12 +268,15 @@ var UI = (function () {
 
   // Close the social menu, the seed menu and the recipe menu.
   function closeMenu() {
+    var closed = onCookClose;
     onMenuPick = null;
     onSeedPick = null;
     onCookPick = null;
+    onCookClose = null;
     menu.hidden = true;
     seedMenu.hidden = true;
     cookMenu.hidden = true;
+    if (closed) closed();
   }
 
   function isMenuOpen() {
@@ -366,6 +372,16 @@ var UI = (function () {
     }, 1200);
   }
 
+  // True if a spot on the screen is over the panel, the ☰ button, the backpack or an open menu,
+  // so the word tag never shows what is under them.
+  function coversSpot(x, y) {
+    return [panelOpen ? panel : null, menuToggle, backpack, menu, seedMenu, cookMenu].some(function (el) {
+      if (!el || el.hidden) return false;
+      var r = el.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    });
+  }
+
   // Show the word for a thing near a spot on the screen, kept inside the window.
   // With the mouse it goes below and to the right so it never covers the cursor;
   // with a finger it goes above, and hides by itself after "seconds".
@@ -414,6 +430,7 @@ var UI = (function () {
     showWord: showWord,
     hideWord: hideWord,
     isWordTimed: isWordTimed,
+    coversSpot: coversSpot,
     show: show,
     showSelected: showSelected,
     update: update,

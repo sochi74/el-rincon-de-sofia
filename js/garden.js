@@ -192,6 +192,7 @@ var Garden = (function () {
         } else {
           a.phase = isTaken(a.plot, id) ? "busy" : "doing";
           a.elapsed = 0;
+          if (a.phase === "doing") Sims.face(a.sim, PLOTS[a.plot].x + PLOTS[a.plot].w / 2, PLOTS[a.plot].y + PLOTS[a.plot].h / 2);
         }
         return;
       }

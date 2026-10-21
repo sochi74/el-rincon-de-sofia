@@ -48,10 +48,13 @@ var Cooking = (function () {
 
   // Tap on the Estufa or the Fogata: the character walks there and the recipe menu opens next to the tap.
   // At the Fogata the menu also has "Junto a la fogata 🔥", to sit by the fire as before.
+  // Closing the menu without picking stops the character where it is.
   function tap(sim, station, screenX, screenY) {
     var s = STATIONS[station.id];
     Sims.walkTo(sim, s.spot.x, s.spot.y);
-    UI.openCookMenu(screenX, screenY, station.id === "campfire", function (pick) {
+    UI.openCookMenu(screenX, screenY, station.id === "campfire", function () {
+      sim.path = [];
+    }, function (pick) {
       if (pick === "campfire") {
         Objects.start(sim, station);
         return;
@@ -98,10 +101,14 @@ var Cooking = (function () {
     return true;
   }
 
-  // Free will: the first dish there is in the backpack, or null.
+  // Free will: the cheapest dish there is in the backpack, or null (so the Plato mágico is kept while there is something simpler).
   function anyDish() {
-    var r = RECIPES.filter(function (rec) { return Inventory.count(rec.id) > 0; })[0];
-    return r ? r.id : null;
+    var best = null;
+    RECIPES.forEach(function (rec) {
+      if (Inventory.count(rec.id) === 0) return;
+      if (!best || Inventory.item(rec.id).price < Inventory.item(best.id).price) best = rec;
+    });
+    return best ? best.id : null;
   }
 
   function finishEating(a) {
@@ -141,6 +148,7 @@ var Cooking = (function () {
         if (a.sim.path.length > 0) return;
         a.phase = Objects.isTaken(a.station, id) ? "busy" : "doing";
         a.elapsed = 0;
+        if (a.phase === "doing") Sims.face(a.sim, a.station.x + a.station.w / 2, a.station.y + a.station.h / 2);
         return;
       }
       if (a.phase === "busy") {

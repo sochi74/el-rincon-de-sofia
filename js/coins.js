@@ -14,12 +14,21 @@ var Coins = (function () {
     return K.every.min + Math.random() * (K.every.max - K.every.min);
   }
 
+  // True if a coin can lie here: the whole coin (it floats a little above its spot) is on open grass,
+  // and it is away from the berries, mushrooms and crystals of the forest.
+  function isFreeSpot(x, y) {
+    var r = K.radius + 4;
+    var points = [[x, y], [x, y - 12 - r], [x - r, y - 12], [x + r, y - 12]];
+    if (!points.every(function (p) { return City.isOpenGrass(p[0], p[1]); })) return false;
+    return !Gather.isNear(x, y, 45);
+  }
+
   // A random spot of open grass in the city, or null if none was found after a few tries.
   function randomSpot() {
     for (var i = 0; i < 40; i++) {
       var x = Math.random() * CONFIG.world.width;
       var y = Math.random() * CONFIG.world.height;
-      if (!City.isOpenGrass(x, y)) continue;
+      if (!isFreeSpot(x, y)) continue;
       var tooClose = ground.some(function (c) {
         return Math.abs(c.x - x) < 60 && Math.abs(c.y - y) < 60;
       });
@@ -200,6 +209,13 @@ var Coins = (function () {
     count += n;
   }
 
+  // True if a coin lies within "r" of a spot (so forest things do not grow under one).
+  function isNear(x, y, r) {
+    return ground.some(function (c) {
+      return Math.abs(c.x - x) < r && Math.abs(c.y - y) < r;
+    });
+  }
+
   function get() {
     return { count: count, ground: ground.map(function (c) { return { x: c.x, y: c.y }; }) };
   }
@@ -210,12 +226,12 @@ var Coins = (function () {
     if (typeof saved.count === "number" && isFinite(saved.count) && saved.count >= 0) count = Math.floor(saved.count);
     if (Array.isArray(saved.ground)) {
       ground = saved.ground.filter(function (c) {
-        return c && typeof c.x === "number" && typeof c.y === "number" && City.isOpenGrass(c.x, c.y);
+        return c && typeof c.x === "number" && typeof c.y === "number" && isFreeSpot(c.x, c.y);
       }).slice(0, K.maxOnGround).map(function (c) {
         return { x: c.x, y: c.y, spin: Math.random() * Math.PI * 2 };
       });
     }
   }
 
-  return { update: update, draw: draw, wordAt: wordAt, text: text, amount: amount, spend: spend, add: add, get: get, set: set };
+  return { update: update, draw: draw, wordAt: wordAt, text: text, amount: amount, spend: spend, add: add, isNear: isNear, get: get, set: set };
 })();

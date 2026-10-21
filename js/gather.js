@@ -60,7 +60,7 @@ var Gather = (function () {
     for (var i = 0; i < 60; i++) {
       var x = Math.random() * CONFIG.world.width * 0.55;
       var y = Math.random() * CONFIG.world.height * 0.55;
-      if (!City.isForestFloor(x, y)) continue;
+      if (!City.isForestFloor(x, y) || Coins.isNear(x, y, 45)) continue;
       var tooClose = forest.some(function (t) {
         return Math.abs(t.x - x) < 50 && Math.abs(t.y - y) < 50;
       });
@@ -92,6 +92,13 @@ var Gather = (function () {
       if (dx * dx + dy * dy <= 20 * 20) return t;
     }
     return null;
+  }
+
+  // True if a forest thing is within "r" of a spot (so shiny coins never fall on one).
+  function isNear(x, y, r) {
+    return forest.some(function (t) {
+      return Math.abs(t.x - x) < r && Math.abs(t.y - y) < r;
+    });
   }
 
   function wordAt(x, y) {
@@ -494,6 +501,7 @@ var Gather = (function () {
 
   return {
     thingAt: thingAt,
+    isNear: isNear,
     wordAt: wordAt,
     tapRiver: tapRiver,
     tapThing: tapThing,
