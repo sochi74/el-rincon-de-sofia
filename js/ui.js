@@ -1,7 +1,8 @@
-// Small panel that shows who is selected, their needs, friendship and the Pausa and Reiniciar buttons.
+// Small panel that shows who is selected, their needs, friendship, a button to pick each character,
+// and the Pausa and Reiniciar buttons.
 // Also the little social menu that opens next to a character.
 var UI = (function () {
-  var panel, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu;
+  var panel, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var current = null;
   var bars = {};
@@ -14,6 +15,13 @@ var UI = (function () {
     friendshipEl = document.getElementById("friendship");
     pauseButton = document.getElementById("pause-button");
     menu = document.getElementById("social-menu");
+    characterButtons = document.querySelectorAll(".character-button");
+
+    Array.prototype.forEach.call(characterButtons, function (button) {
+      button.addEventListener("click", function () {
+        Sims.select(button.getAttribute("data-id"));
+      });
+    });
 
     Array.prototype.forEach.call(menu.querySelectorAll("button"), function (button) {
       button.addEventListener("click", function () {
@@ -60,15 +68,15 @@ var UI = (function () {
     current = character;
     needsEl.hidden = !character;
     friendshipEl.hidden = !character;
+    Array.prototype.forEach.call(characterButtons, function (button) {
+      button.classList.toggle("selected", !!character && button.getAttribute("data-id") === character.id);
+    });
     if (!character) {
       nameEl.textContent = "Nadie seleccionado";
       hintEl.textContent = "Toca a Sofía o a real.fixer";
       return;
     }
     nameEl.textContent = CONFIG.characterLooks[character.id].icon + " " + character.name;
-    var other = otherOf(character);
-    hintEl.textContent = "Toca el piso para caminar, un mueble para usarlo o a " + other.name +
-      " para socializar (dos veces para elegirlo)";
     update();
   }
 
@@ -76,9 +84,20 @@ var UI = (function () {
     return CHARACTERS.filter(function (c) { return c.id !== character.id; })[0];
   }
 
-  // Refresh the bars and friendship of the selected character.
+  // What the selected character can do where it is.
+  function hintFor(character) {
+    var other = otherOf(character);
+    var where = Sims.placeOf(character.id) === "city"
+      ? "Toca el suelo para caminar, la Casa de Sofía para entrar"
+      : "Toca el piso para caminar, un mueble para usarlo, la puerta para salir";
+    return where + " o a " + other.name + " para socializar (dos veces para elegirlo)";
+  }
+
+  // Refresh the hint, bars and friendship of the selected character.
   function update() {
     if (!current) return;
+    var hint = hintFor(current);
+    if (hintEl.textContent !== hint) hintEl.textContent = hint;
     var values = Needs.get(current.id);
     CONFIG.needs.forEach(function (need) {
       var value = values[need.id];

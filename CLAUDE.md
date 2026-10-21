@@ -19,6 +19,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/config.js: colores, tamaños y constantes
 - js/characters.js: datos de los personajes
 - js/house.js: dibujo de la casa y los muebles
+- js/city.js: mapa de la ciudad y sus lugares
 - js/sims.js: dibujo, selección y movimiento
 - js/ui.js: panel
 - js/main.js: arranque y bucle del juego
@@ -26,7 +27,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/objects.js: muebles que se pueden usar y sus acciones
 - js/social.js: interacciones y amistad
 - js/save.js: guardado y carga de la partida
-- Orden de scripts: config, characters, house, sims, needs, objects, social, ui, save, main
+- Orden de scripts: config, characters, house, city, sims, needs, objects, social, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones
@@ -47,3 +48,4 @@ Windows con terminal Linux (WSL). Para abrir el juego: explorer.exe index.html
 
 ## Paleta (estilo acogedor)
 Crema #F5EBDD · Madera #B07A4F · Terracota #C8664A · Verde salvia #8FA88A · Café oscuro #4A3428
+Ciudad: Pasto #A8C686 · Pasto claro #C6DCA4 · Pasto oscuro #6F9460 · Agua #7DB9D6 · Agua clara #B5DCEC · Piedra #B8B2A7 · Piedra clara #DAD4C8

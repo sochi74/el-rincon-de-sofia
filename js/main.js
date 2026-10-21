@@ -7,6 +7,7 @@
 
   var view = { width: 0, height: 0, dpr: 1, scale: 1, offsetX: 0, offsetY: 0 };
   var hovered = null;
+  var hoveredHouse = false;
 
   // Match the canvas to the window and keep it sharp on high-resolution screens.
   function resize() {
@@ -30,7 +31,11 @@
 
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
-    House.draw(ctx, hovered && hovered.id);
+    if (Sims.viewPlace() === "city") {
+      City.draw(ctx, time, hoveredHouse);
+    } else {
+      House.draw(ctx, hovered && hovered.id);
+    }
     Sims.draw(ctx, time);
     Social.draw(ctx, time);
   }
@@ -53,7 +58,7 @@
     window.requestAnimationFrame(loop);
   }
 
-  // Turn a spot on the screen into a spot in the house.
+  // Turn a spot on the screen into a spot in the house or the city.
   function toWorld(event) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -67,11 +72,16 @@
     Sims.handleTap(p.x, p.y, event.clientX, event.clientY);
   }
 
-  // Light up the usable furniture under the mouse (characters in front win).
+  // Light up the usable furniture, or the house in the city, under the mouse (characters in front win).
+  // The front door gets a pointer too.
   function handleHover(event) {
     var p = toWorld(event);
-    hovered = Sims.simAt(p.x, p.y) ? null : Objects.at(p.x, p.y);
-    canvas.style.cursor = hovered ? "pointer" : "";
+    var free = !Sims.simAt(p.x, p.y);
+    var inCity = Sims.viewPlace() === "city";
+    hovered = free && !inCity ? Objects.at(p.x, p.y) : null;
+    hoveredHouse = free && inCity && City.houseAt(p.x, p.y);
+    var door = free && !inCity && House.doorAt(p.x, p.y);
+    canvas.style.cursor = hovered || hoveredHouse || door ? "pointer" : "";
   }
 
   function startGame() {
@@ -92,7 +102,10 @@
   playButton.addEventListener("click", startGame);
   canvas.addEventListener("pointerdown", handleTap);
   canvas.addEventListener("pointermove", handleHover);
-  canvas.addEventListener("pointerleave", function () { hovered = null; });
+  canvas.addEventListener("pointerleave", function () {
+    hovered = null;
+    hoveredHouse = false;
+  });
   window.addEventListener("resize", resize);
   window.addEventListener("pagehide", Save.onLeave);
   window.addEventListener("beforeunload", Save.onLeave);

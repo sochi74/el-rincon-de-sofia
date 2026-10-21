@@ -333,5 +333,11 @@ var House = (function () {
     });
   }
 
-  return { draw: draw, bounds: bounds };
+  // The front door: the welcome mat and the doorway above it. Tapping it takes a character outside.
+  function doorAt(x, y) {
+    var d = CONFIG.frontDoor.tap;
+    return x >= d.x && x <= d.x + d.w && y >= d.y && y <= d.y + d.h;
+  }
+
+  return { draw: draw, bounds: bounds, doorAt: doorAt };
 })();

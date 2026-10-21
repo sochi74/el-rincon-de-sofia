@@ -1,4 +1,4 @@
-// The characters living in the house: drawing, selection and walking.
+// The characters: drawing, selection and walking, in the house or in the city.
 var Sims = (function () {
   var C = CONFIG.colors;
   var sims = [];
@@ -17,7 +17,11 @@ var Sims = (function () {
         x: look.start.x,
         y: look.start.y,
         path: [],
-        stepPhase: 0
+        stepPhase: 0,
+        // "house" or "city"
+        place: "house",
+        // The place it goes to when it gets to the door it is walking to, or null.
+        goal: null
       };
     });
   }
@@ -460,11 +464,18 @@ var Sims = (function () {
     drawThoughtBubble(ctx, sim, time, lift);
   }
 
+  // The place the screen shows: where the selected character is, or the house when nobody is.
+  function viewPlace() {
+    if (selected) return selected.place;
+    return sims.some(function (s) { return s.place === "house"; }) ? "house" : "city";
+  }
+
   function draw(ctx, time) {
+    var view = viewPlace();
     // Whoever is lower on screen is drawn last, so they appear in front.
-    sims.slice().sort(function (a, b) { return a.y - b.y; }).forEach(function (sim) {
-      drawSim(ctx, sim, time);
-    });
+    sims.filter(function (s) { return s.place === view; })
+      .sort(function (a, b) { return a.y - b.y; })
+      .forEach(function (sim) { drawSim(ctx, sim, time); });
   }
 
   // ---------- Walking ----------
@@ -493,8 +504,14 @@ var Sims = (function () {
     return null;
   }
 
-  // Straight line to the target, passing through a doorway when it is in another room.
+  // Straight line to the target. In the house it passes through a doorway when the target is
+  // in another room; in the city it crosses the river on the bridge.
   function walkTo(sim, x, y) {
+    if (sim.place === "city") {
+      sim.path = City.path(sim.x, sim.y, x, y);
+      sim.goal = null;
+      return;
+    }
     var targetRoom = roomAt(x, y);
     if (!targetRoom) return;
     var target = clampToRoom(targetRoom, x, y);
@@ -506,6 +523,30 @@ var Sims = (function () {
     }
     path.push(target);
     sim.path = path;
+    sim.goal = null;
+  }
+
+  // ---------- Going out and coming back ----------
+
+  // Walk to the front door and go out to the city.
+  function goOut(sim) {
+    walkTo(sim, CONFIG.frontDoor.inside.x, CONFIG.frontDoor.inside.y);
+    sim.goal = "city";
+  }
+
+  // Walk to the door of Sofía's house in the city and go in.
+  function goHome(sim) {
+    walkTo(sim, City.doorSpot.x, City.doorSpot.y);
+    sim.goal = "house";
+  }
+
+  // At the door: come out on the other side, in the city by the house door or in the Sala by the front door.
+  function goThrough(sim) {
+    var spot = sim.goal === "city" ? City.doorSpot : CONFIG.frontDoor.inside;
+    sim.place = sim.goal;
+    sim.x = spot.x;
+    sim.y = spot.y;
+    sim.goal = null;
   }
 
   function update(dt) {
@@ -527,6 +568,7 @@ var Sims = (function () {
         }
       }
       sim.stepPhase = sim.path.length > 0 ? sim.stepPhase + dt * 11 : 0;
+      if (sim.path.length === 0 && sim.goal) goThrough(sim);
     });
   }
 
@@ -541,6 +583,7 @@ var Sims = (function () {
   }
 
   // Try to fix the lowest need; true if it found something to do.
+  // In the city, it goes back home first.
   function lookAfter(sim) {
     var values = Needs.get(sim.data.id);
     var lowest = null;
@@ -549,9 +592,13 @@ var Sims = (function () {
     });
     if (values[lowest.id] >= CONFIG.freeWill.threshold) return false;
 
+    if (sim.place === "city") {
+      goHome(sim);
+      return true;
+    }
     if (lowest.id === "social") {
-      if (Social.isBusy()) return false;
       var other = sims.filter(function (s) { return s !== sim; })[0];
+      if (Social.isBusy() || other.place !== sim.place) return false;
       Social.start(sim, other, "chat");
       return true;
     }
@@ -582,9 +629,12 @@ var Sims = (function () {
     return sims;
   }
 
-  // Put a character at a saved spot, if it is inside the house.
-  function place(sim, x, y) {
-    if (typeof x !== "number" || typeof y !== "number" || !roomAt(x, y)) return;
+  // Put a character at a saved spot, if it is inside the house or on dry ground in the city.
+  function place(sim, x, y, where) {
+    where = where === "city" ? "city" : "house";
+    if (typeof x !== "number" || typeof y !== "number") return;
+    if (where === "city" ? !City.isWalkable(x, y) : !roomAt(x, y)) return;
+    sim.place = where;
     sim.x = x;
     sim.y = y;
     sim.path = [];
@@ -592,9 +642,12 @@ var Sims = (function () {
 
   // ---------- Tapping ----------
 
+  // The character at a spot of the place on screen, or null.
   function simAt(x, y) {
     var hit = null;
+    var view = viewPlace();
     sims.forEach(function (sim) {
+      if (sim.place !== view) return;
       var dx = x - sim.x, dy = y - sim.y;
       var k = CONFIG.characterScale;
       if (dx >= -22 * k && dx <= 22 * k && dy >= -76 * k && dy <= 34) {
@@ -607,6 +660,7 @@ var Sims = (function () {
   // A tap on the other character opens the social menu; tapping it again selects it.
   // A tap on a character selects it and stops what it was doing.
   // A tap on furniture sends the selected one to use it; a tap on the floor walks it there.
+  // A tap on the front door takes it out to the city; in the city, a tap on the house takes it back in.
   // While the menu is open, a tap anywhere else only closes it.
   function handleTap(x, y, screenX, screenY) {
     var sim = simAt(x, y);
@@ -636,12 +690,41 @@ var Sims = (function () {
     if (!selected) return;
     Social.cancel(selected.data.id);
     Objects.cancel(selected.data.id);
+    if (selected.place === "city") {
+      if (City.houseAt(x, y)) {
+        goHome(selected);
+      } else {
+        walkTo(selected, x, y);
+      }
+      return;
+    }
+    if (House.doorAt(x, y)) {
+      goOut(selected);
+      return;
+    }
     var furniture = Objects.at(x, y);
     if (furniture) {
       Objects.start(selected, furniture);
     } else {
       walkTo(selected, x, y);
     }
+  }
+
+  // Select a character from the panel buttons, wherever it is.
+  function select(id) {
+    var sim = sims.filter(function (s) { return s.data.id === id; })[0];
+    if (!sim) return;
+    if (UI.isMenuOpen()) {
+      UI.closeMenu();
+      menuFor = null;
+    }
+    selected = sim;
+    onSelect(sim.data);
+  }
+
+  function placeOf(id) {
+    var sim = sims.filter(function (s) { return s.data.id === id; })[0];
+    return sim ? sim.place : "house";
   }
 
   return {
@@ -654,6 +737,9 @@ var Sims = (function () {
     simAt: simAt,
     roomAt: roomAt,
     list: list,
-    place: place
+    place: place,
+    select: select,
+    placeOf: placeOf,
+    viewPlace: viewPlace
   };
 })();

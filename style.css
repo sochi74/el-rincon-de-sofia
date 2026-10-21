@@ -188,6 +188,7 @@ h1 {
   margin-top: 10px;
 }
 
+.character-button,
 #pause-button,
 #reset-button {
   padding: 6px 16px;
@@ -206,11 +207,17 @@ h1 {
   background: #8FA88A;
 }
 
+.character-button.selected {
+  background: #C8664A;
+}
+
+.character-button:hover,
 #pause-button:hover,
 #reset-button:hover {
   background: #C8664A;
 }
 
+.character-button:active,
 #pause-button:active,
 #reset-button:active {
   transform: translateY(2px);

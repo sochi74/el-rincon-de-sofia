@@ -11,7 +11,15 @@ var CONFIG = {
     tileLight: "#FBF4EA",
     tileDark: "#EAD9C4",
     carpet: "#A9BFA4",
-    grass: "#CFDDBF"
+    grass: "#CFDDBF",
+    // City colors: grass greens, water blue and stone gray.
+    cityGrass: "#A8C686",
+    cityGrassLight: "#C6DCA4",
+    cityGrassDark: "#6F9460",
+    water: "#7DB9D6",
+    waterLight: "#B5DCEC",
+    stone: "#B8B2A7",
+    stoneLight: "#DAD4C8"
   },
 
   // Size of the house drawing in world units; it is scaled to fit the window.
@@ -44,6 +52,10 @@ var CONFIG = {
     { rooms: ["kitchen", "living"], x: 275, y: 340 },
     { rooms: ["bedroom", "living"], x: 515, y: 340 }
   ],
+
+  // The front door of the house: where to tap it (the welcome mat and the doorway above it),
+  // and the spot in the Sala next to it where a character goes out and comes back in.
+  frontDoor: { tap: { x: 100, y: 668, w: 90, h: 48 }, inside: { x: 145, y: 640 } },
 
   // How close a character's feet may get to the walls of a room.
   walkMargin: { side: 30, top: 100, bottom: 20 },

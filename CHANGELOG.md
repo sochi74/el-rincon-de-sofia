@@ -1,5 +1,25 @@
 # CHANGELOG.md
 
+## 2026-10-21 · Hito 7: 🚪 La puerta mágica
+- Cada personaje está en un lugar: la casa o la ciudad. La pantalla muestra el lugar del personaje seleccionado.
+- Con un personaje seleccionado, tocar la puerta (el tapete terracota abajo a la izquierda de la Sala) lo hace caminar hasta ella y salir: aparece en la ciudad, frente a la puerta de su casa.
+- Mapa de la ciudad visto desde arriba, dibujado con código:
+  - Casa de Sofía por fuera, con techo de tejas, chimenea, ventanas y puerta.
+  - Un río que cruza el mapa, con ondas que se mueven, y un puente de madera.
+  - Un bosque de árboles redondeados arriba a la izquierda.
+  - Una plaza de piedra con una fuente que salpica.
+  - Carteles con los nombres: Casa de Sofía, Río, Puente, Bosque, Plaza.
+  - Espacio libre junto al río, del otro lado del puente, para la futura carpa de real.fixer.
+- En la ciudad, tocar el suelo hace caminar al seleccionado. Nunca pisa el agua: para cruzar usa el puente. Si tocas el agua, va a la orilla más cercana. No sale del mapa.
+- Tocar la Casa de Sofía (brilla al pasar el mouse) hace que el personaje camine a su puerta y entre: vuelve a la Sala, junto a la puerta.
+- Botones "Sofía" y "real.fixer" en el panel para elegir a cada uno aunque esté en otro lugar; la vista cambia a su lugar. El botón del seleccionado se ve terracota.
+- Las necesidades bajan en los dos lugares. Charlar, contar chistes y chocar los cinco solo funcionan si los dos están en el mismo lugar.
+- Libre albedrío: si el que no está seleccionado está en la ciudad y tiene una necesidad por debajo de 50, primero vuelve a la casa.
+- El guardado recuerda en qué lugar está cada uno y su posición ahí.
+- Colores nuevos de la ciudad: verdes de pasto, azul de agua y gris de piedra.
+- Nuevo archivo js/city.js.
+- Problemas conocidos: Los personajes atraviesan los muebles, y en la ciudad también la casa, los árboles y la fuente. Mientras duermen o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar (y pueden salir o entrar por la puerta). Si real.fixer quiere charlar mientras Sofía usa un mueble, ella lo deja para charlar. El panel puede tapar un poco la parte de arriba del mapa en pantallas chicas.
+
 ## 2026-10-20 · Plan de la Parte B
 - Se escribió el roadmap del juego completo en paquetes
 
