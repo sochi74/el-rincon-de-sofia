@@ -1,5 +1,22 @@
 # CHANGELOG.md
 
+## 2026-10-20 · Hito 5: 💬 ¡A socializar!
+- Con un personaje seleccionado, tocar al otro abre un menú: "Charlar", "Contar un chiste" y "Chocar los cinco". Tocar al otro dos veces lo selecciona.
+- Al elegir, los dos caminan uno hacia el otro, se miran y alternan de 2 a 4 burbujas con sus frases de js/characters.js (saludo, charlar, chiste o chocar los cinco).
+- real.fixer habla en inglés con el subtítulo en español debajo, más pequeño. Sofía habla en español.
+- Si alguno estaba usando un mueble, lo deja para socializar.
+- Efectos para los dos:
+  - Charlar: Social +15, Amistad +5.
+  - Contar un chiste: Social +10, Amistad +8.
+  - Chocar los cinco: Social +8, Amistad +4, y aparece un 🙌 entre ellos.
+- Rasgos: Fiestero/a da Social ×1.5, Tímido/a ×0.7; Conversador/a: Charlar da Social ×1.5; Bromista: sus chistes dan Amistad ×1.5. Hoy nadie es Fiestero, Tímido ni Bromista.
+- Actividad favorita: ×1.25 y un ❤️. A real.fixer le encanta charlar.
+- Social nunca pasa de 100. Amistad va de -100 a 100 y empieza en 0.
+- El panel muestra "Amistad con <el otro>: <valor>".
+- Hay que esperar unos segundos entre interacciones; si se intenta antes, sale la burbuja "Un momento…".
+- El botón Pausa también congela las conversaciones.
+- Problemas conocidos: Los personajes atraviesan los muebles. Mientras duermen o ven tele se quedan de pie. Con Pausa, los personajes todavía terminan de caminar.
+
 ## 2026-10-20 · Hito 4: 🛋️ Cosas de la casa
 - Los muebles se iluminan con un brillo verde salvia cuando el mouse pasa por encima.
 - Con un personaje seleccionado, tocar un mueble lo hace caminar hasta él y usarlo, con una burbuja encima:

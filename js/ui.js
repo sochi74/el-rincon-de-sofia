@@ -1,6 +1,8 @@
-// Small panel that shows who is selected, their needs and the pause button.
+// Small panel that shows who is selected, their needs, friendship and the pause button.
+// Also the little social menu that opens next to a character.
 var UI = (function () {
-  var panel, nameEl, hintEl, needsEl, pauseButton;
+  var panel, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu;
+  var onMenuPick = null;
   var current = null;
   var bars = {};
 
@@ -9,7 +11,17 @@ var UI = (function () {
     nameEl = document.getElementById("selection-name");
     hintEl = document.getElementById("selection-hint");
     needsEl = document.getElementById("needs");
+    friendshipEl = document.getElementById("friendship");
     pauseButton = document.getElementById("pause-button");
+    menu = document.getElementById("social-menu");
+
+    Array.prototype.forEach.call(menu.querySelectorAll("button"), function (button) {
+      button.addEventListener("click", function () {
+        var pick = onMenuPick;
+        closeMenu();
+        if (pick) pick(button.getAttribute("data-type"));
+      });
+    });
 
     CONFIG.needs.forEach(function (need) {
       var row = document.createElement("div");
@@ -43,17 +55,24 @@ var UI = (function () {
   function showSelected(character) {
     current = character;
     needsEl.hidden = !character;
+    friendshipEl.hidden = !character;
     if (!character) {
       nameEl.textContent = "Nadie seleccionado";
       hintEl.textContent = "Toca a Sofía o a real.fixer";
       return;
     }
     nameEl.textContent = CONFIG.characterLooks[character.id].icon + " " + character.name;
-    hintEl.textContent = "Toca el piso para caminar o un mueble para usarlo";
+    var other = otherOf(character);
+    hintEl.textContent = "Toca el piso para caminar, un mueble para usarlo o a " + other.name +
+      " para socializar (dos veces para elegirlo)";
     update();
   }
 
-  // Refresh the bars of the selected character.
+  function otherOf(character) {
+    return CHARACTERS.filter(function (c) { return c.id !== character.id; })[0];
+  }
+
+  // Refresh the bars and friendship of the selected character.
   function update() {
     if (!current) return;
     var values = Needs.get(current.id);
@@ -62,7 +81,35 @@ var UI = (function () {
       bars[need.id].style.width = value + "%";
       bars[need.id].style.background = Needs.colorFor(value);
     });
+    var other = otherOf(current);
+    friendshipEl.textContent = "Amistad con " + other.name + ": " + Math.round(Social.friendshipWith(current.id, other.id));
   }
 
-  return { init: init, show: show, showSelected: showSelected, update: update };
+  // Open the social menu next to a spot on the screen, kept inside the window.
+  function openMenu(x, y, onPick) {
+    onMenuPick = onPick;
+    menu.hidden = false;
+    var w = menu.offsetWidth, h = menu.offsetHeight;
+    menu.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x + 14)) + "px";
+    menu.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, y - h / 2)) + "px";
+  }
+
+  function closeMenu() {
+    onMenuPick = null;
+    menu.hidden = true;
+  }
+
+  function isMenuOpen() {
+    return !menu.hidden;
+  }
+
+  return {
+    init: init,
+    show: show,
+    showSelected: showSelected,
+    update: update,
+    openMenu: openMenu,
+    closeMenu: closeMenu,
+    isMenuOpen: isMenuOpen
+  };
 })();

@@ -4,6 +4,8 @@ var Sims = (function () {
   var sims = [];
   var selected = null;
   var onSelect = function () {};
+  // The character whose social menu is open, if any.
+  var menuFor = null;
 
   function init(selectCallback) {
     onSelect = selectCallback || onSelect;
@@ -83,14 +85,16 @@ var Sims = (function () {
     circle(ctx, 0, -54, 16, look.skin);
   }
 
-  function drawEyes(ctx, look, y) {
-    circle(ctx, -5.5, y, 2.2, look.eyes);
-    circle(ctx, 5.5, y, 2.2, look.eyes);
-    circle(ctx, -4.8, y - 0.8, 0.8, C.white);
-    circle(ctx, 6.2, y - 0.8, 0.8, C.white);
+  // "side" moves the eyes a little to one side (-1 left, 1 right).
+  function drawEyes(ctx, look, y, side) {
+    var dx = (side || 0) * 2;
+    circle(ctx, -5.5 + dx, y, 2.2, look.eyes);
+    circle(ctx, 5.5 + dx, y, 2.2, look.eyes);
+    circle(ctx, -4.8 + dx, y - 0.8, 0.8, C.white);
+    circle(ctx, 6.2 + dx, y - 0.8, 0.8, C.white);
   }
 
-  function drawRealFixer(ctx, look, step) {
+  function drawRealFixer(ctx, look, step, side) {
     drawLegs(ctx, look, step);
     var swing = drawArms(ctx, look, step);
     drawTorso(ctx, look);
@@ -127,7 +131,7 @@ var Sims = (function () {
     fillRound(ctx, -16.5, -58, 5, 10, 2, look.hair);
     fillRound(ctx, 11.5, -58, 5, 10, 2, look.hair);
 
-    drawEyes(ctx, look, -49);
+    drawEyes(ctx, look, -49, side);
 
     // Full dark beard with gray hairs
     ctx.fillStyle = look.beard;
@@ -161,7 +165,7 @@ var Sims = (function () {
     circle(ctx, 0, -72, 2, look.capBrim);
   }
 
-  function drawSofia(ctx, look, step) {
+  function drawSofia(ctx, look, step, side) {
     // Long brown hair falling down her back
     fillRound(ctx, -20, -68, 40, 46, 16, look.hair);
 
@@ -193,7 +197,7 @@ var Sims = (function () {
     ctx.closePath();
     ctx.fill();
 
-    drawEyes(ctx, look, -48);
+    drawEyes(ctx, look, -48, side);
     circle(ctx, -9.5, -44, 3, look.cheeks);
     circle(ctx, 9.5, -44, 3, look.cheeks);
     // Smile
@@ -276,6 +280,80 @@ var Sims = (function () {
     ctx.restore();
   }
 
+  // ---------- Speech bubble for conversations, with a subtitle when there is one ----------
+
+  function wrapText(ctx, text, maxWidth) {
+    var lines = [];
+    var line = "";
+    text.split(" ").forEach(function (word) {
+      var test = line ? line + " " + word : word;
+      if (line && ctx.measureText(test).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  // Returns how much room it takes above the head, so the thought bubble can go higher.
+  function drawSpeechBubble(ctx, sim, time, bubble) {
+    var maxWidth = 210;
+    var textFont = "700 16px " + CONFIG.fontFamily;
+    var subFont = "italic 13px " + CONFIG.fontFamily;
+    ctx.save();
+    ctx.font = textFont;
+    var lines = wrapText(ctx, bubble.text, maxWidth);
+    var w = 0;
+    lines.forEach(function (l) { w = Math.max(w, ctx.measureText(l).width); });
+    ctx.font = subFont;
+    var subLines = bubble.subtitle ? wrapText(ctx, bubble.subtitle, maxWidth) : [];
+    subLines.forEach(function (l) { w = Math.max(w, ctx.measureText(l).width); });
+    w += 26;
+    var h = 16 + lines.length * 20 + (subLines.length ? 4 + subLines.length * 16 : 0);
+
+    var headTop = sim.y - 78 * CONFIG.characterScale;
+    var cx = sim.x, bottom = headTop - 8, top = bottom - h;
+    ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 3;
+    ctx.strokeStyle = C.darkBrown;
+    ctx.lineWidth = 2.5;
+    roundRect(ctx, cx - w / 2, top, w, h, 14);
+    ctx.moveTo(cx - 7, bottom - 1);
+    ctx.lineTo(cx, bottom + 9);
+    ctx.lineTo(cx + 7, bottom - 1);
+    ctx.fillStyle = C.white;
+    ctx.fill();
+    ctx.stroke();
+    ctx.shadowColor = "transparent";
+    ctx.fillRect(cx - 5.5, bottom - 3, 11, 4);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = C.darkBrown;
+    ctx.font = textFont;
+    var y = top + 9;
+    lines.forEach(function (l) { ctx.fillText(l, cx, y); y += 20; });
+    if (subLines.length) {
+      y += 4;
+      ctx.font = subFont;
+      ctx.fillStyle = C.wood;
+      subLines.forEach(function (l) { ctx.fillText(l, cx, y); y += 16; });
+    }
+
+    if (bubble.heart) {
+      var beat = 1 + Math.sin(time * 6) * 0.12;
+      ctx.textBaseline = "middle";
+      ctx.font = Math.round(22 * beat) + "px " + CONFIG.fontFamily;
+      ctx.fillText("❤️", cx - w / 2 - 16, top + 14);
+    }
+    ctx.restore();
+    return h + 16;
+  }
+
   // ---------- Action bubble ("Comiendo 🍳") with a heart for favorites ----------
 
   function drawActionBubble(ctx, sim, time, bubble) {
@@ -321,16 +399,25 @@ var Sims = (function () {
 
     var walking = sim.path.length > 0;
     var bounce = walking ? -Math.abs(Math.sin(sim.stepPhase)) * 5 : 0;
+    // While talking they look at each other and lean in a little.
+    var side = Social.facing(sim.data.id);
     ctx.save();
     ctx.translate(sim.x, sim.y + bounce);
+    ctx.rotate(side * 0.06);
     ctx.scale(CONFIG.characterScale, CONFIG.characterScale);
-    bodies[sim.data.id](ctx, sim.look, walking ? sim.stepPhase : 0);
+    bodies[sim.data.id](ctx, sim.look, walking ? sim.stepPhase : 0, side);
     ctx.restore();
 
     drawNameTag(ctx, sim);
-    var bubble = Objects.bubbleFor(sim.data.id);
-    if (bubble) drawActionBubble(ctx, sim, time, bubble);
-    drawThoughtBubble(ctx, sim, time, bubble ? 44 : 0);
+    var lift = 0;
+    var bubble = Social.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id);
+    if (bubble && bubble.speech) {
+      lift = drawSpeechBubble(ctx, sim, time, bubble);
+    } else if (bubble) {
+      drawActionBubble(ctx, sim, time, bubble);
+      lift = 44;
+    }
+    drawThoughtBubble(ctx, sim, time, lift);
   }
 
   function draw(ctx, time) {
@@ -417,17 +504,37 @@ var Sims = (function () {
     return hit;
   }
 
+  // A tap on the other character opens the social menu; tapping it again selects it.
   // A tap on a character selects it and stops what it was doing.
   // A tap on furniture sends the selected one to use it; a tap on the floor walks it there.
-  function handleTap(x, y) {
+  // While the menu is open, a tap anywhere else only closes it.
+  function handleTap(x, y, screenX, screenY) {
     var sim = simAt(x, y);
+    var again = false;
+    if (UI.isMenuOpen()) {
+      UI.closeMenu();
+      again = !!sim && sim === menuFor;
+      menuFor = null;
+      if (!again) return;
+    }
+    if (sim && selected && sim !== selected && !again) {
+      var from = selected, to = sim;
+      menuFor = sim;
+      UI.openMenu(screenX, screenY, function (type) {
+        menuFor = null;
+        Social.start(from, to, type);
+      });
+      return;
+    }
     if (sim) {
       if (Objects.cancel(sim.data.id)) sim.path = [];
+      Social.cancel(sim.data.id);
       selected = sim;
       onSelect(sim.data);
       return;
     }
     if (!selected) return;
+    Social.cancel(selected.data.id);
     Objects.cancel(selected.data.id);
     var furniture = Objects.at(x, y);
     if (furniture) {
@@ -437,5 +544,5 @@ var Sims = (function () {
     }
   }
 
-  return { init: init, update: update, draw: draw, handleTap: handleTap, walkTo: walkTo, simAt: simAt };
+  return { init: init, update: update, draw: draw, handleTap: handleTap, walkTo: walkTo, simAt: simAt, roomAt: roomAt };
 })();

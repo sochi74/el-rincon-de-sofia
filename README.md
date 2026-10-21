@@ -12,9 +12,9 @@ Un juego de vida acogedor: Sofía vive en su casita y su amigo real.fixer viene 
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it."
 
 ## Estado
-Hito 4 ✅ Cosas de la casa
+Hito 5 ✅ ¡A socializar!
 
-## ⭐ Estrellas de inglés: 7
+## ⭐ Estrellas de inglés: 8
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -55,3 +55,8 @@ Hito 4 ✅ Cosas de la casa
 - eat: comer
 - sleep: dormir
 - watch TV: ver tele
+- talk: charlar
+- joke: chiste
+- high five: chocar los cinco
+- friendship: amistad
+- How are you?: ¿Cómo estás?
