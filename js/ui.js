@@ -49,7 +49,7 @@ var UI = (function () {
       return;
     }
     nameEl.textContent = CONFIG.characterLooks[character.id].icon + " " + character.name;
-    hintEl.textContent = "Toca el piso para caminar";
+    hintEl.textContent = "Toca el piso para caminar o un mueble para usarlo";
     update();
   }
 

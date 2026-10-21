@@ -80,6 +80,14 @@ var CONFIG = {
     calm: { all: 0.85 }
   },
 
+  // How traits change what an activity gives (from CHARACTERS.md).
+  traitGain: {
+    gamer: { watchTv: 1.5 }
+  },
+
+  // Extra for doing your favorite activity.
+  favoriteBonus: 1.25,
+
   // Drawing colors and starting spot (in the Sala) for each character.
   characterLooks: {
     realfixer: {

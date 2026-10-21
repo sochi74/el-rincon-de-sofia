@@ -6,6 +6,7 @@
   var ctx = canvas.getContext("2d");
 
   var view = { width: 0, height: 0, dpr: 1, scale: 1, offsetX: 0, offsetY: 0 };
+  var hovered = null;
 
   // Match the canvas to the window and keep it sharp on high-resolution screens.
   function resize() {
@@ -29,7 +30,7 @@
 
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
-    House.draw(ctx);
+    House.draw(ctx, hovered && hovered.id);
     Sims.draw(ctx, time);
   }
 
@@ -42,17 +43,31 @@
     lastTime = time;
     Sims.update(dt);
     Needs.update(dt);
+    Objects.update(dt);
     UI.update();
     render(time);
     window.requestAnimationFrame(loop);
   }
 
-  // Turn a tap on the screen into a spot in the house.
-  function handleTap(event) {
+  // Turn a spot on the screen into a spot in the house.
+  function toWorld(event) {
     var rect = canvas.getBoundingClientRect();
-    var x = (event.clientX - rect.left - view.offsetX) / view.scale;
-    var y = (event.clientY - rect.top - view.offsetY) / view.scale;
-    Sims.handleTap(x, y);
+    return {
+      x: (event.clientX - rect.left - view.offsetX) / view.scale,
+      y: (event.clientY - rect.top - view.offsetY) / view.scale
+    };
+  }
+
+  function handleTap(event) {
+    var p = toWorld(event);
+    Sims.handleTap(p.x, p.y);
+  }
+
+  // Light up the usable furniture under the mouse (characters in front win).
+  function handleHover(event) {
+    var p = toWorld(event);
+    hovered = Sims.simAt(p.x, p.y) ? null : Objects.at(p.x, p.y);
+    canvas.style.cursor = hovered ? "pointer" : "";
   }
 
   function startGame() {
@@ -69,5 +84,7 @@
 
   playButton.addEventListener("click", startGame);
   canvas.addEventListener("pointerdown", handleTap);
+  canvas.addEventListener("pointermove", handleHover);
+  canvas.addEventListener("pointerleave", function () { hovered = null; });
   window.addEventListener("resize", resize);
 })();

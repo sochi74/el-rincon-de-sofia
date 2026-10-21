@@ -242,6 +242,27 @@ var House = (function () {
 
   var drawers = { fridge: drawFridge, bed: drawBed, tv: drawTv, sofa: drawSofa };
 
+  // Area a piece of furniture covers on the floor, including the TV stand.
+  function bounds(f) {
+    if (f.id === "tv") return { x: f.x - 30, y: f.y - 6, w: f.w + 60, h: f.h + 22 };
+    return { x: f.x, y: f.y, w: f.w, h: f.h };
+  }
+
+  // Soft glow around the piece under the mouse.
+  function drawHighlight(ctx, f) {
+    var b = bounds(f);
+    ctx.save();
+    ctx.shadowColor = C.cream;
+    ctx.shadowBlur = 18;
+    roundRect(ctx, b.x - 6, b.y - 6, b.w + 12, b.h + 12, 20);
+    ctx.fillStyle = "rgba(245, 235, 221, 0.3)";
+    ctx.fill();
+    ctx.strokeStyle = C.sage;
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.restore();
+  }
+
   // Where each furniture name tag goes, relative to the piece.
   function labelPosition(f) {
     if (f.id === "tv") return { x: f.x + f.w / 2, y: f.y + f.h + 42 };
@@ -252,7 +273,7 @@ var House = (function () {
 
   // ---------- Main draw ----------
 
-  function draw(ctx) {
+  function draw(ctx, highlightId) {
     var W = CONFIG.world.width, H = CONFIG.world.height;
 
     // Garden around the house
@@ -271,7 +292,10 @@ var House = (function () {
 
     drawWalls(ctx);
 
-    CONFIG.furniture.forEach(function (f) { drawers[f.id](ctx, f); });
+    CONFIG.furniture.forEach(function (f) {
+      drawers[f.id](ctx, f);
+      if (f.id === highlightId) drawHighlight(ctx, f);
+    });
 
     // Room names
     var roomLabels = {
@@ -291,5 +315,5 @@ var House = (function () {
     });
   }
 
-  return { draw: draw };
+  return { draw: draw, bounds: bounds };
 })();

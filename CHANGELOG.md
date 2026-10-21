@@ -1,5 +1,19 @@
 # CHANGELOG.md
 
+## 2026-10-20 · Hito 4: 🛋️ Cosas de la casa
+- Los muebles se iluminan con un brillo verde salvia cuando el mouse pasa por encima.
+- Con un personaje seleccionado, tocar un mueble lo hace caminar hasta él y usarlo, con una burbuja encima:
+  - Refrigerador: "Comiendo 🍳", Hambre +35 en 4 segundos.
+  - Cama: "Durmiendo 💤", Energía +50 en 6 segundos.
+  - Sofá o Televisión: "Viendo tele 📺", Diversión +35 en 4 segundos.
+- Las necesidades nunca pasan de 100.
+- Los rasgos pueden cambiar lo que da una actividad (Gamer: la tele da Diversión ×1.5). Hoy ningún personaje es Gamer.
+- Actividad favorita: da ×1.25 y un ❤️ sobre la cabeza. A Sofía le encanta ver tele.
+- Un solo personaje por mueble; si está ocupado, aparece la burbuja "Ocupado".
+- Tocar el piso u otro mueble cancela la acción. Tocar a un personaje que está usando un mueble lo detiene.
+- El botón Pausa también congela las acciones.
+- Problemas conocidos: Los personajes atraviesan los muebles. Mientras duermen o ven tele se quedan de pie.
+
 ## 2026-10-20 · Hito 3: 📊 Necesidades
 - Sofía y real.fixer tienen cuatro necesidades: 🍔 Hambre, 😴 Energía, 🎮 Diversión y 💬 Social, de 0 a 100.
 - Empiezan cerca de 80, con una pequeña variación.
