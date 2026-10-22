@@ -1,7 +1,8 @@
 // Dreams and goals: each character (Sofía, real.fixer, Lumi and Vladi) has a dream of 2 goals, one after the other
 // (their "goals" in js/characters.js). Only the goal that is on now counts what happens.
 // Goals about Amistad look at the friendship right now, so they can be met the moment they start.
-// Meeting a goal shows a big sign, rains golden stars over the character (when it is on screen), plays the fanfare,
+// Meeting a goal shows a big sign (where the panel does not cover it), rains golden stars over the character
+// (when it is on screen), plays the fanfare (only when it is where the screen is),
 // gives magic coins and a decoration for its home (drawn in js/house.js and js/city.js), and the next goal starts.
 // Also the "🌟 Metas" button in the panel and its window with each one's goal and how far it got. Pausa freezes the celebration.
 var Goals = (function () {
@@ -151,12 +152,16 @@ var Goals = (function () {
     party = { id: next.id, step: next.step, elapsed: 0, stars: stars };
     sign.textContent = "🌟 ¡Meta cumplida! " + c.name + " " + goal.done + " " + goal.emoji;
     sign.hidden = false;
-    Sound.play("fanfare");
+    UI.placeSign(sign);
+    // The fanfare only sounds when it happens where the screen is, like the other effects.
+    var who = actor(next.id);
+    if (who) Sound.playAt(who.place, "fanfare");
   }
 
   function update(dt) {
     CHARACTERS.forEach(function (c) { check(c.id); });
     if (!party && queue.length > 0) startParty(queue.shift());
+    if (party) UI.placeSign(sign);
     if (party && !Needs.isPaused()) {
       party.elapsed += dt;
       if (party.elapsed >= SIGN_TIME) {
@@ -218,13 +223,15 @@ var Goals = (function () {
 
   // ---------- The window ----------
 
-  // Open or close the window; the backpack closes when it opens.
+  // Open or close the window; the backpack closes when it opens. It opens where it does not cover the Carpa,
+  // the Fogata or the selected one (js/ui.js).
   function setOpen(open) {
     panel.hidden = !open;
     shown = null;
     if (open) {
       UI.closeBackpack();
       render();
+      UI.placeWindow(panel);
     }
   }
 

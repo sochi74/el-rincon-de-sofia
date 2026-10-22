@@ -207,7 +207,8 @@ var House = (function () {
     fridge: { kind: "floor", w: 90, h: 80, start: { x: 115, y: 120 }, use: { x: 0, y: 80 }, label: { x: 0, y: 64 } },
     stove: { kind: "floor", w: 100, h: 70, start: { x: 290, y: 107 }, use: { x: -10, y: 93 }, label: { x: 0, y: 59 } },
     bed: { kind: "floor", w: 190, h: 220, start: { x: 815, y: 190 }, use: { x: -125, y: 10 }, label: { x: 0, y: 90 } },
-    tv: { kind: "floor", w: 260, h: 56, start: { x: 720, y: 392 }, use: { x: -120, y: 103 }, label: { x: 0, y: 54 } },
+    tv: { kind: "floor", w: 260, h: 56, start: { x: 720, y: 392 }, use: { x: -120, y: 103 }, label: { x: 0, y: 54 },
+      seat: { x: 0, y: 118 } },
     sofa: { kind: "floor", w: 260, h: 90, start: { x: 720, y: 605 }, use: { x: 0, y: -73 }, label: { x: 0, y: -67 } },
     rug: { kind: "rug", w: 320, h: 92, start: { x: 720, y: 501 } },
     easel: { kind: "floor", w: 56, h: 92, start: { x: 906, y: 614 }, feet: { x: -24, y: 8, w: 48, h: 38 }, upright: true },
@@ -356,8 +357,10 @@ var House = (function () {
   // and how it is turned. In the Bañera only its head shows, in the middle of the water, however the Bañera is turned.
   // In the Cama it lies along the bed with its head on the pillow. On the Sofá it sits looking where the Sofá looks:
   // seen from behind, from the front or from the side; only from behind the backrest goes over it.
+  // At the Televisión it sits on the floor where it stands, looking at the middle of the screen ("look").
   function poseFor(id) {
     var p = layout[id];
+    if (id === "tv") return { kind: "floor", look: { x: p.x, y: p.y } };
     if (id === "bed") {
       var at = fromMiddle("bed", { x: -41, y: 14 });
       return { kind: "lie", x: at.x, y: at.y, angle: p.dir * Math.PI / 2 };
@@ -369,6 +372,24 @@ var House = (function () {
       return { kind: "sofa", view: "side", flip: p.dir === 3, x: p.x + (p.dir === 1 ? -10 : 10), y: p.y + 18 };
     }
     return null;
+  }
+
+  // Watching tele at the Televisión: where a character sits on the floor in front of it, looking at it.
+  // If something is there, the closest free spot when it is close enough, and else where it stands to use it.
+  function floorSeat() {
+    var s = fromMiddle("tv", DEFS.tv.seat);
+    if (!isSolid(s.x, s.y)) return s;
+    var f = Path.free("house", s.x, s.y);
+    if (Math.sqrt((f.x - s.x) * (f.x - s.x) + (f.y - s.y) * (f.y - s.y)) <= USE_REACH) return f;
+    return useSpot("tv");
+  }
+
+  // True if the Sofá looks at the Televisión and the Televisión looks back at it, close enough to watch from there.
+  function sofaFacesTv() {
+    var f = front("sofa"), t = front("tv");
+    var dx = layout.tv.x - layout.sofa.x, dy = layout.tv.y - layout.sofa.y;
+    var ahead = dx * f.x + dy * f.y, aside = Math.abs(dx * f.y - dy * f.x);
+    return ahead > 60 && ahead < 460 && aside < 140 && dx * t.x + dy * t.y < 0;
   }
 
   // Where a character looks while it uses a piece of furniture: on the Sofá, far ahead (at the Televisión, if it is there).
@@ -1481,6 +1502,8 @@ var House = (function () {
     wordAt: wordAt,
     isSolid: isSolid,
     useSpot: useSpot,
+    floorSeat: floorSeat,
+    sofaFacesTv: sofaFacesTv,
     poseFor: poseFor,
     lookFor: lookFor,
     // Modo decorar

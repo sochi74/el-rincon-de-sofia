@@ -733,6 +733,14 @@ body.decorating #game {
   }
 }
 
+/* Wide screens: the open panel is a narrow column on the left, and the house and the city are drawn beside it
+   (js/main.js; CONFIG.panelColumn has the same width). */
+@media (min-width: 1000px) {
+  #selection-panel {
+    width: 340px;
+  }
+}
+
 /* Small screens: narrower need bars so the panel fits. */
 @media (max-width: 420px) {
   .need-track {

@@ -476,6 +476,21 @@ var Sims = (function () {
     });
   }
 
+  // Sitting on the floor in front of the tele: legs crossed (seen from the front) or forward on the floor (from the side).
+  // From behind the body hides them.
+  function drawFloorLegs(ctx, look, view) {
+    if (view === "front") {
+      fillRound(ctx, -15, -9, 30, 9, 4.5, look.pants);
+      ellipse(ctx, -11, -2, 5, 3.2, look.shoes);
+      ellipse(ctx, 11, -2, 5, 3.2, look.shoes);
+    } else if (view === "side") {
+      [-2, 1].forEach(function (dx) {
+        fillRound(ctx, -6 + dx, -9, 26, 8, 4, look.pants);
+        ellipse(ctx, 21 + dx, -5, 3.5, 5, look.shoes);
+      });
+    }
+  }
+
   // At night the furniture is tinted blue-violet, but characters are drawn after the tint:
   // a blanket gets the same tint here, so it looks like the rest of the Cama.
   function nightShade(ctx, shape) {
@@ -503,12 +518,17 @@ var Sims = (function () {
   // How a character looks while it uses something (see "pose" in js/objects.js and js/house.js):
   // lying in the Cama seen from above, face up with closed eyes under a blanket (turned along the bed);
   // sitting on the Sofá looking where the Sofá looks: seen from behind (the backrest goes on top afterwards),
-  // from the front or from the side; in the Bañera, only the head over the water (the foam goes on top afterwards);
-  // or sitting on the log by the Fogata, from the side.
-  function drawPose(ctx, sim, pose) {
+  // from the front or from the side; sitting on the floor looking at the tele ("view"); in the Bañera, only the head
+  // over the water (the foam goes on top afterwards); or sitting on the log by the Fogata, from the side.
+  function drawPose(ctx, sim, pose, view) {
     var body = bodies[sim.data.id];
     noLegs = true;
-    if (pose.kind === "bath") {
+    if (pose.kind === "floor") {
+      drawFloorLegs(ctx, sim.look, view);
+      // The body sits on the floor, lower than when standing.
+      ctx.translate(0, 12);
+      body[view](ctx, sim.look, 0, sim.blink > 0);
+    } else if (pose.kind === "bath") {
       ctx.beginPath();
       ctx.rect(-60, -140, 120, 140 - House.bathDeep);
       ctx.clip();
@@ -559,19 +579,21 @@ var Sims = (function () {
   // ---------- Selection glow and name tag ----------
   // "at" is where the character is drawn (see drawnAt).
 
-  function drawGlow(ctx, at, time) {
+  // "rx", "ry" is its size: a ring on the floor at the feet, or round around the head of who lies in the Cama.
+  function drawGlow(ctx, at, time, rx, ry) {
     var pulse = (1 + Math.sin(time * 4) * 0.08) * CONFIG.characterScale;
     ctx.save();
     ctx.shadowColor = CONFIG.glow;
     ctx.shadowBlur = 16;
-    ellipse(ctx, at.x, at.y, 26 * pulse, 10 * pulse, "rgba(255, 214, 107, 0.45)");
+    ellipse(ctx, at.x, at.y, (rx || 26) * pulse, (ry || 10) * pulse, "rgba(255, 214, 107, 0.45)");
     ctx.strokeStyle = CONFIG.glow;
     ctx.lineWidth = 3;
     ctx.stroke();
     ctx.restore();
   }
 
-  function drawNameTag(ctx, sim, at) {
+  // "cy" is the middle of the tag; it goes below the feet when there is none.
+  function drawNameTag(ctx, sim, at, cy) {
     var isSelected = sim === selected;
     var size = 15;
     ctx.save();
@@ -580,7 +602,7 @@ var Sims = (function () {
     ctx.textBaseline = "middle";
     var w = ctx.measureText(sim.data.name).width + size * 1.2;
     var h = size * 1.6;
-    var cy = at.y + 24;
+    if (cy === undefined) cy = at.y + 24;
     ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
     ctx.shadowBlur = 6;
     ctx.shadowOffsetY = 3;
@@ -791,6 +813,26 @@ var Sims = (function () {
     ctx.restore();
   }
 
+  // Where the glow, the name tag and the rest go around a character (see drawSim):
+  // "glow" is the selection glow with its size, "name" the middle of the name tag, and "head" a spot as if it stood
+  // with its head where its head is, for the mood star and the bubbles (they go over it).
+  // Standing or sitting, the glow is at the feet and the name below them. In the Bañera the glow goes around the foam
+  // and the name just below it, on the Bañera. In the Cama the glow goes around the head and the name just below it,
+  // on the Cama, however it is turned.
+  function tagSpots(at, pose) {
+    var k = CONFIG.characterScale;
+    if (pose && pose.kind === "bath") {
+      var water = at.y - House.bathDeep * k;
+      return { glow: { x: at.x, y: water, rx: 34, ry: 12 }, name: { x: at.x, y: water + 18 }, head: at };
+    }
+    if (pose && pose.kind === "lie") {
+      var a = pose.angle || 0, up = 54 * k;
+      var hx = at.x + up * Math.sin(a), hy = at.y - up * Math.cos(a);
+      return { glow: { x: hx, y: hy, rx: 22, ry: 22 }, name: { x: hx, y: hy + 16 * k + 16 }, head: { x: hx, y: hy + up } };
+    }
+    return { glow: { x: at.x, y: at.y }, name: { x: at.x, y: at.y + 24 }, head: at };
+  }
+
   function drawSim(ctx, sim, time) {
     var pose = Objects.poseFor(sim.data.id);
     // Sleeping in the Carpa: it is inside, so only the "Zzz" coming out of the tent are seen.
@@ -800,8 +842,9 @@ var Sims = (function () {
     }
     var at = drawnAt(sim);
     var k = CONFIG.characterScale;
-    if (sim === selected) drawGlow(ctx, at, time);
-    if (!pose) ellipse(ctx, at.x, at.y, 16 * k, 6 * k, "rgba(74, 52, 40, 0.25)");
+    var spots = tagSpots(at, pose);
+    if (sim === selected) drawGlow(ctx, spots.glow, time, spots.glow.rx, spots.glow.ry);
+    if (!pose || pose.kind === "floor") ellipse(ctx, at.x, at.y, 16 * k, 6 * k, "rgba(74, 52, 40, 0.25)");
 
     var walking = sim.path.length > 0;
     var bounce = walking ? -Math.abs(Math.sin(sim.stepPhase)) * 5 : 0;
@@ -812,12 +855,18 @@ var Sims = (function () {
     var view = sim.facing === "left" || sim.facing === "right" ? "side" : sim.facing;
     // Lying and sitting on the Sofá face the way the furniture is turned; on the log it looks at the fire.
     var flip = pose && pose.kind === "sofa" ? !!pose.flip : sim.facing === "left" && (!pose || pose.kind === "log");
+    // On the floor it looks at the tele: from behind, from the front or from the side.
+    if (pose && pose.kind === "floor") {
+      var dx = pose.look.x - at.x, dy = pose.look.y - at.y;
+      view = Math.abs(dx) > Math.abs(dy) ? "side" : dy < 0 ? "back" : "front";
+      flip = view === "side" && dx < 0;
+    }
     ctx.save();
     ctx.translate(at.x, at.y + bounce);
     ctx.rotate(lean * 0.06 + (pose && pose.angle ? pose.angle : 0));
     ctx.scale(flip ? -k : k, k * breath);
     if (pose) {
-      drawPose(ctx, sim, pose);
+      drawPose(ctx, sim, pose, view);
     } else {
       bodies[sim.data.id][view](ctx, sim.look, walking ? sim.stepPhase : 0, sim.blink > 0);
     }
@@ -830,19 +879,20 @@ var Sims = (function () {
       drawZzz(ctx, at.x + 22 * Math.cos(a) + 62 * k * Math.sin(a), at.y + 22 * Math.sin(a) - 62 * k * Math.cos(a), time);
     }
 
-    drawNameTag(ctx, sim, at);
-    drawMoodStar(ctx, sim, at, time);
-    drawSparkle(ctx, at, Objects.sparkleFor(sim.data.id));
+    var head = spots.head;
+    drawNameTag(ctx, sim, spots.name, spots.name.y);
+    drawMoodStar(ctx, sim, head, time);
+    drawSparkle(ctx, head, Objects.sparkleFor(sim.data.id));
     var lift = 0;
     var bubble = Social.bubbleFor(sim.data.id) || Gifts.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) ||
       Garden.bubbleFor(sim.data.id) || Gather.bubbleFor(sim.data.id) || Cooking.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
-      lift = drawSpeechBubble(ctx, at, time, bubble);
+      lift = drawSpeechBubble(ctx, head, time, bubble);
     } else if (bubble) {
-      drawActionBubble(ctx, at, time, bubble);
+      drawActionBubble(ctx, head, time, bubble);
       lift = 44;
     }
-    drawThoughtBubble(ctx, sim, at, time, lift);
+    drawThoughtBubble(ctx, sim, head, time, lift);
   }
 
   // The place the screen shows: where the selected character is, or the house when nobody is.
@@ -863,10 +913,12 @@ var Sims = (function () {
 
   function draw(ctx, time) {
     var view = viewPlace();
-    // Everyone on screen, neighbors too: whoever is lower on screen is drawn last, so they appear in front.
+    // Everyone on screen, neighbors and Krohna too: whoever is lower on screen is drawn last, so they appear in front.
     var all = sims.filter(function (s) { return s.place === view; }).map(function (sim) {
       return { y: drawnAt(sim).y, draw: function () { drawSim(ctx, sim, time); } };
     });
+    var kitten = Pet.shownAt();
+    if (kitten) all.push({ y: kitten.y, draw: function () { Pet.draw(ctx); } });
     if (view === "city") {
       Neighbors.visible().forEach(function (n) {
         all.push({ y: n.y, draw: function () { Neighbors.drawOne(ctx, n, time); } });

@@ -332,7 +332,8 @@ var Social = (function () {
     if (two) Sound.playAt(two[0].place, "fanfare");
   }
 
-  // Hearts falling between the two and "¡Ahora son Amigos! 😊" floating over them, only when they are on screen together.
+  // Hearts falling between the two and "¡Ahora son Amigos! 😊" floating over them (where the panel does not cover it),
+  // only when they are on screen together.
   function drawParty(ctx, time) {
     var two = party ? together(party.ids) : null;
     if (!two || two[0].place !== Sims.viewPlace()) return;
@@ -360,6 +361,11 @@ var Social = (function () {
     ctx.globalAlpha = t > 0.85 ? (1 - t) / 0.15 : 1;
     ctx.font = "700 " + Math.round(22 * pop) + "px " + CONFIG.fontFamily;
     var w = ctx.measureText(text).width + 30, h = 44 * pop;
+    // Where the panel or the round buttons do not cover it, and inside the window.
+    var m = ctx.getTransform(), dpr = window.devicePixelRatio || 1;
+    var spot = UI.clearSpot((m.a * x + m.e) / dpr, (m.d * sy + m.f) / dpr, w * m.a / dpr, h * m.d / dpr);
+    x = (spot.x * dpr - m.e) / m.a;
+    sy = (spot.y * dpr - m.f) / m.d;
     ctx.shadowColor = "rgba(74, 52, 40, 0.3)";
     ctx.shadowBlur = 8;
     ctx.shadowOffsetY = 3;

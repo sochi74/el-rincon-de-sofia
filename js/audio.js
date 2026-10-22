@@ -4,6 +4,8 @@
 // the tele while someone watches it) and calm music that turns softer at night.
 // Nothing sounds until "Jugar" is tapped. The 🔊 button goes 🔊 everything → 🎵 no music (effects only) → 🔇 silence,
 // and the mode is remembered (localStorage inside try/catch). Pausa hushes the place sounds and the music.
+// The campfire crackles louder the closer the selected one is to it. When the tab is hidden or the window is minimized,
+// everything goes quiet; coming back, it all goes on as the 🔊 button says.
 // If the browser has no Web Audio, the game just stays quiet.
 var Sound = (function () {
   var K = CONFIG.sound;
@@ -199,9 +201,21 @@ var Sound = (function () {
       river = loopRiver();
       loopTv();
       apply();
+      document.addEventListener("visibilitychange", hush);
+      hush();
     } catch (e) {
       ac = null;
     }
+  }
+
+  // Another tab or a minimized window: no sound at all (the loops of the river and the tele stop too).
+  // Back on the game, the sound goes on.
+  function hush() {
+    var hidden = document.hidden;
+    master.gain.cancelScheduledValues(ac.currentTime);
+    master.gain.setValueAtTime(hidden ? 0 : K.master, ac.currentTime);
+    if (hidden && ac.suspend) ac.suspend();
+    if (!hidden && ac.resume) ac.resume();
   }
 
   function bus() {
@@ -298,6 +312,18 @@ var Sound = (function () {
     for (var i = 0; i < 3; i++) note(ambienceBus, f, t + i * 0.055, 0.035, "sine", 0.1);
   }
 
+  // How loud the campfire is, from 1 right by it to 0 far away: measured from the selected one when it is in the city,
+  // else from the middle of the city.
+  function fireLevel() {
+    var sim = Sims.selectedSim();
+    var from = sim && sim.place === "city" ? sim : { x: CONFIG.world.width / 2, y: CONFIG.world.height / 2 };
+    var fire = CONFIG.cityObjects.filter(function (o) { return o.id === "campfire"; })[0];
+    var dx = from.x - (fire.x + fire.w / 2), dy = from.y - (fire.y + fire.h / 2);
+    var d = Math.sqrt(dx * dx + dy * dy);
+    var t = Math.max(0, Math.min(1, (d - K.fire.near) / (K.fire.far - K.fire.near)));
+    return (1 - t) * (1 - t);
+  }
+
   // Random sounds of the place, each with its own little timer.
   function ambience(dt, place, night) {
     var city = place === "city";
@@ -319,9 +345,10 @@ var Sound = (function () {
       var f = between(500, 900);
       note(ambienceBus, f, t, 0.1, "sine", 0.06, f * 1.8);
     }
+    var fire = fireLevel();
     if (timers.fire <= 0) {
       timers.fire = between(0.08, 0.6);
-      hiss(ambienceBus, t, between(0.015, 0.04), "bandpass", between(1500, 4000), between(0.05, 0.15), null, 1.5);
+      if (fire > 0.01) hiss(ambienceBus, t, between(0.015, 0.04), "bandpass", between(1500, 4000), between(0.05, 0.15) * fire, null, 1.5);
     }
     if (!night && timers.bird <= 0) {
       timers.bird = between(1.5, 5);

@@ -24,13 +24,22 @@
   }
 
   // Scale the place on screen to fit the window: the house is wider than the city (it has the Baño).
+  // On wide screens the open panel keeps a column on the left, so the place fits in the room beside it.
   function fit() {
     var m = CONFIG.margin;
     var size = Sims.viewPlace() === "city" ? CONFIG.world : CONFIG.houseWorld;
     var W = size.width, H = size.height;
-    view.scale = Math.max(0.05, Math.min((view.width - m * 2) / W, (view.height - m * 2) / H));
-    view.offsetX = (view.width - W * view.scale) / 2;
+    var left = UI.reservedLeft(), room = view.width - left;
+    view.scale = Math.max(0.05, Math.min((room - m * 2) / W, (view.height - m * 2) / H));
+    view.offsetX = left + (room - W * view.scale) / 2;
     view.offsetY = (view.height - H * view.scale) / 2;
+  }
+
+  // A spot of the place on screen as a spot on the screen (for the windows of js/ui.js).
+  function toScreen(x, y) {
+    fit();
+    var rect = canvas.getBoundingClientRect();
+    return { x: rect.left + view.offsetX + x * view.scale, y: rect.top + view.offsetY + y * view.scale };
   }
 
   function render(time) {
@@ -59,7 +68,7 @@
       Coins.draw(ctx, time, Time.darkness());
     }
     Neighbors.drawTop(ctx, time);
-    Pet.draw(ctx);
+    // Krohna is drawn among the characters (js/sims.js).
     Sims.draw(ctx, time);
     if (Sims.viewPlace() === "city") Gather.drawPops(ctx);
     Cooking.drawPops(ctx);
@@ -229,6 +238,7 @@
   Needs.init(playableCharacters());
   Social.init(CHARACTERS);
   UI.init();
+  UI.setToScreen(toScreen);
   Goals.init();
   Decorate.init();
   Sims.init(UI.showSelected);

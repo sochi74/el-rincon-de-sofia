@@ -1,37 +1,41 @@
 # CHANGELOG.md
 
 ## Problemas conocidos actuales
-- En la Televisión (de pie, sin el Sofá) se sigue viendo tele de pie.
 - Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa.
 - real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima.
 - Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien.
 - Las mariposas vuelan por encima de las flores y a veces tapan un poquito una.
-- Con el panel abierto, en pantallas chicas todavía puede tapar un poco la parte de arriba del mapa (ciérralo con ✕ para ver todo).
-- Con el panel abierto se tapa casi todo el bosque: ciérralo con ✕ para recolectar.
-- Con el panel abierto, el cartel "¡Ahora son…!" puede quedar tapado si los personajes están arriba del mapa.
-- La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta.
+- La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta (Sofía prefirió que siga abriéndose abajo a la derecha, como siempre).
 - Nadie cuida el jardín, pesca, recolecta, cocina ni regala solo.
 - Si recargas mientras alguien pesca o recolecta, esa acción se pierde.
-- Cuando real.fixer pasa por la puerta, Krohna aparece de golpe del otro lado, junto a él.
-- Krohna puede quedar un poquito detrás de un personaje.
-- El crujido de la fogata se escucha igual en toda la ciudad, no solo cerca de la carpa.
 - Todavía no hay sonido de lluvia (llega con el clima).
-- Si cambias de pestaña, la música se detiene, pero el río o la tele pueden seguir sonando bajito.
 - Los personajes y los vecinos no se esquivan entre ellos: a veces uno pasa por encima de otro.
 - Los rasgos de los vecinos que cambian necesidades y su actividad favorita todavía no hacen nada (solo Bromista funciona).
 - Nadie empieza solo una conversación con los vecinos (pero Lumi y Vladi ya charlan entre ellos de noche).
-- Con el panel abierto se tapa la casa del árbol de Lumi en pantallas chicas.
-- Lumi y Vladi solo charlan si se cruzan de noche; como pasean por lugares distintos, a veces pasa un buen rato sin que charlen.
-- El cartel "¡Meta cumplida!" puede tapar un poquito el panel unos segundos.
-- Al tocar ✅ Listo después de mover cosas en la casa, Krohna (si estaba en la casa) aparece junto a real.fixer, aunque no haya quedado encima de nada.
-- El nombre, la estrellita y la burbuja de quien duerme en una Cama girada quedan sobre sus pies, no sobre su cabeza.
 - La Guitarra y la Olla son solo decoración: los personajes y los vecinos pueden pasar por encima.
 - El Dormitorio es chico: para poner la Televisión y el Sofá ahí, primero hay que llevar la Cama a otra habitación.
 - real.fixer no va solo al bosque a buscar bayas: solo se come las que ya están en la mochila.
-- La casa ahora es más ancha (por el Baño): en pantallas anchas, con el panel abierto se tapa un poquito más de la parte de arriba de la Cocina y del Dormitorio (debajo del panel siguen quedando el Refrigerador y la Estufa, como antes). En pantallas más angostas la casa se ve un poco más chica que la ciudad.
-- Mientras alguien se baña, su brillo de seleccionado y su nombre quedan debajo de la Bañera (como en la Cama).
 - Si la camita de Krohna se pone donde no se puede caminar (muy cerca del río o arriba del todo del mapa), Krohna duerme al lado, en el lugar libre más cercano.
 - Nadie va solo al Baño todavía.
+- En pantallas chicas (celular), con el panel abierto todavía se tapa parte del mapa (la parte de arriba, el bosque y la casa del árbol de Lumi): ciérralo con ✕ para ver todo.
+- En pantallas más angostas la casa se ve un poco más chica que la ciudad (porque es más ancha, por el Baño).
+- En pantallas anchas, con el panel abierto la casa y la ciudad se ven más chicas (usan el espacio al lado del panel); al cerrarlo con ✕ vuelven a su tamaño.
+- En pantallas anchas, el cartel de Modo decorar (arriba a la derecha) puede tapar un poquito la esquina de arriba a la derecha de la casa o la ciudad.
+- La ventanita 🌟 Metas elige su lugar al abrirse; si después el personaje camina hasta ahí, puede quedar tapado.
+
+## 2026-10-22 · Extra: 🧹 Pulido 3
+- 🐱 Krohna y la puerta: cuando real.fixer pasa por la puerta (de la casa a la ciudad o al revés), Krohna camina hasta la misma puerta y sale del otro lado un momento después, y camina hasta él. Si real.fixer vuelve antes, Krohna se queda con él.
+- 🐱 Krohna después de decorar: al tocar ✅ Listo, Krohna se queda donde estaba (en la casa o en la ciudad); solo si quedó encima de algo va al lugar libre más cercano, como los demás.
+- 🐱 Nadie queda tapado de forma rara: Sofía, real.fixer, Lumi, Vladi y Krohna se dibujan en orden según su altura en la pantalla (el que está más abajo va encima).
+- 🛏️ Dormir y bañarse: mientras alguien duerme en la Cama (girada o no), su brillo de seleccionado rodea su cabeza, su nombre queda justo debajo de su cabeza, encima de la Cama, y su estrellita y sus burbujas van sobre su cabeza. En la Bañera, el brillo rodea la espuma y el nombre queda sobre la Bañera, justo debajo de la espuma.
+- 📺 Ver tele en el piso: al tocar la Televisión, si el Sofá está frente a ella y libre, el personaje va al Sofá como antes; si no hay Sofá frente a la tele o está ocupado, se sienta en el piso delante de la tele, mirándola (de espaldas, de frente o de costado, según cómo esté girada la tele). Da lo mismo que antes.
+- 🪟 Panel en pantallas anchas: con el panel abierto, el panel es una columna a la izquierda y la casa y la ciudad se dibujan en el espacio libre a su derecha, más chicas si hace falta, sin que el panel tape nada. Al cerrarlo con ✕ vuelven a usar toda la pantalla. Los clics y las etiquetas caen en el lugar correcto. En pantallas chicas (celular) queda como antes.
+- 🪟 Ventanita 🌟 Metas: se abre en una esquina donde no tape la carpa de real.fixer, la fogata ni el personaje seleccionado (ni el panel, si puede). La 🎒 Mochila se abre como antes, abajo a la derecha (así lo eligió Sofía).
+- 🪟 Carteles: "¡Meta cumplida!" aparece arriba, en el medio del espacio que deja el panel; en pantallas chicas con el panel abierto, abajo. "¡Ahora son…!" se corre para no quedar debajo del panel ni de los botones redondos, y siempre queda dentro de la pantalla.
+- 🔊 Fogata: el crujido suena más fuerte cuanto más cerca de la fogata está el personaje seleccionado (sin nadie seleccionado en la ciudad, se mide desde el centro del mapa); lejos casi no se escucha, y dentro de la casa no suena.
+- 🔊 Cambiar de pestaña: si cambias de pestaña o minimizas, se callan todos los sonidos (música, río, pájaros, grillos, fogata y tele). Al volver, siguen según el modo de sonido.
+- 🔊 Fanfarria: al cumplir una meta, la fanfarria suena solo si el personaje está en el lugar que se ve. El cartel y las monedas siguen igual.
+- 🔄 Vecinos: de noche, cuando Lumi elige a dónde ir, a veces vuela hacia donde está Vladi (su castillito, la plaza o la fogata), y más seguido cuando ya pueden volver a charlar. Así se cruzan y charlan al menos una vez por noche, más o menos. La regla de una charla cada 1 a 2 minutos sigue igual.
 
 ## 2026-10-22 · Extra: 🛁 Baño con bañera de burbujas
 - Sofía cambió la regla fija de la casa: ahora tiene Cocina, Dormitorio, Sala y Baño.
