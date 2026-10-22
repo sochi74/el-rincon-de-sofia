@@ -55,9 +55,12 @@
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
+    // The grayer sky of the rain and the rainbow, under the night tint and the signs (js/weather.js).
+    if (Sims.viewPlace() === "city") Weather.drawSky(ctx);
     drawNight(time);
-    // Signs go over the night tint, so they read the same by night as by day.
+    // Signs go over the night tint, so they read the same by night as by day. The magic fog goes under them.
     if (Sims.viewPlace() === "city") {
+      Weather.drawFog(ctx, Time.darkness());
       City.drawLabels(ctx);
     } else {
       House.drawLabels(ctx);
@@ -70,6 +73,8 @@
     Neighbors.drawTop(ctx, time);
     // Krohna is drawn among the characters (js/sims.js).
     Sims.draw(ctx, time);
+    // Rain drops and snowflakes fall over everyone.
+    if (Sims.viewPlace() === "city") Weather.drawFalling(ctx);
     if (Sims.viewPlace() === "city") Gather.drawPops(ctx);
     Cooking.drawPops(ctx);
     Gifts.draw(ctx, time);
@@ -115,6 +120,7 @@
     var dt = lastTime === null ? 0 : Math.min(0.1, time - lastTime);
     lastTime = time;
     Time.update(dt);
+    Weather.update(dt);
     City.update(dt);
     Coins.update(dt);
     Garden.update(dt);

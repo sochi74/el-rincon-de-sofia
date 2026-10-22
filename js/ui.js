@@ -1,4 +1,4 @@
-// Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
+// Small panel that shows the game clock with the weather of the day (its word next to the mouse), the magic coins, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕),
 // and another one next to it changes the sound (🔊 / 🎵 / 🔇). Some buttons show their word in English next to the mouse. Every button goes "pling", and selling goes "cling".
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
@@ -14,6 +14,7 @@ var UI = (function () {
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
   var menuToggle, panelOpen = true;
   var soundToggle, buttonWordShown = false;
+  var clockText, weatherEl;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
@@ -29,6 +30,13 @@ var UI = (function () {
     panel = document.getElementById("selection-panel");
     menuToggle = document.getElementById("menu-toggle");
     clockEl = document.getElementById("clock");
+    // The clock, and the weather emoji after it with its word, like "Lluvia · rain".
+    clockText = document.createElement("span");
+    weatherEl = document.createElement("span");
+    weatherEl.className = "clock-weather";
+    clockEl.appendChild(clockText);
+    clockEl.appendChild(weatherEl);
+    bindWord(weatherEl, Weather.wordId);
     coinsEl = document.getElementById("coins");
     nameEl = document.getElementById("selection-name");
     hintEl = document.getElementById("selection-hint");
@@ -226,8 +234,10 @@ var UI = (function () {
 
   // Refresh the clock, the magic coins, and the bars and friendship of the selected character.
   function update() {
-    var clock = Time.text();
-    if (clockEl.textContent !== clock) clockEl.textContent = clock;
+    var clock = Time.text() + " · ";
+    if (clockText.textContent !== clock) clockText.textContent = clock;
+    var weather = Weather.emoji();
+    if (weatherEl.textContent !== weather) weatherEl.textContent = weather;
     var coins = Coins.text();
     if (coinsEl.textContent !== coins) coinsEl.textContent = coins;
     if (!seedMenu.hidden) updateSeeds();
@@ -661,11 +671,12 @@ var UI = (function () {
   }
 
   // A button that shows its word next to the mouse while it is over it, like "Sonido · sound" on the 🔊 button.
+  // "id" can also be a function that says which word, for words that change (like the weather's).
   function bindWord(button, id) {
     button.addEventListener("pointermove", function (event) {
       if (event.pointerType === "touch") return;
       buttonWordShown = true;
-      showWord(id, event.clientX, event.clientY);
+      showWord(typeof id === "function" ? id() : id, event.clientX, event.clientY);
     });
     button.addEventListener("pointerleave", forgetButtonWord);
   }

@@ -46,7 +46,9 @@ var Gather = (function () {
 
   // ---------- The forest ----------
 
+  // On foggy days half of the new things are crystals (js/weather.js).
   function pickKind() {
+    if (Weather.isFoggy() && Math.random() < CONFIG.weather.fogForest.crystal) return "crystal";
     var roll = Math.random() * 100;
     for (var i = 0; i < KINDS.length; i++) {
       roll -= KINDS[i].chance;
@@ -156,11 +158,18 @@ var Gather = (function () {
     a.sim.facing = x < a.sim.x ? "left" : "right";
   }
 
+  // How many things the forest holds at most: more on foggy days.
+  function forestMax() {
+    return Weather.isFoggy() ? CONFIG.weather.fogForest.max : K.forestMax;
+  }
+
+  // While it rains, more rainbow fish and fewer silver fish come out (js/weather.js).
   function catchOne() {
     var night = !Time.isDay();
+    var rain = Weather.isRaining() ? CONFIG.weather.rainFish : {};
     var roll = Math.random() * 100;
     for (var i = 0; i < CATCHES.length; i++) {
-      roll -= CATCHES[i].chance;
+      roll -= rain[CATCHES[i].id] || CATCHES[i].chance;
       if (roll < 0) return CATCHES[i].night && !night ? CATCHES[0] : CATCHES[i];
     }
     return CATCHES[0];
@@ -227,13 +236,22 @@ var Gather = (function () {
       }
     });
 
-    // New forest things only appear while the game runs.
+    // New forest things only appear while the game runs. On foggy days more are on their way, up to the bigger limit;
+    // once the fog is gone, the ones on their way stop coming while the forest is full.
     if (Needs.isPaused()) return;
     regrow = regrow.filter(function (left) { return left > 0; });
+    if (Weather.isFoggy()) {
+      while (forest.length + regrow.length < forestMax()) regrow.push(between(REGROW.min, REGROW.max));
+    }
     for (var i = 0; i < regrow.length; i++) {
       regrow[i] -= dt;
-      // If there is no room right now, it tries again a little later.
-      if (regrow[i] <= 0 && !spawn()) regrow[i] = 5;
+      if (regrow[i] > 0) continue;
+      if (forest.length >= forestMax()) {
+        regrow[i] = -1;
+      } else if (!spawn()) {
+        // If there is no room right now, it tries again a little later.
+        regrow[i] = 5;
+      }
     }
   }
 
@@ -491,14 +509,14 @@ var Gather = (function () {
     forest = saved.things.filter(function (t) {
       return t && KINDS.some(function (k) { return k.id === t.kind; }) &&
         typeof t.x === "number" && typeof t.y === "number" && City.isForestFloor(t.x, t.y);
-    }).slice(0, K.forestMax).map(function (t) {
+    }).slice(0, forestMax()).map(function (t) {
       return { kind: t.kind, x: t.x, y: t.y, phase: Math.random() * Math.PI * 2 };
     });
     regrow = (Array.isArray(saved.regrow) ? saved.regrow : []).filter(function (s) {
       return typeof s === "number" && isFinite(s);
     }).map(function (s) {
       return Math.max(0.1, Math.min(REGROW.max, s));
-    }).slice(0, K.forestMax - forest.length);
+    }).slice(0, forestMax() - forest.length);
     while (forest.length + regrow.length < K.forestMin) regrow.push(between(REGROW.min, REGROW.max));
   }
 

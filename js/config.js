@@ -302,6 +302,56 @@ var CONFIG = {
     popTime: 1.8
   },
 
+  // The weather of each day (js/weather.js): at "dayStart" (06:00) the day picks one by its chance out of 100, and it lasts
+  // until 06:00 the next day. A rainy day rains until "rainEnd" (16:00), has a rainbow until "rainbowEnd" (18:00), and is sunny after.
+  // Changes in the look take "fade" seconds (the rainbow "rainbowFade"). Puddles fill in "puddles.grow" seconds of play and dry
+  // in "puddles.dry"; snow covers the roofs and the grass in "snow.cover" seconds and melts in "snow.melt". Once the snow is past
+  // "snow.snowmanAt", the snowman is built in "snow.build" seconds; it melts in "snow.thaw". "snowman" is where it stands (its feet) and how big it is,
+  // in the plaza, off the fountain, the paths and the sign. While it rains the fish come out as in "rainFish" (out of 100);
+  // on foggy days the forest holds up to "fogForest.max" things, and "fogForest.crystal" of the new ones are crystals.
+  weather: {
+    chances: [
+      { id: "sunny", chance: 50 },
+      { id: "rain", chance: 20 },
+      { id: "fog", chance: 20 },
+      { id: "snow", chance: 10 }
+    ],
+    dayStart: 6 * 60,
+    rainEnd: 16 * 60,
+    rainbowEnd: 18 * 60,
+    fade: 4,
+    rainbowFade: 8,
+    puddles: {
+      grow: 30,
+      dry: 45,
+      // Where puddles form, on the grass and on the stones, as { x, y, r } (r: how wide when full).
+      spots: [
+        { x: 262, y: 618, r: 16 }, { x: 398, y: 632, r: 14 }, { x: 500, y: 420, r: 14 }, { x: 60, y: 410, r: 18 },
+        { x: 330, y: 690, r: 16 }, { x: 530, y: 688, r: 14 }, { x: 700, y: 592, r: 18 }, { x: 905, y: 470, r: 16 },
+        { x: 705, y: 168, r: 14 }, { x: 430, y: 322, r: 15 }
+      ]
+    },
+    snow: { cover: 40, melt: 20, snowmanAt: 0.6, build: 5, thaw: 8 },
+    snowman: { x: 484, y: 602, size: 1.3 },
+    rainFish: { fish: 30, rainbowFish: 25 },
+    fogForest: { max: 7, crystal: 0.5 },
+    // The rainbow arc: its middle and size (in city units), the width of each band and how see-through it is.
+    rainbow: {
+      x: 500, y: 760, radius: 600, band: 9, alpha: 0.3,
+      colors: ["#E8737A", "#F2A65A", "#F5D76E", "#9CCB86", "#7DB9D6", "#8C8FD1", "#B58BC9"]
+    },
+    colors: {
+      snow: "#FBFCFF",
+      snowShade: "#DCE6F0",
+      carrot: "#E8873A",
+      grayRain: "110, 118, 135",
+      drop: "225, 235, 248",
+      windowDrop: "120, 160, 190",
+      fog: "238, 230, 248",
+      fogLight: "246, 236, 255"
+    }
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   // "menuKey" remembers whether the panel was open or closed.
   save: { every: 10, key: "el-rincon-de-sofia-save", menuKey: "el-rincon-de-sofia-menu", soundKey: "el-rincon-de-sofia-sound" },
@@ -310,6 +360,7 @@ var CONFIG = {
   // then each group: effects, place sounds and music (softer at night). The tempo is seconds per music step.
   // Krohna meows every "meow.min" to "meow.max" seconds while it is where the selected one is.
   // The campfire crackles fully closer than "fire.near" world units and goes quiet toward "fire.far".
+  // The rain sounds at "rain.city" in the city and "rain.house" in the house; with snow the place sounds go "snowHush" softer.
   sound: {
     master: 0.7,
     effects: 0.35,
@@ -318,7 +369,9 @@ var CONFIG = {
     tempo: { day: 0.42, night: 0.56 },
     fade: 0.6,
     meow: { min: 60, max: 180 },
-    fire: { near: 90, far: 520 }
+    fire: { near: 90, far: 520 },
+    rain: { city: 0.45, house: 0.22 },
+    snowHush: 0.35
   },
 
   // The neighbors, Lumi and Vladi (js/neighbors.js). They live in the city, walk a little slower than Sofía and real.fixer

@@ -44,7 +44,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: 🛁 Baño con bañera de burbujas
 - ✅ Extra: 🧹 Pulido 3
 - ⬜ Extra: 🏡 Mover casas en la ciudad
-- ⬜ Hito 21: 🌧️ Clima y magia. Lluvia, sol y niebla mágica, con brillitos y luces que flotan.
+- ✅ Hito 21: 🌧️ Clima y magia. Cada día amanece soleado, con lluvia (y arcoíris después), niebla mágica o nieve (con techos blancos y muñeco de nieve); la lluvia riega el jardín y ayuda a pescar, y la niebla trae más cristales al bosque.
 - ⬜ Hito 22: 📖 Vecino profe y diario de palabras. Un vecino que enseña una palabra en inglés por día, y un diario en el juego con las palabras aprendidas.
 - ⬜ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas.
 
