@@ -20,15 +20,21 @@
     view.height = window.innerHeight;
     canvas.width = Math.round(view.width * view.dpr);
     canvas.height = Math.round(view.height * view.dpr);
+    fit();
+  }
 
+  // Scale the place on screen to fit the window: the house is wider than the city (it has the Baño).
+  function fit() {
     var m = CONFIG.margin;
-    var W = CONFIG.world.width, H = CONFIG.world.height;
+    var size = Sims.viewPlace() === "city" ? CONFIG.world : CONFIG.houseWorld;
+    var W = size.width, H = size.height;
     view.scale = Math.max(0.05, Math.min((view.width - m * 2) / W, (view.height - m * 2) / H));
     view.offsetX = (view.width - W * view.scale) / 2;
     view.offsetY = (view.height - H * view.scale) / 2;
   }
 
   function render(time) {
+    fit();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = CONFIG.colors.cream;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -125,6 +131,7 @@
 
   // Turn a spot on the screen into a spot in the house or the city.
   function toWorld(event) {
+    fit();
     var rect = canvas.getBoundingClientRect();
     return {
       x: (event.clientX - rect.left - view.offsetX) / view.scale,

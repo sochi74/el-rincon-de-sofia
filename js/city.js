@@ -5,8 +5,9 @@
 // At night the campfire, the house windows and the fireflies shine.
 // The decorations that goals give (js/goals.js) are drawn here too: real.fixer's guitar and moon lantern by his tent,
 // Lumi's crystal lantern and fairy lights on her tree, and Vladi's shiny pot and golden heart at his castle.
-// They are only decoration: nothing walks around them. Modo decorar (js/decorate.js) can move and turn the guitar and the pot
-// to open grass; the rest stays where it is.
+// Krohna's round bed sits by the tent too (always there), where the kitten sleeps while real.fixer sleeps in the tent.
+// They are only decoration: nothing walks around them. Modo decorar (js/decorate.js) can move and turn the guitar, the pot
+// and Krohna's bed to open grass; the rest stays where it is.
 // Also where characters may walk: never on the water (they cross on the bridge), never off the map,
 // and around the house, the trees, the fountain, the tent, the campfire, the garden fence and the neighbors' homes.
 var City = (function () {
@@ -76,7 +77,7 @@ var City = (function () {
     ctx.restore();
   }
 
-  // Where each sign of the map was drawn, by its text, so the guitar and the pot are never put on one.
+  // Where each sign of the map was drawn, by its text, so the guitar, the pot and Krohna's bed are never put on one.
   var signs = {};
 
   function label(ctx, text, cx, cy, size) {
@@ -168,7 +169,7 @@ var City = (function () {
 
   // True if the spot is open grass where a character can walk: not on the river or the bridge,
   // the house, the garden, the plaza, the stone paths, the tent, the campfire, the neighbors' homes, under a tree,
-  // or on the guitar or the pot (used for the shiny coins and the forest things).
+  // or on the guitar, the pot or Krohna's bed (used for the shiny coins and the forest things).
   function isOpenGrass(x, y) {
     if (MOVABLE.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), 10)); })) return false;
     if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
@@ -926,6 +927,8 @@ var City = (function () {
   var CRYSTAL_LANTERN = { x: 252, y: 120, w: 20, h: 34, cx: 262, cy: 141 };
   var FAIRY_LIGHTS = { x: 250, y: 156, w: 80, h: 34 };
   var POT = { w: 28, h: 24, start: { x: 842, y: 672 } };
+  // Krohna's bed, at first on the grass at the right of the tent entrance.
+  var PET_BED = { w: 52, h: 38, start: { x: 904, y: 404 } };
   var HEART = { x: 929, y: 614, w: 20, h: 20, cx: 939, cy: 624 };
   // The little lights along the garland, with their colors.
   var BULBS = (function () {
@@ -1080,6 +1083,42 @@ var City = (function () {
     ctx.restore();
   }
 
+  // Krohna's bed: round and padded, cream with an orange edge, and a little blanket folded over one side.
+  function drawPetBed(ctx) {
+    ctx.save();
+    turnAt(ctx, "petBed");
+    withShadow(ctx, function () {
+      ctx.fillStyle = "#E8913A";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 26, 19, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.fillStyle = "#F6C48A";
+    ctx.beginPath();
+    ctx.ellipse(0, -1, 22, 15, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = C.cream;
+    ctx.beginPath();
+    ctx.ellipse(0, 1, 17, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // The blanket, sage with cream dots
+    ctx.fillStyle = C.sage;
+    ctx.beginPath();
+    ctx.moveTo(6, -13);
+    ctx.quadraticCurveTo(20, -8, 21, 6);
+    ctx.lineTo(10, 12);
+    ctx.quadraticCurveTo(4, 0, 6, -13);
+    ctx.closePath();
+    ctx.fill();
+    [[13, -5], [16, 3], [10, 5]].forEach(function (d) { circle(ctx, d[0], d[1], 1.4, C.cream); });
+    ctx.restore();
+  }
+
+  // Where Krohna sleeps: curled up in the middle of its bed.
+  function petBedSpot() {
+    return { x: layout.petBed.x + 4, y: layout.petBed.y + 8 };
+  }
+
   // A golden heart on the right tower of Vladi's castle.
   function drawHeart(ctx) {
     var x = HEART.cx, y = HEART.cy - 5;
@@ -1137,16 +1176,17 @@ var City = (function () {
     if (Goals.isMet("lumi", 0) && inBox(x, y, CRYSTAL_LANTERN)) return "lantern";
     if (Goals.isMet("lumi", 1) && inBox(x, y, FAIRY_LIGHTS)) return "fairyLights";
     if (isOn("pot") && inBox(x, y, boxOf("pot"))) return "pot";
+    if (inBox(x, y, boxOf("petBed"))) return "krohnaBed";
     if (Goals.isMet("vladi", 1) && inBox(x, y, HEART)) return "heart";
     return null;
   }
 
   // ---------- Modo decorar ----------
 
-  // The guitar and the pot can be moved and turned (js/decorate.js), once their goal is met.
+  // The guitar and the pot can be moved and turned (js/decorate.js), once their goal is met, and Krohna's bed always.
   // "w", "h" is the spot each one takes when it is not turned; "start" is the middle of its first spot.
-  var MOVABLE = ["guitar", "pot"];
-  var DECOR = { guitar: GUITAR, pot: POT };
+  var MOVABLE = ["petBed", "guitar", "pot"];
+  var DECOR = { guitar: GUITAR, pot: POT, petBed: PET_BED };
   var UNLOCK = { guitar: ["realfixer", 0], pot: ["vladi", 0] };
   // Where each one is now: { x, y, dir }, its middle and how many quarter turns clockwise.
   var layout = {};
@@ -1158,8 +1198,10 @@ var City = (function () {
   }
   resetLayout();
 
-  // True once its goal is met. The forest grows its first things before js/goals.js is loaded: then nothing is.
+  // True once its goal is met (Krohna's bed always is). The forest grows its first things before js/goals.js is loaded:
+  // then only the bed is.
   function isOn(id) {
+    if (!UNLOCK[id]) return true;
     return typeof Goals !== "undefined" && Goals.isMet(UNLOCK[id][0], UNLOCK[id][1]);
   }
 
@@ -1308,6 +1350,7 @@ var City = (function () {
     drawHouse(ctx, highlightHouse);
     Garden.draw(ctx, time);
     drawTent(ctx);
+    drawPetBed(ctx);
     if (isOn("guitar")) drawGuitar(ctx);
     if (Goals.isMet("realfixer", 1)) drawMoonLantern(ctx, false);
     drawCampfire(ctx, time);
@@ -1403,6 +1446,7 @@ var City = (function () {
     riverAt: riverAt,
     riverX: riverX,
     doorSpot: doorSpot,
+    petBedSpot: petBedSpot,
     // Modo decorar
     movableAt: movableAt,
     boxOf: boxOf,

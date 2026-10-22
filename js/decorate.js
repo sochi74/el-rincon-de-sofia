@@ -1,4 +1,5 @@
-// Modo decorar: Sofía arranges her house her way, and in the city the guitar and the pot of the goals.
+// Modo decorar: Sofía arranges her house her way (the Baño too), and in the city Krohna's bed and the guitar and the pot
+// of the goals.
 // The "🛠️ Decorar" button in the panel turns it on: everything freezes like with Pausa, and a sign at the top says what to do,
 // with buttons to turn the thing picked ("🔄 Girar"), to put everything back as it was at first ("↩️ Como al principio",
 // after asking) and to finish ("✅ Listo"). Taps only pick and drag: what can be moved glows under the mouse, the last one

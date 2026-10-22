@@ -1,6 +1,7 @@
 // Krohna, real.fixer's orange kitten. Only decoration: no needs, it cannot be selected and it changes nothing in the game.
 // It follows real.fixer a little behind, in the same place (house or city), going around things with js/path.js.
-// When he stands still it sits by his side and wags its tail; when he sleeps in the Carpa it sleeps curled up at the entrance.
+// When he stands still it sits by his side and wags its tail; when he sleeps in the Carpa it sleeps curled up in its bed
+// by the Carpa (js/city.js), wherever Modo decorar put it.
 // With Pausa it stays still.
 var Pet = (function () {
   var K = CONFIG.pet;
@@ -26,9 +27,12 @@ var Pet = (function () {
     return !!pose && pose.kind === "tent";
   }
 
-  // Right next to real.fixer, on the side it already is, or at the tent entrance while he sleeps there.
+  // Right next to real.fixer, on the side it already is, or in its bed while he sleeps in the tent.
   function targetFor(sim) {
-    if (isOwnerInTent()) return Path.free("city", K.sleepSpot.x, K.sleepSpot.y);
+    if (isOwnerInTent()) {
+      var bed = City.petBedSpot();
+      return Path.free("city", bed.x, bed.y);
+    }
     var at = ownerSpot(sim);
     var side = pet.x < at.x ? -1 : 1;
     return Path.free(sim.place, at.x + side * K.side, at.y + 4);

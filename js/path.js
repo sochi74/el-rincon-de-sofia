@@ -3,9 +3,10 @@
 // The way found over the squares is then straightened and its corners are rounded, so the walk looks smooth.
 // Modo decorar (js/decorate.js) moves things, so the squares are worked out again after every move.
 var Path = (function () {
-  // Size of a square, in world units.
+  // Size of a square, in world units. The grid is big enough for the city and for the house (which is wider).
   var CELL = 6;
-  var COLS = Math.ceil(CONFIG.world.width / CELL), ROWS = Math.ceil(CONFIG.world.height / CELL);
+  var COLS = Math.ceil(Math.max(CONFIG.world.width, CONFIG.houseWorld.width) / CELL);
+  var ROWS = Math.ceil(Math.max(CONFIG.world.height, CONFIG.houseWorld.height) / CELL);
   // How round the corners are: at most this many world units cut from each side of a corner.
   var ROUND = 26;
   var DIAGONAL = Math.SQRT2;

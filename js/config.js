@@ -11,6 +11,9 @@ var CONFIG = {
     tileLight: "#FBF4EA",
     tileDark: "#EAD9C4",
     carpet: "#A9BFA4",
+    // Baño: little light blue and white tiles.
+    bathTile: "#A8D8E3",
+    bathTileWhite: "#F7FCFC",
     grass: "#CFDDBF",
     // City colors: grass greens, water blue and stone gray.
     cityGrass: "#A8C686",
@@ -22,8 +25,11 @@ var CONFIG = {
     stoneLight: "#DAD4C8"
   },
 
-  // Size of the house drawing in world units; it is scaled to fit the window.
+  // Size of the city drawing in world units; it is scaled to fit the window.
   world: { width: 1000, height: 720 },
+
+  // Size of the house drawing: wider than the city, for the Baño on the right of the Sala.
+  houseWorld: { width: 1260, height: 720 },
 
   // Empty space kept around the house, in screen pixels.
   margin: 24,
@@ -36,7 +42,8 @@ var CONFIG = {
   rooms: [
     { id: "kitchen", name: "Cocina", x: 40, y: 40, w: 380, h: 300, floor: "tiles" },
     { id: "bedroom", name: "Dormitorio", x: 420, y: 40, w: 540, h: 300, floor: "carpet" },
-    { id: "living", name: "Sala", x: 40, y: 340, w: 920, h: 340, floor: "wood" }
+    { id: "living", name: "Sala", x: 40, y: 340, w: 920, h: 340, floor: "wood" },
+    { id: "bathroom", name: "Baño", x: 960, y: 340, w: 260, h: 340, floor: "bathTiles" }
   ],
 
   furniture: [
@@ -44,7 +51,9 @@ var CONFIG = {
     { id: "stove", name: "Estufa", x: 240, y: 72, w: 100, h: 70 },
     { id: "bed", name: "Cama", x: 720, y: 80, w: 190, h: 220 },
     { id: "tv", name: "Televisión", x: 620, y: 370, w: 200, h: 34 },
-    { id: "sofa", name: "Sofá", x: 590, y: 560, w: 260, h: 90 }
+    { id: "sofa", name: "Sofá", x: 590, y: 560, w: 260, h: 90 },
+    { id: "bathtub", name: "Bañera", x: 1055, y: 352, w: 150, h: 80 },
+    { id: "sink", name: "Lavamanos", x: 972, y: 350, w: 76, h: 56 }
   ],
 
   // Things to use in the city, by real.fixer's tent on the other side of the bridge.
@@ -57,7 +66,8 @@ var CONFIG = {
   doorways: [
     { rooms: ["kitchen", "bedroom"], x: 420, y: 195 },
     { rooms: ["kitchen", "living"], x: 275, y: 340 },
-    { rooms: ["bedroom", "living"], x: 515, y: 340 }
+    { rooms: ["bedroom", "living"], x: 515, y: 340 },
+    { rooms: ["living", "bathroom"], x: 960, y: 490 }
   ],
 
   // The front door of the house: where to tap it (the welcome mat and the doorway above it),
@@ -145,13 +155,12 @@ var CONFIG = {
     answerTime: 2.6
   },
 
-  // Krohna, real.fixer's kitten: how fast it walks, how close it stays to him and where it sleeps by the Carpa.
+  // Krohna, real.fixer's kitten: how fast it walks and how close it stays to him. It sleeps in its bed by the Carpa (js/city.js).
   pet: {
     speed: 200,
     side: 42,
     farther: 70,
-    repath: 0.4,
-    sleepSpot: { x: 812, y: 390 }
+    repath: 0.4
   },
 
   // Free will: the one not selected looks after a need below "threshold" when it is idle.

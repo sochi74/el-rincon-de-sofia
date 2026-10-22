@@ -28,6 +28,22 @@
 - La Guitarra y la Olla son solo decoración: los personajes y los vecinos pueden pasar por encima.
 - El Dormitorio es chico: para poner la Televisión y el Sofá ahí, primero hay que llevar la Cama a otra habitación.
 - real.fixer no va solo al bosque a buscar bayas: solo se come las que ya están en la mochila.
+- La casa ahora es más ancha (por el Baño): en pantallas anchas, con el panel abierto se tapa un poquito más de la parte de arriba de la Cocina y del Dormitorio (debajo del panel siguen quedando el Refrigerador y la Estufa, como antes). En pantallas más angostas la casa se ve un poco más chica que la ciudad.
+- Mientras alguien se baña, su brillo de seleccionado y su nombre quedan debajo de la Bañera (como en la Cama).
+- Si la camita de Krohna se pone donde no se puede caminar (muy cerca del río o arriba del todo del mapa), Krohna duerme al lado, en el lugar libre más cercano.
+- Nadie va solo al Baño todavía.
+
+## 2026-10-22 · Extra: 🛁 Baño con bañera de burbujas
+- Sofía cambió la regla fija de la casa: ahora tiene Cocina, Dormitorio, Sala y Baño.
+- El Baño está a la derecha de la Sala, con su cartel "Baño", sus paredes y una puerta desde la Sala (donde antes estaba la ventana de la Sala; la ventanita ahora está en el Baño). La casa se agrandó hacia la derecha y ninguna habitación se achicó. Por fuera, en la ciudad, la Casa de Sofía sigue igual. Piso de azulejos celeste agua y blancos (colores nuevos en js/config.js). Se llega caminando, con los caminos de siempre.
+- 🛁 Bañera (se usa): blanca, con patitas doradas, llena de agua celeste, espuma y burbujas. Con Sofía o real.fixer seleccionado, tocarla lo hace caminar hasta ella y bañarse: se ve su cabeza dentro de la bañera rodeada de espuma, con burbujas que suben y se revientan, y la burbuja "Bañándose 🫧" unos 5 segundos. Da Diversión +25 y Energía +20 (nunca más de 100); ningún rasgo lo cambia y no es la actividad favorita de nadie. Al terminar, sale y se para junto a la bañera.
+- 🪥 Lavamanos con espejo (se usa): un mueblecito de madera con el lavamanos, un espejo redondo y un vasito con dos cepillos de dientes. "Lavándose los dientes 🪥" unos 2 segundos, Diversión +5, y al terminar un ✨ chiquito sobre la cabeza.
+- Solo decoración: 🚽 Inodoro, 🧴 estante en la pared con frasquitos de jabón de colores (siempre parados, en cualquier pared), 🪴 plantita en maceta y 🛀 dos toallas colgadas en la pared. El Inodoro y la Plantita están en el piso: los personajes los rodean.
+- Lo de siempre: brillan al pasar el mouse, un nuevo clic cancela, Pausa congela todo (también las burbujas y el ✨), y si los dos van a la misma cosa, el segundo dice "Ocupado". El libre albedrío no cambia: nadie va solo al Baño.
+- Modo decorar: la Bañera, el Lavamanos, el Inodoro y la Plantita se mueven por el piso a cualquier habitación y se giran; el Estante y las Toallas se deslizan por las paredes. "Como al principio" los devuelve al Baño.
+- ⭐ Extra desbloqueado (35 ⭐): Krohna's bed 🐾. En la ciudad, a la derecha de la entrada de la carpa de real.fixer, una camita redonda y acolchada, crema con borde naranja y una mantita verde. Solo decoración (se puede pasar por encima, y las monedas no aparecen encima). No tapa la entrada de la carpa, la fogata, el tronco ni el cartel. Cuando real.fixer duerme en la carpa, Krohna duerme enroscado en su camita con una "z" chiquita. Se mueve y se gira en Modo decorar, como la Guitarra y la Olla.
+- Palabras nuevas en js/words.js (al pasar el mouse): Baño · bathroom (BÁZ-rum), Bañera · bathtub (BÁZ-tab), Burbujas · bubbles (BÁ-bels) (en la espuma de la bañera), Lavamanos · sink (SINK), Espejo · mirror (MÍ-rror), Inodoro · toilet (TÓI-let), Jabón · soap (SÓUP) (en el estante), Planta · plant (PLANT), Toalla · towel (TÁU-el), Cepillo de dientes · toothbrush (TÚZ-brash) (en el vasito) y Cama de Krohna · Krohna's bed (KRÓ-nas BED).
+- Guardado: recuerda dónde está y hacia dónde mira cada cosa nueva. Una partida vieja carga bien, con el Baño y la camita como al principio. Si en una partida vieja algo quedó tapando la puerta nueva del Baño (o colgado en la pared donde ahora está la puerta), vuelve a su lugar de siempre.
 
 ## 2026-10-22 · Hito 20: 🛋️ Mover muebles
 - Botón nuevo "🛠️ Decorar" en el panel (junto a Pausa). Al tocarlo, todo se congela como con Pausa (el botón Pausa se apaga mientras tanto), y aparece el cartel "🛠️ Modo decorar: arrastra para mover" con los botones "🔄 Girar", "↩️ Como al principio" y "✅ Listo". En pantallas anchas el cartel va arriba a la derecha; en pantallas más angostas va abajo, en el medio.
