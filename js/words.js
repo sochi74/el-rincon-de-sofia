@@ -55,5 +55,8 @@ var WORDS = {
   gift: { es: "Regalo", en: "gift", say: "GUIFT" },
   friend: { es: "Amigo", en: "friend", say: "FREND" },
   bestFriends: { es: "Mejores amigos", en: "best friends", say: "BEST FRENDS" },
-  kitten: { es: "Gatito", en: "kitten", say: "KÍ-ten" }
+  kitten: { es: "Gatito", en: "kitten", say: "KÍ-ten" },
+
+  // Sound button
+  sound: { es: "Sonido", en: "sound", say: "SÁUND" }
 };

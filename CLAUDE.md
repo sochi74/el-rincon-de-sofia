@@ -37,7 +37,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/path.js: caminos que esquivan obstáculos
 - js/gifts.js: regalos desde la mochila
 - js/pet.js: Krohna, el gatito de real.fixer
-- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, cooking, path, sims, needs, objects, social, gifts, pet, ui, save, main
+- js/audio.js: sonidos y música creados con código
+- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, cooking, path, sims, needs, objects, social, gifts, pet, audio, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

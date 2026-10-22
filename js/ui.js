@@ -1,5 +1,6 @@
 // Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
-// and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕).
+// and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕),
+// and another one next to it changes the sound (🔊 / 🎵 / 🔇). Every button goes "pling", and selling goes "cling".
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
 // the recipe menu that opens next to the Estufa or the Fogata,
 // the backpack window with everything in it and its sell, eat and gift buttons, and the word tag that shows
@@ -8,6 +9,7 @@ var UI = (function () {
   var coinsEl;
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
   var menuToggle, panelOpen = true;
+  var soundToggle, soundWordShown = false;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
@@ -151,6 +153,29 @@ var UI = (function () {
       Save.saveMenuOpen(panelOpen);
     });
 
+    // The sound button: next mode on each tap, and "Sonido · sound" next to the mouse while it is over it.
+    soundToggle = document.getElementById("sound-toggle");
+    showSoundMode();
+    soundToggle.addEventListener("click", function () {
+      Sound.nextMode();
+      showSoundMode();
+    });
+    soundToggle.addEventListener("pointermove", function (event) {
+      if (event.pointerType === "touch") return;
+      soundWordShown = true;
+      showWord("sound", event.clientX, event.clientY);
+    });
+    soundToggle.addEventListener("pointerleave", function () {
+      soundWordShown = false;
+      hideWord();
+    });
+
+    // "Pling" for every button (selling says "cling" instead).
+    document.addEventListener("click", function (event) {
+      var button = event.target.closest ? event.target.closest("button") : null;
+      if (button && !button.hasAttribute("data-quiet")) Sound.play("pling");
+    });
+
     showSelected(null);
   }
 
@@ -159,6 +184,12 @@ var UI = (function () {
     setPanelOpen(Save.loadMenuOpen());
     panel.hidden = false;
     menuToggle.hidden = false;
+    soundToggle.hidden = false;
+  }
+
+  function showSoundMode() {
+    soundToggle.textContent = Sound.icon();
+    soundToggle.setAttribute("aria-label", "Sonido: " + Sound.name());
   }
 
   // Open or close the panel; the round button shows ✕ when it is open and ☰ when it is closed.
@@ -219,6 +250,7 @@ var UI = (function () {
   function openMenu(x, y, onPick) {
     onMenuPick = onPick;
     menu.hidden = false;
+    Sound.play("pling");
     place(menu, x, y);
   }
 
@@ -227,6 +259,7 @@ var UI = (function () {
     onSeedPick = onPick;
     updateSeeds();
     seedMenu.hidden = false;
+    Sound.play("pling");
     place(seedMenu, x, y);
   }
 
@@ -246,6 +279,7 @@ var UI = (function () {
     campfireButton.hidden = !atCampfire;
     updateCook();
     cookMenu.hidden = false;
+    Sound.play("pling");
     place(cookMenu, x, y);
   }
 
@@ -375,10 +409,14 @@ var UI = (function () {
     var button = document.createElement("button");
     button.type = "button";
     button.textContent = text;
+    button.setAttribute("data-quiet", "");
     button.addEventListener("click", function () {
       var rect = button.getBoundingClientRect();
       var coins = Inventory.sell(id, all);
-      if (coins > 0) coinPop(coins, rect.left + rect.width / 2, rect.top);
+      if (coins > 0) {
+        coinPop(coins, rect.left + rect.width / 2, rect.top);
+        Sound.play("cling");
+      }
       updateBackpack();
     });
     return button;
@@ -400,7 +438,7 @@ var UI = (function () {
   // True if a spot on the screen is over the panel, the ☰ button, the backpack or an open menu,
   // so the word tag never shows what is under them.
   function coversSpot(x, y) {
-    return [panelOpen ? panel : null, menuToggle, backpack, menu, seedMenu, cookMenu].some(function (el) {
+    return [panelOpen ? panel : null, menuToggle, soundToggle, backpack, menu, seedMenu, cookMenu].some(function (el) {
       if (!el || el.hidden) return false;
       var r = el.getBoundingClientRect();
       return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
@@ -451,11 +489,16 @@ var UI = (function () {
     return wordTimer !== null;
   }
 
+  function isSoundWordShown() {
+    return soundWordShown;
+  }
+
   return {
     init: init,
     showWord: showWord,
     hideWord: hideWord,
     isWordTimed: isWordTimed,
+    isSoundWordShown: isSoundWordShown,
     coversSpot: coversSpot,
     show: show,
     showSelected: showSelected,

@@ -280,6 +280,8 @@ var Social = (function () {
           size: 16 + Math.random() * 12, sway: Math.random() * Math.PI * 2 });
       }
       party = { level: LEVELS[rank], elapsed: 0, hearts: hearts };
+      var two = Sims.list();
+      if (two[0].place === two[1].place) Sound.playAt(two[0].place, "fanfare");
     }
     known = rank;
     if (party) {

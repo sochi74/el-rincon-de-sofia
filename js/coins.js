@@ -55,6 +55,7 @@ var Coins = (function () {
         if (dx * dx + dy * dy > K.reach * K.reach) return true;
         count += K.value;
         pops.push({ x: c.x, y: c.y, age: 0 });
+        Sound.playAt(sim.place, "cling");
         return false;
       });
     });

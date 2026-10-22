@@ -116,6 +116,7 @@ var Gifts = (function () {
       gift.elapsed = 0;
       Sims.face(gift.from, gift.to.x, gift.to.y);
       Sims.face(gift.to, gift.from.x, gift.from.y);
+      Sound.playAt(gift.from.place, "sparkle");
       return;
     }
     gift.elapsed += dt;

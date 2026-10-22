@@ -186,6 +186,7 @@ var Garden = (function () {
     } else {
       var sold = flower(state.flower);
       plots[a.plot] = empty();
+      Sound.playAt("city", "bell");
       if (sold) {
         Coins.add(sold.sell);
         var p = PLOTS[a.plot];
@@ -214,6 +215,7 @@ var Garden = (function () {
           a.phase = isTaken(a.plot, id) ? "busy" : "doing";
           a.elapsed = 0;
           if (a.phase === "doing") Sims.face(a.sim, PLOTS[a.plot].x + PLOTS[a.plot].w / 2, PLOTS[a.plot].y + PLOTS[a.plot].h / 2);
+          if (a.phase === "doing" && a.kind === "water") Sound.playAt("city", "splash");
         }
         return;
       }

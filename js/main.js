@@ -108,6 +108,7 @@
     Social.update(dt);
     Sims.think(dt);
     Save.update(dt);
+    Sound.update(dt);
     UI.update();
     render(time);
     updateWord();
@@ -147,6 +148,8 @@
   // Every frame, so the tag follows things that move (like the fireflies) and changes when the view does.
   // Over the panel, the ☰ button, the backpack or a menu there is no tag.
   function updateWord() {
+    // The 🔊 button shows its own word.
+    if (UI.isSoundWordShown()) return;
     if (mouse && UI.coversSpot(mouse.clientX, mouse.clientY)) {
       UI.hideWord();
     } else if (mouse) {
@@ -175,6 +178,7 @@
   }
 
   function startGame() {
+    Sound.start();
     titleScreen.hidden = true;
     canvas.hidden = false;
     UI.show();
