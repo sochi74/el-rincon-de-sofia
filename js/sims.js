@@ -982,6 +982,9 @@ var Sims = (function () {
     });
     if (values[lowest.id] >= CONFIG.freeWill.threshold) return false;
 
+    // Hungry real.fixer with berries in the backpack eats one right here first.
+    if (lowest.id === "hunger" && Cooking.hasBerryFor(sim)) return Cooking.eatBerry(sim);
+
     // Hungry with a dish in the backpack: eat it right here instead of going to the Refrigerador.
     var dish = lowest.id === "hunger" ? Cooking.anyDish() : null;
     if (dish) return Cooking.eat(sim, dish);

@@ -50,6 +50,7 @@ var WORDS = {
   dish: { es: "Plato", en: "dish", say: "DISH" },
   soup: { es: "Sopa", en: "soup", say: "SÚUP" },
   pie: { es: "Tarta", en: "pie", say: "PÁI" },
+  eat: { es: "Comer", en: "eat", say: "ÍIT" },
 
   // Friendship and gifts
   gift: { es: "Regalo", en: "gift", say: "GUIFT" },

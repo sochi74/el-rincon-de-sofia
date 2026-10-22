@@ -15,9 +15,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 
 ## Estado
-Hito 19 ✅ Sueños y metas
+Extra ✅ real.fixer come bayas
 
-## ⭐ Estrellas de inglés: 31
+## ⭐ Estrellas de inglés: 33
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -172,6 +172,7 @@ Hito 19 ✅ Sueños y metas
 - pot: olla
 - heart: corazón
 - dark: oscuro
+- Yum!: ¡Mmm!
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -199,7 +200,8 @@ Hito 19 ✅ Sueños y metas
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - Próximo regalo: a las 35 ⭐
-- Siguiente paso: Pack 3, Hito 20: 🛋️ Mover muebles y más habitaciones.
+- Siguiente paso: Pack 3, Hito 20: 🛋️ Mover muebles y más habitaciones (ahí Sofía quiere acomodar el florero que quedó sobre el mueble de la tele).
+- Pendiente: la skill de hito.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
 - Decisiones grandes pendientes, para hablar con Robert: pixel art con imágenes; canciones reales de real.fixer (archivos de audio); jugar con amigos por internet.
 
