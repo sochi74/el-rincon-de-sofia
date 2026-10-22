@@ -3,13 +3,19 @@
 // Lumi flies around the city day and night, flapping her wings, and at night leaves a little trail of golden sparkles.
 // Vladi stays in his castle by day ("Zzz" come out of its window); from 19:00 to 07:00 he walks slowly near his castle,
 // the plaza and the campfire, and now and then he stops, shakes and hugs his teddy bear.
-// Sofía or real.fixer can talk with them and give them gifts (js/social.js and js/gifts.js). Pausa freezes their walks.
+// At night, when they come close to each other, Lumi and Vladi sometimes stop, look at each other and chat on their own
+// (greeting and chat phrases), which gives both a little Amistad. Tapping one of them ends that chat.
+// Sofía or real.fixer can talk with them and give them gifts (js/social.js and js/gifts.js). Pausa freezes their walks and chats.
 var Neighbors = (function () {
   var K = CONFIG.neighbors;
   var P = Sims.parts;
   var list = [];
   // Lumi's trail of sparkles at night, as { x, y, age, size }.
   var trail = [];
+  // Lumi and Vladi chatting on their own, or null: { a, b, lines: [{ n, phrase }], index, elapsed };
+  // and seconds of play until they may chat again.
+  var chat = null;
+  var chatWait = between(K.chat.wait.min, K.chat.wait.max);
 
   function between(min, max) {
     return min + Math.random() * (max - min);
@@ -139,14 +145,93 @@ var Neighbors = (function () {
     return true;
   }
 
+  // ---------- Chatting with each other ----------
+
+  function randomItem(items) {
+    return items[Math.floor(Math.random() * items.length)];
+  }
+
+  // True if a neighbor is with Sofía or real.fixer: talking, getting a gift, or with the social menu open over it.
+  function withPlayer(n) {
+    var id = n.data.id;
+    return Social.isInvolved(id) || Gifts.isInvolved(id) || Sims.menuTarget() === n;
+  }
+
+  // At night, both outside, close to each other and free: they may start a chat.
+  function canChat(a, b) {
+    if (Time.isDay() || a.inside || b.inside || a.goingIn || b.goingIn || withPlayer(a) || withPlayer(b)) return false;
+    var dx = a.x - b.x, dy = a.y - b.y;
+    return dx * dx + dy * dy <= K.chat.near * K.chat.near;
+  }
+
+  // 2 or 3 lines, taking turns: a greeting first, then chat phrases.
+  function startChat(a, b) {
+    var lines = [{ n: a, phrase: randomItem(a.data.phrases.greeting) }, { n: b, phrase: randomItem(b.data.phrases.chat) }];
+    if (Math.random() < 0.5) lines.push({ n: a, phrase: randomItem(a.data.phrases.chat) });
+    [a, b].forEach(function (n) {
+      n.path = [];
+      n.walking = false;
+      n.scared = 0;
+      n.fear = null;
+    });
+    chat = { a: a, b: b, lines: lines, index: 0, elapsed: 0 };
+  }
+
+  // The chat ends: on its last line it gives Amistad to both (js/social.js celebrates a new level).
+  function endChat(finished) {
+    if (finished) {
+      Social.addFriendship(chat.a.data.id, chat.b.data.id, K.chat.friendship);
+      Social.addFriendship(chat.b.data.id, chat.a.data.id, K.chat.friendship);
+    }
+    chat = null;
+    chatWait = between(K.chat.wait.min, K.chat.wait.max);
+  }
+
+  function chatStep(dt) {
+    if (chat) {
+      // Tapped by the player, a gift, or the sun coming up: the chat ends right away.
+      if (withPlayer(chat.a) || withPlayer(chat.b) || Time.isDay()) {
+        endChat(false);
+        return;
+      }
+      chat.a.facing = chat.b.x >= chat.a.x ? "right" : "left";
+      chat.b.facing = chat.a.x >= chat.b.x ? "right" : "left";
+      chat.elapsed += dt;
+      var line = chat.lines[chat.index];
+      var s = CONFIG.social;
+      if (chat.elapsed < Math.min(s.lineMax, s.lineMin + line.phrase.text.length * s.lineExtraPerLetter)) return;
+      chat.index++;
+      chat.elapsed = 0;
+      if (chat.index >= chat.lines.length) endChat(true);
+      return;
+    }
+    chatWait = Math.max(0, chatWait - dt);
+    var lumi = byId("lumi"), vladi = byId("vladi");
+    if (chatWait > 0 || !lumi || !vladi || !canChat(lumi, vladi)) return;
+    if (Math.random() < 0.5) startChat(lumi, vladi); else startChat(vladi, lumi);
+  }
+
+  // The line a neighbor is saying in its chat with the other one, or null.
+  function chatBubble(n) {
+    if (!chat) return null;
+    var line = chat.lines[chat.index];
+    return line.n === n ? { text: line.phrase.text, subtitle: line.phrase.subtitle, heart: false, speech: true } : null;
+  }
+
+  function isChatting(n) {
+    return !!chat && (chat.a === n || chat.b === n);
+  }
+
   function update(dt) {
+    if (!Needs.isPaused()) chatStep(dt);
     list.forEach(function (n) {
       live(n, dt);
       if (Needs.isPaused()) return;
       var id = n.data.id;
-      var busy = Social.isInvolved(id) || Gifts.isInvolved(id) || Sims.menuTarget() === n;
+      var busy = withPlayer(n) || isChatting(n);
       if (busy) {
-        // Talking or getting a gift: it stands still and looks at the other one, and then stays a little more.
+        // Talking, getting a gift or chatting with the other neighbor: it stands still and looks at the other one,
+        // and then stays a little more.
         if (Sims.menuTarget() === n) n.path = [];
         n.walking = false;
         n.scared = 0;
@@ -545,7 +630,7 @@ var Neighbors = (function () {
     var bounce = walking && !lift ? -Math.abs(Math.sin(n.stepPhase)) * 4 : 0;
     var breath = walking ? 1 : 1 + Math.sin(n.breath) * CONFIG.alive.breathe.amount;
     var shake = n.scared > 0 && !Needs.isPaused() ? Math.sin(time * 55) * 1.3 : 0;
-    var lean = Social.facing(n.data.id);
+    var lean = Social.facing(n.data.id) || (isChatting(n) ? (n.facing === "right" ? 1 : -1) : 0);
     var view = n.facing === "left" || n.facing === "right" ? "side" : n.facing;
     ctx.save();
     ctx.translate(n.x + shake, n.y - lift + bounce);
@@ -553,7 +638,7 @@ var Neighbors = (function () {
     ctx.scale(n.facing === "left" ? -k : k, k * breath);
     BODIES[n.data.id][view](ctx, n.look, walking ? n.stepPhase : 0, n.blink > 0, n);
     ctx.restore();
-    var bubble = Social.bubbleFor(n.data.id) || Gifts.bubbleFor(n.data.id) || n.fear;
+    var bubble = Social.bubbleFor(n.data.id) || Gifts.bubbleFor(n.data.id) || chatBubble(n) || n.fear;
     Sims.drawTags(ctx, n, { x: n.x, y: n.y }, time, bubble);
   }
 

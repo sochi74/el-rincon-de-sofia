@@ -189,6 +189,7 @@ var Garden = (function () {
       Sound.playAt("city", "bell");
       if (sold) {
         Coins.add(sold.sell);
+        Goals.notify("harvest", a.sim.data.id, sold.id);
         var p = PLOTS[a.plot];
         pops.push({ x: p.x + p.w / 2, y: p.y, value: sold.sell, age: 0 });
       }

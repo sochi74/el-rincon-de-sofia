@@ -312,7 +312,10 @@ var CONFIG = {
   // for "scared.time" seconds. "home" is the spot by each house door where they come out and stand.
   // "spots" are the places each one walks to. "houses" are where their homes are drawn on the city map: Lumi's treehouse
   // on top of a big forest tree, with its rope ladder down to the grass, and Vladi's castle on free grass by the bottom right.
+  // At night, when both are outside closer than "chat.near" and nobody is talking with them, Lumi and Vladi stop and chat
+  // on their own, at most once every "chat.wait.min" to "chat.wait.max" seconds of play; each chat gives both "chat.friendship" Amistad.
   neighbors: {
+    chat: { near: 170, wait: { min: 60, max: 120 }, friendship: 5 },
     lumi: {
       speed: 130,
       scale: 0.82,

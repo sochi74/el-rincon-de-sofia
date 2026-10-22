@@ -1,10 +1,11 @@
 # CHARACTERS.md
 
 ## Campos de cada personaje
-Nombre y apodo · Tipo (jugable o vecino) · Apariencia (tono de piel, pelo, vello facial, ropa de arriba, ropa de abajo, accesorio distintivo, detalles) · Rasgos (3) · Actividad favorita (da ❤️ y ×1.25) · Frase típica · Idioma de diálogo · Frases (saludo, charlar, chiste, chocar los cinco, hambre, sueño, aburrimiento, feliz) · Relaciones (amistad inicial 0) · Regalos favoritos (dan Amistad +15) · Mascota
+Nombre y apodo · Tipo (jugable o vecino) · Apariencia (tono de piel, pelo, vello facial, ropa de arriba, ropa de abajo, accesorio distintivo, detalles) · Rasgos (3) · Actividad favorita (da ❤️ y ×1.25) · Frase típica · Idioma de diálogo · Frases (saludo, charlar, chiste, chocar los cinco, hambre, sueño, aburrimiento, feliz) · Relaciones (amistad inicial 0) · Regalos favoritos (dan Amistad +15) · Mascota · Metas (2, en orden, cada una con su decoración)
 
 Tipos: los jugables (Sofía y real.fixer) se seleccionan y tienen necesidades. Los vecinos (Lumi y Vladi) viven en la ciudad, pasean solos y no se seleccionan.
 Los vecinos todavía no tienen necesidades: los rasgos que cambian necesidades y la actividad favorita se guardan en la ficha, pero aún no hacen nada. Bromista sí funciona en los chistes.
+Metas: cada uno tiene un sueño de 2 metas; primero la 1 y después la 2. Cumplir la Meta 1 da +30 🪙 y la Meta 2 +50 🪙, y cada una deja una decoración para siempre en su casa.
 
 Efectos de rasgos (se multiplican si se suman):
 Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/a: Energía baja ×0.7 · Fiestero/a: Social baja ×1.5, socializar da ×1.5 · Tímido/a: Social baja ×0.7, socializar da ×0.7 · Gamer: la tele da Diversión ×1.5 · Creativo/a: Diversión baja ×1.5 · Bromista: sus chistes dan Amistad ×1.5 · Conversador/a: Charlar da Social ×1.5 · Tranquilo/a: todas sus necesidades bajan ×0.85
@@ -29,6 +30,9 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
 - Relaciones: Sofía 0, Lumi 0, Vladi 0
 - Regalos favoritos: Sopa de cangrejo, Cristal
 - Mascota: Krohna, un gatito naranja
+- Metas:
+  - Meta 1: 💬 "Charlar con todos los vecinos" (0/2): la primera vez que usa "Charlar" con Lumi y con Vladi. Decoración: 🎸 una guitarra apoyada al costado de su carpa.
+  - Meta 2: 🌙 "Pescar un Pez luna" (0/1). Decoración: 🌙 un farolito con forma de luna colgado de la carpa, que brilla de noche.
 
 ## Sofía
 - Nombre y apodo: Sofía. Vive sola en su casita acogedora.
@@ -50,6 +54,9 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
 - Relaciones: real.fixer 0, Lumi 0, Vladi 0
 - Regalos favoritos: Tarta de bayas, Plato mágico
 - Mascota: ninguna
+- Metas:
+  - Meta 1: 🌸 "Cosechar 5 flores" (0/5): cada cosecha que hace Sofía. Decoración: 🌸 un florero con flores de colores del jardín en la Sala.
+  - Meta 2: 🥧 "Comer una Tarta de bayas" (0/1): con el botón Comer o por libre albedrío. Decoración: 🎊 banderines de colores en la pared de la Cocina.
 
 ## Lumi
 - Nombre y apodo: Lumi. Hada vecina del valle. Vive en una casita en un árbol del bosque.
@@ -71,6 +78,9 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
 - Relaciones: Sofía 0, real.fixer 0, Vladi 0
 - Regalos favoritos: Cristal
 - Mascota: ninguna
+- Metas:
+  - Meta 1: 🎉 "Ser amiga de todos" (0/2): Amistad de 30 o más (😊 Amigos) con Sofía y con real.fixer. Decoración: 💎 un farol de cristal colgado en su casita del árbol, que brilla de noche.
+  - Meta 2: 🦋 "Ser amiga de Vladi" (0/1): Amistad de 30 o más con Vladi. Decoración: ✨ una guirnalda de lucecitas de colores en su árbol, que titilan de noche.
 
 ## Vladi
 - Nombre y apodo: Vladi. Vampiro vecino del valle, que le tiene miedo a la oscuridad. Vive en un castillito con faroles siempre encendidos.
@@ -92,3 +102,6 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
 - Relaciones: Sofía 0, real.fixer 0, Lumi 0
 - Regalos favoritos: Cangrejo
 - Mascota: ninguna
+- Metas:
+  - Meta 1: 💛 "Tener un mejor amigo" (0/1): Amistad de 70 o más (💛 Mejores amigos) con cualquiera. Decoración: 🍲 una olla brillante junto a la puerta de su castillito.
+  - Meta 2: 🦀 "Recibir una Sopa de cangrejo" (0/1): cuando alguien se la regala. Decoración: 💛 un corazón dorado en una de las torrecitas.

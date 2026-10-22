@@ -1,6 +1,8 @@
 // Data for the characters. Must always match CHARACTERS.md.
 // "type" is "playable" (Sofía and real.fixer, who can be selected) or "neighbor" (Lumi and Vladi, who live in the city).
 // Each phrase has its text and, when the text is in English, a Spanish subtitle.
+// "goals" are the character's dream: 2 goals, one after the other (js/goals.js counts them). Each one has its emoji, its text,
+// how it is said once it is done ("Sofía cosechó 5 flores"), how much it takes and the decoration it gives.
 var CHARACTERS = [
   {
     id: "realfixer",
@@ -63,7 +65,13 @@ var CHARACTERS = [
       { id: "crabSoup", name: "Sopa de cangrejo" },
       { id: "crystal", name: "Cristal" }
     ],
-    pet: "Krohna, un gatito naranja"
+    pet: "Krohna, un gatito naranja",
+    goals: [
+      { id: "chatNeighbors", emoji: "💬", text: "Charlar con todos los vecinos", done: "charló con todos los vecinos", target: 2,
+        decoration: "🎸 una guitarra apoyada al costado de su carpa" },
+      { id: "moonFish", emoji: "🌙", text: "Pescar un Pez luna", done: "pescó un Pez luna", target: 1,
+        decoration: "🌙 un farolito con forma de luna colgado de la carpa, que brilla de noche" }
+    ]
   },
   {
     id: "sofia",
@@ -127,7 +135,13 @@ var CHARACTERS = [
       { id: "berryPie", name: "Tarta de bayas" },
       { id: "magicDish", name: "Plato mágico" }
     ],
-    pet: "ninguna"
+    pet: "ninguna",
+    goals: [
+      { id: "harvestFlowers", emoji: "🌸", text: "Cosechar 5 flores", done: "cosechó 5 flores", target: 5,
+        decoration: "🌸 un florero con flores de colores del jardín en la Sala" },
+      { id: "eatBerryPie", emoji: "🥧", text: "Comer una Tarta de bayas", done: "se comió una Tarta de bayas", target: 1,
+        decoration: "🎊 banderines de colores en la pared de la Cocina" }
+    ]
   },
   {
     id: "lumi",
@@ -189,7 +203,13 @@ var CHARACTERS = [
     favoriteGifts: [
       { id: "crystal", name: "Cristal" }
     ],
-    pet: "ninguna"
+    pet: "ninguna",
+    goals: [
+      { id: "friendsAll", emoji: "🎉", text: "Ser amiga de todos", done: "es amiga de todos", target: 2,
+        decoration: "💎 un farol de cristal colgado en su casita del árbol, que brilla de noche" },
+      { id: "friendVladi", emoji: "🦋", text: "Ser amiga de Vladi", done: "es amiga de Vladi", target: 1,
+        decoration: "✨ una guirnalda de lucecitas de colores en su árbol, que titilan de noche" }
+    ]
   },
   {
     id: "vladi",
@@ -251,7 +271,13 @@ var CHARACTERS = [
     favoriteGifts: [
       { id: "crab", name: "Cangrejo" }
     ],
-    pet: "ninguna"
+    pet: "ninguna",
+    goals: [
+      { id: "bestFriend", emoji: "💛", text: "Tener un mejor amigo", done: "tiene un mejor amigo", target: 1,
+        decoration: "🍲 una olla brillante junto a la puerta de su castillito" },
+      { id: "crabSoupGift", emoji: "🦀", text: "Recibir una Sopa de cangrejo", done: "recibió una Sopa de cangrejo", target: 1,
+        decoration: "💛 un corazón dorado en una de las torrecitas" }
+    ]
   }
 ];
 

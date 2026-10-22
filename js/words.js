@@ -67,5 +67,18 @@ var WORDS = {
   teddyBear: { es: "Osito de peluche", en: "teddy bear", say: "TÉ-di BER" },
 
   // Sound button
-  sound: { es: "Sonido", en: "sound", say: "SÁUND" }
+  sound: { es: "Sonido", en: "sound", say: "SÁUND" },
+
+  // Dreams and goals, and the decorations they give
+  goal: { es: "Meta", en: "goal", say: "GÓUL" },
+  dream: { es: "Sueño", en: "dream", say: "DRÍIM" },
+  easel: { es: "Caballete", en: "easel", say: "Í-sel" },
+  painting: { es: "Cuadro", en: "painting", say: "PÉIN-ting" },
+  vase: { es: "Florero", en: "vase", say: "VÉIS" },
+  bunting: { es: "Banderines", en: "bunting", say: "BÁN-ting" },
+  guitar: { es: "Guitarra", en: "guitar", say: "gui-TÁR" },
+  lantern: { es: "Farol", en: "lantern", say: "LÁN-tern" },
+  fairyLights: { es: "Guirnalda de luces", en: "fairy lights", say: "FÉ-ri LÁITS" },
+  pot: { es: "Olla", en: "pot", say: "POT" },
+  heart: { es: "Corazón", en: "heart", say: "JÁRT" }
 };

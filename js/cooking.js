@@ -117,6 +117,7 @@ var Cooking = (function () {
     Object.keys(a.recipe.effect).forEach(function (need) {
       values[need] = Math.min(100, values[need] + a.recipe.effect[need]);
     });
+    Goals.notify("eat", a.sim.data.id, a.recipe.id);
   }
 
   // ---------- Every frame ----------

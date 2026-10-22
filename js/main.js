@@ -59,6 +59,7 @@
     Cooking.drawPops(ctx);
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
+    Goals.draw(ctx, time);
   }
 
   // Mix two "#RRGGBB" colors: t = 0 gives a, t = 1 gives b.
@@ -110,6 +111,7 @@
     Needs.update(dt);
     Objects.update(dt);
     Social.update(dt);
+    Goals.update(dt);
     Sims.think(dt);
     Save.update(dt);
     Sound.update(dt);
@@ -200,6 +202,7 @@
   Needs.init(playableCharacters());
   Social.init(CHARACTERS);
   UI.init();
+  Goals.init();
   Sims.init(UI.showSelected);
   Neighbors.init();
   Save.load();

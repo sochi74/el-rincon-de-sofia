@@ -178,6 +178,7 @@ var Gather = (function () {
       var c = catchOne();
       var it = Inventory.item(c.id);
       Inventory.add(c.id, 1);
+      Goals.notify("fish", id, c.id);
       popOver(a.sim, c.text + " " + it.emoji);
       Sound.playAt("city", "blup");
       var values = Needs.get(id);

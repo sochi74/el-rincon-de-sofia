@@ -15,9 +15,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 
 ## Estado
-Hito 18 ✅ Vecinos nuevos
+Hito 19 ✅ Sueños y metas
 
-## ⭐ Estrellas de inglés: 29
+## ⭐ Estrellas de inglés: 31
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -160,6 +160,18 @@ Hito 18 ✅ Vecinos nuevos
 - wings: alas
 - teddy bear: osito de peluche
 - Is it dark in here?: ¿Está oscuro aquí?
+- goal: meta
+- dream: sueño
+- easel: caballete
+- painting: cuadro
+- vase: florero
+- bunting: banderines
+- guitar: guitarra
+- lantern: farol
+- fairy lights: guirnalda de luces
+- pot: olla
+- heart: corazón
+- dark: oscuro
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -167,7 +179,7 @@ Hito 18 ✅ Vecinos nuevos
 - Comandos que funcionan en su terminal:
   - Actualizar el repo local: cd ~/juegos/el-rincon-de-sofia && git checkout main && git pull --prune
   - Abrir Claude Code: cd ~/juegos/el-rincon-de-sofia && claude
-  - Copiar el informe: gh pr view --json title,body,files | clip.exe (su gh es viejo y "gh pr view" solo da error)
+  - Copiar el informe: gh pr view --json title,body,files | iconv -t UTF-16LE | clip.exe (así salen bien los acentos; su gh es viejo y "gh pr view" solo da error)
   - Hacer merge: gh pr merge --squash --delete-branch
   - Ver si hay pull requests abiertos: gh pr list
   - Abrir el juego desde Claude Code: explorer.exe index.html
@@ -185,8 +197,9 @@ Hito 18 ✅ Vecinos nuevos
   - 15 ⭐: la Princess crown 👑 de Sofía
   - 20 ⭐: Butterflies 🦋 en el jardín
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
-  - Próximo regalo: a las 30 ⭐
-- Siguiente paso: Pack 3, Hito 19: 🌟 Sueños y metas.
+  - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
+  - Próximo regalo: a las 35 ⭐
+- Siguiente paso: Pack 3, Hito 20: 🛋️ Mover muebles y más habitaciones.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
 - Decisiones grandes pendientes, para hablar con Robert: pixel art con imágenes; canciones reales de real.fixer (archivos de audio); jugar con amigos por internet.
 
