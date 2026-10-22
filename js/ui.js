@@ -6,6 +6,9 @@
 // the backpack window (it takes turns with the goals window of js/goals.js) with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
 // the gift when more than one can), and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
+// On wide screens the open panel keeps a column on the left and the house and the city are drawn beside it (js/main.js);
+// the goals window and the big signs go where the panel does not cover them, and the goals window also away from the Carpa,
+// the Fogata and the selected one (the backpack opens at the bottom right, as always).
 var UI = (function () {
   var coinsEl;
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
@@ -19,6 +22,8 @@ var UI = (function () {
   var giftMenu, onGiftPick = null;
   var current = null;
   var bars = {};
+  // Turns a spot of the place on screen into a spot on the screen (js/main.js gives it).
+  var toScreen = null;
 
   function init() {
     panel = document.getElementById("selection-panel");
@@ -472,6 +477,134 @@ var UI = (function () {
     }, 1200);
   }
 
+  // ---------- Room for the place, the windows and the signs ----------
+
+  // How much of the left of the screen the open panel keeps for itself, on screens at least "panelColumn" wide
+  // (there style.css makes it a narrow column). 0 when it is closed or the screen is narrower.
+  function reservedLeft() {
+    if (!panelOpen || panel.hidden || window.innerWidth < CONFIG.panelColumn) return 0;
+    return panel.offsetLeft + panel.offsetWidth;
+  }
+
+  function setToScreen(fn) {
+    toScreen = fn;
+  }
+
+  function rectOf(el) {
+    var r = el.getBoundingClientRect();
+    return { x: r.left, y: r.top, w: r.width, h: r.height };
+  }
+
+  // How much two boxes cover each other, in square pixels.
+  function overlap(a, b) {
+    var w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+    var h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+    return w > 0 && h > 0 ? w * h : 0;
+  }
+
+  // A box of the place on screen, as a box on the screen.
+  function screenBox(b) {
+    var a = toScreen(b.x, b.y), z = toScreen(b.x + b.w, b.y + b.h);
+    return { x: a.x, y: a.y, w: z.x - a.x, h: z.y - a.y };
+  }
+
+  // What a window should not cover: the Carpa and the Fogata (in the city) and the selected one, where they are now.
+  function keepSeen() {
+    if (!toScreen) return [];
+    var boxes = [];
+    var view = Sims.viewPlace();
+    if (view === "city") {
+      CONFIG.cityObjects.forEach(function (o) { boxes.push(screenBox(o)); });
+    }
+    var sim = Sims.selectedSim();
+    if (sim && sim.place === view) {
+      var pose = Objects.poseFor(sim.data.id);
+      var at = pose && pose.x !== undefined ? pose : sim;
+      var k = CONFIG.characterScale;
+      boxes.push(screenBox({ x: at.x - 34 * k, y: at.y - 110 * k, w: 68 * k, h: 140 * k }));
+    }
+    return boxes;
+  }
+
+  // Open the goals window in a corner where it covers the least of the Carpa, the Fogata and
+  // the selected one, and never the panel or the round buttons when it can help it: first the bottom right,
+  // then the bottom left, the top right and the top left. It stays put while it is open.
+  function placeWindow(el) {
+    var W = window.innerWidth, H = window.innerHeight, m = 16;
+    el.style.left = el.style.top = "";
+    el.style.right = m + "px";
+    el.style.bottom = m + "px";
+    var w = el.offsetWidth, h = el.offsetHeight;
+    var left = reservedLeft() + m;
+    var buttons = [menuToggle, soundToggle].map(rectOf);
+    var under = buttons.concat(panelOpen ? [rectOf(panel)] : []);
+    // At the top, below the round buttons when it would cover them.
+    function topAt(x) {
+      var y = m;
+      buttons.forEach(function (r) {
+        if (overlap({ x: x, y: y, w: w, h: h }, r)) y = r.y + r.h + m;
+      });
+      return y;
+    }
+    var corners = [
+      { right: true, bottom: true, x: W - w - m, y: H - h - m },
+      { right: false, bottom: true, x: left, y: H - h - m },
+      { right: true, bottom: false, x: W - w - m, y: topAt(W - w - m) },
+      { right: false, bottom: false, x: left, y: topAt(left) }
+    ];
+    var seen = keepSeen();
+    var best = null;
+    corners.forEach(function (c) {
+      var box = { x: c.x, y: c.y, w: w, h: h };
+      var score = 0;
+      seen.forEach(function (b) { score += overlap(box, b) * 10; });
+      under.forEach(function (b) { score += overlap(box, b) * 4; });
+      if (!best || score < best.score) best = { c: c, score: score };
+    });
+    var c = best.c;
+    el.style.right = c.right ? m + "px" : "";
+    el.style.left = c.right ? "" : c.x + "px";
+    el.style.bottom = c.bottom ? m + "px" : "";
+    el.style.top = c.bottom ? "" : c.y + "px";
+  }
+
+  // The "¡Meta cumplida!" sign: at the top in the middle of the room the panel leaves; on narrower screens with the panel
+  // open (it covers the top), at the bottom in the middle.
+  function placeSign(el) {
+    var left = reservedLeft(), W = window.innerWidth;
+    if (left > 0) {
+      el.style.left = (left + (W - left) / 2) + "px";
+      el.style.maxWidth = (W - left - 32) + "px";
+      el.style.top = el.style.bottom = "";
+    } else if (panelOpen) {
+      el.style.left = el.style.maxWidth = "";
+      el.style.top = "auto";
+      el.style.bottom = "18px";
+    } else {
+      el.style.left = el.style.maxWidth = el.style.top = el.style.bottom = "";
+    }
+  }
+
+  // Move a sign drawn on the place ("x", "y" its middle on the screen, "w" by "h" pixels) so it is inside the window
+  // and not under the panel or the round buttons: beside them when it fits there, else below them.
+  function clearSpot(x, y, w, h) {
+    var W = window.innerWidth, H = window.innerHeight, m = 8;
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+    x = clamp(x, m + w / 2, W - m - w / 2);
+    y = clamp(y, m + h / 2, H - m - h / 2);
+    [panelOpen ? panel : null, menuToggle, soundToggle].forEach(function (el) {
+      if (!el || el.hidden) return;
+      var r = rectOf(el);
+      if (!overlap({ x: x - w / 2, y: y - h / 2, w: w, h: h }, r)) return;
+      if (r.x + r.w + m + w / 2 <= W - m) {
+        x = r.x + r.w + m + w / 2;
+      } else {
+        y = Math.min(r.y + r.h + m + h / 2, H - m - h / 2);
+      }
+    });
+    return { x: x, y: y };
+  }
+
   // True if a spot on the screen is over the panel, the ☰ button, the backpack, the goals window or an open menu,
   // so the word tag never shows what is under them.
   function coversSpot(x, y) {
@@ -565,6 +698,11 @@ var UI = (function () {
     openCookMenu: openCookMenu,
     closeMenu: closeMenu,
     isMenuOpen: isMenuOpen,
+    reservedLeft: reservedLeft,
+    setToScreen: setToScreen,
+    placeWindow: placeWindow,
+    placeSign: placeSign,
+    clearSpot: clearSpot,
     closeBackpack: function () { setBackpackOpen(false); }
   };
 })();

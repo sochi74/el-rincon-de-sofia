@@ -1,5 +1,6 @@
 // Krohna, real.fixer's orange kitten. Only decoration: no needs, it cannot be selected and it changes nothing in the game.
 // It follows real.fixer a little behind, in the same place (house or city), going around things with js/path.js.
+// When he goes through the door, it walks to the same door and comes out on the other side a moment after him.
 // When he stands still it sits by his side and wags its tail; when he sleeps in the Carpa it sleeps curled up in its bed
 // by the Carpa (js/city.js), wherever Modo decorar put it.
 // With Pausa it stays still.
@@ -8,7 +9,8 @@ var Pet = (function () {
   var C = { fur: "#E8913A", stripe: "#B9621F", belly: "#F6C48A", eyes: "#3A2A1E", nose: "#E7849A" };
   var SIZE = 1.4;
 
-  // { place, x, y, path, facing: 1 right or -1 left, clock, step, timer, target }
+  // { place, x, y, path, facing: 1 right or -1 left, clock, step, timer, target, door: seconds until it may go through
+  // the door after him, or null while it is not going to the door }
   var pet = null;
 
   function owner() {
@@ -46,37 +48,28 @@ var Pet = (function () {
   function init() {
     var sim = owner();
     var spot = Path.free(sim.place, sim.x - K.side, sim.y + 4);
-    pet = { place: sim.place, x: spot.x, y: spot.y, path: [], facing: 1, clock: 0, step: 0, timer: 0, target: null };
+    pet = { place: sim.place, x: spot.x, y: spot.y, path: [], facing: 1, clock: 0, step: 0, timer: 0, target: null, door: null };
   }
 
-  function update(dt) {
-    var sim = owner();
-    if (!pet || !sim || Needs.isPaused()) return;
-    pet.clock += dt;
-    // He went through the door: the kitten comes out right behind him.
-    if (pet.place !== sim.place) {
-      var spot = Path.free(sim.place, sim.x - K.side, sim.y + 4);
-      pet.place = sim.place;
-      pet.x = spot.x;
-      pet.y = spot.y;
-      pet.path = [];
-      pet.target = null;
-    }
+  // The door of Sofía's house on each side: in the Sala by the front door, or in the city in front of the house.
+  function doorSpot(place) {
+    return place === "house" ? CONFIG.frontDoor.inside : City.doorSpot;
+  }
 
-    pet.timer -= dt;
-    var at = ownerSpot(sim);
-    var far = dist(pet.x, pet.y, at.x, at.y) > K.farther;
-    var ownerStill = sim.path.length === 0;
-    if (pet.timer <= 0 && (far || isOwnerInTent() || (ownerStill && pet.path.length === 0))) {
-      pet.timer = K.repath;
-      var target = targetFor(sim);
-      // Only a new way when the spot changed, so it does not keep looking for a spot it cannot reach.
-      if (!pet.target || dist(target.x, target.y, pet.target.x, pet.target.y) > 10 || far) {
-        if (dist(pet.x, pet.y, target.x, target.y) > 8) pet.path = Path.find(pet.place, pet.x, pet.y, target.x, target.y);
-        pet.target = target;
-      }
-    }
+  // Modo decorar moved things in a place: if the kitten was left on something, it steps to the closest free spot;
+  // else it stays where it is. Then it finds its way again.
+  function settle(where) {
+    if (!pet || pet.place !== where) return;
+    var spot = Path.free(where, pet.x, pet.y);
+    pet.x = spot.x;
+    pet.y = spot.y;
+    pet.path = [];
+    pet.target = null;
+    pet.timer = 0;
+  }
 
+  // One step along its way.
+  function walk(dt) {
     var step = K.speed * dt;
     while (pet.path.length > 0 && step > 0) {
       var p = pet.path[0];
@@ -95,6 +88,57 @@ var Pet = (function () {
       }
     }
     pet.step = pet.path.length > 0 ? pet.step + dt * 14 : 0;
+  }
+
+  // He went through the door: the kitten walks to the same door and, a moment after him, comes out on the other side
+  // (then it walks to him as always). If he comes back before that, it just stays with him.
+  function followThroughDoor(sim, dt) {
+    if (pet.door === null) {
+      var door = doorSpot(pet.place);
+      pet.door = K.doorWait;
+      pet.path = Path.find(pet.place, pet.x, pet.y, door.x, door.y);
+      pet.target = null;
+    }
+    pet.door -= dt;
+    walk(dt);
+    if (pet.path.length > 0 || pet.door > 0) return;
+    var out = doorSpot(sim.place);
+    pet.place = sim.place;
+    pet.x = out.x;
+    pet.y = out.y;
+    pet.door = null;
+    pet.timer = 0;
+  }
+
+  function update(dt) {
+    var sim = owner();
+    if (!pet || !sim || Needs.isPaused()) return;
+    pet.clock += dt;
+    if (pet.place !== sim.place) {
+      followThroughDoor(sim, dt);
+      return;
+    }
+    if (pet.door !== null) {
+      pet.door = null;
+      pet.path = [];
+      pet.timer = 0;
+    }
+
+    pet.timer -= dt;
+    var at = ownerSpot(sim);
+    var far = dist(pet.x, pet.y, at.x, at.y) > K.farther;
+    var ownerStill = sim.path.length === 0;
+    if (pet.timer <= 0 && (far || isOwnerInTent() || (ownerStill && pet.path.length === 0))) {
+      pet.timer = K.repath;
+      var target = targetFor(sim);
+      // Only a new way when the spot changed, so it does not keep looking for a spot it cannot reach.
+      if (!pet.target || dist(target.x, target.y, pet.target.x, pet.target.y) > 10 || far) {
+        if (dist(pet.x, pet.y, target.x, target.y) > 8) pet.path = Path.find(pet.place, pet.x, pet.y, target.x, target.y);
+        pet.target = target;
+      }
+    }
+
+    walk(dt);
     // Sitting, it looks at him.
     if (pet.path.length === 0 && Math.abs(at.x - pet.x) > 2) pet.facing = at.x > pet.x ? 1 : -1;
   }
@@ -236,6 +280,12 @@ var Pet = (function () {
     if (sleeping) drawZ(ctx, pet.x + 12, pet.y - 26);
   }
 
+  // Where it is drawn when it is in the place on screen (js/sims.js draws it among the characters), or null.
+  function shownAt() {
+    if (!pet || pet.place !== Sims.viewPlace()) return null;
+    return { x: pet.x, y: pet.y };
+  }
+
   // True if the kitten is at a spot of the place on screen (for the word tag).
   function at(x, y) {
     if (!pet || pet.place !== Sims.viewPlace()) return false;
@@ -252,5 +302,5 @@ var Pet = (function () {
     return pet ? pet.place : null;
   }
 
-  return { init: init, update: update, draw: draw, at: at, word: word, place: place };
+  return { init: init, update: update, settle: settle, draw: draw, shownAt: shownAt, at: at, word: word, place: place };
 })();

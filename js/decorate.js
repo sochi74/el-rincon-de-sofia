@@ -117,8 +117,8 @@ var Decorate = (function () {
     Object.keys(changed).forEach(function (place) { Sims.settle(place); });
     Objects.refresh();
     Cooking.refresh();
-    // Krohna, if it was in the house, comes back to real.fixer's side on free floor.
-    if (changed.house && Pet.place() === "house") Pet.init();
+    // Krohna stays where it is, unless it was left on something: then it steps to the closest free spot.
+    Object.keys(changed).forEach(function (place) { Pet.settle(place); });
     changed = {};
   }
 

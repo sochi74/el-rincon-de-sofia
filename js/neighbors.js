@@ -3,6 +3,7 @@
 // Lumi flies around the city day and night, flapping her wings, and at night leaves a little trail of golden sparkles.
 // Vladi stays in his castle by day ("Zzz" come out of its window); from 19:00 to 07:00 he walks slowly near his castle,
 // the plaza and the campfire, and now and then he stops, shakes and hugs his teddy bear.
+// At night Lumi sometimes flies over to where Vladi is (more often when they may chat again), so they meet.
 // At night, when they come close to each other, Lumi and Vladi sometimes stop, look at each other and chat on their own
 // (greeting and chat phrases), which gives both a little Amistad. Tapping one of them ends that chat.
 // Sofía or real.fixer can talk with them and give them gifts (js/social.js and js/gifts.js). Pausa freezes their walks and chats.
@@ -95,7 +96,17 @@ var Neighbors = (function () {
   }
 
   // Off to another of its spots, never the one it just left.
+  // At night Lumi sometimes goes to where Vladi is instead (by his castle, the plaza or the campfire), stopping a little
+  // before him.
   function next(n) {
+    var vladi = byId("vladi");
+    if (n.data.id === "lumi" && vladi && !vladi.inside && !vladi.goingIn && !Time.isDay() &&
+      Math.random() < (chatWait > 0 ? K.lumi.seek.chance : K.lumi.seek.ready)) {
+      var side = n.x < vladi.x ? -1 : 1;
+      var spot = Path.free("city", vladi.x + side * K.lumi.seek.gap, vladi.y);
+      walk(n, spot.x, spot.y);
+      return;
+    }
     var spots = n.cfg.spots;
     var i = Math.floor(Math.random() * (spots.length - 1));
     if (i >= n.lastSpot) i++;

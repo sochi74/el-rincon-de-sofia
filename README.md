@@ -15,9 +15,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 
 ## Estado
-Extra ✅ Baño
+Extra ✅ Pulido 3
 
-## ⭐ Estrellas de inglés: 35
+## ⭐ Estrellas de inglés: 36
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -215,7 +215,7 @@ Extra ✅ Baño
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
   - Próximo regalo: a las 40 ⭐
-- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 21 🌧️ Clima y magia.
+- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 21 🌧️ Clima y magia (Extra 🧹 Pulido 3 ya está hecho).
 - Pendiente: la skill de hito.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.

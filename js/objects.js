@@ -21,7 +21,8 @@ var Objects = (function () {
   // "look" is where it looks while using it; otherwise it looks at the piece.
   // "owner" is the only one who may use it; anyone else gets the "notYours" bubble.
   // "pose" is how it is drawn while using it (js/sims.js): lying in the Cama with its head on the pillow, sitting on
-  // the Sofá, in the Bañera (only the head shows), inside the Carpa (only the "Zzz" are seen) or sitting on the log by the Fogata. "x", "y" is where its feet go.
+  // the Sofá, on the floor in front of the Televisión, in the Bañera (only the head shows), inside the Carpa (only the "Zzz" are seen)
+  // or sitting on the log by the Fogata. "x", "y" is where its feet go (on the floor, where it stands).
   // In the house the spot, the look and the pose come from js/house.js, because Modo decorar moves and turns the furniture:
   // in front of the piece as it is turned, lying along the Cama and sitting looking where the Sofá looks.
   // The Estufa has no action of its own: tapping it opens the recipe menu (js/cooking.js), like the Fogata.
@@ -42,9 +43,10 @@ var Objects = (function () {
     campfire: { action: "campfire", spot: { x: SEAT.x, y: SEAT.y + 34 }, pose: { kind: "log", x: SEAT.x, y: SEAT.y + 10 } }
   };
 
-  // Where a character stands to use a piece of furniture or a thing of the city.
+  // Where a character stands to use a piece of furniture or a thing of the city (at the Televisión, where it sits on the floor).
   function spotOf(furniture) {
     if (placeOf(furniture) === "city") return USABLE[furniture.id].spot;
+    if (furniture.id === "tv") return House.floorSeat();
     var b = House.bounds(furniture);
     return House.useSpot(furniture.id) || { x: b.x + b.w / 2, y: b.y + b.h + 20 };
   }
@@ -104,9 +106,19 @@ var Objects = (function () {
     }
   }
 
+  // The Sofá, when it looks at the Televisión and nobody else is on it or going to it; else null.
+  function freeSofa(id) {
+    var sofa = CONFIG.furniture.filter(function (f) { return f.id === "sofa"; })[0];
+    if (!sofa || !House.sofaFacesTv()) return null;
+    var taken = Object.keys(current).some(function (other) { return other !== id && current[other].furniture === sofa; });
+    return taken ? null : sofa;
+  }
+
   // Send a character to a piece of furniture; the action starts when it gets there.
   // If it belongs to someone else, it only shows a short bubble.
+  // At the Televisión it sits on the Sofá in front of it when it is free, and else on the floor in front of the tele.
   function start(sim, furniture) {
+    if (furniture.id === "tv") furniture = freeSofa(sim.data.id) || furniture;
     var use = USABLE[furniture.id];
     if (use.owner && use.owner !== sim.data.id) {
       current[sim.data.id] = { sim: sim, furniture: null, phase: "notYours", elapsed: 0, text: use.notYours };

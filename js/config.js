@@ -34,6 +34,10 @@ var CONFIG = {
   // Empty space kept around the house, in screen pixels.
   margin: 24,
 
+  // On screens at least this wide, the open panel is a column on the left and the house and the city are drawn beside it
+  // (style.css has the same width).
+  panelColumn: 1000,
+
   wallThickness: 16,
   doorWidth: 90,
 
@@ -156,11 +160,13 @@ var CONFIG = {
   },
 
   // Krohna, real.fixer's kitten: how fast it walks and how close it stays to him. It sleeps in its bed by the Carpa (js/city.js).
+  // When he goes through the door, it comes out on the other side "doorWait" seconds after him, or later if it was far.
   pet: {
     speed: 200,
     side: 42,
     farther: 70,
-    repath: 0.4
+    repath: 0.4,
+    doorWait: 0.8
   },
 
   // Free will: the one not selected looks after a need below "threshold" when it is idle.
@@ -303,6 +309,7 @@ var CONFIG = {
   // Sounds and music made with code (js/audio.js). Volumes go from 0 to 1: "master" is for everything,
   // then each group: effects, place sounds and music (softer at night). The tempo is seconds per music step.
   // Krohna meows every "meow.min" to "meow.max" seconds while it is where the selected one is.
+  // The campfire crackles fully closer than "fire.near" world units and goes quiet toward "fire.far".
   sound: {
     master: 0.7,
     effects: 0.35,
@@ -310,7 +317,8 @@ var CONFIG = {
     music: { day: 0.16, night: 0.09 },
     tempo: { day: 0.42, night: 0.56 },
     fade: 0.6,
-    meow: { min: 60, max: 180 }
+    meow: { min: 60, max: 180 },
+    fire: { near: 90, far: 520 }
   },
 
   // The neighbors, Lumi and Vladi (js/neighbors.js). They live in the city, walk a little slower than Sofía and real.fixer
@@ -323,6 +331,8 @@ var CONFIG = {
   // on top of a big forest tree, with its rope ladder down to the grass, and Vladi's castle on free grass by the bottom right.
   // At night, when both are outside closer than "chat.near" and nobody is talking with them, Lumi and Vladi stop and chat
   // on their own, at most once every "chat.wait.min" to "chat.wait.max" seconds of play; each chat gives both "chat.friendship" Amistad.
+  // At night, each time Lumi picks where to go, she goes to Vladi ("seek.gap" world units from him) with chance "seek.chance",
+  // or "seek.ready" once they may chat again.
   neighbors: {
     chat: { near: 170, wait: { min: 60, max: 120 }, friendship: 5 },
     lumi: {
@@ -331,6 +341,7 @@ var CONFIG = {
       float: 12,
       stay: { min: 3, max: 6 },
       trail: { every: 0.06, life: 0.9 },
+      seek: { chance: 0.25, ready: 0.6, gap: 70 },
       home: { x: 290, y: 216 },
       spots: [
         { x: 290, y: 216 },

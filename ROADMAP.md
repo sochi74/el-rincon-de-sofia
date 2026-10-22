@@ -42,6 +42,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: 🍒 real.fixer come bayas
 - ✅ Hito 20: 🛋️ Mover muebles. Modo decorar para arrastrar y girar muebles y decoraciones, a cualquier habitación, y volver a como estaba.
 - ✅ Extra: 🛁 Baño con bañera de burbujas
+- ✅ Extra: 🧹 Pulido 3
 - ⬜ Extra: 🏡 Mover casas en la ciudad
 - ⬜ Hito 21: 🌧️ Clima y magia. Lluvia, sol y niebla mágica, con brillitos y luces que flotan.
 - ⬜ Hito 22: 📖 Vecino profe y diario de palabras. Un vecino que enseña una palabra en inglés por día, y un diario en el juego con las palabras aprendidas.
