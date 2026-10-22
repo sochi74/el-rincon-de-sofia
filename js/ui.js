@@ -1,6 +1,6 @@
 // Small panel that shows the game clock, the magic coins, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕),
-// and another one next to it changes the sound (🔊 / 🎵 / 🔇). Every button goes "pling", and selling goes "cling".
+// and another one next to it changes the sound (🔊 / 🎵 / 🔇). Some buttons show their word in English next to the mouse. Every button goes "pling", and selling goes "cling".
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
 // the recipe menu that opens next to the Estufa or the Fogata,
 // the backpack window (it takes turns with the goals window of js/goals.js) with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
@@ -10,7 +10,7 @@ var UI = (function () {
   var coinsEl;
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
   var menuToggle, panelOpen = true;
-  var soundToggle, soundWordShown = false;
+  var soundToggle, buttonWordShown = false;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
   var onMenuPick = null;
   var seedMenu, seedButtons = [], onSeedPick = null;
@@ -168,15 +168,7 @@ var UI = (function () {
       Sound.nextMode();
       showSoundMode();
     });
-    soundToggle.addEventListener("pointermove", function (event) {
-      if (event.pointerType === "touch") return;
-      soundWordShown = true;
-      showWord("sound", event.clientX, event.clientY);
-    });
-    soundToggle.addEventListener("pointerleave", function () {
-      soundWordShown = false;
-      hideWord();
-    });
+    bindWord(soundToggle, "sound");
 
     // "Pling" for every button (selling says "cling" instead).
     document.addEventListener("click", function (event) {
@@ -535,8 +527,25 @@ var UI = (function () {
     return wordTimer !== null;
   }
 
-  function isSoundWordShown() {
-    return soundWordShown;
+  // A button that shows its word next to the mouse while it is over it, like "Sonido · sound" on the 🔊 button.
+  function bindWord(button, id) {
+    button.addEventListener("pointermove", function (event) {
+      if (event.pointerType === "touch") return;
+      buttonWordShown = true;
+      showWord(id, event.clientX, event.clientY);
+    });
+    button.addEventListener("pointerleave", forgetButtonWord);
+  }
+
+  // Hide a button's word (also when its button hides under the mouse, so no leave comes).
+  function forgetButtonWord() {
+    if (!buttonWordShown) return;
+    buttonWordShown = false;
+    hideWord();
+  }
+
+  function isButtonWordShown() {
+    return buttonWordShown;
   }
 
   return {
@@ -544,7 +553,9 @@ var UI = (function () {
     showWord: showWord,
     hideWord: hideWord,
     isWordTimed: isWordTimed,
-    isSoundWordShown: isSoundWordShown,
+    isButtonWordShown: isButtonWordShown,
+    bindWord: bindWord,
+    forgetButtonWord: forgetButtonWord,
     coversSpot: coversSpot,
     show: show,
     showSelected: showSelected,

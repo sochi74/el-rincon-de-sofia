@@ -500,17 +500,20 @@ var Sims = (function () {
     nightShade(ctx, function () { roundRect(ctx, -25, -38, 50, 54, 10); });
   }
 
-  // How a character looks while it uses something (see "pose" in js/objects.js):
-  // lying in the Cama seen from above, face up with closed eyes under a blanket; sitting on the Sofá seen from behind,
-  // looking at the Televisión (the backrest goes on top afterwards); or sitting on the log by the Fogata, from the side.
+  // How a character looks while it uses something (see "pose" in js/objects.js and js/house.js):
+  // lying in the Cama seen from above, face up with closed eyes under a blanket (turned along the bed);
+  // sitting on the Sofá looking where the Sofá looks: seen from behind (the backrest goes on top afterwards),
+  // from the front or from the side; or sitting on the log by the Fogata, from the side.
   function drawPose(ctx, sim, pose) {
     var body = bodies[sim.data.id];
     noLegs = true;
     if (pose.kind === "lie") {
       body.front(ctx, sim.look, 0, true);
       drawBlanket(ctx);
-    } else if (pose.kind === "sofa") {
+    } else if (pose.kind === "sofa" && pose.view === "back") {
       body.back(ctx, sim.look, 0);
+    } else if (pose.kind === "sofa" && pose.view === "front") {
+      body.front(ctx, sim.look, 0, sim.blink > 0);
     } else {
       drawSittingLegs(ctx, sim.look);
       // The body sits lower than when standing.
@@ -788,11 +791,11 @@ var Sims = (function () {
     // While talking they lean in a little toward each other.
     var lean = Social.facing(sim.data.id);
     var view = sim.facing === "left" || sim.facing === "right" ? "side" : sim.facing;
-    // Lying and sitting on the Sofá always face the same way; on the log it looks at the fire.
-    var flip = sim.facing === "left" && (!pose || pose.kind === "log");
+    // Lying and sitting on the Sofá face the way the furniture is turned; on the log it looks at the fire.
+    var flip = pose && pose.kind === "sofa" ? !!pose.flip : sim.facing === "left" && (!pose || pose.kind === "log");
     ctx.save();
     ctx.translate(at.x, at.y + bounce);
-    ctx.rotate(lean * 0.06);
+    ctx.rotate(lean * 0.06 + (pose && pose.angle ? pose.angle : 0));
     ctx.scale(flip ? -k : k, k * breath);
     if (pose) {
       drawPose(ctx, sim, pose);
@@ -800,8 +803,12 @@ var Sims = (function () {
       bodies[sim.data.id][view](ctx, sim.look, walking ? sim.stepPhase : 0, sim.blink > 0);
     }
     ctx.restore();
-    if (pose && pose.kind === "sofa") House.drawSofaBackrest(ctx);
-    if (pose && pose.kind === "lie") drawZzz(ctx, at.x + 22, at.y - 62 * k, time);
+    if (pose && pose.backrest) House.drawSofaBackrest(ctx);
+    if (pose && pose.kind === "lie") {
+      // Over the head, wherever the Cama makes it point.
+      var a = pose.angle || 0;
+      drawZzz(ctx, at.x + 22 * Math.cos(a) + 62 * k * Math.sin(a), at.y + 22 * Math.sin(a) - 62 * k * Math.cos(a), time);
+    }
 
     drawNameTag(ctx, sim, at);
     drawMoodStar(ctx, sim, at, time);
@@ -1043,6 +1050,12 @@ var Sims = (function () {
     visit.timer = randomWait();
   }
 
+  // Where the visitor waits in the Sala; if Modo decorar put something there, the closest free spot of the Sala.
+  function visitSpot() {
+    var sala = CONFIG.rooms.filter(function (r) { return r.id === "living"; })[0];
+    return Path.free("house", CONFIG.visit.spot.x, CONFIG.visit.spot.y, sala);
+  }
+
   // Every now and then the visitor walks to Sofía's house, stays a while in the Sala and goes back home.
   // If it is already in the house with nothing to do, it stays a while and then goes home too.
   function visitStep(dt) {
@@ -1071,7 +1084,8 @@ var Sims = (function () {
         goHome(sim);
         return;
       }
-      walkTo(sim, CONFIG.visit.spot.x, CONFIG.visit.spot.y);
+      var spot = visitSpot();
+      walkTo(sim, spot.x, spot.y);
       visit.phase = "staying";
       visit.stay = CONFIG.visit.stay;
       return;
@@ -1129,6 +1143,30 @@ var Sims = (function () {
     sim.x = spot.x;
     sim.y = spot.y;
     sim.path = [];
+  }
+
+  // Modo decorar moved things in a place: whoever stands on something now steps to the closest free spot,
+  // and whoever was walking finds a new way to where it was going (going out or in as before).
+  function settle(where) {
+    sims.forEach(function (sim) {
+      if (sim.place !== where) return;
+      var solid = where === "city" ? City.isSolid(sim.x, sim.y) : House.isSolid(sim.x, sim.y);
+      if (solid) {
+        var spot = Path.free(where, sim.x, sim.y);
+        sim.x = spot.x;
+        sim.y = spot.y;
+      }
+      if (sim.path.length > 0) {
+        var end = sim.path[sim.path.length - 1];
+        sim.path = Path.find(where, sim.x, sim.y, end.x, end.y);
+      }
+    });
+  }
+
+  // Close the social menu (Modo decorar starts), so nobody keeps waiting for it.
+  function closeMenu() {
+    if (UI.isMenuOpen()) UI.closeMenu();
+    menuFor = null;
   }
 
   // ---------- Tapping ----------
@@ -1272,6 +1310,8 @@ var Sims = (function () {
     roomAt: roomAt,
     list: list,
     place: place,
+    settle: settle,
+    closeMenu: closeMenu,
     select: select,
     placeOf: placeOf,
     isIdle: isIdle,

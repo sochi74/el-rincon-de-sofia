@@ -1,6 +1,7 @@
 // Paths that go around everything solid, in the house and in the city.
 // Each place is cut into small squares; a square is free when its middle is not solid (House.isSolid, City.isSolid).
 // The way found over the squares is then straightened and its corners are rounded, so the walk looks smooth.
+// Modo decorar (js/decorate.js) moves things, so the squares are worked out again after every move.
 var Path = (function () {
   // Size of a square, in world units.
   var CELL = 6;
@@ -12,8 +13,13 @@ var Path = (function () {
   var STEPS = [[1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1],
     [1, 1, DIAGONAL], [1, -1, DIAGONAL], [-1, 1, DIAGONAL], [-1, -1, DIAGONAL]];
 
-  // Free (1) or solid (0) squares of each place, worked out the first time they are needed. Nothing solid moves.
+  // Free (1) or solid (0) squares of each place, worked out the first time they are needed after a change.
   var grids = {};
+
+  // Something solid moved: work the squares out again the next time.
+  function reset() {
+    grids = {};
+  }
 
   function isSolid(place, x, y) {
     return place === "city" ? City.isSolid(x, y) : House.isSolid(x, y);
@@ -236,12 +242,52 @@ var Path = (function () {
   }
 
   // The closest spot of a place where a character may stand (the same spot if it is free).
-  function free(place, x, y) {
+  // With "within", only a spot inside that box (like a room).
+  function free(place, x, y, within) {
     var g = grid(place);
-    if (g[cellOf(x, y)] && !isSolid(place, x, y)) return { x: x, y: y };
-    var i = closest(x, y, function (k) { return g[k]; });
+    function inside(p) {
+      return !within || (p.x >= within.x && p.x <= within.x + within.w && p.y >= within.y && p.y <= within.y + within.h);
+    }
+    if (g[cellOf(x, y)] && !isSolid(place, x, y) && inside({ x: x, y: y })) return { x: x, y: y };
+    var i = closest(x, y, function (k) { return g[k] && inside(center(k)); });
     return i < 0 ? { x: x, y: y } : center(i);
   }
 
-  return { find: find, free: free };
+  // Where a character can walk now from a spot, going square by square (Modo decorar checks every room and piece
+  // of furniture can still be reached). "at" says if a spot is reached; "any" if some spot inside a box is.
+  function reach(place, x, y) {
+    reset();
+    var g = grid(place);
+    var seen = new Uint8Array(COLS * ROWS);
+    var start = cellOf(x, y);
+    var todo = g[start] ? [start] : [];
+    if (todo.length) seen[start] = 1;
+    while (todo.length > 0) {
+      var i = todo.pop();
+      var c = i % COLS, r = Math.floor(i / COLS);
+      for (var s = 0; s < 4; s++) {
+        var nc = c + STEPS[s][0], nr = r + STEPS[s][1];
+        if (nc < 0 || nr < 0 || nc >= COLS || nr >= ROWS) continue;
+        var j = nr * COLS + nc;
+        if (g[j] && !seen[j]) {
+          seen[j] = 1;
+          todo.push(j);
+        }
+      }
+    }
+    return {
+      at: function (px, py) { return !!seen[cellOf(px, py)]; },
+      any: function (b) {
+        var c0 = cellOf(b.x, b.y), c1 = cellOf(b.x + b.w, b.y + b.h);
+        for (var row = Math.floor(c0 / COLS); row <= Math.floor(c1 / COLS); row++) {
+          for (var col = c0 % COLS; col <= c1 % COLS; col++) {
+            if (seen[row * COLS + col]) return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+
+  return { find: find, free: free, reset: reset, reach: reach };
 })();

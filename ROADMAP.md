@@ -40,7 +40,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 18: 🧚 Vecinos nuevos. Lumi, el hada, y Vladi, el vampiro miedoso, con su ficha completa y su casa en el mapa (casa del árbol y castillito); pasean solos, se puede charlar con ellos y hacerles regalos.
 - ✅ Hito 19: 🌟 Sueños y metas. Cada personaje tiene un sueño de 2 metas, con la ventana 🌟 Metas; cumplir una da celebración, monedas y una decoración en su casa. Lumi y Vladi charlan solos de noche.
 - ✅ Extra: 🍒 real.fixer come bayas
-- ⬜ Hito 20: 🛋️ Mover muebles y más habitaciones. Arrastrar muebles para acomodarlos, y nuevas habitaciones (por ejemplo, un estudio de pintura).
+- ✅ Hito 20: 🛋️ Mover muebles. Modo decorar para arrastrar y girar muebles y decoraciones, a cualquier habitación, y volver a como estaba.
+- ⬜ Extra: 🛁 Baño con bañera de burbujas
+- ⬜ Extra: 🏡 Mover casas en la ciudad
 - ⬜ Hito 21: 🌧️ Clima y magia. Lluvia, sol y niebla mágica, con brillitos y luces que flotan.
 - ⬜ Hito 22: 📖 Vecino profe y diario de palabras. Un vecino que enseña una palabra en inglés por día, y un diario en el juego con las palabras aprendidas.
 - ⬜ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas.

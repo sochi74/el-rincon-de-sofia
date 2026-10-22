@@ -40,7 +40,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/goals.js: sueños y metas de cada personaje, su avance, la celebración y la ventana 🌟 Metas
 - js/pet.js: Krohna, el gatito de real.fixer
 - js/audio.js: sonidos y música creados con código
-- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, pet, audio, ui, save, main
+- js/decorate.js: Modo decorar: mover y girar muebles y decoraciones, y volver a como estaba
+- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, pet, audio, decorate, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

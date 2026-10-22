@@ -60,6 +60,7 @@
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
     Goals.draw(ctx, time);
+    Decorate.draw(ctx, time);
   }
 
   // Mix two "#RRGGBB" colors: t = 0 gives a, t = 1 gives b.
@@ -113,6 +114,7 @@
     Social.update(dt);
     Goals.update(dt);
     Sims.think(dt);
+    Decorate.update(dt);
     Save.update(dt);
     Sound.update(dt);
     UI.update();
@@ -130,9 +132,16 @@
     };
   }
 
+  // In Modo decorar a tap only picks a thing to drag (js/decorate.js); the finger keeps dragging it even off the canvas.
   function handleTap(event) {
     var p = toWorld(event);
-    Sims.handleTap(p.x, p.y, event.clientX, event.clientY);
+    if (Decorate.isOn()) {
+      Decorate.down(p.x, p.y);
+      if (Decorate.isDragging() && canvas.setPointerCapture) canvas.setPointerCapture(event.pointerId);
+      canvas.style.cursor = Decorate.cursor();
+    } else {
+      Sims.handleTap(p.x, p.y, event.clientX, event.clientY);
+    }
     if (event.pointerType === "touch") {
       UI.showWord(wordAt(event), event.clientX, event.clientY, CONFIG.wordTag.touchSeconds);
     }
@@ -156,8 +165,8 @@
   // Every frame, so the tag follows things that move (like the fireflies) and changes when the view does.
   // Over the panel, the ☰ button, the backpack or a menu there is no tag.
   function updateWord() {
-    // The 🔊 button shows its own word.
-    if (UI.isSoundWordShown()) return;
+    // The 🔊 button and the Modo decorar buttons show their own word.
+    if (UI.isButtonWordShown()) return;
     if (mouse && UI.coversSpot(mouse.clientX, mouse.clientY)) {
       UI.hideWord();
     } else if (mouse) {
@@ -169,9 +178,20 @@
 
   // Light up the usable furniture, or in the city the house, tent, campfire, a neighbor's home, a garden plot or a forest thing,
   // under the mouse (characters and neighbors in front win). The front door, the river and the neighbors get a pointer too.
+  // In Modo decorar only what can be moved lights up (js/decorate.js), and it follows the finger while it is dragged.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
     var p = toWorld(event);
+    if (Decorate.isOn()) {
+      hovered = null;
+      hoveredHouse = false;
+      hoveredHome = null;
+      Garden.setHover(-1);
+      Gather.setHover(null);
+      Decorate.move(p.x, p.y);
+      canvas.style.cursor = Decorate.cursor();
+      return;
+    }
     var inCity = Sims.viewPlace() === "city";
     var neighbor = inCity && !Sims.simAt(p.x, p.y) && !!Neighbors.at(p.x, p.y);
     var free = !Sims.simAt(p.x, p.y) && !neighbor;
@@ -203,6 +223,7 @@
   Social.init(CHARACTERS);
   UI.init();
   Goals.init();
+  Decorate.init();
   Sims.init(UI.showSelected);
   Neighbors.init();
   Save.load();
@@ -217,7 +238,15 @@
     hoveredHome = null;
     Garden.setHover(-1);
     Gather.setHover(null);
+    Decorate.leave();
     mouse = null;
+  });
+  canvas.addEventListener("pointerup", function () {
+    Decorate.up();
+    canvas.style.cursor = Decorate.cursor();
+  });
+  canvas.addEventListener("pointercancel", function () {
+    Decorate.up();
   });
   window.addEventListener("resize", resize);
   window.addEventListener("pagehide", Save.onLeave);

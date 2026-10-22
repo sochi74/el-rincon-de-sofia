@@ -5,7 +5,8 @@
 // At night the campfire, the house windows and the fireflies shine.
 // The decorations that goals give (js/goals.js) are drawn here too: real.fixer's guitar and moon lantern by his tent,
 // Lumi's crystal lantern and fairy lights on her tree, and Vladi's shiny pot and golden heart at his castle.
-// They are only decoration: nothing walks around them.
+// They are only decoration: nothing walks around them. Modo decorar (js/decorate.js) can move and turn the guitar and the pot
+// to open grass; the rest stays where it is.
 // Also where characters may walk: never on the water (they cross on the bridge), never off the map,
 // and around the house, the trees, the fountain, the tent, the campfire, the garden fence and the neighbors' homes.
 var City = (function () {
@@ -75,6 +76,9 @@ var City = (function () {
     ctx.restore();
   }
 
+  // Where each sign of the map was drawn, by its text, so the guitar and the pot are never put on one.
+  var signs = {};
+
   function label(ctx, text, cx, cy, size) {
     ctx.save();
     ctx.font = "700 " + size + "px " + CONFIG.fontFamily;
@@ -82,6 +86,7 @@ var City = (function () {
     ctx.textBaseline = "middle";
     var w = ctx.measureText(text).width + size * 1.2;
     var h = size * 1.7;
+    signs[text] = { x: cx - w / 2, y: cy - h / 2, w: w, h: h };
     withShadow(ctx, function () {
       fillRound(ctx, cx - w / 2, cy - h / 2, w, h, h / 2, C.darkBrown);
     });
@@ -162,9 +167,10 @@ var City = (function () {
   }
 
   // True if the spot is open grass where a character can walk: not on the river or the bridge,
-  // the house, the garden, the plaza, the stone paths, the tent, the campfire, the neighbors' homes or under a tree
-  // (used for the shiny coins and the forest things).
+  // the house, the garden, the plaza, the stone paths, the tent, the campfire, the neighbors' homes, under a tree,
+  // or on the guitar or the pot (used for the shiny coins and the forest things).
   function isOpenGrass(x, y) {
+    if (MOVABLE.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), 10)); })) return false;
     if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
     if (Garden.isGardenAt(x, y)) return false;
     if (Math.abs(x - riverX(y)) < RIVER.half + RIVER.bank + 20) return false;
@@ -914,12 +920,12 @@ var City = (function () {
 
   // ---------- Decorations from the goals ----------
 
-  // Where each one is, for drawing it and for its word.
-  var GUITAR = { x: 744, y: 268, w: 34, h: 80 };
+  // Where each one is, for drawing it and for its word. The guitar and the pot can be moved: see "Modo decorar" below.
+  var GUITAR = { w: 34, h: 80, start: { x: 761, y: 308 } };
   var MOON_LANTERN = { x: 773, y: 340, w: 26, h: 40, cx: 786, cy: 368 };
   var CRYSTAL_LANTERN = { x: 252, y: 120, w: 20, h: 34, cx: 262, cy: 141 };
   var FAIRY_LIGHTS = { x: 250, y: 156, w: 80, h: 34 };
-  var POT = { x: 828, y: 660, w: 28, h: 24, cx: 842, cy: 674 };
+  var POT = { w: 28, h: 24, start: { x: 842, y: 672 } };
   var HEART = { x: 929, y: 614, w: 20, h: 20, cx: 939, cy: 624 };
   // The little lights along the garland, with their colors.
   var BULBS = (function () {
@@ -932,10 +938,11 @@ var City = (function () {
     return out;
   })();
 
-  // real.fixer's guitar, leaning against the side of his tent.
+  // real.fixer's guitar, at first leaning against the side of his tent.
   function drawGuitar(ctx) {
     ctx.save();
-    ctx.translate(760, 336);
+    turnAt(ctx, "guitar");
+    ctx.translate(-1, 28);
     ctx.rotate(0.22);
     withShadow(ctx, function () {
       circle(ctx, 0, 0, 11, C.wood);
@@ -1045,9 +1052,11 @@ var City = (function () {
     ctx.globalAlpha = base;
   }
 
-  // Vladi's shiny pot, by the door of his castle.
+  // Vladi's shiny pot, at first by the door of his castle.
   function drawPot(ctx) {
-    var x = POT.cx, y = POT.cy;
+    ctx.save();
+    turnAt(ctx, "pot");
+    var x = 0, y = 2;
     withShadow(ctx, function () {
       fillRound(ctx, x - 11, y - 7, 22, 15, 6, "#B8743E");
     });
@@ -1067,6 +1076,7 @@ var City = (function () {
     }
     ctx.closePath();
     ctx.fill();
+    ctx.restore();
     ctx.restore();
   }
 
@@ -1123,12 +1133,135 @@ var City = (function () {
   // The word of a decoration at a spot, or null.
   function decorationAt(x, y) {
     if (Goals.isMet("realfixer", 1) && inBox(x, y, MOON_LANTERN)) return "lantern";
-    if (Goals.isMet("realfixer", 0) && inBox(x, y, GUITAR)) return "guitar";
+    if (isOn("guitar") && inBox(x, y, boxOf("guitar"))) return "guitar";
     if (Goals.isMet("lumi", 0) && inBox(x, y, CRYSTAL_LANTERN)) return "lantern";
     if (Goals.isMet("lumi", 1) && inBox(x, y, FAIRY_LIGHTS)) return "fairyLights";
-    if (Goals.isMet("vladi", 0) && inBox(x, y, POT)) return "pot";
+    if (isOn("pot") && inBox(x, y, boxOf("pot"))) return "pot";
     if (Goals.isMet("vladi", 1) && inBox(x, y, HEART)) return "heart";
     return null;
+  }
+
+  // ---------- Modo decorar ----------
+
+  // The guitar and the pot can be moved and turned (js/decorate.js), once their goal is met.
+  // "w", "h" is the spot each one takes when it is not turned; "start" is the middle of its first spot.
+  var MOVABLE = ["guitar", "pot"];
+  var DECOR = { guitar: GUITAR, pot: POT };
+  var UNLOCK = { guitar: ["realfixer", 0], pot: ["vladi", 0] };
+  // Where each one is now: { x, y, dir }, its middle and how many quarter turns clockwise.
+  var layout = {};
+
+  function resetLayout() {
+    MOVABLE.forEach(function (id) {
+      layout[id] = { x: DECOR[id].start.x, y: DECOR[id].start.y, dir: 0 };
+    });
+  }
+  resetLayout();
+
+  // True once its goal is met. The forest grows its first things before js/goals.js is loaded: then nothing is.
+  function isOn(id) {
+    return typeof Goals !== "undefined" && Goals.isMet(UNLOCK[id][0], UNLOCK[id][1]);
+  }
+
+  function boxOf(id) {
+    var d = DECOR[id], p = layout[id];
+    var side = p.dir % 2 === 1;
+    var w = side ? d.h : d.w, h = side ? d.w : d.h;
+    return { x: p.x - w / 2, y: p.y - h / 2, w: w, h: h };
+  }
+
+  // Draw around the middle of a decoration, turned the way it is.
+  function turnAt(ctx, id) {
+    var p = layout[id];
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.dir * Math.PI / 2);
+  }
+
+  function overlap(a, b) {
+    return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+  }
+
+  // The decoration that can be moved at a spot, or null.
+  function movableAt(x, y) {
+    for (var i = MOVABLE.length - 1; i >= 0; i--) {
+      var id = MOVABLE[i];
+      if (isOn(id) && inBox(x, y, boxOf(id))) return id;
+    }
+    return null;
+  }
+
+  function dragTo(id, x, y) {
+    layout[id].x = Math.round(x);
+    layout[id].y = Math.round(y);
+  }
+
+  function turn(id) {
+    layout[id].dir = (layout[id].dir + 1) % 4;
+  }
+
+  function getPos(id) {
+    var p = layout[id];
+    return { x: p.x, y: p.y, dir: p.dir };
+  }
+
+  function setPos(id, pos) {
+    layout[id] = pos;
+  }
+
+  // True if a spot of the map is grass where a decoration can stand: not on the river, the bridge, the stone paths,
+  // the plaza, the garden, a house (Sofía's, the tent with its campfire and log, the treehouse or the castle,
+  // with what hangs on them) or under a tree, and not right at the edge of the map.
+  function isDecorGrass(x, y) {
+    if (x < 10 || x > W - 10 || y < 10 || y > H - 10) return false;
+    if (Math.abs(x - riverX(y)) < RIVER.half + 6) return false;
+    if (Math.abs(x - riverX(BRIDGE.y)) <= RIVER.half + BRIDGE.reach && Math.abs(y - BRIDGE.y) <= BRIDGE.half + 14) return false;
+    if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 4) || Garden.isGardenAt(x, y) || houseAt(x, y)) return false;
+    if (neighborHomeAt(x, y) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return false;
+    if ([TENT, FIRE, MOON_LANTERN, HEART, { x: SEAT.x - 30, y: SEAT.y - 16, w: 60, h: 32 }].some(function (b) {
+      return inBox(x, y, grow(b, 4));
+    })) return false;
+    for (var t = 0; t < TREES.length; t++) {
+      if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] + 4)) return false;
+    }
+    return !pathLines().some(function (line) {
+      for (var i = 1; i < line.length; i++) {
+        if (distanceToSegment(x, y, line[i - 1], line[i]) < 24) return true;
+      }
+      return false;
+    });
+  }
+
+  // True if a decoration is all on grass where it can stand (see above), off the signs, the other decoration,
+  // the forest things and the shiny coins.
+  function fits(id) {
+    var b = boxOf(id);
+    var cols = Math.ceil(b.w / 10), rows = Math.ceil(b.h / 10);
+    for (var i = 0; i <= cols; i++) {
+      for (var j = 0; j <= rows; j++) {
+        var x = b.x + b.w * i / cols, y = b.y + b.h * j / rows;
+        if (!isDecorGrass(x, y) || Coins.wordAt(x, y)) return false;
+      }
+    }
+    if (MOVABLE.some(function (other) { return other !== id && isOn(other) && overlap(grow(b, 6), boxOf(other)); })) return false;
+    if (Object.keys(signs).some(function (k) { return overlap(b, signs[k]); })) return false;
+    return !Gather.isNear(b.x + b.w / 2, b.y + b.h / 2, Math.max(b.w, b.h) / 2 + 16);
+  }
+
+  function getLayout() {
+    var out = {};
+    MOVABLE.forEach(function (id) { out[id] = getPos(id); });
+    return out;
+  }
+
+  // Used when loading a saved game. Anything missing or strange stays in its first spot.
+  function setLayout(saved) {
+    if (!saved || typeof saved !== "object") return;
+    MOVABLE.forEach(function (id) {
+      var s = saved[id];
+      if (!s || typeof s !== "object" || [0, 1, 2, 3].indexOf(s.dir) < 0) return;
+      if (typeof s.x !== "number" || typeof s.y !== "number" || !isWalkable(s.x, s.y)) return;
+      layout[id] = { x: s.x, y: s.y, dir: s.dir };
+    });
   }
 
   // ---------- Forest ----------
@@ -1175,11 +1308,11 @@ var City = (function () {
     drawHouse(ctx, highlightHouse);
     Garden.draw(ctx, time);
     drawTent(ctx);
-    if (Goals.isMet("realfixer", 0)) drawGuitar(ctx);
+    if (isOn("guitar")) drawGuitar(ctx);
     if (Goals.isMet("realfixer", 1)) drawMoonLantern(ctx, false);
     drawCampfire(ctx, time);
     drawCastle(ctx, time, highlightId === "castle");
-    if (Goals.isMet("vladi", 0)) drawPot(ctx);
+    if (isOn("pot")) drawPot(ctx);
     if (Goals.isMet("vladi", 1)) drawHeart(ctx);
     CONFIG.cityObjects.forEach(function (f) {
       if (f.id === highlightId) drawThingHighlight(ctx, f);
@@ -1269,6 +1402,19 @@ var City = (function () {
     isForestFloor: isForestFloor,
     riverAt: riverAt,
     riverX: riverX,
-    doorSpot: doorSpot
+    doorSpot: doorSpot,
+    // Modo decorar
+    movableAt: movableAt,
+    boxOf: boxOf,
+    dragTo: dragTo,
+    canTurn: function () { return true; },
+    turn: turn,
+    getPos: getPos,
+    setPos: setPos,
+    fits: fits,
+    settle: function () {},
+    resetLayout: resetLayout,
+    getLayout: getLayout,
+    setLayout: setLayout
   };
 })();
