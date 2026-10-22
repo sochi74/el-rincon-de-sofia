@@ -8,7 +8,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - Funciona igual con doble clic en index.html (file://) y en GitHub Pages: <script src> clásicos en orden fijo, sin módulos ES, sin fetch, todos los datos dentro de archivos .js.
 - Nombres de archivo en minúsculas; referencias con las mismas mayúsculas exactas.
 - Nunca usar "Sims", "The Sims", nombres o logos de EA, Simlish ni arte de EA.
-- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi y Vladi (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio y Sala; las casas de los vecinos se ven solo desde afuera en la ciudad.
+- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi y Vladi (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad.
 - Guardado (Hito 6): localStorage dentro de try/catch; el juego funciona aunque falle.
 - Repo público; GitHub Pages desde main, carpeta raíz.
 

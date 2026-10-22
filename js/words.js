@@ -87,5 +87,20 @@ var WORDS = {
   decorate: { es: "Decorar", en: "decorate", say: "DÉ-ko-reit" },
   turn: { es: "Girar", en: "turn", say: "TERN" },
   done: { es: "Listo", en: "done", say: "DAN" },
-  rug: { es: "Alfombra", en: "rug", say: "RAG" }
+  rug: { es: "Alfombra", en: "rug", say: "RAG" },
+
+  // Baño
+  bathroom: { es: "Baño", en: "bathroom", say: "BÁZ-rum" },
+  bathtub: { es: "Bañera", en: "bathtub", say: "BÁZ-tab" },
+  bubbles: { es: "Burbujas", en: "bubbles", say: "BÁ-bels" },
+  sink: { es: "Lavamanos", en: "sink", say: "SINK" },
+  mirror: { es: "Espejo", en: "mirror", say: "MÍ-rror" },
+  toilet: { es: "Inodoro", en: "toilet", say: "TÓI-let" },
+  soap: { es: "Jabón", en: "soap", say: "SÓUP" },
+  plant: { es: "Planta", en: "plant", say: "PLANT" },
+  towel: { es: "Toalla", en: "towel", say: "TÁU-el" },
+  toothbrush: { es: "Cepillo de dientes", en: "toothbrush", say: "TÚZ-brash" },
+
+  // Krohna's bed by the Carpa
+  krohnaBed: { es: "Cama de Krohna", en: "Krohna's bed", say: "KRÓ-nas BED" }
 };

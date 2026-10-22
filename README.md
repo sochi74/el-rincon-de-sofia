@@ -15,9 +15,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 
 ## Estado
-Hito 20 ✅ Mover muebles
+Extra ✅ Baño
 
-## ⭐ Estrellas de inglés: 34
+## ⭐ Estrellas de inglés: 35
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -177,6 +177,16 @@ Hito 20 ✅ Mover muebles
 - done: listo
 - rug: alfombra
 - Yum!: ¡Mmm!
+- bathroom: baño
+- bathtub: bañera
+- bubbles: burbujas
+- sink: lavamanos
+- mirror: espejo
+- toilet: inodoro
+- soap: jabón
+- plant: planta
+- towel: toalla
+- toothbrush: cepillo de dientes
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -203,9 +213,11 @@ Hito 20 ✅ Mover muebles
   - 20 ⭐: Butterflies 🦋 en el jardín
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
-  - Próximo regalo: a las 35 ⭐
-- Siguiente paso: Sofía elige entre ⬜ Extra 🛁 Baño con bañera de burbujas, ⬜ Extra 🏡 Mover casas en la ciudad o Hito 21 🌧️ Clima y magia.
+  - 35 ⭐: Krohna's bed 🐾
+  - Próximo regalo: a las 40 ⭐
+- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 21 🌧️ Clima y magia.
 - Pendiente: la skill de hito.
+- Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
 - Decisiones grandes pendientes, para hablar con Robert: pixel art con imágenes; canciones reales de real.fixer (archivos de audio); jugar con amigos por internet.
 

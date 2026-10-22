@@ -2,20 +2,26 @@
 var Objects = (function () {
   // Each action raises one need by this many points over this many seconds.
   // "favorite" is how the action is written in a character's favorite activity.
+  // The Baño ones raise more than one need ("gains"), are nobody's favorite and no trait changes them,
+  // so free will never picks them (it looks for actions with one "need"). "sparkle" puts a little ✨ over the head at the end.
   var ACTIONS = {
     eat: { text: "Comiendo 🍳", need: "hunger", amount: 35, duration: 4, favorite: "comer" },
     sleep: { text: "Durmiendo 💤", need: "energy", amount: 50, duration: 6, favorite: "dormir" },
     watchTv: { text: "Viendo tele 📺", need: "fun", amount: 35, duration: 4, favorite: "ver tele" },
     sleepTent: { text: "Durmiendo en la carpa 💤", need: "energy", amount: 50, duration: 6, favorite: "dormir" },
-    campfire: { text: "Junto a la fogata 🔥", need: "fun", amount: 30, duration: 4, favorite: "sentarse junto a la fogata" }
+    campfire: { text: "Junto a la fogata 🔥", need: "fun", amount: 30, duration: 4, favorite: "sentarse junto a la fogata" },
+    bath: { text: "Bañándose 🫧", gains: { fun: 25, energy: 20 }, duration: 5 },
+    brushTeeth: { text: "Lavándose los dientes 🪥", gains: { fun: 5 }, duration: 2, sparkle: true }
   };
+  // How long the little ✨ stays over the head after brushing the teeth, in seconds.
+  var SPARKLE_TIME = 1.2;
 
   // Usable furniture: its action and the free spot next to it where the character walks to use it,
   // and where it stands up again when it finishes.
   // "look" is where it looks while using it; otherwise it looks at the piece.
   // "owner" is the only one who may use it; anyone else gets the "notYours" bubble.
   // "pose" is how it is drawn while using it (js/sims.js): lying in the Cama with its head on the pillow, sitting on
-  // the Sofá, inside the Carpa (only the "Zzz" are seen) or sitting on the log by the Fogata. "x", "y" is where its feet go.
+  // the Sofá, in the Bañera (only the head shows), inside the Carpa (only the "Zzz" are seen) or sitting on the log by the Fogata. "x", "y" is where its feet go.
   // In the house the spot, the look and the pose come from js/house.js, because Modo decorar moves and turns the furniture:
   // in front of the piece as it is turned, lying along the Cama and sitting looking where the Sofá looks.
   // The Estufa has no action of its own: tapping it opens the recipe menu (js/cooking.js), like the Fogata.
@@ -27,6 +33,8 @@ var Objects = (function () {
     bed: { action: "sleep" },
     tv: { action: "watchTv" },
     sofa: { action: "watchTv" },
+    bathtub: { action: "bath" },
+    sink: { action: "brushTeeth" },
     tent: {
       action: "sleepTent", spot: { x: 850, y: 395 }, owner: "realfixer", notYours: "Es la carpa de real.fixer",
       pose: { kind: "tent", zzz: { x: 856, y: 318 } }
@@ -105,14 +113,14 @@ var Objects = (function () {
       return;
     }
     var action = ACTIONS[use.action];
-    var favorite = sim.data.favoriteActivity === action.favorite;
+    var favorite = !!action.favorite && sim.data.favoriteActivity === action.favorite;
     current[sim.data.id] = {
       sim: sim,
       furniture: furniture,
       action: action,
       phase: "walking",
       elapsed: 0,
-      multiplier: gainMultiplier(sim.data, use.action) * (favorite ? CONFIG.favoriteBonus : 1),
+      multiplier: action.gains ? 1 : gainMultiplier(sim.data, use.action) * (favorite ? CONFIG.favoriteBonus : 1),
       favorite: favorite
     };
     var spot = spotOf(furniture);
@@ -163,6 +171,19 @@ var Objects = (function () {
     return !!current[id];
   }
 
+  // How long a character has been using something (the bubbles of the Bañera rise with it), in seconds.
+  function elapsedFor(id) {
+    return current[id] ? current[id].elapsed : 0;
+  }
+
+  // Seconds left of the little ✨ over each one's head, by id.
+  var sparkles = {};
+
+  // How much of the ✨ is left over a character's head (1 just after brushing, down to 0), or 0.
+  function sparkleFor(id) {
+    return (sparkles[id] || 0) / SPARKLE_TIME;
+  }
+
   // Turn the character toward what it uses.
   function lookAt(a) {
     var f = a.furniture;
@@ -188,6 +209,12 @@ var Objects = (function () {
   }
 
   function update(dt) {
+    if (!Needs.isPaused()) {
+      Object.keys(sparkles).forEach(function (id) {
+        sparkles[id] -= dt;
+        if (sparkles[id] <= 0) delete sparkles[id];
+      });
+    }
     Object.keys(current).forEach(function (id) {
       var a = current[id];
 
@@ -210,14 +237,20 @@ var Objects = (function () {
         return;
       }
 
-      // Doing: the need goes up a little every frame, never above 100.
+      // Doing: the need (or each need of "gains") goes up a little every frame, never above 100.
       if (Needs.isPaused()) return;
       var step = Math.min(dt, a.action.duration - a.elapsed);
       a.elapsed += step;
       var values = Needs.get(id);
-      var gain = a.action.amount / a.action.duration * a.multiplier * step;
-      values[a.action.need] = Math.min(100, values[a.action.need] + gain);
-      if (a.elapsed >= a.action.duration) delete current[id];
+      var gains = a.action.gains || {};
+      if (!a.action.gains) gains[a.action.need] = a.action.amount;
+      Object.keys(gains).forEach(function (need) {
+        values[need] = Math.min(100, values[need] + gains[need] / a.action.duration * a.multiplier * step);
+      });
+      if (a.elapsed >= a.action.duration) {
+        delete current[id];
+        if (a.action.sparkle) sparkles[id] = SPARKLE_TIME;
+      }
     });
   }
 
@@ -243,6 +276,8 @@ var Objects = (function () {
     poseFor: poseFor,
     freeFor: freeFor,
     isActive: isActive,
+    elapsedFor: elapsedFor,
+    sparkleFor: sparkleFor,
     isWatchingTv: isWatchingTv
   };
 })();

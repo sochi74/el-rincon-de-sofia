@@ -1,10 +1,13 @@
 // Draws the house seen from above: floors, walls, room names and furniture.
+// Four rooms: Cocina, Dormitorio, Sala and, on the right of the Sala, the Baño with its bathtub full of bubbles,
+// its sink with a mirror, and its toilet, plant, soap shelf and towels (only decoration).
 // Also the decorations: Sofía's painting easel in the Sala (always there), and the ones her goals give (js/goals.js):
 // a vase with garden flowers on the floor of the Sala and colored bunting on the Cocina wall.
 // At night the Televisión gives a soft glow while someone watches it.
 // Also where characters may walk: inside the rooms, through the doorways, and never on the furniture.
 // Everything that Modo decorar moves (js/decorate.js) has its place and turn here: the furniture, the rug, the easel
-// and the vase on the floor of any room, and the poster and the bunting on any wall. Where each one is, where a character
+// and the vase, the toilet and the plant on the floor of any room, and the poster, the bunting, the soap shelf and the towels
+// on any wall. Where each one is, where a character
 // stands to use it and how it lies or sits on it all follow that place and turn.
 var House = (function () {
   var C = CONFIG.colors;
@@ -67,6 +70,27 @@ var House = (function () {
           ctx.fillRect(tx, ty, t, t);
         }
       }
+    } else if (room.floor === "bathTiles") {
+      // Little light blue and white squares with thin lines between them.
+      var bt = 30;
+      for (var by = room.y; by < room.y + room.h; by += bt) {
+        for (var bx = room.x; bx < room.x + room.w; bx += bt) {
+          ctx.fillStyle = ((bx - room.x) / bt + (by - room.y) / bt) % 2 === 0 ? C.bathTile : C.bathTileWhite;
+          ctx.fillRect(bx, by, bt, bt);
+        }
+      }
+      ctx.strokeStyle = "rgba(255, 253, 248, 0.8)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (var gx = room.x; gx <= room.x + room.w; gx += bt) {
+        ctx.moveTo(gx, room.y);
+        ctx.lineTo(gx, room.y + room.h);
+      }
+      for (var gy = room.y; gy <= room.y + room.h; gy += bt) {
+        ctx.moveTo(room.x, gy);
+        ctx.lineTo(room.x + room.w, gy);
+      }
+      ctx.stroke();
     } else if (room.floor === "carpet") {
       ctx.fillStyle = C.carpet;
       ctx.fillRect(room.x, room.y, room.w, room.h);
@@ -107,10 +131,12 @@ var House = (function () {
   function wallSegments() {
     var d = CONFIG.doorWidth;
     return [
-      // Outside walls (front door on the bottom wall)
+      // Outside walls (front door on the bottom wall), with the Baño sticking out on the right of the Sala
       [40, 40, 960, 40],
-      [960, 40, 960, 680],
-      [960, 680, 190, 680],
+      [960, 40, 960, 340],
+      [960, 340, 1220, 340],
+      [1220, 340, 1220, 680],
+      [1220, 680, 190, 680],
       [190 - d, 680, 40, 680],
       [40, 680, 40, 40],
       // Kitchen | Bedroom
@@ -119,7 +145,10 @@ var House = (function () {
       // Top rooms | Living room
       [40, 340, 230, 340],
       [230 + d, 340, 470, 340],
-      [470 + d, 340, 960, 340]
+      [470 + d, 340, 960, 340],
+      // Living room | Bathroom
+      [960, 340, 960, 490 - d / 2],
+      [960, 490 + d / 2, 960, 680]
     ];
   }
 
@@ -151,7 +180,7 @@ var House = (function () {
     ctx.lineCap = "round";
     ctx.strokeStyle = "#BFE0EA";
     ctx.lineWidth = CONFIG.wallThickness * 0.5;
-    [[200, 40, 330, 40], [520, 40, 660, 40], [960, 430, 960, 580]].forEach(function (s) {
+    [[200, 40, 330, 40], [520, 40, 660, 40], [1220, 590, 1220, 650]].forEach(function (s) {
       ctx.beginPath();
       ctx.moveTo(s[0], s[1]);
       ctx.lineTo(s[2], s[3]);
@@ -185,10 +214,22 @@ var House = (function () {
     vase: { kind: "floor", w: 48, h: 74, start: { x: 900, y: 390 }, feet: { x: -22, y: 12, w: 44, h: 24 }, upright: true,
       unlock: ["sofia", 0] },
     poster: { kind: "wall", length: 120, depth: 60, off: 12, start: { side: "top", line: 340, along: 395 } },
-    bunting: { kind: "wall", length: 364, depth: 32, off: -2, start: { side: "top", line: 40, along: 230 }, unlock: ["sofia", 1] }
+    bunting: { kind: "wall", length: 364, depth: 32, off: -2, start: { side: "top", line: 40, along: 230 }, unlock: ["sofia", 1] },
+    // The Baño. "parts" are smaller spots with their own word (the bubbles, the mirror and the toothbrushes), from the middle.
+    bathtub: { kind: "floor", w: 150, h: 80, start: { x: 1130, y: 392 }, use: { x: 0, y: 70 }, label: { x: 12, y: 54 },
+      parts: { bubbles: { x: 22, y: -26, w: 46, h: 52 } } },
+    sink: { kind: "floor", w: 76, h: 56, start: { x: 1010, y: 378 }, use: { x: 0, y: 72 }, label: { x: 18, y: 44 },
+      parts: { mirror: { x: -26, y: -28, w: 52, h: 18 }, toothbrush: { x: 22, y: -16, w: 16, h: 22 } } },
+    toilet: { kind: "floor", w: 50, h: 64, start: { x: 1180, y: 640 } },
+    plant: { kind: "floor", w: 44, h: 62, start: { x: 994, y: 640 }, feet: { x: -18, y: 8, w: 36, h: 22 }, upright: true },
+    shelf: { kind: "wall", length: 96, depth: 28, off: 2, start: { side: "bottom", line: 680, along: 1080 } },
+    towels: { kind: "wall", length: 84, depth: 30, off: 2, start: { side: "right", line: 1220, along: 520 } }
   };
   // The order they are drawn in; the last one is on top, so it is picked first.
-  var ORDER = ["rug", "fridge", "stove", "bed", "tv", "sofa", "vase", "easel", "poster", "bunting"];
+  var ORDER = ["rug", "fridge", "stove", "bed", "tv", "sofa", "bathtub", "sink", "toilet", "plant", "vase", "easel",
+    "poster", "bunting", "shelf", "towels"];
+  // The word of each thing when it is not the same as its id.
+  var WORD_OF = { shelf: "soap", towels: "towel" };
   // How far from its spot in front a character may stand to use a piece of furniture, when that spot is taken.
   var USE_REACH = 70;
   // In front of the front door, inside the Sala: nothing goes here, so the door can always be used.
@@ -307,7 +348,12 @@ var House = (function () {
     return null;
   }
 
-  // How a character lies in the Cama or sits on the Sofá (js/sims.js draws it): where its feet go and how it is turned.
+  // How far below the middle of the Bañera the water line goes, where the head of who bathes comes out of the bubbles,
+  // and how far up from the feet that is on a character (js/sims.js hides the rest under the water).
+  var BATH_NECK = 8, BATH_DEEP = 40;
+
+  // How a character lies in the Cama, sits on the Sofá or bathes in the Bañera (js/sims.js draws it): where its feet go
+  // and how it is turned. In the Bañera only its head shows, in the middle of the water, however the Bañera is turned.
   // In the Cama it lies along the bed with its head on the pillow. On the Sofá it sits looking where the Sofá looks:
   // seen from behind, from the front or from the side; only from behind the backrest goes over it.
   function poseFor(id) {
@@ -316,6 +362,7 @@ var House = (function () {
       var at = fromMiddle("bed", { x: -41, y: 14 });
       return { kind: "lie", x: at.x, y: at.y, angle: p.dir * Math.PI / 2 };
     }
+    if (id === "bathtub") return { kind: "bath", x: p.x, y: p.y + BATH_NECK + BATH_DEEP * CONFIG.characterScale };
     if (id === "sofa") {
       if (p.dir === 0) return { kind: "sofa", view: "back", x: p.x, y: p.y + 47, backrest: true };
       if (p.dir === 2) return { kind: "sofa", view: "front", x: p.x, y: p.y + 40 };
@@ -402,6 +449,47 @@ var House = (function () {
         ctx.arc(sw[0], top, 3, 0, Math.PI * 2);
         ctx.arc(sw[1], top, 3, 0, Math.PI * 2);
         ctx.fill();
+      });
+    });
+  }
+
+  // A wooden shelf on the wall of the Baño with little soap bottles in colors. The bottles always stand up, with their
+  // caps on top: in a row on the shelf on a top or bottom wall, one over the other on a side wall.
+  var SOAPS = [["#E795AE", 16], ["#8FA88A", 20], ["#7DB9D6", 17], ["#F2C230", 14]];
+
+  function drawShelf(ctx) {
+    var b = boxOf("shelf"), wide = b.w > b.h;
+    if (wide) {
+      withShadow(ctx, function () {
+        fillRound(ctx, b.x, b.y + b.h - 8, b.w, 8, 3, C.wood);
+      });
+    } else {
+      var wallLeft = layout.shelf.side === "left";
+      withShadow(ctx, function () {
+        fillRound(ctx, wallLeft ? b.x : b.x + b.w - 8, b.y, 8, b.h, 3, C.wood);
+      });
+    }
+    SOAPS.forEach(function (soap, i) {
+      var h = wide ? soap[1] : soap[1] * 0.75, w = wide ? 13 : 11;
+      var bx = wide ? b.x + 10 + i * 21 : b.x + (b.w - w) / 2;
+      var bottom = wide ? b.y + b.h - 6 : b.y + 8 + (i + 1) * (b.h - 12) / 4;
+      fillRound(ctx, bx, bottom - h, w, h, 4, soap[0]);
+      fillRound(ctx, bx + w / 2 - 3, bottom - h - 4, 6, 5, 2, C.white);
+      fillRound(ctx, bx + 2.5, bottom - h + 3, 2.5, h - 7, 1.2, "rgba(255, 253, 248, 0.6)");
+    });
+  }
+
+  // Two striped towels hanging from a little rail on the wall of the Baño.
+  function drawTowels(ctx) {
+    drawOnWall(ctx, "towels", function (b) {
+      fillRound(ctx, b.x + 2, b.y + 1, b.w - 4, 5, 2.5, "#9AA6A8");
+      [[b.x + 6, "#E795AE"], [b.x + b.w / 2 + 2, "#7DB9D6"]].forEach(function (t) {
+        var tw = b.w / 2 - 8;
+        withShadow(ctx, function () {
+          fillRound(ctx, t[0], b.y + 2, tw, b.h - 2, 5, t[1]);
+        });
+        fillRound(ctx, t[0], b.y + b.h - 10, tw, 3, 1.5, C.white);
+        fillRound(ctx, t[0], b.y + b.h - 5, tw, 2, 1, "rgba(255, 253, 248, 0.7)");
       });
     });
   }
@@ -709,6 +797,226 @@ var House = (function () {
     fillRound(ctx, f.x + 6, f.y + f.h - 30, f.w - 12, 24, 12, "#A9533C");
   }
 
+  // ---------- The Baño ----------
+
+  // A white bathtub on little golden legs, full of light blue water with bubbles. Not turned, the tap is on the left.
+  function drawBathtub(ctx, f) {
+    // Little feet peeking out at the corners
+    [[f.x + 16, f.y + 6], [f.x + f.w - 16, f.y + 6], [f.x + 16, f.y + f.h - 6], [f.x + f.w - 16, f.y + f.h - 6]].forEach(function (p) {
+      ctx.fillStyle = "#C9A24E";
+      ctx.beginPath();
+      ctx.arc(p[0] + (p[0] < f.x + f.w / 2 ? -6 : 6), p[1] + (p[1] < f.y + f.h / 2 ? -4 : 4), 6, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    withShadow(ctx, function () {
+      fillRound(ctx, f.x, f.y, f.w, f.h, 36, C.white);
+    });
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.25)";
+    ctx.lineWidth = 2;
+    roundRect(ctx, f.x, f.y, f.w, f.h, 36);
+    ctx.stroke();
+    // The water, with a soft shine
+    fillRound(ctx, f.x + 11, f.y + 10, f.w - 22, f.h - 20, 28, C.water);
+    fillRound(ctx, f.x + 16, f.y + 14, f.w - 32, f.h - 30, 22, C.waterLight);
+    // The tap
+    fillRound(ctx, f.x + 4, f.y + f.h / 2 - 7, 16, 14, 5, "#9AA6A8");
+    ctx.fillStyle = "#C8D2D4";
+    ctx.beginPath();
+    ctx.arc(f.x + 10, f.y + f.h / 2, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    // A big puff of foam at the far end and little ones along the sides
+    var foam = [[f.x + f.w - 40, f.y + 24, 12], [f.x + f.w - 30, f.y + 40, 14], [f.x + f.w - 42, f.y + 54, 11],
+      [f.x + f.w - 56, f.y + 38, 10], [f.x + f.w - 24, f.y + 58, 8], [f.x + f.w - 26, f.y + 22, 8],
+      [f.x + 40, f.y + 16, 6], [f.x + 58, f.y + f.h - 16, 6], [f.x + 84, f.y + 15, 5]];
+    ctx.fillStyle = C.white;
+    foam.forEach(function (b) {
+      ctx.beginPath();
+      ctx.arc(b[0], b[1], b[2], 0, Math.PI * 2);
+      ctx.fill();
+    });
+    // Little bubbles on the water
+    [[f.x + 70, f.y + 34, 4], [f.x + 50, f.y + 48, 3], [f.x + 88, f.y + 52, 3.5], [f.x + 100, f.y + 28, 2.5]].forEach(function (b) {
+      ctx.fillStyle = "rgba(255, 253, 248, 0.5)";
+      ctx.strokeStyle = C.white;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(b[0], b[1], b[2], 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
+
+  // A sink on a little wooden cabinet, with a round mirror on the wall behind it and a cup with two toothbrushes.
+  // Not turned, the wall is above it.
+  function drawSink(ctx, f) {
+    var cx = f.x + f.w / 2;
+    // The mirror, framed in wood
+    ctx.fillStyle = C.wood;
+    ctx.beginPath();
+    ctx.ellipse(cx, f.y + 8, 26, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#DCEFF5";
+    ctx.beginPath();
+    ctx.ellipse(cx, f.y + 8, 21, 6.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    strokePath(ctx, C.white, 2, [[cx - 12, f.y + 7], [cx - 4, f.y + 4]]);
+    // The cabinet top and the basin
+    withShadow(ctx, function () {
+      fillRound(ctx, f.x, f.y + 14, f.w, f.h - 14, 10, C.woodLight);
+    });
+    fillRound(ctx, f.x + 3, f.y + 17, f.w - 6, f.h - 20, 8, C.cream);
+    ctx.fillStyle = C.white;
+    ctx.beginPath();
+    ctx.ellipse(cx - 6, f.y + 36, 22, 13, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.25)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = "#DCEFF5";
+    ctx.beginPath();
+    ctx.ellipse(cx - 6, f.y + 37, 16, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#9AA6A8";
+    ctx.beginPath();
+    ctx.arc(cx - 6, f.y + 38, 2, 0, Math.PI * 2);
+    ctx.fill();
+    // The tap
+    fillRound(ctx, cx - 9, f.y + 16, 6, 12, 3, "#9AA6A8");
+    // The cup with a pink and a blue toothbrush
+    strokePath(ctx, "#E795AE", 2.5, [[f.x + f.w - 15, f.y + 30], [f.x + f.w - 18, f.y + 13]]);
+    strokePath(ctx, "#7DB9D6", 2.5, [[f.x + f.w - 12, f.y + 30], [f.x + f.w - 8, f.y + 14]]);
+    ctx.fillStyle = C.terracotta;
+    ctx.beginPath();
+    ctx.arc(f.x + f.w - 13, f.y + 32, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#D98168";
+    ctx.beginPath();
+    ctx.arc(f.x + f.w - 13, f.y + 32, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // A white toilet seen from above: the seat around the water and the tank against the wall (below it, when not turned).
+  function drawToilet(ctx, f) {
+    var cx = f.x + f.w / 2;
+    withShadow(ctx, function () {
+      fillRound(ctx, f.x + 2, f.y + f.h - 20, f.w - 4, 20, 6, C.white);
+      ctx.beginPath();
+      ctx.ellipse(cx, f.y + 24, 21, 24, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.25)";
+    ctx.lineWidth = 1.5;
+    roundRect(ctx, f.x + 2, f.y + f.h - 20, f.w - 4, 20, 6);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(cx, f.y + 24, 21, 24, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = "#CFE8EF";
+    ctx.beginPath();
+    ctx.ellipse(cx, f.y + 22, 12, 15, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // The flush button
+    ctx.fillStyle = "#9AA6A8";
+    ctx.beginPath();
+    ctx.arc(cx, f.y + f.h - 10, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // A little plant in a terracotta pot, with round leaves. Turned to a side, the leaves lean the other way.
+  function drawPlant(ctx, b, dir) {
+    var cx = b.x + b.w / 2, base = b.y + b.h - 2;
+    ctx.save();
+    ctx.fillStyle = "rgba(74, 52, 40, 0.22)";
+    ctx.beginPath();
+    ctx.ellipse(cx, base, 18, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.translate(cx, base);
+    ctx.scale(dir % 2 === 1 ? -1 : 1, 1);
+    // Leaves: dark ones behind, light ones in front
+    [[-12, -40, 9, -0.6, C.cityGrassDark], [12, -42, 9, 0.6, C.cityGrassDark], [0, -52, 9, 0, C.cityGrassDark],
+      [-7, -34, 8, -0.4, C.sage], [8, -36, 8, 0.5, C.sage], [-1, -44, 7, 0.1, "#A9BFA4"]].forEach(function (l) {
+      ctx.save();
+      ctx.translate(l[0], l[1]);
+      ctx.rotate(l[3]);
+      ctx.fillStyle = l[4];
+      ctx.beginPath();
+      ctx.ellipse(0, 0, l[2] * 0.7, l[2], 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+    // The pot
+    withShadow(ctx, function () {
+      ctx.fillStyle = C.terracotta;
+      ctx.beginPath();
+      ctx.moveTo(-13, -24);
+      ctx.lineTo(13, -24);
+      ctx.lineTo(9, 0);
+      ctx.lineTo(-9, 0);
+      ctx.closePath();
+      ctx.fill();
+    });
+    fillRound(ctx, -15, -28, 30, 7, 3, "#D98168");
+    ctx.restore();
+  }
+
+  // The foam around the neck of who bathes ("x", "y" is the water line) and bubbles that rise and pop.
+  // "t" is how long it has been bathing, so everything stands still with Pausa.
+  // Characters are drawn after the night tint, so here the foam gets the tint again by itself.
+  function drawBathFoam(ctx, x, y, t) {
+    var puffs = [[-22, 2, 8], [-13, -1, 9], [-3, 3, 9], [8, 0, 9], [18, 3, 8], [27, 0, 6], [-29, -2, 5], [-8, 8, 6], [12, 8, 6]];
+    ctx.save();
+    ctx.beginPath();
+    puffs.forEach(function (p) {
+      ctx.moveTo(x + p[0] + p[2], y + p[1]);
+      ctx.arc(x + p[0], y + p[1], p[2], 0, Math.PI * 2);
+    });
+    ctx.fillStyle = C.white;
+    ctx.fill();
+    var dark = Time.darkness();
+    if (dark > 0) {
+      ctx.globalCompositeOperation = "multiply";
+      ctx.globalAlpha = dark;
+      ctx.fillStyle = CONFIG.night.tint;
+      ctx.fill();
+    }
+    ctx.restore();
+    // Bubbles: each one rises, grows a little and pops in a tiny star of lines.
+    for (var i = 0; i < 6; i++) {
+      var k = (t * 0.55 + i / 6) % 1;
+      var bx = x - 26 + i * 10 + Math.sin(t * 2.4 + i * 1.7) * 5, by = y - 4 - k * 70;
+      ctx.save();
+      if (k < 0.85) {
+        var r = 3 + k * 4;
+        ctx.globalAlpha = Math.min(1, k / 0.1);
+        ctx.fillStyle = "rgba(181, 220, 236, 0.45)";
+        ctx.strokeStyle = C.white;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(bx, by, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = C.white;
+        ctx.beginPath();
+        ctx.arc(bx - r * 0.35, by - r * 0.35, r * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        var pop = (k - 0.85) / 0.15;
+        ctx.globalAlpha = 1 - pop;
+        ctx.strokeStyle = C.white;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        for (var a = 0; a < 6; a++) {
+          var ang = a * Math.PI / 3;
+          ctx.moveTo(bx + Math.cos(ang) * (4 + pop * 3), by + Math.sin(ang) * (4 + pop * 3));
+          ctx.lineTo(bx + Math.cos(ang) * (7 + pop * 5), by + Math.sin(ang) * (7 + pop * 5));
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  }
+
   // Draw a floor thing turned the way it is, with a drawing made around its middle.
   function drawTurned(ctx, id, fn) {
     var p = layout[id], d = DEFS[id];
@@ -739,6 +1047,8 @@ var House = (function () {
     stove: drawStove,
     bed: drawBed,
     sofa: drawSofa,
+    bathtub: drawBathtub,
+    sink: drawSink,
     tv: function (ctx, b) { drawTv(ctx, { x: b.x + 30, y: b.y + 6, w: b.w - 60, h: b.h - 22 }); }
   };
 
@@ -776,7 +1086,7 @@ var House = (function () {
   // ---------- Main draw ----------
 
   function draw(ctx, highlightId) {
-    var W = CONFIG.world.width, H = CONFIG.world.height;
+    var W = CONFIG.houseWorld.width, H = CONFIG.houseWorld.height;
 
     // Garden around the house
     fillRound(ctx, 0, 0, W, H, 40, C.grass);
@@ -788,11 +1098,15 @@ var House = (function () {
     drawWalls(ctx);
     drawPoster(ctx);
     if (isOn("bunting")) drawBunting(ctx);
+    drawShelf(ctx);
+    drawTowels(ctx);
 
     CONFIG.furniture.forEach(function (f) {
       drawTurned(ctx, f.id, function (b) { DRAWERS[f.id](ctx, b); });
       if (f.id === highlightId) drawGlow(ctx, boxOf(f.id), C.sage);
     });
+    drawTurned(ctx, "toilet", function (b) { drawToilet(ctx, b); });
+    drawTurned(ctx, "plant", function (b) { drawPlant(ctx, b, layout.plant.dir); });
     if (isOn("vase")) drawTurned(ctx, "vase", function (b) { drawVase(ctx, b, layout.vase.dir); });
     drawTurned(ctx, "easel", function (b) { drawEasel(ctx, b, layout.easel.dir); });
   }
@@ -803,7 +1117,8 @@ var House = (function () {
     var roomLabels = {
       kitchen: { x: 250, y: 260 },
       bedroom: { x: 570, y: 250 },
-      living: { x: 190, y: 600 }
+      living: { x: 190, y: 600 },
+      bathroom: { x: 1086, y: 560 }
     };
     CONFIG.rooms.forEach(function (room) {
       var p = roomLabels[room.id];
@@ -847,13 +1162,30 @@ var House = (function () {
     return x >= d.x && x <= d.x + d.w && y >= d.y && y <= d.y + d.h;
   }
 
-  // The id of the word for what is at a spot: a decoration, a piece of furniture, the rug, the front door or a room, or null.
+  // A smaller spot of a floor thing ("parts" in DEFS), turned with it.
+  function partBox(id, part) {
+    var a = fromMiddle(id, { x: part.x, y: part.y }), b = fromMiddle(id, { x: part.x + part.w, y: part.y + part.h });
+    return { x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(b.x - a.x), h: Math.abs(b.y - a.y) };
+  }
+
+  // The id of the word for what is at a spot: a decoration, a piece of furniture (or a part of it, like the mirror),
+  // the rug, the front door or a room, or null.
   function wordAt(x, y) {
     if (inBox(x, y, boxOf("easel"))) return "easel";
     if (isOn("vase") && inBox(x, y, boxOf("vase"))) return "vase";
     if (isOn("bunting") && inBox(x, y, boxOf("bunting"))) return "bunting";
+    var deco = ["shelf", "towels", "plant", "toilet"];
+    for (var d = 0; d < deco.length; d++) {
+      if (inBox(x, y, boxOf(deco[d]))) return WORD_OF[deco[d]] || deco[d];
+    }
     for (var i = CONFIG.furniture.length - 1; i >= 0; i--) {
-      if (inBox(x, y, boxOf(CONFIG.furniture[i].id))) return CONFIG.furniture[i].id;
+      var id = CONFIG.furniture[i].id;
+      if (!inBox(x, y, boxOf(id))) continue;
+      var parts = DEFS[id].parts || {};
+      for (var name in parts) {
+        if (inBox(x, y, partBox(id, parts[name]))) return name;
+      }
+      return id;
     }
     if (inBox(x, y, boxOf("rug"))) return "rug";
     if (doorAt(x, y)) return "door";
@@ -1065,8 +1397,8 @@ var House = (function () {
         for (var along = t.from; along <= t.to; along += 10) spots.push({ side: t.side, line: t.line, along: along });
       });
     } else {
-      for (var y = 0; y <= CONFIG.world.height; y += 10) {
-        for (var x = 0; x <= CONFIG.world.width; x += 10) spots.push({ x: x, y: y, dir: keep.dir });
+      for (var y = 0; y <= CONFIG.houseWorld.height; y += 10) {
+        for (var x = 0; x <= CONFIG.houseWorld.width; x += 10) spots.push({ x: x, y: y, dir: keep.dir });
       }
     }
     var from = boxOf(id), mx = from.x + from.w / 2, my = from.y + from.h / 2;
@@ -1118,6 +1450,17 @@ var House = (function () {
       });
       if (!inRoom) layout[id] = { x: d.start.x, y: d.start.y, dir: 0 };
     });
+    // A game saved before the Baño: anything left in front of its door (or on a wall where the door is now) goes back
+    // to its first spot, and if a room or a piece of furniture still cannot be reached, everything does.
+    Path.reset();
+    ORDER.forEach(function (id) {
+      if (DEFS[id].kind === "rug") return;
+      if (DEFS[id].kind === "wall" ? !fitsWall(id) : !fitsFloor(id)) {
+        var s = DEFS[id].start;
+        setPos(id, DEFS[id].kind === "wall" ? { side: s.side, line: s.line, along: s.along } : { x: s.x, y: s.y, dir: 0 });
+      }
+    });
+    if (!allReachable()) resetLayout();
     Path.reset();
   }
 
@@ -1130,6 +1473,8 @@ var House = (function () {
     drawLabels: drawLabels,
     drawNightLights: drawNightLights,
     drawSofaBackrest: drawSofaBackrest,
+    drawBathFoam: drawBathFoam,
+    bathDeep: BATH_DEEP,
     drawGlow: drawGlow,
     bounds: bounds,
     doorAt: doorAt,

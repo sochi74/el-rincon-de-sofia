@@ -503,11 +503,17 @@ var Sims = (function () {
   // How a character looks while it uses something (see "pose" in js/objects.js and js/house.js):
   // lying in the Cama seen from above, face up with closed eyes under a blanket (turned along the bed);
   // sitting on the Sofá looking where the Sofá looks: seen from behind (the backrest goes on top afterwards),
-  // from the front or from the side; or sitting on the log by the Fogata, from the side.
+  // from the front or from the side; in the Bañera, only the head over the water (the foam goes on top afterwards);
+  // or sitting on the log by the Fogata, from the side.
   function drawPose(ctx, sim, pose) {
     var body = bodies[sim.data.id];
     noLegs = true;
-    if (pose.kind === "lie") {
+    if (pose.kind === "bath") {
+      ctx.beginPath();
+      ctx.rect(-60, -140, 120, 140 - House.bathDeep);
+      ctx.clip();
+      body.front(ctx, sim.look, 0, sim.blink > 0);
+    } else if (pose.kind === "lie") {
       body.front(ctx, sim.look, 0, true);
       drawBlanket(ctx);
     } else if (pose.kind === "sofa" && pose.view === "back") {
@@ -772,6 +778,19 @@ var Sims = (function () {
     ctx.restore();
   }
 
+  // A little ✨ over the head after brushing the teeth: it rises a bit and fades. "left" goes from 1 to 0.
+  function drawSparkle(ctx, at, left) {
+    if (left <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, left / 0.3);
+    ctx.font = "20px " + CONFIG.fontFamily;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = C.darkBrown;
+    ctx.fillText("✨", at.x + 26, at.y - 78 * CONFIG.characterScale - 6 - (1 - left) * 12);
+    ctx.restore();
+  }
+
   function drawSim(ctx, sim, time) {
     var pose = Objects.poseFor(sim.data.id);
     // Sleeping in the Carpa: it is inside, so only the "Zzz" coming out of the tent are seen.
@@ -804,6 +823,7 @@ var Sims = (function () {
     }
     ctx.restore();
     if (pose && pose.backrest) House.drawSofaBackrest(ctx);
+    if (pose && pose.kind === "bath") House.drawBathFoam(ctx, at.x, at.y - House.bathDeep * k, Objects.elapsedFor(sim.data.id));
     if (pose && pose.kind === "lie") {
       // Over the head, wherever the Cama makes it point.
       var a = pose.angle || 0;
@@ -812,6 +832,7 @@ var Sims = (function () {
 
     drawNameTag(ctx, sim, at);
     drawMoodStar(ctx, sim, at, time);
+    drawSparkle(ctx, at, Objects.sparkleFor(sim.data.id));
     var lift = 0;
     var bubble = Social.bubbleFor(sim.data.id) || Gifts.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) ||
       Garden.bubbleFor(sim.data.id) || Gather.bubbleFor(sim.data.id) || Cooking.bubbleFor(sim.data.id);
