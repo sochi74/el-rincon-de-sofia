@@ -13,6 +13,7 @@
 - "crear una ciudad de fantasia estilo dreamlight valley"
 - "podriamos agregar el menu al juego? (en la pantalla del juego) y yo poder abrir y cerar el menu?"
 - "quiero que fixer pueda alimentarse de las bayas" (solo real.fixer, y solo cuando tiene hambre; lo hace solo, con bayas de la mochila)
+- "agrega este proceso de continuacion entre sesiones de arquitectos como proceso establecido en nuestros estandares"
 
 ## Parte B: Diseño del juego completo
 Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para construir, explorar y hacer amigos.

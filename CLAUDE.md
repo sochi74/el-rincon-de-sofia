@@ -46,6 +46,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - Hito 1 va directo a main. Desde el Hito 2: una sesión = un hito = una rama hito-N-<slug>.
 - Commits estilo conventional commits en inglés (feat, fix, docs).
 - Pull request con secciones: Qué construimos, Cómo probarlo, Archivos que cambiaron, Biblias actualizadas, Problemas conocidos, Ideas para después.
+- En cada hito, actualizar en README.md la sección 'Para el Modo Planear' (estrellas, regalos desbloqueados y siguiente paso). Ver ahí el proceso de traspaso entre arquitectos.
 
 ## Forma de cada sesión
 1. Leer las cinco biblias. 2. git checkout main y git pull. 3. Hacer un solo hito. 4. Probarlo con Sofía. 5. Actualizar las biblias. 6. Abrir el pull request. 7. Nunca hacer merge.

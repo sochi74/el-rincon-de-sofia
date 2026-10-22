@@ -1,5 +1,26 @@
 # CHANGELOG.md
 
+## Problemas conocidos actuales
+- En la Televisión (de pie, sin el Sofá) se sigue viendo tele de pie.
+- Si recargas en medio de una visita, real.fixer se queda un rato en la casa y después vuelve a su carpa.
+- real.fixer no va a buscar monedas solo; solo las recoge si pasa por encima.
+- Los personajes son grandes al lado de las parcelas: mientras trabajan pueden tapar la parcela de arriba o el cartel del jardín, y después hay que moverlos para ver bien.
+- Las mariposas vuelan por encima de las flores y a veces tapan un poquito una.
+- Con el panel abierto, en pantallas chicas todavía puede tapar un poco la parte de arriba del mapa (ciérralo con ✕ para ver todo).
+- Con el panel abierto se tapa casi todo el bosque: ciérralo con ✕ para recolectar.
+- Con el panel abierto, el cartel "¡Ahora son…!" puede quedar tapado si los personajes están arriba del mapa.
+- La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta.
+- Nadie cuida el jardín, pesca, recolecta, cocina ni regala solo.
+- Si recargas mientras alguien pesca o recolecta, esa acción se pierde.
+- Cuando real.fixer pasa por la puerta, Krohna aparece de golpe del otro lado, junto a él.
+- Krohna puede quedar un poquito detrás de un personaje.
+- El crujido de la fogata se escucha igual en toda la ciudad, no solo cerca de la carpa.
+- Todavía no hay sonido de lluvia (llega con el clima).
+- Si cambias de pestaña, la música se detiene, pero el río o la tele pueden seguir sonando bajito.
+
+## 2026-10-21 · Continuidad
+- Se agregaron notas para continuar en el Modo Planear, el proceso de traspaso entre arquitectos, y se revisó la coherencia de las biblias.
+
 ## 2026-10-21 · Hito 17: 🎵 Sonidos y música
 - Todos los sonidos y la música se crean con código, con el audio del navegador (Web Audio). No hay archivos de sonido ni librerías.
 - El sonido empieza recién al tocar "Jugar".
