@@ -1,8 +1,12 @@
-// The neighbors: Lumi, the fairy, and Vladi, the vampire who is afraid of the dark. They live in the city
-// (their homes are drawn in js/city.js), walk around on their own going around obstacles (js/path.js) and are never selected.
+// The neighbors: Lumi, the fairy, Vladi, the vampire who is afraid of the dark, and Professor Hoot, the fox librarian.
+// They live in the city (their homes are drawn in js/city.js), walk around on their own going around obstacles (js/path.js)
+// and are never selected.
 // Lumi flies around the city day and night, flapping her wings, and at night leaves a little trail of golden sparkles.
 // Vladi stays in his castle by day ("Zzz" come out of its window); from 19:00 to 07:00 he walks slowly near his castle,
 // the plaza and the campfire, and now and then he stops, shakes and hugs his teddy bear.
+// Professor Hoot never walks: from 08:00 to 18:00 he stands by the door of his hollow tree reading his book, and now and then
+// turns a page or fixes his glasses; the rest of the time he sleeps inside ("Zzz" come out of its window).
+// He teaches the word of the day (js/lessons.js).
 // At night Lumi sometimes flies over to where Vladi is (more often when they may chat again), so they meet.
 // At night, when they come close to each other, Lumi and Vladi sometimes stop, look at each other and chat on their own
 // (greeting and chat phrases), which gives both a little Amistad. Tapping one of them ends that chat.
@@ -43,14 +47,31 @@ var Neighbors = (function () {
         stay: between(cfg.stay.min, cfg.stay.max),
         lastSpot: 0,
         walking: false,
-        // Only Vladi: inside his castle, on his way in, and seconds left shaking with his bubble.
-        inside: data.id === "vladi" && Time.isDay(),
+        // Vladi: inside his castle, on his way in, and seconds left shaking with his bubble.
+        // Professor Hoot: inside his hollow tree, and his reading (seconds until he turns a page or fixes his glasses,
+        // which one, and seconds left doing it).
+        inside: sleepsNow(data.id),
+        readWait: cfg.read ? between(cfg.read.min, cfg.read.max) : 0,
+        readMove: null,
+        readTime: 0,
         goingIn: false,
         scared: 0,
         fear: null,
         trailWait: 0
       };
     });
+  }
+
+  // True when this neighbor is asleep at home right now: Vladi by day, Professor Hoot out of his hours.
+  function sleepsNow(id) {
+    if (id === "vladi") return Time.isDay();
+    if (id === "hoot") return !hootAwake();
+    return false;
+  }
+
+  function hootAwake() {
+    var a = K.hoot.awake, minute = Time.get().minute;
+    return minute >= a.from && minute < a.to;
   }
 
   // ---------- Walking ----------
@@ -156,16 +177,46 @@ var Neighbors = (function () {
     return true;
   }
 
+  // Professor Hoot: in his hours he comes out by his door and reads, else he goes in to sleep (he is right by his door).
+  // True while he is inside.
+  function hootDay(n, dt) {
+    var awake = hootAwake();
+    if (n.inside && awake) {
+      n.inside = false;
+      n.x = n.cfg.home.x;
+      n.y = n.cfg.home.y;
+      n.facing = "front";
+    } else if (!n.inside && !awake) {
+      n.inside = true;
+      n.readMove = null;
+    }
+    if (n.inside) return true;
+    n.facing = "front";
+    if (n.readMove) {
+      n.readTime -= dt;
+      if (n.readTime <= 0) n.readMove = null;
+      return false;
+    }
+    n.readWait -= dt;
+    if (n.readWait <= 0) {
+      n.readMove = Math.random() < 0.6 ? "page" : "glasses";
+      n.readTime = n.cfg.read.time;
+      n.readWait = between(n.cfg.read.min, n.cfg.read.max);
+    }
+    return false;
+  }
+
   // ---------- Chatting with each other ----------
 
   function randomItem(items) {
     return items[Math.floor(Math.random() * items.length)];
   }
 
-  // True if a neighbor is with Sofía or real.fixer: talking, getting a gift, or with the social menu open over it.
+  // True if a neighbor is with Sofía or real.fixer: talking, getting a gift, teaching the word of the day,
+  // or with the social menu open over it.
   function withPlayer(n) {
     var id = n.data.id;
-    return Social.isInvolved(id) || Gifts.isInvolved(id) || Sims.menuTarget() === n;
+    return Social.isInvolved(id) || Gifts.isInvolved(id) || Lessons.isInvolved(id) || Sims.menuTarget() === n;
   }
 
   // At night, both outside, close to each other and free: they may start a chat.
@@ -248,7 +299,12 @@ var Neighbors = (function () {
         n.scared = 0;
         n.fear = null;
         n.stay = Math.max(n.stay, 1.5);
+        n.readMove = null;
         move(n, dt);
+        return;
+      }
+      if (id === "hoot") {
+        hootDay(n, dt);
         return;
       }
       move(n, dt);
@@ -621,9 +677,253 @@ var Neighbors = (function () {
     P.circle(ctx, 11.5, -27, 3, look.skin);
   }
 
+  // ---------- Professor Hoot ----------
+
+  // His big fluffy tail with its white tip, behind him: "dir" is which side it goes to (1 right, -1 left),
+  // "up" how much it curls up.
+  function drawTail(ctx, look, dir, up, sway) {
+    ctx.save();
+    ctx.translate(dir * 6, -14);
+    ctx.rotate(dir * (0.9 + sway) - up);
+    ctx.fillStyle = look.fur;
+    ctx.beginPath();
+    ctx.ellipse(0, -15, 9, 17, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = look.white;
+    ctx.beginPath();
+    ctx.ellipse(0, -28, 6.5, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // A pointed ear: orange outside and dark inside. "dx" is where it stands, "lean" which way it tips.
+  function drawEar(ctx, look, dx, lean) {
+    ctx.fillStyle = look.fur;
+    ctx.beginPath();
+    ctx.moveTo(dx - 7, -63);
+    ctx.lineTo(dx + lean * 4, -80);
+    ctx.lineTo(dx + 7, -63);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = look.furDark;
+    ctx.beginPath();
+    ctx.moveTo(dx - 3.5, -64);
+    ctx.lineTo(dx + lean * 3, -75);
+    ctx.lineTo(dx + 3.5, -64);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // The brown jacket with the white chest of fur in its opening and the red bow tie at the neck.
+  function drawJacket(ctx, look, view) {
+    P.drawTorso(ctx, look, view);
+    if (view === "back") {
+      P.strokeLine(ctx, look.jacketDark, 1.2, [[0, -38], [0, -14]]);
+      return;
+    }
+    var x = view === "side" ? 5 : 0;
+    ctx.fillStyle = look.white;
+    ctx.beginPath();
+    ctx.moveTo(x - 5, -40);
+    ctx.lineTo(x + 5, -40);
+    ctx.lineTo(x, -26);
+    ctx.closePath();
+    ctx.fill();
+    P.circle(ctx, x, -22, 1.2, look.jacketDark);
+    P.circle(ctx, x, -17, 1.2, look.jacketDark);
+    // Bow tie
+    ctx.fillStyle = look.bowTie;
+    ctx.beginPath();
+    ctx.moveTo(x, -39);
+    ctx.lineTo(x - 5.5, -42);
+    ctx.lineTo(x - 5.5, -36);
+    ctx.closePath();
+    ctx.moveTo(x, -39);
+    ctx.lineTo(x + 5.5, -42);
+    ctx.lineTo(x + 5.5, -36);
+    ctx.closePath();
+    ctx.fill();
+    P.circle(ctx, x, -39, 1.6, look.bowTie);
+  }
+
+  // Round glasses over the eyes, at "y", with "xs" the middle of each lens.
+  function drawGlasses(ctx, look, xs, y) {
+    ctx.save();
+    ctx.strokeStyle = look.glasses;
+    ctx.lineWidth = 1.3;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
+    xs.forEach(function (x) {
+      ctx.beginPath();
+      ctx.arc(x, y, 4.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
+    if (xs.length === 2) {
+      ctx.beginPath();
+      ctx.moveTo(xs[0] + 4.3, y);
+      ctx.quadraticCurveTo((xs[0] + xs[1]) / 2, y - 1.5, xs[1] - 4.3, y);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // A closed book, its cover and the edge of its pages, with its middle at (x, y).
+  function drawClosedBook(ctx, look, x, y, w, h) {
+    P.fillRound(ctx, x - w / 2, y - h / 2, w, h, 1.5, look.book);
+    P.fillRound(ctx, x - w / 2 + 1.5, y + h / 2 - 3, w - 3, 2, 1, look.page);
+    P.fillRound(ctx, x - w / 2, y - h / 2, 2.5, h, 1, look.bookDark);
+  }
+
+  // The book open in front of his chest, held with both paws. Turning a page, one page flips over.
+  function drawOpenBook(ctx, look, n) {
+    var y = -26;
+    P.fillRound(ctx, -14, y - 9, 28, 16, 2, look.book);
+    P.fillRound(ctx, -12.5, y - 8, 12, 13, 1.5, look.page);
+    P.fillRound(ctx, 0.5, y - 8, 12, 13, 1.5, look.page);
+    P.strokeLine(ctx, "rgba(74, 52, 40, 0.3)", 0.8, [[-10, y - 4], [-3, y - 4]]);
+    P.strokeLine(ctx, "rgba(74, 52, 40, 0.3)", 0.8, [[-10, y - 1], [-3, y - 1]]);
+    P.strokeLine(ctx, "rgba(74, 52, 40, 0.3)", 0.8, [[3, y - 4], [10, y - 4]]);
+    P.strokeLine(ctx, "rgba(74, 52, 40, 0.3)", 0.8, [[3, y - 1], [10, y - 1]]);
+    if (n && n.readMove === "page") {
+      // The page goes from the right to the left, over the middle.
+      var t = 1 - n.readTime / n.cfg.read.time;
+      var w = 12 * Math.cos(t * Math.PI);
+      ctx.fillStyle = look.page;
+      ctx.strokeStyle = "rgba(74, 52, 40, 0.35)";
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(0, y - 8);
+      ctx.quadraticCurveTo(w / 2, y - 11 - Math.sin(t * Math.PI) * 4, w, y - 8);
+      ctx.lineTo(w, y + 5);
+      ctx.lineTo(0, y + 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+
+  // Head from the front: orange with pointed ears, white cheeks and muzzle, a little black nose, eyes behind round glasses.
+  function drawFoxFace(ctx, look, closed) {
+    drawEar(ctx, look, -10, -1);
+    drawEar(ctx, look, 10, 1);
+    P.circle(ctx, 0, -54, 16, look.fur);
+    ctx.fillStyle = look.white;
+    ctx.beginPath();
+    ctx.moveTo(-15, -50);
+    ctx.quadraticCurveTo(-8, -52, 0, -46);
+    ctx.quadraticCurveTo(8, -52, 15, -50);
+    ctx.quadraticCurveTo(10, -38, 0, -38);
+    ctx.quadraticCurveTo(-10, -38, -15, -50);
+    ctx.closePath();
+    ctx.fill();
+    P.ellipse(ctx, 0, -46.5, 2.6, 2, look.nose);
+    ctx.strokeStyle = look.nose;
+    ctx.lineWidth = 1.2;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(-3, -42.5);
+    ctx.quadraticCurveTo(0, -40.5, 3, -42.5);
+    ctx.stroke();
+    P.drawEyes(ctx, look, -54, closed);
+  }
+
+  // Reading by his door: the book open in his paws. Fixing his glasses, one paw goes up to them.
+  // With someone (or walking), the book is closed under his arm.
+  function drawHootFront(ctx, look, step, closed, n) {
+    var reading = n && !n.inside && n.path.length === 0 && !withPlayer(n);
+    drawTail(ctx, look, 1, 0, Math.sin(n ? n.breath * 0.7 : 0) * 0.08);
+    P.drawLegs(ctx, look, step, "front");
+    drawJacket(ctx, look, "front");
+    var fixing = reading && n.readMove === "glasses";
+    var lift = fixing ? Math.sin(Math.PI * (1 - n.readTime / n.cfg.read.time)) : 0;
+    if (reading) {
+      // Sleeves bent toward the middle, holding the book; the right paw goes up to the glasses when fixing them.
+      P.fillRound(ctx, -18, -38, 6, 12, 3, look.jacket);
+      P.fillRound(ctx, -16, -30, 8, 6, 3, look.jacket);
+      drawOpenBook(ctx, look, n);
+      P.circle(ctx, -11, -26, 3, look.fur);
+      if (fixing) {
+        P.fillRound(ctx, 12, -38 - lift * 6, 6, 12, 3, look.jacket);
+      } else {
+        P.fillRound(ctx, 12, -38, 6, 12, 3, look.jacket);
+        P.fillRound(ctx, 8, -30, 8, 6, 3, look.jacket);
+        P.circle(ctx, 11, -26, 3, look.fur);
+      }
+    } else {
+      // The left arm down, the right one holding the closed book against his side.
+      P.fillRound(ctx, -18, -38, 6, 16, 3, look.jacket);
+      P.circle(ctx, -15, -21, 3, look.fur);
+      drawClosedBook(ctx, look, 16, -27, 8, 15);
+      P.fillRound(ctx, 12, -38, 6, 14, 3, look.jacket);
+      P.circle(ctx, 15, -24, 3, look.fur);
+    }
+    drawFoxFace(ctx, look, closed);
+    drawGlasses(ctx, look, [-5.5, 5.5], fixing ? -54 - lift * 1.5 : -54);
+    if (fixing) P.circle(ctx, 9, -50 - lift * 3, 3, look.fur);
+  }
+
+  // From behind: the ears, the back of his orange head, his jacket and the big tail in front of it all.
+  function drawHootBack(ctx, look, step) {
+    P.drawLegs(ctx, look, step, "back");
+    drawJacket(ctx, look, "back");
+    P.fillRound(ctx, -18, -38, 6, 16, 3, look.jacket);
+    P.fillRound(ctx, 12, -38, 6, 16, 3, look.jacket);
+    drawEar(ctx, look, -10, -1);
+    drawEar(ctx, look, 10, 1);
+    P.circle(ctx, 0, -54, 16, look.fur);
+    P.ellipse(ctx, 0, -44, 9, 4, look.furDark);
+    drawTail(ctx, look, 1, 0.9, 0);
+  }
+
+  // From the side, looking right: a long snout with the nose at its tip, one ear, the tail behind and the book under his arm.
+  function drawHootSide(ctx, look, step, closed) {
+    drawTail(ctx, look, -1, -0.2, 0);
+    P.drawLegs(ctx, look, step, "side");
+    drawJacket(ctx, look, "side");
+    ctx.fillStyle = look.fur;
+    ctx.beginPath();
+    ctx.moveTo(-3, -80);
+    ctx.lineTo(-10, -63);
+    ctx.lineTo(4, -64);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = look.furDark;
+    ctx.beginPath();
+    ctx.moveTo(-3.5, -75);
+    ctx.lineTo(-7, -65);
+    ctx.lineTo(1, -65);
+    ctx.closePath();
+    ctx.fill();
+    P.circle(ctx, 0, -54, 16, look.fur);
+    // Snout, white underneath, with the nose at the tip
+    ctx.fillStyle = look.fur;
+    ctx.beginPath();
+    ctx.moveTo(10, -58);
+    ctx.lineTo(24, -48);
+    ctx.lineTo(9, -44);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = look.white;
+    ctx.beginPath();
+    ctx.moveTo(2, -46);
+    ctx.lineTo(23, -47);
+    ctx.quadraticCurveTo(12, -38, 2, -40);
+    ctx.closePath();
+    ctx.fill();
+    P.circle(ctx, 23.5, -48.5, 2.3, look.nose);
+    P.drawEye(ctx, look, 8, -55, closed);
+    drawGlasses(ctx, look, [8.5], -55);
+    P.strokeLine(ctx, look.glasses, 1.1, [[4.2, -55.5], [-6, -57]]);
+    // The book under his arm, and the arm over it
+    drawClosedBook(ctx, look, 1, -28, 12, 15);
+    P.fillRound(ctx, -3, -38, 6, 16, 3, look.jacket);
+    P.circle(ctx, 0, -21, 3, look.fur);
+  }
+
   var BODIES = {
     lumi: { front: drawLumiFront, back: drawLumiBack, side: drawLumiSide },
-    vladi: { front: drawVladiFront, back: drawVladiBack, side: drawVladiSide }
+    vladi: { front: drawVladiFront, back: drawVladiBack, side: drawVladiSide },
+    hoot: { front: drawHootFront, back: drawHootBack, side: drawHootSide }
   };
 
   // How high over the grass it is drawn: Lumi floats and bobs softly; Vladi stands on the grass.
@@ -649,11 +949,12 @@ var Neighbors = (function () {
     ctx.scale(n.facing === "left" ? -k : k, k * breath);
     BODIES[n.data.id][view](ctx, n.look, walking ? n.stepPhase : 0, n.blink > 0, n);
     ctx.restore();
-    var bubble = Social.bubbleFor(n.data.id) || Gifts.bubbleFor(n.data.id) || chatBubble(n) || n.fear;
+    var bubble = Social.bubbleFor(n.data.id) || Gifts.bubbleFor(n.data.id) || Lessons.bubbleFor(n.data.id) || chatBubble(n) || n.fear;
     Sims.drawTags(ctx, n, { x: n.x, y: n.y }, time, bubble);
   }
 
-  // Drawn over the night tint: Lumi's sparkles, and the "Zzz" from the castle window while Vladi sleeps inside.
+  // Drawn over the night tint: Lumi's sparkles, and the "Zzz" from the castle window while Vladi sleeps inside
+  // (and from the window of the hollow tree while Professor Hoot does).
   function drawTop(ctx, time) {
     if (Sims.viewPlace() !== "city") return;
     ctx.save();
@@ -668,6 +969,8 @@ var Neighbors = (function () {
     ctx.restore();
     var vladi = byId("vladi");
     if (vladi && vladi.inside) Sims.drawZzz(ctx, City.castleWindow.x + 4, City.castleWindow.y - 8, time);
+    var hoot = byId("hoot");
+    if (hoot && hoot.inside) Sims.drawZzz(ctx, City.hollowWindow.x + 4, City.hollowWindow.y - 8, time);
   }
 
   // ---------- Tapping and words ----------
@@ -676,7 +979,7 @@ var Neighbors = (function () {
     return list.filter(function (n) { return n.data.id === id; })[0] || null;
   }
 
-  // The neighbors outside, in the city (Vladi inside his castle is not seen).
+  // The neighbors outside, in the city (Vladi inside his castle and Professor Hoot inside his hollow tree are not seen).
   function visible() {
     return list.filter(function (n) { return !n.inside; });
   }
@@ -697,7 +1000,7 @@ var Neighbors = (function () {
 
   // ---------- Saving ----------
 
-  // Where each one is, the way it looks, and whether Vladi is inside his castle.
+  // Where each one is, the way it looks, and whether Vladi (or Professor Hoot) is inside his home.
   function get() {
     var out = {};
     list.forEach(function (n) {
@@ -709,7 +1012,8 @@ var Neighbors = (function () {
   var FACINGS = ["front", "back", "left", "right"];
 
   // Used when loading a saved game. A neighbor missing from it (an old saved game) starts by its home,
-  // with Vladi inside his castle by day and outside by its door at night.
+  // with Vladi inside his castle by day and outside by its door at night. Professor Hoot is always by his door
+  // (or inside, out of his hours), whatever was saved.
   function set(saved) {
     list.forEach(function (n) {
       var s = saved && typeof saved === "object" ? saved[n.data.id] : null;
@@ -718,7 +1022,13 @@ var Neighbors = (function () {
       n.goingIn = false;
       n.scared = 0;
       n.fear = null;
-      if (s && typeof s === "object" && typeof s.x === "number" && typeof s.y === "number" && City.isWalkable(s.x, s.y)) {
+      n.readMove = null;
+      if (n.data.id === "hoot") {
+        n.x = n.cfg.home.x;
+        n.y = n.cfg.home.y;
+        n.facing = "front";
+        n.inside = sleepsNow("hoot");
+      } else if (s && typeof s === "object" && typeof s.x === "number" && typeof s.y === "number" && City.isWalkable(s.x, s.y)) {
         var spot = Path.free("city", s.x, s.y);
         n.x = spot.x;
         n.y = spot.y;
@@ -728,7 +1038,7 @@ var Neighbors = (function () {
         n.x = n.cfg.home.x;
         n.y = n.cfg.home.y;
         n.facing = "front";
-        n.inside = n.data.id === "vladi" && Time.isDay();
+        n.inside = sleepsNow(n.data.id);
       }
     });
   }

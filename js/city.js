@@ -1,6 +1,7 @@
 // The fantasy city map seen from above: Sofía's house, the river and its bridge, the forest, the plaza,
 // real.fixer's tent with its campfire and fireflies on the other side of the bridge, and Sofía's garden next to her house.
-// The neighbors' homes too: Lumi's treehouse on a big forest tree and Vladi's little castle, seen only from outside.
+// The neighbors' homes too: Lumi's treehouse on a big forest tree, Vladi's little castle and Professor Hoot's hollow tree
+// in the forest (with the chalkboard by its door that shows the word of the day), seen only from outside.
 // Berries, mushrooms and crystals from js/gather.js grow in the forest.
 // At night the campfire, the house windows and the fireflies shine.
 // The decorations that goals give (js/goals.js) are drawn here too: real.fixer's guitar and moon lantern by his tent,
@@ -27,7 +28,7 @@ var City = (function () {
   // Round trees of the forest, at the top left, as [x, y, radius].
   var TREES = [
     [50, 60, 32], [130, 40, 36], [230, 70, 34], [330, 45, 30], [420, 80, 32],
-    [80, 150, 38], [185, 165, 34], [290, 150, 38], [395, 175, 30], [470, 210, 26],
+    [80, 150, 38], [185, 165, 34], [290, 150, 38], [395, 175, 30],
     [45, 245, 30], [140, 260, 36], [245, 250, 30], [350, 270, 32], [60, 340, 26]
   ];
   // The ground of the forest, around the trees and its sign.
@@ -37,8 +38,11 @@ var City = (function () {
   // How close a character's feet may get to solid things, and the radius of the fountain's stone rim.
   var CLEAR = 14;
   var FOUNTAIN = 42;
-  // The neighbors' homes: Lumi's treehouse (with its rope ladder) and Vladi's castle.
+  // The neighbors' homes: Lumi's treehouse (with its rope ladder), Vladi's castle, and Professor Hoot's hollow tree
+  // (its trunk is solid, and its round crown like the other trees) with the chalkboard by its door.
   var TREEHOUSE = CONFIG.neighbors.houses.treehouse, CASTLE = CONFIG.neighbors.houses.castle;
+  var HOLLOW = CONFIG.neighbors.houses.hollowTree, CHALKBOARD = CONFIG.neighbors.houses.chalkboard;
+  var CROWN = { x: HOLLOW.x + HOLLOW.w / 2, y: HOLLOW.y + 34, r: 34 };
 
   // Where a character stands outside, in front of the house door.
   var doorSpot = { x: HOUSE.x + HOUSE.w / 2, y: HOUSE.y + HOUSE.h + 35 };
@@ -140,8 +144,8 @@ var City = (function () {
   }
 
   // True if a character cannot stand here: off the map, in the water, or on something solid
-  // (the house, the fountain, the tent, the campfire, a tree, the garden fence, the rope ladder of the treehouse
-  // or Vladi's castle, and the snowman on snowy days). Used by js/path.js.
+  // (the house, the fountain, the tent, the campfire, a tree, the garden fence, the rope ladder of the treehouse,
+  // Vladi's castle, Professor Hoot's hollow tree and its chalkboard, and the snowman on snowy days). Used by js/path.js.
   // Small things (coins, berries, mushrooms, crystals, the flowers in the plots and the log) are not solid.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
@@ -150,6 +154,8 @@ var City = (function () {
     if (Weather.snowmanBlocks(x, y, CLEAR)) return true;
     if (inBox(x, y, grow(TENT, CLEAR)) || inBox(x, y, grow(FIRE, 10))) return true;
     if (inBox(x, y, grow(CASTLE, CLEAR)) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return true;
+    if (inBox(x, y, grow(HOLLOW.trunk, CLEAR)) || inBox(x, y, grow(CHALKBOARD, 4))) return true;
+    if (near(x, y, CROWN.x, CROWN.y, CROWN.r * 0.6 + CLEAR)) return true;
     for (var t = 0; t < TREES.length; t++) {
       if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] * 0.6 + CLEAR)) return true;
     }
@@ -183,6 +189,7 @@ var City = (function () {
     if (inBox(x, y, { x: FIRE.x - 25, y: FIRE.y - 25, w: FIRE.w + 50, h: FIRE.h + 50 })) return false;
     if (inBox(x, y, { x: SEAT.x - 45, y: SEAT.y - 40, w: 90, h: 70 })) return false;
     if (inBox(x, y, grow(TREEHOUSE, 20)) || inBox(x, y, { x: CASTLE.x - 25, y: CASTLE.y - 60, w: CASTLE.w + 50, h: CASTLE.h + 85 })) return false;
+    if (inBox(x, y, grow(HOLLOW, 20)) || inBox(x, y, grow(CHALKBOARD, 20))) return false;
     for (var t = 0; t < TREES.length; t++) {
       if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] + 20)) return false;
     }
@@ -683,8 +690,8 @@ var City = (function () {
       ctx.fillRect(wx, WINDOW_Y + 10, 26, 2);
     });
 
-    // The round window of the treehouse and the arched window of the castle, lit in yellow.
-    [[TREE_WINDOW, 6, 30], [CASTLE_WINDOW, 7, 34]].forEach(function (wnd) {
+    // The round window of the treehouse, the arched window of the castle and the little window of the hollow tree, lit in yellow.
+    [[TREE_WINDOW, 6, 30], [CASTLE_WINDOW, 7, 34], [HOLLOW_WINDOW, 5, 28]].forEach(function (wnd) {
       var p = wnd[0];
       ctx.globalCompositeOperation = "lighter";
       ctx.globalAlpha = 1;
@@ -931,6 +938,138 @@ var City = (function () {
   // Where the two lanterns stand, and the window of the castle.
   var LANTERNS = [CASTLE.x + CASTLE.w / 2 - 30, CASTLE.x + CASTLE.w / 2 + 30];
   var CASTLE_WINDOW = { x: CASTLE.x + CASTLE.w / 2, y: CASTLE.y + 22 + 22 };
+
+  // Professor Hoot's hollow tree: a thick trunk with roots, a round wooden door at its foot, a little round window,
+  // and a big round crown on top (with snow on it on snowy days).
+  function drawHollowTree(ctx, highlight) {
+    var T = HOLLOW.trunk, cx = T.x + T.w / 2, bottom = T.y + T.h;
+    var bark = "#8B5E3C", barkDark = "#6B4429";
+
+    // Shadow on the grass, then the trunk getting wider at the roots.
+    ctx.save();
+    ctx.fillStyle = "rgba(74, 52, 40, 0.22)";
+    ctx.beginPath();
+    ctx.ellipse(cx + 6, bottom + 2, T.w / 2 + 14, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = bark;
+    ctx.beginPath();
+    ctx.moveTo(T.x - 8, bottom);
+    ctx.quadraticCurveTo(T.x + 2, bottom - 6, T.x + 4, bottom - 18);
+    ctx.lineTo(T.x + 8, T.y);
+    ctx.lineTo(T.x + T.w - 8, T.y);
+    ctx.lineTo(T.x + T.w - 4, bottom - 18);
+    ctx.quadraticCurveTo(T.x + T.w - 2, bottom - 6, T.x + T.w + 8, bottom);
+    ctx.closePath();
+    ctx.fill();
+    // Lines of the bark and a knot
+    ctx.save();
+    ctx.strokeStyle = barkDark;
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    [[T.x + 12, T.y + 10, T.x + 10, bottom - 22], [T.x + T.w - 12, T.y + 14, T.x + T.w - 9, bottom - 20]].forEach(function (l) {
+      ctx.beginPath();
+      ctx.moveTo(l[0], l[1]);
+      ctx.quadraticCurveTo(l[0] + 3, (l[1] + l[3]) / 2, l[2], l[3]);
+      ctx.stroke();
+    });
+    ctx.beginPath();
+    ctx.ellipse(T.x + T.w - 13, T.y + 26, 3, 4.5, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // The round wooden door, with its planks and a golden knob
+    var dr = 13, dy = bottom - 17;
+    ctx.fillStyle = C.darkBrown;
+    ctx.beginPath();
+    ctx.moveTo(cx - dr - 2, bottom);
+    ctx.lineTo(cx - dr - 2, dy);
+    ctx.arc(cx, dy, dr + 2, Math.PI, 0);
+    ctx.lineTo(cx + dr + 2, bottom);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#C99A6E";
+    ctx.beginPath();
+    ctx.moveTo(cx - dr, bottom);
+    ctx.lineTo(cx - dr, dy);
+    ctx.arc(cx, dy, dr, Math.PI, 0);
+    ctx.lineTo(cx + dr, bottom);
+    ctx.closePath();
+    ctx.fill();
+    ctx.save();
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.35)";
+    ctx.lineWidth = 1.4;
+    [-6, 0, 6].forEach(function (dx) {
+      ctx.beginPath();
+      ctx.moveTo(cx + dx, bottom - 1);
+      ctx.lineTo(cx + dx, dy - Math.sqrt(dr * dr - dx * dx) + 2);
+      ctx.stroke();
+    });
+    ctx.restore();
+    circle(ctx, cx + 8, bottom - 13, 1.8, "#E2B44B");
+
+    // The little round window, with its cross
+    circle(ctx, HOLLOW_WINDOW.x, HOLLOW_WINDOW.y, 7, C.darkBrown);
+    circle(ctx, HOLLOW_WINDOW.x, HOLLOW_WINDOW.y, 5, "#BFE0EA");
+    ctx.fillStyle = C.darkBrown;
+    ctx.fillRect(HOLLOW_WINDOW.x - 0.75, HOLLOW_WINDOW.y - 5, 1.5, 10);
+    ctx.fillRect(HOLLOW_WINDOW.x - 5, HOLLOW_WINDOW.y - 0.75, 10, 1.5);
+
+    // The big round crown, wider than the other trees, with a few leaves of light
+    var c = CROWN;
+    ctx.save();
+    ctx.fillStyle = "rgba(74, 52, 40, 0.18)";
+    ctx.beginPath();
+    ctx.ellipse(c.x + 5, c.y + c.r * 0.6, c.r + 10, c.r * 0.45, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    [[-26, 8, 22], [26, 8, 22], [0, 0, c.r]].forEach(function (b) {
+      circle(ctx, c.x + b[0], c.y + b[1], b[2], C.cityGrassDark);
+    });
+    circle(ctx, c.x - 8, c.y - 8, c.r * 0.62, C.sage);
+    circle(ctx, c.x + 20, c.y + 4, 11, C.sage);
+    circle(ctx, c.x - 14, c.y - 15, c.r * 0.22, C.cityGrassLight);
+    Weather.roofSnow(ctx, function () {
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r - 2, 1.08 * Math.PI, 1.92 * Math.PI);
+      ctx.quadraticCurveTo(c.x, c.y - c.r * 0.45, c.x - (c.r - 2) * Math.cos(0.08 * Math.PI), c.y - (c.r - 2) * Math.sin(0.08 * Math.PI));
+      ctx.closePath();
+    });
+
+    if (highlight) drawThingHighlight(ctx, HOLLOW);
+  }
+
+  // The little window of the hollow tree, for its light at night and the "Zzz" while Professor Hoot sleeps.
+  var HOLLOW_WINDOW = { x: HOLLOW.trunk.x + 15, y: HOLLOW.trunk.y + 17 };
+
+  // The chalkboard by the door of the hollow tree, on two little legs, with the word of the day written in chalk.
+  function drawChalkboard(ctx, highlight) {
+    var B = CHALKBOARD, boardH = B.h - 8;
+    fillRound(ctx, B.x + 6, B.y + boardH - 2, 3, 10, 1.5, C.darkBrown);
+    fillRound(ctx, B.x + B.w - 9, B.y + boardH - 2, 3, 10, 1.5, C.darkBrown);
+    withShadow(ctx, function () {
+      fillRound(ctx, B.x, B.y, B.w, boardH, 4, C.wood);
+    });
+    fillRound(ctx, B.x + 3, B.y + 3, B.w - 6, boardH - 6, 2, "#3D4F45");
+    var word = Lessons.boardWord();
+    var size = 11;
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "italic 700 " + size + "px " + CONFIG.fontFamily;
+    var room = B.w - 10;
+    var w = ctx.measureText(word).width;
+    if (w > room) {
+      size = Math.max(6, size * room / w);
+      ctx.font = "italic 700 " + size.toFixed(1) + "px " + CONFIG.fontFamily;
+    }
+    ctx.fillStyle = "rgba(250, 248, 240, 0.92)";
+    ctx.fillText(word, B.x + B.w / 2, B.y + boardH / 2 + 0.5);
+    ctx.restore();
+    // A little stick of chalk on the frame
+    fillRound(ctx, B.x + B.w - 14, B.y + boardH - 3, 8, 2.5, 1.2, "#FBF7EE");
+    if (highlight) drawThingHighlight(ctx, B);
+  }
 
   // A little lantern: a dark frame with a warm flame that flickers a little.
   function drawLantern(ctx, x, y, time) {
@@ -1389,6 +1528,8 @@ var City = (function () {
       if (f.id === highlightId) drawThingHighlight(ctx, f);
     });
     TREES.forEach(function (t, i) { drawTree(ctx, t[0], t[1], t[2], i); });
+    drawHollowTree(ctx, highlightId === "hollowTree");
+    drawChalkboard(ctx, highlightId === "chalkboard");
     drawTreehouse(ctx, highlightId === "treehouse");
     if (Goals.isMet("lumi", 1)) drawFairyLights(ctx, time, false);
     if (Goals.isMet("lumi", 0)) drawCrystalLantern(ctx, false);
@@ -1409,6 +1550,7 @@ var City = (function () {
     label(ctx, "Jardín de Sofía", fence.x + fence.w / 2, fence.y - 16, 16);
     label(ctx, "Casa de Lumi", TREEHOUSE.x + TREEHOUSE.w / 2, TREEHOUSE.y - 14, 16);
     label(ctx, "Castillito de Vladi", CASTLE.x + CASTLE.w / 2, CASTLE.y - 38, 16);
+    label(ctx, "Árbol de Professor Hoot", HOLLOW.x + HOLLOW.w / 2 - 6, HOLLOW.y - 12, 16);
   }
 
   // ---------- What is under the mouse ----------
@@ -1421,9 +1563,12 @@ var City = (function () {
     return x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
   }
 
-  // "treehouse" or "castle" if the spot is on one of the neighbors' homes (roofs and ladder included), or null.
+  // "treehouse", "castle", "chalkboard" or "hollowTree" if the spot is on one of the neighbors' homes
+  // (roofs and ladder included) or on Professor Hoot's chalkboard, or null.
   function neighborHomeAt(x, y) {
     if (inBox(x, y, TREEHOUSE)) return "treehouse";
+    if (inBox(x, y, CHALKBOARD)) return "chalkboard";
+    if (inBox(x, y, HOLLOW)) return "hollowTree";
     if (inBox(x, y, { x: CASTLE.x, y: CASTLE.y - 22, w: CASTLE.w, h: CASTLE.h + 22 })) return "castle";
     return null;
   }
@@ -1470,6 +1615,7 @@ var City = (function () {
     houseAt: houseAt,
     neighborHomeAt: neighborHomeAt,
     castleWindow: CASTLE_WINDOW,
+    hollowWindow: HOLLOW_WINDOW,
     isOpenGrass: isOpenGrass,
     isForestFloor: isForestFloor,
     riverAt: riverAt,

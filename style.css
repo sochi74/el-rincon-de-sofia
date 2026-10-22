@@ -278,6 +278,22 @@ h1 {
   background: #C8664A;
 }
 
+/* "📖 Palabra del día" for Professor Hoot, golden; faded once it was done today. */
+#social-menu button[data-type="lesson"] {
+  background: #E2B44B;
+  color: #4A3428;
+}
+
+#social-menu button[data-type="lesson"]:hover:not(:disabled) {
+  background: #C8664A;
+  color: #F5EBDD;
+}
+
+#social-menu button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 #seed-menu,
 #cook-menu {
   position: fixed;
@@ -329,7 +345,8 @@ h1 {
 }
 
 #backpack,
-#goals {
+#goals,
+#diary {
   position: fixed;
   right: 16px;
   bottom: 16px;
@@ -344,7 +361,8 @@ h1 {
 }
 
 #backpack[hidden],
-#goals[hidden] {
+#goals[hidden],
+#diary[hidden] {
   display: none;
 }
 
@@ -358,7 +376,8 @@ h1 {
 }
 
 #backpack-close,
-#goals-close {
+#goals-close,
+#diary-close {
   width: 32px;
   height: 32px;
   font: inherit;
@@ -430,7 +449,8 @@ h1 {
 
 .backpack-row button:hover:not(:disabled),
 #backpack-close:hover,
-#goals-close:hover {
+#goals-close:hover,
+#diary-close:hover {
   background: #C8664A;
 }
 
@@ -497,6 +517,7 @@ h1 {
 .character-button,
 #backpack-button,
 #goals-button,
+#diary-button,
 #decorate-button,
 #pause-button,
 #reset-button {
@@ -523,6 +544,7 @@ h1 {
 .character-button:hover,
 #backpack-button:hover,
 #goals-button:hover,
+#diary-button:hover,
 #decorate-button:hover,
 #pause-button:hover:not(:disabled),
 #reset-button:hover {
@@ -542,6 +564,7 @@ h1 {
 .character-button:active,
 #backpack-button:active,
 #goals-button:active,
+#diary-button:active,
 #decorate-button:active,
 #pause-button:active:not(:disabled),
 #reset-button:active {
@@ -631,6 +654,132 @@ h1 {
     opacity: 1;
     transform: translateX(-50%) scale(1);
   }
+}
+
+/* The Diario de palabras: how many words, then "🎓 Del profe" and "🔍 Descubiertas", with a scroll when there are many. */
+#diary {
+  width: min(400px, calc(100vw - 32px));
+  max-height: min(520px, calc(100vh - 32px));
+}
+
+.diary-count {
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+#diary-list {
+  display: grid;
+  gap: 6px;
+}
+
+.diary-section {
+  margin-top: 4px;
+  font-weight: 700;
+  color: #C8664A;
+}
+
+.diary-row {
+  display: grid;
+  gap: 2px;
+  padding: 5px 10px;
+  background: #FFFDF8;
+  border: 2px solid #EAD9C4;
+  border-radius: 12px;
+}
+
+.diary-example {
+  font-size: 0.85rem;
+  color: #6E5A4A;
+}
+
+/* "📖 ¡Palabra nueva!" floating up by the cursor. */
+.word-pop {
+  position: fixed;
+  z-index: 7;
+  transform: translate(-50%, -100%);
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #4A3428;
+  background: #F5EBDD;
+  border: 2px solid #E2B44B;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: word-pop 1.6s ease-out forwards;
+}
+
+@keyframes word-pop {
+  0% {
+    opacity: 0;
+    margin-top: 6px;
+  }
+  15% {
+    opacity: 1;
+    margin-top: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    margin-top: -36px;
+  }
+}
+
+/* The question of the word of the day: at the bottom in the middle, with its 3 answers. */
+#lesson-quiz {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  z-index: 6;
+  max-width: calc(100vw - 32px);
+  padding: 12px 18px;
+  text-align: center;
+  color: #4A3428;
+  background: #F5EBDD;
+  border: 4px solid #E2B44B;
+  border-radius: 20px;
+  box-shadow: 0 5px 0 #B8862E;
+  transform: translateX(-50%);
+}
+
+#lesson-quiz[hidden] {
+  display: none;
+}
+
+#lesson-quiz p {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.lesson-answers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.lesson-answers button {
+  padding: 6px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: #F5EBDD;
+  background: #B07A4F;
+  border: 3px solid #4A3428;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #4A3428;
+  cursor: pointer;
+}
+
+.lesson-answers button:hover {
+  background: #C8664A;
+}
+
+.lesson-answers button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #4A3428;
 }
 
 /* Modo decorar: the sign at the top with its buttons, and the question before putting everything back. */

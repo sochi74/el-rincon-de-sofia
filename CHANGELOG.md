@@ -21,8 +21,22 @@
 - En pantallas anchas, con el panel abierto la casa y la ciudad se ven más chicas (usan el espacio al lado del panel); al cerrarlo con ✕ vuelven a su tamaño.
 - En pantallas anchas, el cartel de Modo decorar (arriba a la derecha) puede tapar un poquito la esquina de arriba a la derecha de la casa o la ciudad.
 - La ventanita 🌟 Metas elige su lugar al abrirse; si después el personaje camina hasta ahí, puede quedar tapado.
-- Las palabras Clima · weather y Charco · puddle ya están en js/words.js, pero todavía no aparecen al pasar el mouse por ningún lado.
+- Las palabras Clima · weather, Charco · puddle y Zorro · fox ya están en js/words.js, pero todavía no aparecen solas al pasar el mouse (Professor Hoot muestra "Professor Hoot · fox").
 - El muñeco de nieve se dibuja debajo de los personajes: si alguien camina justo detrás de él, se ve por encima del muñeco.
+- En el 📖 Diario, las palabras de los vecinos se guardan como aparecen en su etiqueta (por ejemplo "Lumi · fairy" o "Professor Hoot · fox").
+- Professor Hoot no pasea ni charla solo con Lumi y Vladi; nadie va solo a aprender la palabra del día.
+
+## 2026-10-22 · Hito 22: 📖 Vecino profe y diario de palabras
+- Sofía cambió la regla fija de los vecinos: ahora son Lumi, Vladi y Professor Hoot (siguen siendo dos jugables).
+- 🦊 Ficha nueva en CHARACTERS.md y js/characters.js: Professor Hoot, zorro bibliotecario (Tranquilo, Creativo, Tímido; le encanta el Pescado con hongos; todavía sin metas). Todos tienen Amistad 0 con él.
+- 🌳 Su casa: en el bosque, a la derecha de la Casa de Lumi, un árbol grande y hueco (en lugar de un árbol chico que estaba ahí) con puerta redonda de madera, ventanita que brilla de noche y, al lado, una pizarrita que muestra en tiza la palabra del día. Cartel "Árbol de Professor Hoot". Es obstáculo, no tapa caminos ni carteles, y las monedas y las cosas del bosque no aparecen encima. Con nieve, su copa se pone blanca. Uno de los lugares de paseo de Lumi se corrió un poquito para no quedar encima de él.
+- De 08:00 a 18:00 está parado junto a su puerta leyendo su libro abierto, y a veces pasa una página o se acomoda los lentes. El resto del tiempo duerme adentro y salen "Zzz" de la ventana. No pasea. Se dibuja de frente, de espalda y de costado, parpadea y respira; Pausa lo congela.
+- 📖 Palabra del día: con Sofía o real.fixer seleccionado en la ciudad, tocar a Professor Hoot abre el menú social con "📖 Palabra del día" arriba. El personaje camina hasta él, se miran, y él dice "Today's word is: …!" y la frase de ejemplo. Después una ventanita pregunta "¿Qué significa '…'?" con 3 respuestas en orden al azar. Bien: "Great job!", +10 🪙 flotando y el "cling". Mal: "Almost! It means …" sin monedas. Las dos veces la palabra entra al Diario. Una vez por día del juego; después la opción se ve apagada con "Vuelve mañana 🌙". Las 20 palabras van en orden (en js/words.js) y al terminar vuelven a empezar.
+- Charlar, contar un chiste, chocar los cinco, regalar (hasta 3 regalos por día) y la línea "Amistad con Professor Hoot" funcionan como con Lumi y Vladi.
+- 📖 Diario: botón "📖 Diario" en el panel; la ventanita se turna con la Mochila y Metas y se cierra con ✕. Muestra "Palabras aprendidas: N", "🎓 Del profe" (con la frase de ejemplo) y "🔍 Descubiertas", las más nuevas arriba, con scroll. La primera vez que aparece la etiqueta de una palabra, entra a Descubiertas y flota "📖 ¡Palabra nueva!" cerca del cursor. Una palabra del profe no se repite en Descubiertas.
+- Guardado: la partida recuerda la posición de la lista y si ya se hizo la palabra de hoy (y la Amistad y los regalos de Professor Hoot). El Diario se guarda aparte y "Reiniciar" no lo borra. Una partida vieja carga con Professor Hoot junto a su árbol y el Diario vacío.
+- Palabras nuevas en js/words.js: Zorro · fox (FOKS), Profesor · teacher (TÍI-cher) (sobre "🎓 Del profe"), Diario · diary (DÁI-a-ri) (en el botón), Palabra · word (UÓRD) (en "📖 Palabra del día"), Árbol hueco · hollow tree (JÓ-lou TRÍI) y Pizarra · chalkboard (CHÓK-bord). Al pasar el mouse por él: "Professor Hoot · fox (FOKS)".
+- Archivo nuevo: js/lessons.js (la palabra del día y el Diario), en el orden de scripts entre goals y pet.
 
 ## 2026-10-22 · Hito 21: 🌧️ Clima y magia
 - Cada día del juego, a las 06:00, se elige el clima del día: ☀️ Soleado 50 %, 🌧️ Lluvia 20 %, 🌫️ Niebla mágica 20 % o ❄️ Nieve 10 %, y dura hasta las 06:00 siguiente. La partida nueva empieza con el Día 1 soleado.

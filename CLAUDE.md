@@ -8,7 +8,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - Funciona igual con doble clic en index.html (file://) y en GitHub Pages: <script src> clásicos en orden fijo, sin módulos ES, sin fetch, todos los datos dentro de archivos .js.
 - Nombres de archivo en minúsculas; referencias con las mismas mayúsculas exactas.
 - Nunca usar "Sims", "The Sims", nombres o logos de EA, Simlish ni arte de EA.
-- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi y Vladi (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad.
+- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi, Vladi y Professor Hoot (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad.
 - Guardado (Hito 6): localStorage dentro de try/catch; el juego funciona aunque falle.
 - Repo público; GitHub Pages desde main, carpeta raíz.
 
@@ -17,14 +17,14 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - style.css: estilos
 - .nojekyll: GitHub Pages sin Jekyll
 - js/config.js: colores, tamaños y constantes
-- js/words.js: palabras en español e inglés con pronunciación
+- js/words.js: palabras en español e inglés con pronunciación, y las palabras que enseña Professor Hoot
 - js/characters.js: datos de los personajes
 - js/time.js: reloj del juego, día y noche
 - js/house.js: dibujo de la casa y los muebles
 - js/city.js: mapa de la ciudad y sus lugares
 - js/coins.js: monedas mágicas y monedas brillantes
 - js/sims.js: dibujo, selección y movimiento
-- js/neighbors.js: los vecinos Lumi y Vladi: dibujo, paseo y horarios
+- js/neighbors.js: los vecinos Lumi, Vladi y Professor Hoot: dibujo, paseo y horarios
 - js/ui.js: panel
 - js/main.js: arranque y bucle del juego
 - js/needs.js: necesidades y cómo bajan
@@ -38,11 +38,12 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/path.js: caminos que esquivan obstáculos
 - js/gifts.js: regalos desde la mochila
 - js/goals.js: sueños y metas de cada personaje, su avance, la celebración y la ventana 🌟 Metas
+- js/lessons.js: la palabra del día de Professor Hoot (con su pregunta) y el 📖 Diario de palabras
 - js/pet.js: Krohna, el gatito de real.fixer
 - js/audio.js: sonidos y música creados con código
 - js/decorate.js: Modo decorar: mover y girar muebles y decoraciones, y volver a como estaba
 - js/weather.js: el clima de cada día (sol, lluvia con arcoíris, niebla mágica, nieve), sus efectos en el juego y su dibujo
-- Orden de scripts: config, words, characters, time, weather, house, city, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, pet, audio, decorate, ui, save, main
+- Orden de scripts: config, words, characters, time, weather, house, city, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

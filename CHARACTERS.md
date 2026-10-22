@@ -3,7 +3,7 @@
 ## Campos de cada personaje
 Nombre y apodo · Tipo (jugable o vecino) · Apariencia (tono de piel, pelo, vello facial, ropa de arriba, ropa de abajo, accesorio distintivo, detalles) · Rasgos (3) · Actividad favorita (da ❤️ y ×1.25) · Frase típica · Idioma de diálogo · Frases (saludo, charlar, chiste, chocar los cinco, hambre, sueño, aburrimiento, feliz) · Relaciones (amistad inicial 0) · Regalos favoritos (dan Amistad +15) · Mascota · Metas (2, en orden, cada una con su decoración)
 
-Tipos: los jugables (Sofía y real.fixer) se seleccionan y tienen necesidades. Los vecinos (Lumi y Vladi) viven en la ciudad, pasean solos y no se seleccionan.
+Tipos: los jugables (Sofía y real.fixer) se seleccionan y tienen necesidades. Los vecinos (Lumi, Vladi y Professor Hoot) viven en la ciudad, pasean solos y no se seleccionan.
 Los vecinos todavía no tienen necesidades: los rasgos que cambian necesidades y la actividad favorita se guardan en la ficha, pero aún no hacen nada. Bromista sí funciona en los chistes.
 Metas: cada uno tiene un sueño de 2 metas; primero la 1 y después la 2. Cumplir la Meta 1 da +30 🪙 y la Meta 2 +50 🪙, y cada una deja una decoración para siempre en su casa.
 
@@ -27,7 +27,7 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
   - Sueño: "I need a nap." (Necesito una siesta.) · "Low battery..." (Poca batería...)
   - Aburrimiento: "Let's do something fun." (Hagamos algo divertido.) · "So quiet in here..." (Qué silencio aquí...)
   - Feliz: "Let's fix it." (¡Vamos a arreglarlo!) · "Life is good." (La vida es buena.)
-- Relaciones: Sofía 0, Lumi 0, Vladi 0
+- Relaciones: Sofía 0, Lumi 0, Vladi 0, Professor Hoot 0
 - Regalos favoritos: Sopa de cangrejo, Cristal
 - Mascota: Krohna, un gatito naranja
 - Metas:
@@ -51,7 +51,7 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
   - Sueño: "Cinco minutitos más… y después pinto algo." · "Mis ojos se cierran solos." · "Time for a nap!" (¡Hora de la siesta!)
   - Aburrimiento: "Necesito pintar algo ya." · "¿Ponemos una peli?"
   - Feliz: "¡Pizza and a movie! Este día es perfecto." · "¡Qué lindo es mi rincón!"
-- Relaciones: real.fixer 0, Lumi 0, Vladi 0
+- Relaciones: real.fixer 0, Lumi 0, Vladi 0, Professor Hoot 0
 - Regalos favoritos: Tarta de bayas, Plato mágico
 - Mascota: ninguna
 - Metas:
@@ -75,7 +75,7 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
   - Sueño: "Hasta las hadas bostezan…" · "Un ratito en mi árbol y vuelvo."
   - Aburrimiento: "¿Y si hacemos una fiesta?" · "¡Qué quieto está todo!"
   - Feliz: "¡A volar se ha dicho!" · "¡Brillitos para todos!"
-- Relaciones: Sofía 0, real.fixer 0, Vladi 0
+- Relaciones: Sofía 0, real.fixer 0, Vladi 0, Professor Hoot 0
 - Regalos favoritos: Cristal
 - Mascota: ninguna
 - Metas:
@@ -99,9 +99,32 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
   - Sueño: "So sleepy..." (Qué sueño...) · "Five more minutes." (Cinco minutos más.)
   - Aburrimiento: "Let's play a game." (Juguemos un juego.) · "Is it dark in here?" (¿Está oscuro aquí?)
   - Feliz: "Is it dark in here? No? Great!" (¿Está oscuro aquí? ¿No? ¡Genial!) · "I'm brave! ...Mostly." (¡Soy valiente! ...Casi siempre.)
-- Relaciones: Sofía 0, real.fixer 0, Lumi 0
+- Relaciones: Sofía 0, real.fixer 0, Lumi 0, Professor Hoot 0
 - Regalos favoritos: Cangrejo
 - Mascota: ninguna
 - Metas:
   - Meta 1: 💛 "Tener un mejor amigo" (0/1): Amistad de 70 o más (💛 Mejores amigos) con cualquiera. Decoración: 🍲 una olla brillante junto a la puerta de su castillito.
   - Meta 2: 🦀 "Recibir una Sopa de cangrejo" (0/1): cuando alguien se la regala. Decoración: 💛 un corazón dorado en una de las torrecitas.
+
+## Professor Hoot
+- Nombre y apodo: Professor Hoot. Zorro bibliotecario, el profe de inglés del valle. Vive en un árbol hueco del bosque.
+- Tipo: vecino
+- Apariencia: zorro naranja con pecho y punta de la cola blancos; cola esponjosa; lentes redondos; saco café; corbatín rojo; siempre lleva un libro bajo el brazo.
+- Rasgos: 🧘 Tranquilo, 🎨 Creativo, 🙈 Tímido
+- Actividad favorita: enseñar palabras
+- Frase típica: "Every day, a new word!" (¡Cada día, una palabra nueva!)
+- Idioma de diálogo: inglés con subtítulos en español
+- Frases:
+  - Saludo: "Oh, hello there." (Oh, hola.) · "Welcome, my friend." (Bienvenida, amiga mía.)
+  - Charlar: "I just finished a wonderful book." (Acabo de terminar un libro maravilloso.) · "Words are a kind of magic." (Las palabras son un tipo de magia.)
+  - Chiste: "Why is my name Hoot? Even I don't know!" (¿Por qué me llamo Hoot? ¡Ni yo lo sé!) · "I read a book about glue. I couldn't put it down!" (Leí un libro sobre pegamento. ¡No lo podía soltar!)
+  - Chocar los cinco: "Oh! A high five. Splendid." (¡Oh! Chocar los cinco. Espléndido.) · "Well done!" (¡Bien hecho!)
+  - Hambre: "Time for a little snack." (Hora de un bocadito.) · "Fish with mushrooms, perhaps?" (¿Pescado con hongos, quizás?)
+  - Sueño: "My eyes are closing..." (Se me cierran los ojos...) · "One more page... zzz." (Una página más... zzz.)
+  - Aburrimiento: "Let's learn something new." (Aprendamos algo nuevo.) · "Have you read anything good?" (¿Leíste algo bueno?)
+  - Feliz: "Every day, a new word!" (¡Cada día, una palabra nueva!) · "What a lovely day to learn." (Qué lindo día para aprender.)
+- Relaciones: Sofía 0, real.fixer 0, Lumi 0, Vladi 0
+- Regalos favoritos: Pescado con hongos
+- Mascota: ninguna
+- Metas: todavía ninguna
+- Nota: como los otros vecinos, todavía no tiene necesidades; sus rasgos se guardan en la ficha pero aún no hacen nada.

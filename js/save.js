@@ -1,9 +1,11 @@
 // Saves and loads the game in the browser: needs, where each character is (house or city), stands and looks, friendship,
 // the day and hour of the game clock, the weather of the day (with its puddles, snow and snowman), the magic coins (the counter and the shiny coins on the ground), the garden plots,
 // the backpack (with its dishes) and the things in the forest, how many gifts each one got today,
-// where each neighbor is (and whether Vladi is inside his castle) with its friendship toward each one,
+// where each neighbor is (and whether Vladi or Professor Hoot is inside his home) with its friendship toward each one,
 // and each one's goals: the goal it is on, how far it got, and so the decorations of the goals already met,
-// and where Modo decorar put each thing and which way it is turned (in the house and in the city).
+// and where Modo decorar put each thing and which way it is turned (in the house and in the city),
+// and where Professor Hoot's list of words is (and whether today's word is done).
+// The Diario de palabras is saved apart, by js/lessons.js, so "Reiniciar" does not forget it.
 // It also remembers, apart from the game, whether the panel was open or closed.
 // Every use of localStorage is inside try/catch, so the game keeps working if it fails.
 var Save = (function () {
@@ -15,7 +17,8 @@ var Save = (function () {
   function snapshot() {
     var data = { characters: {}, clock: Time.get(), weather: Weather.get(), coins: Coins.get(), garden: Garden.get(),
       inventory: Gifts.withPending(Cooking.withPending(Inventory.get())), forest: Gather.get(), gifts: Gifts.get(),
-      neighbors: Neighbors.get(), goals: Goals.get(), layout: { house: House.getLayout(), city: City.getLayout() } };
+      neighbors: Neighbors.get(), goals: Goals.get(), lessons: Lessons.get(),
+      layout: { house: House.getLayout(), city: City.getLayout() } };
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var friendship = friendshipOf(id);
@@ -74,6 +77,8 @@ var Save = (function () {
     Weather.set(data.weather);
     // An old saved game has no goals: everyone starts on goal 1 (the Amistad ones are checked right away).
     Goals.set(data.goals);
+    // An old saved game starts Professor Hoot's words from the first one.
+    Lessons.set(data.lessons);
     // Where each thing is, before anything looks for free spots. An old saved game has everything in its first spot.
     var layout = data.layout && typeof data.layout === "object" ? data.layout : {};
     House.setLayout(layout.house);

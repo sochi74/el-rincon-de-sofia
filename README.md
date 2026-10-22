@@ -13,11 +13,12 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río. Su gatito naranja se llama Krohna 🐱
 - 🧚 Lumi: hada vecina, energética, bromista y fiestera; vive en una casita en un árbol del bosque y pasea volando. "¡A volar se ha dicho!"
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
+- 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
 
 ## Estado
-Hito 21 ✅ Clima y magia
+Hito 22 ✅ Vecino profe y diario
 
-## ⭐ Estrellas de inglés: 37
+## ⭐ Estrellas de inglés: 38
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -197,6 +198,12 @@ Hito 21 ✅ Clima y magia
 - tab: pestaña
 - loud: fuerte
 - quiet: bajito
+- fox: zorro
+- teacher: profesor
+- diary: diario
+- word: palabra
+- hollow tree: árbol hueco
+- chalkboard: pizarra
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -225,8 +232,9 @@ Hito 21 ✅ Clima y magia
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
   - Próximo regalo: a las 40 ⭐
-- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 22 📖 Vecino profe y diario de palabras (Hito 21 🌧️ Clima y magia ya está hecho).
+- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 23 📱 Jugar en el celular (Hito 22 📖 Vecino profe y diario ya está hecho).
 - Pendiente: la skill de hito.
+- Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
 - Decisiones grandes pendientes, para hablar con Robert: pixel art con imágenes; canciones reales de real.fixer (archivos de audio); jugar con amigos por internet.

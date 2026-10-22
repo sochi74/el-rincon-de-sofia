@@ -1,5 +1,5 @@
 // Gifts: from the backpack, the selected character gives something to someone in the same place: the other one,
-// or in the city a neighbor who is outside (Lumi, or Vladi at night).
+// or in the city a neighbor who is outside (Lumi, Vladi at night, or Professor Hoot from 08:00 to 18:00).
 // The giver walks to the other, says "Regalando 🎁" for a while, and the other answers: a favorite gift (see "favoriteGifts"
 // in js/characters.js) gives a lot of Amistad, the Bota vieja takes a little, and anything else gives some.
 // Each one takes a few gifts per day of the game; after that the gift goes back to the backpack. Pausa freezes it all.
@@ -7,7 +7,7 @@ var Gifts = (function () {
   var K = CONFIG.gifts;
 
   // What each one says to a boot or when it already got enough today. Sofía and Lumi speak Spanish;
-  // real.fixer and Vladi English with subtitles.
+  // real.fixer, Vladi and Professor Hoot English with subtitles.
   var LINES = {
     sofia: {
       boot: { text: "¿Una bota?…", subtitle: null },
@@ -22,6 +22,10 @@ var Gifts = (function () {
       enough: { text: "¡Ya me diste mucho hoy! 😊", subtitle: null }
     },
     vladi: {
+      boot: { text: "A boot?…", subtitle: "¿Una bota?…" },
+      enough: { text: "That's enough for today 😊", subtitle: "Ya me diste mucho hoy 😊" }
+    },
+    hoot: {
       boot: { text: "A boot?…", subtitle: "¿Una bota?…" },
       enough: { text: "That's enough for today 😊", subtitle: "Ya me diste mucho hoy 😊" }
     }
@@ -44,7 +48,7 @@ var Gifts = (function () {
   function recipients(sim) {
     if (!sim) return [];
     return Sims.list().concat(Neighbors.visible()).filter(function (s) {
-      return s !== sim && s.place === sim.place && !Social.isInvolved(s.data.id);
+      return s !== sim && s.place === sim.place && !Social.isInvolved(s.data.id) && !Lessons.isInvolved(s.data.id);
     });
   }
 

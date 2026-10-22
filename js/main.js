@@ -8,7 +8,7 @@
   var view = { width: 0, height: 0, dpr: 1, scale: 1, offsetX: 0, offsetY: 0 };
   var hovered = null;
   var hoveredHouse = false;
-  // "treehouse" or "castle" when the mouse is over a neighbor's home, else null.
+  // "treehouse", "castle", "hollowTree" or "chalkboard" when the mouse is over a neighbor's home, else null.
   var hoveredHome = null;
   // Last spot of the mouse on the screen, for the word tag (null when it is away or with a finger).
   var mouse = null;
@@ -80,6 +80,7 @@
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
     Goals.draw(ctx, time);
+    Lessons.draw(ctx);
     Decorate.draw(ctx, time);
   }
 
@@ -134,6 +135,7 @@
     Objects.update(dt);
     Social.update(dt);
     Goals.update(dt);
+    Lessons.update(dt);
     Sims.think(dt);
     Decorate.update(dt);
     Save.update(dt);
@@ -246,6 +248,7 @@
   UI.init();
   UI.setToScreen(toScreen);
   Goals.init();
+  Lessons.init();
   Decorate.init();
   Sims.init(UI.showSelected);
   Neighbors.init();
