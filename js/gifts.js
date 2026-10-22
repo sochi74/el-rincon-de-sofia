@@ -1,17 +1,27 @@
-// Gifts: from the backpack, the selected character gives something to the other one, when both are in the same place.
+// Gifts: from the backpack, the selected character gives something to someone in the same place: the other one,
+// or in the city a neighbor who is outside (Lumi, or Vladi at night).
 // The giver walks to the other, says "Regalando 🎁" for a while, and the other answers: a favorite gift (see "favoriteGifts"
 // in js/characters.js) gives a lot of Amistad, the Bota vieja takes a little, and anything else gives some.
 // Each one takes a few gifts per day of the game; after that the gift goes back to the backpack. Pausa freezes it all.
 var Gifts = (function () {
   var K = CONFIG.gifts;
 
-  // What each one says to a boot or when it already got enough today. Sofía speaks Spanish; real.fixer English with subtitles.
+  // What each one says to a boot or when it already got enough today. Sofía and Lumi speak Spanish;
+  // real.fixer and Vladi English with subtitles.
   var LINES = {
     sofia: {
       boot: { text: "¿Una bota?…", subtitle: null },
       enough: { text: "Ya me diste mucho hoy 😊", subtitle: null }
     },
     realfixer: {
+      boot: { text: "A boot?…", subtitle: "¿Una bota?…" },
+      enough: { text: "That's enough for today 😊", subtitle: "Ya me diste mucho hoy 😊" }
+    },
+    lumi: {
+      boot: { text: "¿Una bota?…", subtitle: null },
+      enough: { text: "¡Ya me diste mucho hoy! 😊", subtitle: null }
+    },
+    vladi: {
       boot: { text: "A boot?…", subtitle: "¿Una bota?…" },
       enough: { text: "That's enough for today 😊", subtitle: "Ya me diste mucho hoy 😊" }
     }
@@ -30,25 +40,31 @@ var Gifts = (function () {
     return received.counts;
   }
 
-  function otherOf(sim) {
-    return Sims.list().filter(function (s) { return s !== sim; })[0];
+  // Who can get a gift from this one now: the other one and the neighbors outside, in the same place and not talking.
+  function recipients(sim) {
+    if (!sim) return [];
+    return Sims.list().concat(Neighbors.visible()).filter(function (s) {
+      return s !== sim && s.place === sim.place && !Social.isInvolved(s.data.id);
+    });
   }
 
   function randomItem(list) {
     return list[Math.floor(Math.random() * list.length)];
   }
 
-  // True if the selected one can give something now: idle, nobody else giving, and the other one in the same place.
+  // True if the selected one can give something now: idle, nobody else giving, and someone to give it to in the same place.
   function canGive(sim) {
     if (!sim || gift || !Sims.isIdle(sim)) return false;
-    var other = otherOf(sim);
-    return !!other && other.place === sim.place && !Social.isInvolved(other.data.id);
+    return recipients(sim).length > 0;
   }
 
-  // Start a gift: the thing comes out of the backpack, the other stops what it was doing and the giver walks to it.
-  function give(sim, itemId) {
-    if (!canGive(sim) || !Inventory.take(itemId, 1)) return false;
-    var other = otherOf(sim);
+  // Start a gift to "toId" (or to the only one who can get it): the thing comes out of the backpack,
+  // the one who gets it stops what it was doing and the giver walks to it.
+  function give(sim, itemId, toId) {
+    if (!canGive(sim)) return false;
+    var can = recipients(sim);
+    var other = toId ? can.filter(function (s) { return s.data.id === toId; })[0] : can.length === 1 ? can[0] : null;
+    if (!other || !Inventory.take(itemId, 1)) return false;
     var id = other.data.id;
     Objects.cancel(id);
     Garden.cancel(id);
@@ -184,6 +200,7 @@ var Gifts = (function () {
   }
 
   return {
+    recipients: recipients,
     canGive: canGive,
     give: give,
     cancel: cancel,

@@ -3,7 +3,8 @@
 // and another one next to it changes the sound (🔊 / 🎵 / 🔇). Every button goes "pling", and selling goes "cling".
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
 // the recipe menu that opens next to the Estufa or the Fogata,
-// the backpack window with everything in it and its sell, eat and gift buttons, and the word tag that shows
+// the backpack window with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
+// the gift when more than one can), and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
   var coinsEl;
@@ -15,6 +16,7 @@ var UI = (function () {
   var seedMenu, seedButtons = [], onSeedPick = null;
   var cookMenu, cookButtons = [], campfireButton, onCookPick = null, onCookClose = null;
   var backpack, backpackList, backpackShown = null, eatButtons = [], giftButtons = [];
+  var giftMenu, onGiftPick = null;
   var current = null;
   var bars = {};
 
@@ -135,6 +137,12 @@ var UI = (function () {
       pauseButton.textContent = paused ? "▶️ Continuar" : "⏸️ Pausa";
     });
 
+    // The little menu to pick who gets a gift; its buttons are made each time it opens.
+    giftMenu = document.createElement("div");
+    giftMenu.id = "gift-menu";
+    giftMenu.hidden = true;
+    document.body.appendChild(giftMenu);
+
     backpack = document.getElementById("backpack");
     backpackList = document.getElementById("backpack-list");
     document.getElementById("backpack-button").addEventListener("click", function () {
@@ -219,10 +227,6 @@ var UI = (function () {
     update();
   }
 
-  function otherOf(character) {
-    return CHARACTERS.filter(function (c) { return c.id !== character.id; })[0];
-  }
-
   // Refresh the clock, the magic coins, and the bars and friendship of the selected character.
   function update() {
     var clock = Time.text();
@@ -239,10 +243,12 @@ var UI = (function () {
       bars[need.id].style.width = value + "%";
       bars[need.id].style.background = Needs.colorFor(value);
     });
-    var other = otherOf(current);
-    var value = Social.friendshipWith(current.id, other.id);
-    var level = Social.levelOf(value);
-    var text = "Amistad con " + other.name + ": " + Math.round(value) + " · " + level.emoji + " " + level.name;
+    // One line for each one: the other one first, then the neighbors.
+    var text = CHARACTERS.filter(function (c) { return c.id !== current.id; }).map(function (other) {
+      var value = Social.friendshipWith(current.id, other.id);
+      var level = Social.levelOf(value);
+      return "Amistad con " + other.name + ": " + Math.round(value) + " · " + level.emoji + " " + level.name;
+    }).join("\n");
     if (friendshipEl.textContent !== text) friendshipEl.textContent = text;
   }
 
@@ -303,21 +309,45 @@ var UI = (function () {
     el.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, y - h / 2)) + "px";
   }
 
-  // Close the social menu, the seed menu and the recipe menu.
+  // Open the menu to pick who gets the gift, next to a spot on the screen: one button per name.
+  // (The "Regalar" button that opens it already went "pling".)
+  function openGiftMenu(x, y, names, onPick) {
+    closeMenu();
+    onGiftPick = onPick;
+    giftMenu.textContent = "";
+    names.forEach(function (who) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.textContent = who.name;
+      button.addEventListener("click", function () {
+        var pick = onGiftPick;
+        closeMenu();
+        if (pick) pick(who.id);
+      });
+      giftMenu.appendChild(button);
+    });
+    giftMenu.hidden = false;
+    // To the left of the button, so it does not cover the backpack's list.
+    place(giftMenu, x - giftMenu.offsetWidth - 28, y);
+  }
+
+  // Close the social menu, the seed menu, the recipe menu and the gift menu.
   function closeMenu() {
     var closed = onCookClose;
     onMenuPick = null;
     onSeedPick = null;
     onCookPick = null;
     onCookClose = null;
+    onGiftPick = null;
     menu.hidden = true;
     seedMenu.hidden = true;
     cookMenu.hidden = true;
+    giftMenu.hidden = true;
     if (closed) closed();
   }
 
   function isMenuOpen() {
-    return !menu.hidden || !seedMenu.hidden || !cookMenu.hidden;
+    return !menu.hidden || !seedMenu.hidden || !cookMenu.hidden || !giftMenu.hidden;
   }
 
   // ---------- Backpack ----------
@@ -330,7 +360,7 @@ var UI = (function () {
 
   // Rebuild the list only when what is in the backpack changes (it can change while it is open, when fishing).
   // The "Comer" buttons are faded while nobody is selected or the selected one is busy.
-  // The "Regalar" buttons too, and also while the other one is in another place.
+  // The "Regalar" buttons too, and also while nobody else is in the same place.
   function updateBackpack() {
     var sim = Sims.selectedSim();
     var canEat = !!sim && Sims.isIdle(sim);
@@ -390,7 +420,8 @@ var UI = (function () {
     return button;
   }
 
-  // The selected one walks to the other and gives it one of this thing.
+  // The selected one walks to someone in the same place and gives them one of this thing.
+  // With more than one who can get it, a little menu asks who.
   function giftButton(id, canGive) {
     var button = document.createElement("button");
     button.type = "button";
@@ -398,7 +429,17 @@ var UI = (function () {
     button.className = "gift-button";
     button.disabled = !canGive;
     button.addEventListener("click", function () {
-      Gifts.give(Sims.selectedSim(), id);
+      var sim = Sims.selectedSim();
+      var can = Gifts.recipients(sim);
+      if (can.length > 1) {
+        var rect = button.getBoundingClientRect();
+        openGiftMenu(rect.left, rect.top + rect.height / 2, can.map(function (s) { return s.data; }), function (toId) {
+          Gifts.give(sim, id, toId);
+          updateBackpack();
+        });
+        return;
+      }
+      Gifts.give(sim, id);
       updateBackpack();
     });
     giftButtons.push(button);
@@ -438,7 +479,7 @@ var UI = (function () {
   // True if a spot on the screen is over the panel, the ☰ button, the backpack or an open menu,
   // so the word tag never shows what is under them.
   function coversSpot(x, y) {
-    return [panelOpen ? panel : null, menuToggle, soundToggle, backpack, menu, seedMenu, cookMenu].some(function (el) {
+    return [panelOpen ? panel : null, menuToggle, soundToggle, backpack, menu, seedMenu, cookMenu, giftMenu].some(function (el) {
       if (!el || el.hidden) return false;
       var r = el.getBoundingClientRect();
       return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;

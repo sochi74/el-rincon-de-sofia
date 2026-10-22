@@ -57,6 +57,15 @@ var WORDS = {
   bestFriends: { es: "Mejores amigos", en: "best friends", say: "BEST FRENDS" },
   kitten: { es: "Gatito", en: "kitten", say: "KÍ-ten" },
 
+  // Neighbors
+  lumi: { es: "Lumi", en: "fairy", say: "FÉ-ri" },
+  vladi: { es: "Vladi", en: "vampire", say: "VÁM-pai-er" },
+  treehouse: { es: "Casa del árbol", en: "treehouse", say: "TRÍI-jaus" },
+  castle: { es: "Castillo", en: "castle", say: "KÁ-sel" },
+  neighbor: { es: "Vecino", en: "neighbor", say: "NÉI-bor" },
+  wings: { es: "Alas", en: "wings", say: "UÍNGS" },
+  teddyBear: { es: "Osito de peluche", en: "teddy bear", say: "TÉ-di BER" },
+
   // Sound button
   sound: { es: "Sonido", en: "sound", say: "SÁUND" }
 };

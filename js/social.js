@@ -1,5 +1,6 @@
-// Social interactions between the two characters, and their friendship with its levels.
-// When the friendship goes up a level, hearts rain between the two and a sign floats over them.
+// Social interactions between two characters, and their friendship with its levels. Sofía or real.fixer can also talk
+// with a neighbor (Lumi or Vladi): the neighbor stops and waits, and only the one who starts walks to it.
+// Each pair has its own friendship. When it goes up a level, hearts rain between the two and a sign floats over them.
 var Social = (function () {
   // Friendship levels, from the highest down: the first one whose "min" the (rounded) value reaches.
   var LEVELS = [
@@ -17,7 +18,7 @@ var Social = (function () {
     highFive: { category: "highFive", social: 8, friendship: 4, favorite: "chocar los cinco", emoji: "🙌" }
   };
 
-  // Friendship of each character toward the other, from -100 to 100.
+  // Friendship of each character toward each other one, from -100 to 100.
   var friendship = {};
 
   // The conversation going on right now, or null:
@@ -88,8 +89,14 @@ var Social = (function () {
     waiting[id] = CONFIG.social.waitBubbleTime;
   }
 
+  // Next to a neighbor, on the side the one who starts comes from, as far as two who talk stand apart.
+  function besideNeighbor(a, b) {
+    var side = a.x <= b.x ? -1 : 1;
+    return Path.free(b.place, b.x + side * CONFIG.social.gap * 2, b.y);
+  }
+
   // "a" goes to talk with "b". If they are using furniture, they leave it.
-  // They only socialize when both are in the same place.
+  // They only socialize when both are in the same place. A neighbor stands still and "a" walks to it.
   function start(a, b, typeId) {
     if (a.place !== b.place) return;
     if (isBusy()) {
@@ -99,9 +106,15 @@ var Social = (function () {
     var type = TYPES[typeId];
     Objects.cancel(a.data.id);
     Objects.cancel(b.data.id);
-    var spots = meetingSpots(a, b);
-    Sims.walkTo(a, spots.a.x, spots.a.y);
-    Sims.walkTo(b, spots.b.x, spots.b.y);
+    if (b.data.type === "neighbor") {
+      var spot = besideNeighbor(a, b);
+      Sims.walkTo(a, spot.x, spot.y);
+      b.path = [];
+    } else {
+      var spots = meetingSpots(a, b);
+      Sims.walkTo(a, spots.a.x, spots.a.y);
+      Sims.walkTo(b, spots.b.x, spots.b.y);
+    }
     convo = { a: a, b: b, typeId: typeId, type: type, phase: "approach", lines: buildLines(a, b, type), index: 0, elapsed: 0 };
   }
 
@@ -120,7 +133,8 @@ var Social = (function () {
   }
 
   // Trait effects on what an interaction gives one character, all multiplied together.
-  function multipliers(sim, teller) {
+  // In a joke both tell one, so a Bromista on either side makes the Amistad grow more.
+  function multipliers(sim) {
     var social = 1, friend = 1;
     var typeId = convo.typeId;
     sim.data.traits.forEach(function (trait) {
@@ -129,9 +143,11 @@ var Social = (function () {
       if (effect.all) social *= effect.all;
       if (effect[typeId]) social *= effect[typeId];
     });
-    teller.data.traits.forEach(function (trait) {
-      var effect = CONFIG.traitFriendship[trait.id];
-      if (effect && effect[typeId]) friend *= effect[typeId];
+    [convo.a, convo.b].forEach(function (teller) {
+      teller.data.traits.forEach(function (trait) {
+        var effect = CONFIG.traitFriendship[trait.id];
+        if (effect && effect[typeId]) friend *= effect[typeId];
+      });
     });
     if (isFavorite(sim)) {
       social *= CONFIG.favoriteBonus;
@@ -144,13 +160,13 @@ var Social = (function () {
     return !!convo && sim.data.favoriteActivity === convo.type.favorite;
   }
 
-  // Social never goes above 100; friendship stays between -100 and 100.
+  // Social never goes above 100; friendship stays between -100 and 100. Neighbors have no needs yet.
   function applyEffects() {
     [[convo.a, convo.b], [convo.b, convo.a]].forEach(function (pair) {
       var sim = pair[0], other = pair[1];
-      var m = multipliers(sim, convo.a);
+      var m = multipliers(sim);
       var values = Needs.get(sim.data.id);
-      values.social = Math.min(100, values.social + convo.type.social * m.social);
+      if (values) values.social = Math.min(100, values.social + convo.type.social * m.social);
       var f = friendship[sim.data.id][other.data.id] + convo.type.friendship * m.friend;
       friendship[sim.data.id][other.data.id] = Math.max(-100, Math.min(100, f));
     });
@@ -254,46 +270,68 @@ var Social = (function () {
     return LEVELS.filter(function (l) { return v >= l.min; })[0];
   }
 
-  // The highest level between the two (each one has its own value; they are almost always the same level).
-  // "known" is the last one seen, null until the first frame, so loading a saved game never celebrates.
+  // The highest level between the two of a pair (each one has its own value; they are almost always the same level).
+  // "known" has the last one seen for each pair, null until the first frame, so loading a saved game never celebrates.
   var known = null;
-  // The celebration going on, or null: { level, elapsed, hearts: [{ dx, delay, speed, size, sway }] }
+  // The celebration going on, or null: { level, ids: [id, otherId], elapsed, hearts: [{ dx, delay, speed, size, sway }] }
   var party = null;
 
-  function pairRank() {
-    var best = LEVELS.length - 1;
-    Object.keys(friendship).forEach(function (id) {
-      Object.keys(friendship[id]).forEach(function (otherId) {
-        best = Math.min(best, LEVELS.indexOf(levelOf(friendship[id][otherId])));
-      });
+  function pairRank(id, otherId) {
+    return Math.min(LEVELS.indexOf(levelOf(friendshipWith(id, otherId))), LEVELS.indexOf(levelOf(friendshipWith(otherId, id))));
+  }
+
+  // Every pair once, as [id, otherId].
+  function pairs() {
+    var ids = Object.keys(friendship), out = [];
+    ids.forEach(function (id, i) {
+      ids.slice(i + 1).forEach(function (otherId) { out.push([id, otherId]); });
     });
-    return best;
+    return out;
+  }
+
+  // Sofía, real.fixer or a neighbor, by id.
+  function actor(id) {
+    return Sims.list().concat(Neighbors.list()).filter(function (s) { return s.data.id === id; })[0] || null;
+  }
+
+  // Both of a pair, when they are together where the screen shows (Vladi inside his castle is not seen); else null.
+  function together(ids) {
+    var a = actor(ids[0]), b = actor(ids[1]);
+    if (!a || !b || a.inside || b.inside || a.place !== b.place) return null;
+    return [a, b];
   }
 
   // Going up a level starts the hearts and the sign; going down does not.
   function checkLevel(dt) {
-    var rank = pairRank();
-    if (known !== null && rank < known) {
-      var hearts = [];
-      for (var i = 0; i < CONFIG.friendLevel.hearts; i++) {
-        hearts.push({ dx: (Math.random() * 2 - 1) * 90, delay: Math.random() * 1.6, speed: 60 + Math.random() * 50,
-          size: 16 + Math.random() * 12, sway: Math.random() * Math.PI * 2 });
-      }
-      party = { level: LEVELS[rank], elapsed: 0, hearts: hearts };
-      var two = Sims.list();
-      if (two[0].place === two[1].place) Sound.playAt(two[0].place, "fanfare");
-    }
-    known = rank;
+    var first = known === null;
+    if (first) known = {};
+    pairs().forEach(function (ids) {
+      var key = ids.join("|");
+      var rank = pairRank(ids[0], ids[1]);
+      if (!first && known[key] !== undefined && rank < known[key]) celebrate(ids, rank);
+      known[key] = rank;
+    });
     if (party) {
       party.elapsed += dt;
       if (party.elapsed >= CONFIG.friendLevel.time) party = null;
     }
   }
 
+  function celebrate(ids, rank) {
+    var hearts = [];
+    for (var i = 0; i < CONFIG.friendLevel.hearts; i++) {
+      hearts.push({ dx: (Math.random() * 2 - 1) * 90, delay: Math.random() * 1.6, speed: 60 + Math.random() * 50,
+        size: 16 + Math.random() * 12, sway: Math.random() * Math.PI * 2 });
+    }
+    party = { level: LEVELS[rank], ids: ids, elapsed: 0, hearts: hearts };
+    var two = together(ids);
+    if (two) Sound.playAt(two[0].place, "fanfare");
+  }
+
   // Hearts falling between the two and "¡Ahora son Amigos! 😊" floating over them, only when they are on screen together.
   function drawParty(ctx, time) {
-    var two = Sims.list();
-    if (!party || two[0].place !== two[1].place || two[0].place !== Sims.viewPlace()) return;
+    var two = party ? together(party.ids) : null;
+    if (!two || two[0].place !== Sims.viewPlace()) return;
     var k = CONFIG.characterScale;
     var x = (two[0].x + two[1].x) / 2;
     var top = Math.min(two[0].y, two[1].y) - 78 * k - 40;

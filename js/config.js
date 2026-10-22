@@ -304,6 +304,50 @@ var CONFIG = {
     meow: { min: 60, max: 180 }
   },
 
+  // The neighbors, Lumi and Vladi (js/neighbors.js). They live in the city, walk a little slower than Sofía and real.fixer
+  // ("speed"), and stay "stay.min" to "stay.max" seconds at each spot they visit before going on.
+  // Lumi is "scale" times as big as the others and floats "float" world units over the grass. At night her trail of sparkles
+  // lasts "trail.life" seconds, with a new sparkle every "trail.every" seconds while she moves.
+  // Vladi is in his castle by day; at night, at some of his stops ("scared.chance") he shakes and hugs his teddy bear
+  // for "scared.time" seconds. "home" is the spot by each house door where they come out and stand.
+  // "spots" are the places each one walks to. "houses" are where their homes are drawn on the city map: Lumi's treehouse
+  // on top of a big forest tree, with its rope ladder down to the grass, and Vladi's castle on free grass by the bottom right.
+  neighbors: {
+    lumi: {
+      speed: 130,
+      scale: 0.82,
+      float: 12,
+      stay: { min: 3, max: 6 },
+      trail: { every: 0.06, life: 0.9 },
+      home: { x: 290, y: 216 },
+      spots: [
+        { x: 290, y: 216 },
+        { x: 120, y: 205 },
+        { x: 425, y: 285 },
+        { x: 500, y: 610 },
+        { x: 626, y: 360 },
+        { x: 379, y: 492 }
+      ]
+    },
+    vladi: {
+      speed: 105,
+      scale: 1,
+      stay: { min: 4, max: 8 },
+      scared: { chance: 0.45, time: 2.6 },
+      home: { x: 890, y: 692 },
+      spots: [
+        { x: 890, y: 692 },
+        { x: 770, y: 640 },
+        { x: 875, y: 485 },
+        { x: 480, y: 635 }
+      ]
+    },
+    houses: {
+      treehouse: { x: 256, y: 88, w: 68, h: 118, ladder: { x: 282, y: 150, w: 16, h: 54 } },
+      castle: { x: 825, y: 565, w: 130, h: 100 }
+    }
+  },
+
   // Drawing colors and starting place and spot for each character: real.fixer next to his tent, Sofía in the Sala.
   characterLooks: {
     realfixer: {
@@ -338,6 +382,41 @@ var CONFIG = {
       crown: "#E8BE4F",
       crownEdge: "#B8862E",
       gem: "#E8607E"
+    },
+    // Lumi, the fairy: red braids, a peach dress, golden shoes and golden wings.
+    lumi: {
+      icon: "🧚",
+      skin: "#F7DCC8",
+      hair: "#C8552E",
+      hairDark: "#A3401F",
+      eyes: "#4A3428",
+      cheeks: "rgba(232, 120, 140, 0.4)",
+      freckles: "#C98A6A",
+      shirt: "#F4B494",
+      dress: "#F4B494",
+      dressHem: "#E39A78",
+      pants: "#F7DCC8",
+      shoes: "#E2B44B",
+      wing: "rgba(240, 204, 102, 0.85)",
+      wingEdge: "#C99A2E"
+    },
+    // Vladi, the vampire: slicked-back black hair, a black suit with a white shirt, a black and red cape, and his teddy bear.
+    vladi: {
+      icon: "🧛",
+      skin: "#EDE6E2",
+      hair: "#1C1A22",
+      eyes: "#4A3428",
+      shirt: "#24222B",
+      suit: "#24222B",
+      whiteShirt: "#FFFDF8",
+      pants: "#1E1C24",
+      shoes: "#121116",
+      cape: "#17151C",
+      capeInside: "#B23A3A",
+      fang: "#FFFFFF",
+      bear: "#9A6B45",
+      bearLight: "#C99A6E",
+      bearDark: "#4A3428"
     }
   }
 };

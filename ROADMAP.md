@@ -37,7 +37,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 17: 🎵 Sonidos y música. Sonidos de botones, sonidos del mundo (río, pájaros, fogata, lluvia) y música de fondo tranquila, todo creado con código, con botón para silenciar.
 
 ### 🏡 Pack 3: Vecinos y hogar
-- ⬜ Hito 18: 🧚 Vecinos nuevos. 2 o 3 personajes mágicos con su ficha completa en CHARACTERS.md, cada uno con su casa en el mapa.
+- ✅ Hito 18: 🧚 Vecinos nuevos. Lumi, el hada, y Vladi, el vampiro miedoso, con su ficha completa y su casa en el mapa (casa del árbol y castillito); pasean solos, se puede charlar con ellos y hacerles regalos.
 - ⬜ Hito 19: 🌟 Sueños y metas. Cada personaje tiene una meta, y ayudarlo a cumplirla da una recompensa.
 - ⬜ Hito 20: 🛋️ Mover muebles y más habitaciones. Arrastrar muebles para acomodarlos, y nuevas habitaciones (por ejemplo, un estudio de pintura).
 - ⬜ Hito 21: 🌧️ Clima y magia. Lluvia, sol y niebla mágica, con brillitos y luces que flotan.
