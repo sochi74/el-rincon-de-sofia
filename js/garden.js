@@ -23,19 +23,22 @@ var Garden = (function () {
 
   // The fence around the garden and the 6 plots inside it, 2 rows of 3.
   // "GATE" is how wide the opening at the bottom is; characters walk in and out through it.
+  // Modo decorar moves the fence (js/city.js), and then the plots go with it, keeping what grows in them.
   var FENCE = G.fence;
   var GATE = 34;
   var PLOTS = [];
-  (function () {
+
+  function relayout() {
     var p = G.plot;
     var x0 = FENCE.x + (FENCE.w - (3 * p.w + 2 * p.gap)) / 2;
     var y0 = FENCE.y + (FENCE.h - (2 * p.h + p.gap)) / 2;
     for (var row = 0; row < 2; row++) {
       for (var col = 0; col < 3; col++) {
-        PLOTS.push({ x: x0 + col * (p.w + p.gap), y: y0 + row * (p.h + p.gap), w: p.w, h: p.h });
+        PLOTS[row * 3 + col] = { x: x0 + col * (p.w + p.gap), y: y0 + row * (p.h + p.gap), w: p.w, h: p.h };
       }
     }
-  })();
+  }
+  relayout();
 
   // What grows in each plot: { flower: id or null, watered, growth: seconds grown so far }.
   var plots = PLOTS.map(empty);
@@ -120,6 +123,21 @@ var Garden = (function () {
   function spotFor(i) {
     var p = PLOTS[i];
     return { x: p.x + p.w / 2, y: p.y - G.standAbove };
+  }
+
+  // Where a character stands for each plot (Modo decorar checks they can all be reached).
+  function standSpots() {
+    return PLOTS.map(function (p, i) { return spotFor(i); });
+  }
+
+  // After Modo decorar: whoever was walking to a plot walks to where it is now.
+  function refresh() {
+    Object.keys(current).forEach(function (id) {
+      var a = current[id];
+      if (a.phase !== "walking") return;
+      var spot = spotFor(a.plot);
+      Sims.walkTo(a.sim, spot.x, spot.y);
+    });
   }
 
   // ---------- Actions ----------
@@ -636,6 +654,9 @@ var Garden = (function () {
     plotAt: plotAt,
     isGardenAt: isGardenAt,
     isFenceAt: isFenceAt,
+    relayout: relayout,
+    standSpots: standSpots,
+    refresh: refresh,
     wordAt: wordAt,
     tap: tap,
     cancel: cancel,

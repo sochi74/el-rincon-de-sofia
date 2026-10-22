@@ -16,9 +16,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
 
 ## Estado
-Hito 22 ✅ Vecino profe y diario
+Extra ✅ Mover casas
 
-## ⭐ Estrellas de inglés: 38
+## ⭐ Estrellas de inglés: 39
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -232,7 +232,7 @@ Hito 22 ✅ Vecino profe y diario
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
   - Próximo regalo: a las 40 ⭐
-- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 23 📱 Jugar en el celular (Hito 22 📖 Vecino profe y diario ya está hecho).
+- Siguiente paso: Pack 3, Hito 23 📱 Jugar en el celular (el último del Pack 3). Extra 🏡 Mover casas en la ciudad ya está hecho.
 - Pendiente: la skill de hito.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.

@@ -43,7 +43,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 20: 🛋️ Mover muebles. Modo decorar para arrastrar y girar muebles y decoraciones, a cualquier habitación, y volver a como estaba.
 - ✅ Extra: 🛁 Baño con bañera de burbujas
 - ✅ Extra: 🧹 Pulido 3
-- ⬜ Extra: 🏡 Mover casas en la ciudad
+- ✅ Extra: 🏡 Mover casas en la ciudad. En Modo decorar se mueven la Casa de Sofía, el Jardín, la Carpa (con fogata, tronco y camita de Krohna), las casas de los vecinos, la fuente y cada árbol; vuelve el arbolito del bosque.
 - ✅ Hito 21: 🌧️ Clima y magia. Cada día amanece soleado, con lluvia (y arcoíris después), niebla mágica o nieve (con techos blancos y muñeco de nieve); la lluvia riega el jardín y ayuda a pescar, y la niebla trae más cristales al bosque.
 - ✅ Hito 22: 📖 Vecino profe y diario de palabras. Professor Hoot, el zorro bibliotecario, vive en un árbol hueco del bosque y enseña una palabra en inglés por día con una pregunta de 3 opciones; el 📖 Diario guarda las palabras del profe y las que Sofía descubre con el mouse.
 - ⬜ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas.

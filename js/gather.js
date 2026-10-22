@@ -86,6 +86,23 @@ var Gather = (function () {
     }
   })();
 
+  // After Modo decorar moved things in the city: a forest thing left under something, or where nobody can walk to,
+  // moves to another free spot of the forest floor (or grows again later if there is none).
+  function settle() {
+    forest.slice().forEach(function (t) {
+      if (City.isForestFloor(t.x, t.y)) return;
+      forest.splice(forest.indexOf(t), 1);
+      var spot = randomSpot();
+      if (!spot) {
+        regrow.push(between(REGROW.min, REGROW.max));
+        return;
+      }
+      t.x = spot.x;
+      t.y = spot.y;
+      forest.push(t);
+    });
+  }
+
   // The forest thing at a spot of the city, or null.
   function thingAt(x, y) {
     for (var i = forest.length - 1; i >= 0; i--) {
@@ -529,6 +546,7 @@ var Gather = (function () {
     cancel: cancel,
     isActive: isActive,
     update: update,
+    settle: settle,
     bubbleFor: bubbleFor,
     setHover: setHover,
     draw: draw,

@@ -9,7 +9,10 @@
 // The weather (js/weather.js) draws on the map too: snow on the grass and the roofs, puddles, rings on the river and the snowman.
 // Krohna's round bed sits by the tent too (always there), where the kitten sleeps while real.fixer sleeps in the tent.
 // They are only decoration: nothing walks around them. Modo decorar (js/decorate.js) can move and turn the guitar, the pot
-// and Krohna's bed to open grass; the rest stays where it is.
+// and Krohna's bed to open grass. It can also move (never turn) Sofía's house, her garden, real.fixer's tent (with its
+// campfire, its log and Krohna's bed), the neighbors' homes, the fountain and each tree, to any free spot from where
+// everything can still be reached walking; what hangs on them, their signs and the spots by their doors go with them.
+// The river, the bridge, the stone paths, the plaza, the forest ground with its "Bosque" sign and the snowman stay.
 // Also where characters may walk: never on the water (they cross on the bridge), never off the map,
 // and around the house, the trees, the fountain, the tent, the campfire, the garden fence and the neighbors' homes.
 var City = (function () {
@@ -25,12 +28,17 @@ var City = (function () {
   // The house and the plaza sit low on the map, so the panel never covers them.
   var HOUSE = { x: 90, y: 440, w: 190, h: 160 };
   var PLAZA = { x: 420, y: 560, r: 90 };
-  // Round trees of the forest, at the top left, as [x, y, radius].
+  // Round trees of the forest, at the top left, as [x, y, radius]. The last one is the little tree that came back.
+  // Modo decorar can move each one anywhere free, except Lumi's tree ("LUMI_TREE"), which goes with her treehouse.
   var TREES = [
     [50, 60, 32], [130, 40, 36], [230, 70, 34], [330, 45, 30], [420, 80, 32],
     [80, 150, 38], [185, 165, 34], [290, 150, 38], [395, 175, 30],
-    [45, 245, 30], [140, 260, 36], [245, 250, 30], [350, 270, 32], [60, 340, 26]
+    [45, 245, 30], [140, 260, 36], [245, 250, 30], [350, 270, 32], [60, 340, 26],
+    [470, 330, 24]
   ];
+  var LUMI_TREE = 7;
+  // The fountain stands in the middle of the plaza at first; Modo decorar can move it (the plaza stays).
+  var FOUNTAIN_AT = { x: PLAZA.x, y: PLAZA.y };
   // The ground of the forest, around the trees and its sign.
   var FOREST = { x: 0, y: 0, w: 505, h: 370 };
   // How close a character's feet may get to the edges of the map.
@@ -150,7 +158,7 @@ var City = (function () {
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (inBox(x, y, grow(HOUSE, CLEAR))) return true;
-    if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN + CLEAR)) return true;
+    if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + CLEAR)) return true;
     if (Weather.snowmanBlocks(x, y, CLEAR)) return true;
     if (inBox(x, y, grow(TENT, CLEAR)) || inBox(x, y, grow(FIRE, 10))) return true;
     if (inBox(x, y, grow(CASTLE, CLEAR)) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return true;
@@ -176,15 +184,21 @@ var City = (function () {
   }
 
   // True if the spot is open grass where a character can walk: not on the river or the bridge,
-  // the house, the garden, the plaza, the stone paths, the tent, the campfire, the neighbors' homes, under a tree,
-  // or on the guitar, the pot or Krohna's bed (used for the shiny coins and the forest things).
+  // the house, the garden, the plaza, the fountain, the stone paths, the tent, the campfire, the neighbors' homes, under a tree,
+  // or on the guitar, the pot or Krohna's bed, and a character can get there walking from the door of Sofía's house
+  // (used for the shiny coins and the forest things).
   function isOpenGrass(x, y) {
-    if (MOVABLE.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), 10)); })) return false;
+    return isOpenGround(x, y) && isReachable(x, y);
+  }
+
+  // The same, without asking if a character can get there.
+  function isOpenGround(x, y) {
+    if (SMALL.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), 10)); })) return false;
     if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
     if (Garden.isGardenAt(x, y)) return false;
     if (Math.abs(x - riverX(y)) < RIVER.half + RIVER.bank + 20) return false;
     if (houseAt(x, y) || (x > HOUSE.x - 20 && x < HOUSE.x + HOUSE.w + 20 && y > HOUSE.y - 70)) return false;
-    if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20)) return false;
+    if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20) || near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + 20)) return false;
     if (inBox(x, y, { x: TENT.x - 25, y: TENT.y - 50, w: TENT.w + 50, h: TENT.h + 75 })) return false;
     if (inBox(x, y, { x: FIRE.x - 25, y: FIRE.y - 25, w: FIRE.w + 50, h: FIRE.h + 50 })) return false;
     if (inBox(x, y, { x: SEAT.x - 45, y: SEAT.y - 40, w: 90, h: 70 })) return false;
@@ -193,18 +207,33 @@ var City = (function () {
     for (var t = 0; t < TREES.length; t++) {
       if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] + 20)) return false;
     }
-    return !pathLines().some(function (line) {
+    if (pathLines().some(function (line) {
       for (var i = 1; i < line.length; i++) {
         if (distanceToSegment(x, y, line[i - 1], line[i]) < 40) return true;
       }
       return false;
-    });
+    })) return false;
+    return true;
+  }
+
+  // Where a character can walk to from the door of Sofía's house, worked out again after Modo decorar moves something.
+  // The forest grows its first things before js/path.js is loaded: then every spot counts.
+  var reachable = null;
+
+  function isReachable(x, y) {
+    if (typeof Path === "undefined") return true;
+    if (!reachable) reachable = Path.reach("city", doorSpot.x, doorSpot.y);
+    return reachable.at(x, y);
   }
 
   // True if the spot is open forest floor between the trees, where berries, mushrooms and crystals
   // can grow (not under a tree and not on the "Bosque" sign).
   function isForestFloor(x, y) {
-    if (!inBox(x, y, FOREST) || !isOpenGrass(x, y)) return false;
+    return isForestGround(x, y) && isReachable(x, y);
+  }
+
+  function isForestGround(x, y) {
+    if (!inBox(x, y, FOREST) || !isOpenGround(x, y)) return false;
     return !inBox(x, y, { x: 190, y: 295, w: 160, h: 90 });
   }
 
@@ -235,12 +264,15 @@ var City = (function () {
     ctx.globalAlpha = 1;
   }
 
-  // The stone paths, as lists of points: from the house door to the plaza, and from the plaza to the bridge.
+  // The stone paths, as lists of points: from the first spot of the house door to the plaza, and from the plaza
+  // to the bridge. They never move, even when Modo decorar moves the house.
+  var PATH_LINES = [
+    [[doorSpot.x, HOUSE.y + HOUSE.h], [doorSpot.x + 30, doorSpot.y + 8], [PLAZA.x - PLAZA.r + 10, PLAZA.y + 20]],
+    [[PLAZA.x + 40, PLAZA.y - PLAZA.r + 10], [bridgeEnd("west").x + 10, BRIDGE.y]]
+  ];
+
   function pathLines() {
-    return [
-      [[doorSpot.x, HOUSE.y + HOUSE.h], [doorSpot.x + 30, doorSpot.y + 8], [PLAZA.x - PLAZA.r + 10, PLAZA.y + 20]],
-      [[PLAZA.x + 40, PLAZA.y - PLAZA.r + 10], [bridgeEnd("west").x + 10, BRIDGE.y]]
-    ];
+    return PATH_LINES;
   }
 
   function drawPaths(ctx) {
@@ -321,7 +353,7 @@ var City = (function () {
 
   // ---------- Plaza with its fountain ----------
 
-  function drawPlaza(ctx, time) {
+  function drawPlaza(ctx) {
     var x = PLAZA.x, y = PLAZA.y, r = PLAZA.r;
     circle(ctx, x, y, r, C.stoneLight);
     ctx.save();
@@ -343,8 +375,11 @@ var City = (function () {
       ctx.stroke();
     }
     ctx.restore();
+  }
 
-    // Fountain: stone rim, water, and a little column in the middle.
+  // The fountain: stone rim, water, and a little column in the middle. At first in the middle of the plaza.
+  function drawFountain(ctx, time) {
+    var x = FOUNTAIN_AT.x, y = FOUNTAIN_AT.y;
     withShadow(ctx, function () {
       circle(ctx, x, y, FOUNTAIN, C.stone);
     });
@@ -375,9 +410,10 @@ var City = (function () {
 
   // ---------- Sofía's house seen from outside ----------
 
-  // Left edge of the two front windows of the house, and the height of their glass.
-  var WINDOWS = [HOUSE.x + 30, HOUSE.x + HOUSE.w - 56];
-  var WINDOW_Y = HOUSE.y + 92 + 25;
+  // Left edge of the two front windows of the house, wherever it is.
+  function houseWindows() {
+    return [HOUSE.x + 30, HOUSE.x + HOUSE.w - 56];
+  }
 
   function drawHouse(ctx, highlight) {
     var x = HOUSE.x, y = HOUSE.y, w = HOUSE.w, h = HOUSE.h;
@@ -390,7 +426,7 @@ var City = (function () {
     fillRound(ctx, x + 8, bottom - 8, w - 16, 8, 4, C.wood);
 
     // Windows on both sides of the door
-    WINDOWS.forEach(function (wx) {
+    houseWindows().forEach(function (wx) {
       fillRound(ctx, wx - 3, wallTop + 22, 32, 28, 5, C.wood);
       fillRound(ctx, wx, wallTop + 25, 26, 22, 3, "#BFE0EA");
       ctx.fillStyle = C.wood;
@@ -678,7 +714,8 @@ var City = (function () {
     drawFlames(ctx, time, cx, cy);
 
     // Yellow light in the house windows, with a little glow around them.
-    WINDOWS.forEach(function (wx) {
+    var WINDOW_Y = HOUSE.y + 92 + 25;
+    houseWindows().forEach(function (wx) {
       ctx.globalCompositeOperation = "lighter";
       ctx.globalAlpha = 1;
       halo(ctx, wx + 13, WINDOW_Y + 11, 40, N.warmLight, 0.35 * dark);
@@ -702,7 +739,7 @@ var City = (function () {
     });
 
     // The castle lanterns: a warm halo around each one, and the flame bright again on top.
-    LANTERNS.forEach(function (lx) {
+    castleLanterns().forEach(function (lx) {
       var ly = CASTLE.y + CASTLE.h - 36;
       ctx.globalCompositeOperation = "lighter";
       ctx.globalAlpha = 1;
@@ -748,7 +785,7 @@ var City = (function () {
   // a round window, a little door and a rope ladder down to the grass.
   function drawTreehouse(ctx, highlight) {
     var cx = TREEHOUSE.x + TREEHOUSE.w / 2, L = TREEHOUSE.ladder;
-    var wallTop = 118, bottom = 152;
+    var wallTop = TREEHOUSE.y + 30, bottom = TREEHOUSE.y + 64;
 
     // Rope ladder: two ropes with wooden rungs, down from the platform to the grass.
     ctx.save();
@@ -927,7 +964,7 @@ var City = (function () {
     circle(ctx, cx + 6, bottom - 16, 2, "#E2B44B");
 
     // Two lanterns on posts beside the door, always lit
-    LANTERNS.forEach(function (lx) {
+    castleLanterns().forEach(function (lx) {
       fillRound(ctx, lx - 2, bottom - 30, 4, 30, 2, C.darkBrown);
       drawLantern(ctx, lx, bottom - 36, time);
     });
@@ -935,8 +972,10 @@ var City = (function () {
     if (highlight) drawThingHighlight(ctx, { x: x, y: y - 22, w: w, h: h + 22 });
   }
 
-  // Where the two lanterns stand, and the window of the castle.
-  var LANTERNS = [CASTLE.x + CASTLE.w / 2 - 30, CASTLE.x + CASTLE.w / 2 + 30];
+  // Where the two lanterns stand, wherever the castle is, and the window of the castle.
+  function castleLanterns() {
+    return [CASTLE.x + CASTLE.w / 2 - 30, CASTLE.x + CASTLE.w / 2 + 30];
+  }
   var CASTLE_WINDOW = { x: CASTLE.x + CASTLE.w / 2, y: CASTLE.y + 22 + 22 };
 
   // Professor Hoot's hollow tree: a thick trunk with roots, a round wooden door at its foot, a little round window,
@@ -1346,34 +1385,180 @@ var City = (function () {
 
   // ---------- Modo decorar ----------
 
-  // The guitar and the pot can be moved and turned (js/decorate.js), once their goal is met, and Krohna's bed always.
-  // "w", "h" is the spot each one takes when it is not turned; "start" is the middle of its first spot.
-  var MOVABLE = ["petBed", "guitar", "pot"];
+  // Small decorations: the guitar and the pot can be moved and turned (js/decorate.js), once their goal is met,
+  // and Krohna's bed always. "w", "h" is the spot each one takes when it is not turned; "start" is the middle of its first spot.
+  var SMALL = ["petBed", "guitar", "pot"];
   var DECOR = { guitar: GUITAR, pot: POT, petBed: PET_BED };
   var UNLOCK = { guitar: ["realfixer", 0], pot: ["vladi", 0] };
-  // Where each one is now: { x, y, dir }, its middle and how many quarter turns clockwise.
+  // Big things, moved but never turned: Sofía's house, her garden, real.fixer's tent (with its campfire, its log and
+  // Krohna's bed), Vladi's castle, Lumi's treehouse (with her tree), Professor Hoot's hollow tree (with its chalkboard),
+  // the fountain, and each tree of the forest. What hangs on them, their signs and the spots by their doors go with them.
+  var BIG = ["house", "garden", "tent", "castle", "treehouse", "hollowTree", "fountain"];
+  var TREE_IDS = [];
+  TREES.forEach(function (t, i) { if (i !== LUMI_TREE) TREE_IDS.push("tree" + i); });
+  var MOVABLE = SMALL.concat(BIG, TREE_IDS);
+  // The big things that may stand on the stones of the plaza.
+  var ON_PLAZA = { fountain: true, treehouse: true, hollowTree: true };
+  // Where each one is now: { x, y, dir }, its middle and how many quarter turns clockwise (big things never turn).
   var layout = {};
 
+  function isBig(id) {
+    return !DECOR[id];
+  }
+
+  function treeOf(id) {
+    return id.indexOf("tree") === 0 && id !== "treehouse" ? TREES[Number(id.slice(4))] : null;
+  }
+
+  // What goes with each big thing when it moves: anything with x, y (and cx, cy) or a list [x, y, ...].
+  function partsOf(id) {
+    var N = CONFIG.neighbors;
+    if (id === "house") return [HOUSE, doorSpot];
+    if (id === "garden") return [CONFIG.garden.fence, N.lumi.spots[5]];
+    if (id === "tent") {
+      return [TENT, FIRE, SEAT, MOON_LANTERN, CONFIG.characterLooks.realfixer.start, N.vladi.spots[2]].concat(FIREFLIES);
+    }
+    if (id === "castle") return [CASTLE, CASTLE_WINDOW, HEART, N.vladi.home, N.vladi.spots[0], N.vladi.spots[1]];
+    if (id === "treehouse") {
+      return [TREEHOUSE, TREEHOUSE.ladder, TREE_WINDOW, CRYSTAL_LANTERN, FAIRY_LIGHTS, TREES[LUMI_TREE], N.lumi.home,
+        N.lumi.spots[0]].concat(BULBS);
+    }
+    if (id === "hollowTree") return [HOLLOW, HOLLOW.trunk, CHALKBOARD, CROWN, HOLLOW_WINDOW, N.hoot.home, N.hoot.spots[0]];
+    if (id === "fountain") return [FOUNTAIN_AT];
+    return [treeOf(id)];
+  }
+
+  function copyOf(p) {
+    if (Array.isArray(p)) return [p[0], p[1]];
+    return { x: p.x, y: p.y, cx: p.cx, cy: p.cy };
+  }
+
+  // The first spot of every part, and the middle of each big thing at first.
+  var BASES = {}, START = {};
+  BIG.concat(TREE_IDS).forEach(function (id) {
+    BASES[id] = partsOf(id).map(copyOf);
+    var b = boxOf(id);
+    START[id] = { x: Math.round(b.x + b.w / 2), y: Math.round(b.y + b.h / 2) };
+  });
+
+  // How far a big thing is from its first spot.
+  function offset(id) {
+    return { x: layout[id].x - START[id].x, y: layout[id].y - START[id].y };
+  }
+
+  // Put every part of a big thing where it goes now.
+  function apply(id) {
+    var d = offset(id);
+    partsOf(id).forEach(function (p, i) {
+      var base = BASES[id][i];
+      if (Array.isArray(p)) {
+        p[0] = base[0] + d.x;
+        p[1] = base[1] + d.y;
+        return;
+      }
+      p.x = base.x + d.x;
+      p.y = base.y + d.y;
+      if (base.cx !== undefined) p.cx = base.cx + d.x;
+      if (base.cy !== undefined) p.cy = base.cy + d.y;
+    });
+    if (id === "garden" && typeof Garden !== "undefined") Garden.relayout();
+    reachable = null;
+  }
+
   function resetLayout() {
-    MOVABLE.forEach(function (id) {
+    SMALL.forEach(function (id) {
       layout[id] = { x: DECOR[id].start.x, y: DECOR[id].start.y, dir: 0 };
     });
+    BIG.concat(TREE_IDS).forEach(function (id) {
+      layout[id] = { x: START[id].x, y: START[id].y, dir: 0 };
+      apply(id);
+    });
   }
-  resetLayout();
 
-  // True once its goal is met (Krohna's bed always is). The forest grows its first things before js/goals.js is loaded:
-  // then only the bed is.
+  // True once its goal is met (Krohna's bed and the big things always are). The forest grows its first things before
+  // js/goals.js is loaded: then only the bed is.
   function isOn(id) {
     if (!UNLOCK[id]) return true;
     return typeof Goals !== "undefined" && Goals.isMet(UNLOCK[id][0], UNLOCK[id][1]);
   }
 
-  function boxOf(id) {
-    var d = DECOR[id], p = layout[id];
-    var side = p.dir % 2 === 1;
-    var w = side ? d.h : d.w, h = side ? d.w : d.h;
-    return { x: p.x - w / 2, y: p.y - h / 2, w: w, h: h };
+  function treeBox(t) {
+    return { x: t[0] - t[2], y: t[1] - t[2], w: t[2] * 2, h: t[2] * 2 };
   }
+
+  // The boxes of a big thing that a tap picks.
+  function pickBoxes(id) {
+    if (id === "house") return [grow(HOUSE, 8)];
+    if (id === "garden") return [grow(CONFIG.garden.fence, 10)];
+    if (id === "tent") return [grow(TENT, 14), FIRE, { x: SEAT.x - 11, y: SEAT.y - 24, w: 22, h: 48 }];
+    if (id === "castle") return [{ x: CASTLE.x, y: CASTLE.y - 22, w: CASTLE.w, h: CASTLE.h + 22 }];
+    if (id === "treehouse") return [TREEHOUSE, treeBox(TREES[LUMI_TREE])];
+    if (id === "hollowTree") return [HOLLOW, CHALKBOARD];
+    if (id === "fountain") return [{ x: FOUNTAIN_AT.x - FOUNTAIN, y: FOUNTAIN_AT.y - FOUNTAIN, w: FOUNTAIN * 2, h: FOUNTAIN * 2 }];
+    return [treeBox(treeOf(id))];
+  }
+
+  // What a big thing takes on the ground, as boxes { x, y, w, h } and circles { cx, cy, r }.
+  // A tree only takes the middle of its crown, so trees may stand close together as in the forest.
+  function shapesOf(id) {
+    var t = treeOf(id);
+    if (t) return [{ cx: t[0], cy: t[1], r: t[2] * 0.6 }];
+    if (id === "fountain") return [{ cx: FOUNTAIN_AT.x, cy: FOUNTAIN_AT.y, r: FOUNTAIN }];
+    if (id === "treehouse") {
+      var L = TREES[LUMI_TREE];
+      return [TREEHOUSE, { cx: L[0], cy: L[1], r: L[2] * 0.6 }];
+    }
+    if (id === "garden") return [grow(CONFIG.garden.fence, 4)];
+    if (id === "tent") return [TENT, FIRE, { x: SEAT.x - 11, y: SEAT.y - 24, w: 22, h: 48 }];
+    return pickBoxes(id);
+  }
+
+  function boxOf(id) {
+    if (!isBig(id)) {
+      var d = DECOR[id], p = layout[id];
+      var side = p.dir % 2 === 1;
+      var w = side ? d.h : d.w, h = side ? d.w : d.h;
+      return { x: p.x - w / 2, y: p.y - h / 2, w: w, h: h };
+    }
+    var boxes = pickBoxes(id);
+    var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    boxes.forEach(function (b) {
+      x0 = Math.min(x0, b.x);
+      y0 = Math.min(y0, b.y);
+      x1 = Math.max(x1, b.x + b.w);
+      y1 = Math.max(y1, b.y + b.h);
+    });
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+
+  // ---------- Signs ----------
+
+  // The sign of each big thing, as [text, middle x, middle y, size]: it goes with its thing.
+  function signOf(id) {
+    var fence = CONFIG.garden.fence;
+    if (id === "house") return ["Casa de Sofía", HOUSE.x + HOUSE.w / 2, HOUSE.y - 34, 24];
+    if (id === "tent") return ["Carpa de real.fixer", TENT.x + TENT.w / 2, TENT.y - 30, 20];
+    if (id === "garden") return ["Jardín de Sofía", fence.x + fence.w / 2, fence.y - 16, 16];
+    if (id === "treehouse") return ["Casa de Lumi", TREEHOUSE.x + TREEHOUSE.w / 2, TREEHOUSE.y - 14, 16];
+    if (id === "castle") return ["Castillito de Vladi", CASTLE.x + CASTLE.w / 2, CASTLE.y - 38, 16];
+    if (id === "hollowTree") return ["Árbol de Professor Hoot", HOLLOW.x + HOLLOW.w / 2 - 6, HOLLOW.y - 12, 16];
+    return null;
+  }
+
+  // The signs that never move.
+  var FIXED_SIGNS = ["Río", "Puente", "Bosque", "Plaza"];
+
+  // The box a sign takes, measured like js/city.js draws it.
+  var measure = null;
+
+  function signBox(sign) {
+    if (!measure) measure = document.createElement("canvas").getContext("2d");
+    measure.font = "700 " + sign[3] + "px " + CONFIG.fontFamily;
+    var w = measure.measureText(sign[0]).width + sign[3] * 1.2, h = sign[3] * 1.7;
+    return { x: sign[1] - w / 2, y: sign[2] - h / 2, w: w, h: h };
+  }
+
+  // ---------- Picking and dragging ----------
 
   // Draw around the middle of a decoration, turned the way it is.
   function turnAt(ctx, id) {
@@ -1386,22 +1571,49 @@ var City = (function () {
     return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
   }
 
-  // The decoration that can be moved at a spot, or null.
+  // The thing that can be moved at a spot, or null: the decorations first, then the homes drawn over the trees,
+  // the trees, and the rest (a tap on a sign picks its thing too).
+  var PICK_ORDER = SMALL.slice().reverse().concat(["treehouse", "hollowTree"], TREE_IDS.slice().reverse(),
+    ["house", "garden", "tent", "castle", "fountain"]);
+
   function movableAt(x, y) {
-    for (var i = MOVABLE.length - 1; i >= 0; i--) {
-      var id = MOVABLE[i];
-      if (isOn(id) && inBox(x, y, boxOf(id))) return id;
+    for (var i = 0; i < PICK_ORDER.length; i++) {
+      var id = PICK_ORDER[i];
+      if (!isOn(id)) continue;
+      if (!isBig(id)) {
+        if (inBox(x, y, boxOf(id))) return id;
+        continue;
+      }
+      var t = treeOf(id);
+      if (t ? near(x, y, t[0], t[1], t[2]) : pickBoxes(id).some(function (b) { return inBox(x, y, b); })) return id;
+      var sign = signOf(id);
+      if (sign && inBox(x, y, signBox(sign))) return id;
     }
     return null;
   }
 
+  // Moving the tent takes Krohna's bed along, keeping how far apart they are.
+  function moveTo(id, x, y) {
+    if (id === "tent") {
+      layout.petBed.x += x - layout.tent.x;
+      layout.petBed.y += y - layout.tent.y;
+    }
+    layout[id].x = x;
+    layout[id].y = y;
+    if (isBig(id)) apply(id);
+  }
+
   function dragTo(id, x, y) {
-    layout[id].x = Math.round(x);
-    layout[id].y = Math.round(y);
+    moveTo(id, Math.round(x), Math.round(y));
   }
 
   function turn(id) {
     layout[id].dir = (layout[id].dir + 1) % 4;
+  }
+
+  // Houses, trees and the fountain are never turned: "🔄 Girar" says "No se puede girar".
+  function noTurn(id) {
+    return isBig(id);
   }
 
   function getPos(id) {
@@ -1410,17 +1622,21 @@ var City = (function () {
   }
 
   function setPos(id, pos) {
-    layout[id] = pos;
+    moveTo(id, pos.x, pos.y);
+    layout[id].dir = pos.dir;
   }
 
+  // ---------- Where things fit ----------
+
   // True if a spot of the map is grass where a decoration can stand: not on the river, the bridge, the stone paths,
-  // the plaza, the garden, a house (Sofía's, the tent with its campfire and log, the treehouse or the castle,
-  // with what hangs on them) or under a tree, and not right at the edge of the map.
+  // the plaza, the fountain, the garden, a house (Sofía's, the tent with its campfire and log, the treehouse, the castle
+  // or the hollow tree, with what hangs on them) or under a tree, and not right at the edge of the map.
   function isDecorGrass(x, y) {
     if (x < 10 || x > W - 10 || y < 10 || y > H - 10) return false;
     if (Math.abs(x - riverX(y)) < RIVER.half + 6) return false;
     if (Math.abs(x - riverX(BRIDGE.y)) <= RIVER.half + BRIDGE.reach && Math.abs(y - BRIDGE.y) <= BRIDGE.half + 14) return false;
     if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 4) || Garden.isGardenAt(x, y) || houseAt(x, y)) return false;
+    if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + 4)) return false;
     if (neighborHomeAt(x, y) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return false;
     if ([TENT, FIRE, MOON_LANTERN, HEART, { x: SEAT.x - 30, y: SEAT.y - 16, w: 60, h: 32 }].some(function (b) {
       return inBox(x, y, grow(b, 4));
@@ -1428,17 +1644,21 @@ var City = (function () {
     for (var t = 0; t < TREES.length; t++) {
       if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] + 4)) return false;
     }
-    return !pathLines().some(function (line) {
+    return !onPath(x, y, 24);
+  }
+
+  function onPath(x, y, d) {
+    return pathLines().some(function (line) {
       for (var i = 1; i < line.length; i++) {
-        if (distanceToSegment(x, y, line[i - 1], line[i]) < 24) return true;
+        if (distanceToSegment(x, y, line[i - 1], line[i]) < d) return true;
       }
       return false;
     });
   }
 
-  // True if a decoration is all on grass where it can stand (see above), off the signs, the other decoration,
+  // True if a decoration is all on grass where it can stand (see above), off the signs, the other decorations,
   // the forest things and the shiny coins.
-  function fits(id) {
+  function fitsSmall(id) {
     var b = boxOf(id);
     var cols = Math.ceil(b.w / 10), rows = Math.ceil(b.h / 10);
     for (var i = 0; i <= cols; i++) {
@@ -1447,9 +1667,158 @@ var City = (function () {
         if (!isDecorGrass(x, y) || Coins.wordAt(x, y)) return false;
       }
     }
-    if (MOVABLE.some(function (other) { return other !== id && isOn(other) && overlap(grow(b, 6), boxOf(other)); })) return false;
+    if (SMALL.some(function (other) { return other !== id && isOn(other) && overlap(grow(b, 6), boxOf(other)); })) return false;
     if (Object.keys(signs).some(function (k) { return overlap(b, signs[k]); })) return false;
     return !Gather.isNear(b.x + b.w / 2, b.y + b.h / 2, Math.max(b.w, b.h) / 2 + 16);
+  }
+
+  // Spots inside a shape, every few world units, for checking the ground under it.
+  function samples(s) {
+    var out = [], step = 8;
+    var b = s.r !== undefined ? { x: s.cx - s.r, y: s.cy - s.r, w: s.r * 2, h: s.r * 2 } : s;
+    var cols = Math.ceil(b.w / step), rows = Math.ceil(b.h / step);
+    for (var i = 0; i <= cols; i++) {
+      for (var j = 0; j <= rows; j++) {
+        var x = b.x + b.w * i / cols, y = b.y + b.h * j / rows;
+        if (s.r === undefined || near(x, y, s.cx, s.cy, s.r)) out.push({ x: x, y: y });
+      }
+    }
+    return out;
+  }
+
+  // Where the house is at first: the stone path that starts under it may be covered there, and so may its end
+  // by the plaza (under its stones).
+  var HOUSE_FIRST = grow(HOUSE, 8);
+
+  function onStonePath(x, y) {
+    if (inBox(x, y, HOUSE_FIRST) || near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20)) return false;
+    return onPath(x, y, 22);
+  }
+
+  // True if a big thing may stand on this spot of the ground: on the map, off the river, the bridge and the stone paths,
+  // and off the plaza unless it is the fountain, a tree or a treehouse.
+  function groundFor(id, x, y) {
+    if (x < 6 || x > W - 6 || y < 6 || y > H - 6) return false;
+    if (Math.abs(x - riverX(y)) < RIVER.half + 6) return false;
+    if (Math.abs(x - riverX(BRIDGE.y)) <= RIVER.half + BRIDGE.reach + 12 && Math.abs(y - BRIDGE.y) <= BRIDGE.half + 14) return false;
+    if (onStonePath(x, y)) return false;
+    return !near(x, y, PLAZA.x, PLAZA.y, PLAZA.r) || ON_PLAZA[id] || !!treeOf(id);
+  }
+
+  function touches(a, b) {
+    if (a.r !== undefined && b.r !== undefined) return near(a.cx, a.cy, b.cx, b.cy, a.r + b.r);
+    if (a.r !== undefined) return touches(b, a);
+    if (b.r === undefined) return overlap(a, b);
+    var px = Math.max(a.x, Math.min(b.cx, a.x + a.w)), py = Math.max(a.y, Math.min(b.cy, a.y + a.h));
+    return near(px, py, b.cx, b.cy, b.r);
+  }
+
+  function grown(s, by) {
+    return s.r !== undefined ? { cx: s.cx, cy: s.cy, r: s.r + by } : grow(s, by);
+  }
+
+  // How much of a tree's crown (its middle) a home may not cover: about its trunk.
+  var TRUNK = 0.6;
+
+  // Where the snowman stands on snowy days: nothing may be put there.
+  function snowmanBox() {
+    var M = CONFIG.weather.snowman, k = M.size;
+    return { x: M.x - 16 * k, y: M.y - 58 * k, w: 32 * k, h: 58 * k + 4 };
+  }
+
+  // True if a big thing fits where it is: on ground it may stand on, off every other thing and every sign
+  // (a sign may go over a tree), and everything can still be reached walking from the door of Sofía's house.
+  function fitsBig(id) {
+    var mine = shapesOf(id);
+    if (!mine.every(function (s) {
+      return samples(s).every(function (p) { return groundFor(id, p.x, p.y); });
+    })) return false;
+    var sign = signOf(id), mySign = sign ? signBox(sign) : null;
+    if (mySign && (mySign.x < 4 || mySign.y < 4 || mySign.x + mySign.w > W - 4 || mySign.y + mySign.h > H - 4)) return false;
+    var isTree = !!treeOf(id);
+    var hits = [];
+    MOVABLE.forEach(function (other) {
+      if (other === id || !isOn(other) || (id === "tent" && other === "petBed")) return;
+      // A decoration may lean a little on a home, as the guitar on the tent and the pot by the castle door.
+      // A home may stand under the edge of a tree's crown: only its trunk is in the way (trees among themselves keep apart).
+      var theirs = isBig(other) ? shapesOf(other).map(function (s) {
+        return treeOf(other) && !isTree ? { cx: s.cx, cy: s.cy, r: s.r * TRUNK } : grown(s, 4);
+      }) : [grow(boxOf(other), -6)];
+      theirs.forEach(function (s) {
+        hits.push({ s: s, withSign: !treeOf(other), home: isTree && isBig(other) && !treeOf(other) });
+      });
+      var theirSign = signOf(other);
+      if (theirSign) hits.push({ s: grow(signBox(theirSign), -4), withSign: true, overTree: true });
+    });
+    FIXED_SIGNS.forEach(function (text) {
+      if (signs[text]) hits.push({ s: grow(signs[text], -4), withSign: true, overTree: true });
+    });
+    hits.push({ s: snowmanBox(), withSign: true });
+    var feet = isTree ? mine.map(function (s) { return { cx: s.cx, cy: s.cy, r: s.r * TRUNK }; }) : mine;
+    if (hits.some(function (h) {
+      if ((h.home ? feet : mine).some(function (s) { return !(isTree && h.overTree) && touches(s, h.s); })) return true;
+      return !!mySign && h.withSign && touches(mySign, h.s);
+    })) return false;
+    return canReachAll();
+  }
+
+  function fits(id) {
+    return isBig(id) ? fitsBig(id) : fitsSmall(id);
+  }
+
+  // Where a character stands at the tent entrance, to cook at the campfire, and to sit on the log
+  // (js/objects.js and js/cooking.js have the first spots and follow the tent with "follow").
+  function follow(id, spot) {
+    var d = offset(id);
+    return { x: spot.x + d.x, y: spot.y + d.y };
+  }
+
+  // True if, from the door of Sofía's house, a character can walk to the doors of every home, the garden plots,
+  // the tent, the campfire and its log, both banks of the river and the forest.
+  function canReachAll() {
+    var N = CONFIG.neighbors;
+    var r = Path.reach("city", doorSpot.x, doorSpot.y);
+    reachable = null;
+    var spots = [N.vladi.home, N.lumi.home, N.hoot.home, N.lumi.spots[5],
+      { x: TENT.x + TENT.w / 2, y: TENT.y + TENT.h + 40 }, { x: FIRE.x + FIRE.w + 32, y: FIRE.y + 50 },
+      { x: SEAT.x, y: SEAT.y + 34 }].concat(Garden.standSpots());
+    // Close enough counts: a character walks to the closest spot it can (like a plot right by the fence).
+    if (!spots.every(function (p) { return r.any({ x: p.x - 10, y: p.y - 10, w: 20, h: 20 }); })) return false;
+    var banks = [-1, 1].every(function (side) {
+      for (var y = MARGIN.top + 10; y < H - MARGIN.bottom; y += 20) {
+        if (r.at(riverX(y) + side * (RIVER.half + RIVER.bank + 6), y)) return true;
+      }
+      return false;
+    });
+    if (!banks) return false;
+    for (var fx = FOREST.x + 10; fx < FOREST.x + FOREST.w; fx += 15) {
+      for (var fy = MARGIN.top; fy < FOREST.y + FOREST.h; fy += 15) {
+        if (isForestGround(fx, fy) && r.at(fx, fy)) return true;
+      }
+    }
+    return false;
+  }
+
+  // ---------- After moving ----------
+
+  // Where each big thing was when Modo decorar started, so whoever was going near one goes to its new spot.
+  var before = {};
+
+  function beginMoves() {
+    before = getLayout();
+  }
+
+  // A spot near a big thing that moved, moved along with it (else the same spot).
+  function carry(x, y) {
+    for (var i = 0; i < BIG.length; i++) {
+      var id = BIG[i], was = before[id];
+      if (!was) continue;
+      var dx = layout[id].x - was.x, dy = layout[id].y - was.y;
+      if (!dx && !dy) continue;
+      var box = boxOf(id);
+      if (inBox(x, y, grow({ x: box.x - dx, y: box.y - dy, w: box.w, h: box.h }, 70))) return { x: x + dx, y: y + dy };
+    }
+    return { x: x, y: y };
   }
 
   function getLayout() {
@@ -1464,10 +1833,19 @@ var City = (function () {
     MOVABLE.forEach(function (id) {
       var s = saved[id];
       if (!s || typeof s !== "object" || [0, 1, 2, 3].indexOf(s.dir) < 0) return;
-      if (typeof s.x !== "number" || typeof s.y !== "number" || !isWalkable(s.x, s.y)) return;
+      if (typeof s.x !== "number" || typeof s.y !== "number" || !isFinite(s.x) || !isFinite(s.y)) return;
+      if (isBig(id)) {
+        if (s.x < 0 || s.x > W || s.y < 0 || s.y > H) return;
+        layout[id] = { x: s.x, y: s.y, dir: 0 };
+        apply(id);
+        return;
+      }
+      if (!isWalkable(s.x, s.y)) return;
       layout[id] = { x: s.x, y: s.y, dir: s.dir };
     });
   }
+
+  resetLayout();
 
   // ---------- Forest ----------
 
@@ -1511,7 +1889,8 @@ var City = (function () {
     drawRiver(ctx, time);
     Weather.drawRiverRings(ctx);
     drawBridge(ctx);
-    drawPlaza(ctx, time);
+    drawPlaza(ctx);
+    drawFountain(ctx, time);
     Weather.drawPuddles(ctx);
     Weather.drawSnowman(ctx);
     drawHouse(ctx, highlightHouse);
@@ -1539,18 +1918,16 @@ var City = (function () {
   }
 
   // The signs of the places, drawn over the night tint so they always read well.
+  // The signs of the big things go with them (see "signOf" in Modo decorar); the rest never move.
   function drawLabels(ctx) {
-    label(ctx, "Casa de Sofía", HOUSE.x + HOUSE.w / 2, HOUSE.y - 34, 24);
     label(ctx, "Río", riverX(600), 600, 24);
     label(ctx, "Puente", riverX(BRIDGE.y), BRIDGE.y + 62, 22);
     label(ctx, "Bosque", 270, 330, 24);
     label(ctx, "Plaza", PLAZA.x, PLAZA.y - 60, 22);
-    label(ctx, "Carpa de real.fixer", TENT.x + TENT.w / 2, TENT.y - 30, 20);
-    var fence = CONFIG.garden.fence;
-    label(ctx, "Jardín de Sofía", fence.x + fence.w / 2, fence.y - 16, 16);
-    label(ctx, "Casa de Lumi", TREEHOUSE.x + TREEHOUSE.w / 2, TREEHOUSE.y - 14, 16);
-    label(ctx, "Castillito de Vladi", CASTLE.x + CASTLE.w / 2, CASTLE.y - 38, 16);
-    label(ctx, "Árbol de Professor Hoot", HOLLOW.x + HOLLOW.w / 2 - 6, HOLLOW.y - 12, 16);
+    BIG.forEach(function (id) {
+      var sign = signOf(id);
+      if (sign) label(ctx, sign[0], sign[1], sign[2], sign[3]);
+    });
   }
 
   // ---------- What is under the mouse ----------
@@ -1589,7 +1966,7 @@ var City = (function () {
     var garden = Garden.wordAt(x, y);
     if (garden) return garden;
     if (Weather.snowmanAt(x, y)) return "snowman";
-    if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN)) return "fountain";
+    if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN)) return "fountain";
     if (houseAt(x, y)) return "house";
     var half = RIVER.half + 34;
     if (Math.abs(x - riverX(BRIDGE.y)) <= half && Math.abs(y - BRIDGE.y) <= 28) return "bridge";
@@ -1617,6 +1994,7 @@ var City = (function () {
     castleWindow: CASTLE_WINDOW,
     hollowWindow: HOLLOW_WINDOW,
     isOpenGrass: isOpenGrass,
+    isReachable: isReachable,
     isForestFloor: isForestFloor,
     riverAt: riverAt,
     riverX: riverX,
@@ -1627,11 +2005,15 @@ var City = (function () {
     boxOf: boxOf,
     dragTo: dragTo,
     canTurn: function () { return true; },
+    noTurn: noTurn,
     turn: turn,
     getPos: getPos,
     setPos: setPos,
     fits: fits,
     settle: function () {},
+    beginMoves: beginMoves,
+    carry: carry,
+    follow: follow,
     resetLayout: resetLayout,
     getLayout: getLayout,
     setLayout: setLayout

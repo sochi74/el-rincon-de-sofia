@@ -1219,7 +1219,8 @@ var Sims = (function () {
   }
 
   // Modo decorar moved things in a place: whoever stands on something now steps to the closest free spot,
-  // and whoever was walking finds a new way to where it was going (going out or in as before).
+  // and whoever was walking finds a new way to where it was going (going out or in as before). In the city, going to
+  // the house goes to its door where it is now, and going near a home that moved goes to the same spot by it.
   function settle(where) {
     sims.forEach(function (sim) {
       if (sim.place !== where) return;
@@ -1231,6 +1232,7 @@ var Sims = (function () {
       }
       if (sim.path.length > 0) {
         var end = sim.path[sim.path.length - 1];
+        if (where === "city") end = sim.goal === "house" ? City.doorSpot : City.carry(end.x, end.y);
         sim.path = Path.find(where, sim.x, sim.y, end.x, end.y);
       }
     });

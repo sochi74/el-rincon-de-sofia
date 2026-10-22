@@ -255,11 +255,13 @@ var Weather = (function () {
   }
 
   // Puddles on the grass and on the stones: they grow while it rains and dry up after.
+  // Where Modo decorar put a home, a tree or the fountain, there is no puddle.
   function drawPuddles(ctx) {
     if (puddles <= 0) return;
     var C = CONFIG.colors;
     ctx.save();
     K.puddles.spots.forEach(function (p, i) {
+      if (City.isWalkable(p.x, p.y) && City.isSolid(p.x, p.y)) return;
       var g = puddles;
       ctx.globalAlpha = Math.min(1, g * 1.5) * 0.85;
       ctx.fillStyle = "#6E9FB8";

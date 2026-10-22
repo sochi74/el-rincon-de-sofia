@@ -43,6 +43,25 @@ var Coins = (function () {
     if (spot) ground.push({ x: spot.x, y: spot.y, spin: Math.random() * Math.PI * 2 });
   }
 
+  // After Modo decorar moved things in the city: a coin left under something, or where nobody can walk to,
+  // moves to another spot of open grass (or goes away if there is none).
+  function settle() {
+    var kept = [];
+    ground.forEach(function (c) {
+      if (!isFreeSpot(c.x, c.y)) {
+        var others = ground;
+        ground = kept;
+        var spot = randomSpot();
+        ground = others;
+        if (!spot) return;
+        c.x = spot.x;
+        c.y = spot.y;
+      }
+      kept.push(c);
+    });
+    ground = kept;
+  }
+
   function update(dt) {
     pops.forEach(function (p) { p.age += dt; });
     pops = pops.filter(function (p) { return p.age < K.popTime; });
@@ -234,5 +253,5 @@ var Coins = (function () {
     }
   }
 
-  return { update: update, draw: draw, wordAt: wordAt, text: text, amount: amount, spend: spend, add: add, isNear: isNear, get: get, set: set };
+  return { update: update, settle: settle, draw: draw, wordAt: wordAt, text: text, amount: amount, spend: spend, add: add, isNear: isNear, get: get, set: set };
 })();

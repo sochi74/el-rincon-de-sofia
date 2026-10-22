@@ -25,6 +25,24 @@
 - El muñeco de nieve se dibuja debajo de los personajes: si alguien camina justo detrás de él, se ve por encima del muñeco.
 - En el 📖 Diario, las palabras de los vecinos se guardan como aparecen en su etiqueta (por ejemplo "Lumi · fairy" o "Professor Hoot · fox").
 - Professor Hoot no pasea ni charla solo con Lumi y Vladi; nadie va solo a aprender la palabra del día.
+- La ciudad está bastante llena: para llevar una casa lejos, primero hay que hacerle lugar moviendo árboles u otras cosas. La Casa de Sofía es grande y casi no tiene otro lugar libre hasta que se mueven árboles del bosque.
+- Los caminos de piedra no se mueven: si mueves la Casa de Sofía, el camino sigue empezando donde estaba su puerta.
+- La Guitarra y la Olla se quedan donde están cuando mueves la Carpa o el Castillito (se mueven solas, como antes). Si las sueltas justo en su lugar de siempre, junto a la carpa o la puerta del castillito, se ven rojas y vuelven.
+- La copa de un árbol puede quedar un poquito encima del borde de una casa (solo el tronco no deja ponerla encima).
+- Al tocar ✅ Listo, Lumi y Vladi se quedan donde estaban (si quedaron encima de algo, van al lugar libre más cercano) y van a los lugares nuevos en su próximo paseo.
+
+## 2026-10-22 · Extra: 🏡 Mover casas en la ciudad
+- 🛠️ En Modo decorar, en la ciudad, ahora también se arrastran: 🏠 la Casa de Sofía (con su puerta), 🌸 el Jardín de Sofía (sus 6 parcelas con lo que tienen plantado, la cerca y su cartel), ⛺ la Carpa de real.fixer junto con su fogata, el tronco y la camita de Krohna (sin cambiar cómo están ubicados entre sí; la camita se sigue pudiendo mover sola), 🏰 el Castillito de Vladi, 🌳 la Casa de Lumi (su árbol con la casita), 🌳 el Árbol de Professor Hoot (con su pizarrita), ⛲ la fuente (dentro o fuera de la plaza) y 🌲 cada árbol del bosque, uno por uno. Se toman tocando la cosa o su cartel.
+- Con cada casa se mueven sus decoraciones colgadas (farolito de luna, farol de cristal, guirnalda, corazón dorado), la nieve de su techo, su cartel y su ventana que brilla de noche. Las luciérnagas se mueven con la carpa.
+- No se mueven: el río, el puente, los caminos de piedra, la plaza de piedra, el área del Bosque (con su cartel) y el muñeco de nieve.
+- Las casas, los árboles y la fuente no se giran: con ellas, "🔄 Girar" muestra la burbuja "No se puede girar".
+- Verde o rojo: cabe en pasto libre, sin encimarse con otra cosa ni con un cartel (los carteles sí pueden quedar sobre la copa de un árbol), sin tapar el río, el puente, los caminos de piedra ni el lugar del muñeco de nieve. En la plaza solo pueden ir la fuente, los árboles y las casas de árbol. Además, desde la puerta de la Casa de Sofía se tiene que poder llegar caminando a la puerta de cada casa, a todas las parcelas y la entrada del jardín, a la carpa, la fogata y el tronco, a las dos orillas del río y al Bosque. Si se suelta en rojo, vuelve a donde estaba.
+- Todo usa los lugares nuevos: entrar y salir de la casa, los caminos, el libre albedrío, las visitas de real.fixer (desde su carpa y de vuelta), dormir en la carpa (con sus "Zzz"), sentarse en el tronco y cocinar en la fogata, Krohna y su camita, los paseos de Lumi (su casa y la entrada del jardín) y de Vladi (su castillito y la fogata), Professor Hoot junto a su puerta, el jardín, las monedas y las cosas del bosque (si quedaron debajo de algo o encerradas, se mudan a un lugar libre), la luz de la fogata y de las ventanas de noche, el sonido de la fogata, los charcos (no aparecen debajo de una casa o un árbol) y las etiquetas de palabras.
+- Al tocar ✅ Listo, quien quedó encima de algo va al lugar libre más cercano, y quien iba caminando hacia una casa que se movió va a su lugar nuevo.
+- 🌲 Volvió el árbol chico que se quitó en el Hito 22, en un lugar libre del bosque (abajo a la derecha del bosque, cerca del río), con el mismo dibujo que los demás. Se mueve como los otros.
+- ↩️ Como al principio devuelve todo, en la casa y en la ciudad, a su lugar de siempre (el arbolito, a su lugar nuevo del bosque).
+- Guardado: recuerda dónde está cada cosa. Una partida vieja carga todo como al principio; "Reiniciar" también.
+- Con permiso de Sofía también se tocaron js/objects.js y js/cooking.js, para que dormir en la carpa, sentarse en el tronco y cocinar en la fogata usen sus lugares nuevos.
 
 ## 2026-10-22 · Hito 22: 📖 Vecino profe y diario de palabras
 - Sofía cambió la regla fija de los vecinos: ahora son Lumi, Vladi y Professor Hoot (siguen siendo dos jugables).
