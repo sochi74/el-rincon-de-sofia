@@ -1,5 +1,5 @@
 // Data for the characters. Must always match CHARACTERS.md.
-// "type" is "playable" (Sofía and real.fixer, who can be selected) or "neighbor" (Lumi and Vladi, who live in the city).
+// "type" is "playable" (Sofía and real.fixer, who can be selected) or "neighbor" (Lumi, Vladi and Professor Hoot, who live in the city).
 // Each phrase has its text and, when the text is in English, a Spanish subtitle.
 // "goals" are the character's dream: 2 goals, one after the other (js/goals.js counts them). Each one has its emoji, its text,
 // how it is said once it is done ("Sofía cosechó 5 flores"), how much it takes and the decoration it gives.
@@ -60,7 +60,7 @@ var CHARACTERS = [
         { text: "Life is good.", subtitle: "La vida es buena." }
       ]
     },
-    relationships: { sofia: 0, lumi: 0, vladi: 0 },
+    relationships: { sofia: 0, lumi: 0, vladi: 0, hoot: 0 },
     favoriteGifts: [
       { id: "crabSoup", name: "Sopa de cangrejo" },
       { id: "crystal", name: "Cristal" }
@@ -130,7 +130,7 @@ var CHARACTERS = [
         { text: "¡Qué lindo es mi rincón!", subtitle: null }
       ]
     },
-    relationships: { realfixer: 0, lumi: 0, vladi: 0 },
+    relationships: { realfixer: 0, lumi: 0, vladi: 0, hoot: 0 },
     favoriteGifts: [
       { id: "berryPie", name: "Tarta de bayas" },
       { id: "magicDish", name: "Plato mágico" }
@@ -199,7 +199,7 @@ var CHARACTERS = [
         { text: "¡Brillitos para todos!", subtitle: null }
       ]
     },
-    relationships: { sofia: 0, realfixer: 0, vladi: 0 },
+    relationships: { sofia: 0, realfixer: 0, vladi: 0, hoot: 0 },
     favoriteGifts: [
       { id: "crystal", name: "Cristal" }
     ],
@@ -267,7 +267,7 @@ var CHARACTERS = [
         { text: "I'm brave! ...Mostly.", subtitle: "¡Soy valiente! ...Casi siempre." }
       ]
     },
-    relationships: { sofia: 0, realfixer: 0, lumi: 0 },
+    relationships: { sofia: 0, realfixer: 0, lumi: 0, hoot: 0 },
     favoriteGifts: [
       { id: "crab", name: "Cangrejo" }
     ],
@@ -278,6 +278,70 @@ var CHARACTERS = [
       { id: "crabSoupGift", emoji: "🦀", text: "Recibir una Sopa de cangrejo", done: "recibió una Sopa de cangrejo", target: 1,
         decoration: "💛 un corazón dorado en una de las torrecitas" }
     ]
+  },
+  {
+    id: "hoot",
+    name: "Professor Hoot",
+    type: "neighbor",
+    nickname: "Professor Hoot. Zorro bibliotecario, el profe de inglés del valle. Vive en un árbol hueco del bosque.",
+    appearance: {
+      skin: "zorro naranja con pecho y punta de la cola blancos",
+      hair: "orejas puntiagudas naranjas",
+      facialHair: "hocico blanco",
+      top: "saco café con corbatín rojo",
+      bottom: "patas oscuras",
+      accessory: "siempre lleva un libro bajo el brazo",
+      details: "cola esponjosa; lentes redondos"
+    },
+    traits: [
+      { id: "calm", name: "Tranquilo", emoji: "🧘" },
+      { id: "creative", name: "Creativo", emoji: "🎨" },
+      { id: "shy", name: "Tímido", emoji: "🙈" }
+    ],
+    favoriteActivity: "enseñar palabras",
+    catchphrase: { text: "Every day, a new word!", subtitle: "¡Cada día, una palabra nueva!" },
+    dialogLanguage: "inglés con subtítulos en español",
+    phrases: {
+      greeting: [
+        { text: "Oh, hello there.", subtitle: "Oh, hola." },
+        { text: "Welcome, my friend.", subtitle: "Bienvenida, amiga mía." }
+      ],
+      chat: [
+        { text: "I just finished a wonderful book.", subtitle: "Acabo de terminar un libro maravilloso." },
+        { text: "Words are a kind of magic.", subtitle: "Las palabras son un tipo de magia." }
+      ],
+      joke: [
+        { text: "Why is my name Hoot? Even I don't know!", subtitle: "¿Por qué me llamo Hoot? ¡Ni yo lo sé!" },
+        { text: "I read a book about glue. I couldn't put it down!", subtitle: "Leí un libro sobre pegamento. ¡No lo podía soltar!" }
+      ],
+      highFive: [
+        { text: "Oh! A high five. Splendid.", subtitle: "¡Oh! Chocar los cinco. Espléndido." },
+        { text: "Well done!", subtitle: "¡Bien hecho!" }
+      ],
+      hunger: [
+        { text: "Time for a little snack.", subtitle: "Hora de un bocadito." },
+        { text: "Fish with mushrooms, perhaps?", subtitle: "¿Pescado con hongos, quizás?" }
+      ],
+      sleep: [
+        { text: "My eyes are closing...", subtitle: "Se me cierran los ojos..." },
+        { text: "One more page... zzz.", subtitle: "Una página más... zzz." }
+      ],
+      boredom: [
+        { text: "Let's learn something new.", subtitle: "Aprendamos algo nuevo." },
+        { text: "Have you read anything good?", subtitle: "¿Leíste algo bueno?" }
+      ],
+      happy: [
+        { text: "Every day, a new word!", subtitle: "¡Cada día, una palabra nueva!" },
+        { text: "What a lovely day to learn.", subtitle: "Qué lindo día para aprender." }
+      ]
+    },
+    relationships: { sofia: 0, realfixer: 0, lumi: 0, vladi: 0 },
+    favoriteGifts: [
+      { id: "fishMushroom", name: "Pescado con hongos" }
+    ],
+    pet: "ninguna",
+    // No goals yet.
+    goals: []
   }
 ];
 

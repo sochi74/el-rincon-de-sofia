@@ -1048,7 +1048,7 @@ var Sims = (function () {
   function isIdle(sim) {
     var id = sim.data.id;
     return sim.path.length === 0 && !Objects.isActive(id) && !Garden.isActive(id) && !Gather.isActive(id) && !Cooking.isActive(id) &&
-      !Social.isInvolved(id) && !Gifts.isInvolved(id);
+      !Social.isInvolved(id) && !Gifts.isInvolved(id) && !Lessons.isInvolved(id);
   }
 
   // Try to fix the lowest need; true if it found something to do.
@@ -1265,7 +1265,8 @@ var Sims = (function () {
   }
 
   // A tap on the other character opens the social menu; tapping it again selects it.
-  // In the city, a tap on a neighbor who is outside opens the social menu too (neighbors are never selected).
+  // In the city, a tap on a neighbor who is outside opens the social menu too (neighbors are never selected);
+  // for Professor Hoot it has "📖 Palabra del día" on top (js/lessons.js).
   // A tap on a character selects it and stops what it was doing.
   // A tap on furniture sends the selected one to use it (the Estufa opens the recipe menu); a tap on the floor walks it there.
   // A tap on the front door takes it out to the city; in the city, a tap on the house takes it back in,
@@ -1292,8 +1293,13 @@ var Sims = (function () {
       menuFor = neighbor;
       UI.openMenu(screenX, screenY, function (type) {
         menuFor = null;
-        Social.start(giver, friend, type);
-      });
+        Lessons.cancel(giver.data.id);
+        if (type === "lesson") {
+          Lessons.start(giver, friend);
+        } else {
+          Social.start(giver, friend, type);
+        }
+      }, friend.data.id === "hoot" ? Lessons.menuOption() : null);
       return;
     }
     if (sim && selected && sim !== selected && !again) {
@@ -1310,6 +1316,7 @@ var Sims = (function () {
       if (Gather.cancel(sim.data.id)) wasBusy = true;
       if (Cooking.cancel(sim.data.id)) wasBusy = true;
       if (Gifts.cancel(sim.data.id)) wasBusy = true;
+      if (Lessons.cancel(sim.data.id)) wasBusy = true;
       if (Garden.cancel(sim.data.id) || wasBusy) sim.path = [];
       Social.cancel(sim.data.id);
       selected = sim;
@@ -1323,6 +1330,7 @@ var Sims = (function () {
     Gather.cancel(selected.data.id);
     Cooking.cancel(selected.data.id);
     Gifts.cancel(selected.data.id);
+    Lessons.cancel(selected.data.id);
     if (selected.place === "city") {
       var thing = Objects.at(x, y, "city");
       var plot = Garden.plotAt(x, y);

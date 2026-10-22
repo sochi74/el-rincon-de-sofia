@@ -144,6 +144,10 @@ var CONFIG = {
     waitBubbleTime: 1.2
   },
 
+  // Professor Hoot's word of the day (js/lessons.js): magic coins for the right answer, and how long the floating
+  // "+10 🪙" and "📖 ¡Palabra nueva!" last, in seconds.
+  lessons: { reward: 10, popTime: 1.6 },
+
   // Going up a friendship level: how many hearts rain and how long it all lasts, in seconds.
   friendLevel: { hearts: 22, time: 3.5 },
 
@@ -353,8 +357,10 @@ var CONFIG = {
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.
-  // "menuKey" remembers whether the panel was open or closed.
-  save: { every: 10, key: "el-rincon-de-sofia-save", menuKey: "el-rincon-de-sofia-menu", soundKey: "el-rincon-de-sofia-sound" },
+  // "menuKey" remembers whether the panel was open or closed. "diaryKey" keeps the Diario de palabras apart from the game,
+  // so "Reiniciar" never forgets it.
+  save: { every: 10, key: "el-rincon-de-sofia-save", menuKey: "el-rincon-de-sofia-menu", soundKey: "el-rincon-de-sofia-sound",
+    diaryKey: "el-rincon-de-sofia-diary" },
 
   // Sounds and music made with code (js/audio.js). Volumes go from 0 to 1: "master" is for everything,
   // then each group: effects, place sounds and music (softer at night). The tempo is seconds per music step.
@@ -374,7 +380,7 @@ var CONFIG = {
     snowHush: 0.35
   },
 
-  // The neighbors, Lumi and Vladi (js/neighbors.js). They live in the city, walk a little slower than Sofía and real.fixer
+  // The neighbors, Lumi, Vladi and Professor Hoot (js/neighbors.js). They live in the city, walk a little slower than Sofía and real.fixer
   // ("speed"), and stay "stay.min" to "stay.max" seconds at each spot they visit before going on.
   // Lumi is "scale" times as big as the others and floats "float" world units over the grass. At night her trail of sparkles
   // lasts "trail.life" seconds, with a new sparkle every "trail.every" seconds while she moves.
@@ -386,6 +392,10 @@ var CONFIG = {
   // on their own, at most once every "chat.wait.min" to "chat.wait.max" seconds of play; each chat gives both "chat.friendship" Amistad.
   // At night, each time Lumi picks where to go, she goes to Vladi ("seek.gap" world units from him) with chance "seek.chance",
   // or "seek.ready" once they may chat again.
+  // Professor Hoot never walks: from "awake.from" to "awake.to" (minutes of the day) he stands by the door of his hollow tree
+  // ("home") reading his book; every "read.min" to "read.max" seconds he turns a page or fixes his glasses for "read.time" seconds.
+  // The rest of the time he sleeps inside. His hollow tree ("hollowTree", in the forest) has its round door, a little window
+  // and, by its door, the chalkboard with the word of the day ("chalkboard").
   neighbors: {
     chat: { near: 170, wait: { min: 60, max: 120 }, friendship: 5 },
     lumi: {
@@ -399,7 +409,7 @@ var CONFIG = {
       spots: [
         { x: 290, y: 216 },
         { x: 120, y: 205 },
-        { x: 425, y: 285 },
+        { x: 390, y: 300 },
         { x: 500, y: 610 },
         { x: 626, y: 360 },
         { x: 379, y: 492 }
@@ -418,9 +428,20 @@ var CONFIG = {
         { x: 480, y: 635 }
       ]
     },
+    hoot: {
+      speed: 100,
+      scale: 0.95,
+      stay: { min: 4, max: 8 },
+      awake: { from: 480, to: 1080 },
+      read: { min: 4, max: 9, time: 1.1 },
+      home: { x: 414, y: 266 },
+      spots: [{ x: 414, y: 266 }]
+    },
     houses: {
       treehouse: { x: 256, y: 88, w: 68, h: 118, ladder: { x: 282, y: 150, w: 16, h: 54 } },
-      castle: { x: 825, y: 565, w: 130, h: 100 }
+      castle: { x: 825, y: 565, w: 130, h: 100 },
+      hollowTree: { x: 424, y: 128, w: 88, h: 122, trunk: { x: 440, y: 186, w: 56, h: 62 } },
+      chalkboard: { x: 502, y: 218, w: 52, h: 34 }
     }
   },
 
@@ -493,6 +514,27 @@ var CONFIG = {
       bear: "#9A6B45",
       bearLight: "#C99A6E",
       bearDark: "#4A3428"
+    },
+    // Professor Hoot, the fox: orange fur with a white chest and tail tip, round glasses, a brown jacket, a red bow tie
+    // and his book.
+    hoot: {
+      icon: "🦊",
+      skin: "#E07B39",
+      fur: "#E07B39",
+      furDark: "#B85A24",
+      white: "#FFF8EE",
+      eyes: "#3A2A20",
+      nose: "#2E2018",
+      shirt: "#8A5A3A",
+      jacket: "#8A5A3A",
+      jacketDark: "#6E4529",
+      bowTie: "#C8433A",
+      glasses: "#4A3428",
+      pants: "#5A3A2A",
+      shoes: "#3A2A20",
+      book: "#5E7F6A",
+      bookDark: "#46604F",
+      page: "#FFFDF8"
     }
   }
 };

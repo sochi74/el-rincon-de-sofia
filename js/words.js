@@ -1,5 +1,6 @@
 // Words shown when the mouse is over furniture, rooms and places: Spanish, English and how to say
 // the English word, written the way a Spanish speaker would read it. Only data.
+// Also the list of words Professor Hoot teaches (LESSON_WORDS, at the end).
 var WORDS = {
   // House
   kitchen: { es: "Cocina", en: "kitchen", say: "KÍ-chen" },
@@ -66,6 +67,9 @@ var WORDS = {
   neighbor: { es: "Vecino", en: "neighbor", say: "NÉI-bor" },
   wings: { es: "Alas", en: "wings", say: "UÍNGS" },
   teddyBear: { es: "Osito de peluche", en: "teddy bear", say: "TÉ-di BER" },
+  hoot: { es: "Professor Hoot", en: "fox", say: "FOKS" },
+  hollowTree: { es: "Árbol hueco", en: "hollow tree", say: "JÓ-lou TRÍI" },
+  chalkboard: { es: "Pizarra", en: "chalkboard", say: "CHÓK-bord" },
 
   // Sound button
   sound: { es: "Sonido", en: "sound", say: "SÁUND" },
@@ -112,5 +116,36 @@ var WORDS = {
   puddle: { es: "Charco", en: "puddle", say: "PÁ-del" },
 
   // Krohna's bed by the Carpa
-  krohnaBed: { es: "Cama de Krohna", en: "Krohna's bed", say: "KRÓ-nas BED" }
+  krohnaBed: { es: "Cama de Krohna", en: "Krohna's bed", say: "KRÓ-nas BED" },
+
+  // Professor Hoot and the Diario de palabras (js/lessons.js)
+  fox: { es: "Zorro", en: "fox", say: "FOKS" },
+  teacher: { es: "Profesor", en: "teacher", say: "TÍI-cher" },
+  diary: { es: "Diario", en: "diary", say: "DÁI-a-ri" },
+  word: { es: "Palabra", en: "word", say: "UÓRD" }
 };
+
+// The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).
+// Each one has its meaning in Spanish, how to say it, and an example with its Spanish subtitle.
+var LESSON_WORDS = [
+  { en: "happy", es: "feliz", say: "JÁ-pi", example: { text: "I am happy today.", subtitle: "Estoy feliz hoy." } },
+  { en: "book", es: "libro", say: "BUK", example: { text: "I love this book.", subtitle: "Me encanta este libro." } },
+  { en: "star", es: "estrella", say: "STAR", example: { text: "Look at that star!", subtitle: "¡Mira esa estrella!" } },
+  { en: "cloud", es: "nube", say: "KLÁUD", example: { text: "That cloud looks like a cat.", subtitle: "Esa nube parece un gato." } },
+  { en: "blue", es: "azul", say: "BLÚU", example: { text: "The river is blue.", subtitle: "El río es azul." } },
+  { en: "sing", es: "cantar", say: "SING", example: { text: "Let's sing a song.", subtitle: "Cantemos una canción." } },
+  { en: "dance", es: "bailar", say: "DANS", example: { text: "Lumi loves to dance.", subtitle: "A Lumi le encanta bailar." } },
+  { en: "big", es: "grande", say: "BIG", example: { text: "This tree is very big.", subtitle: "Este árbol es muy grande." } },
+  { en: "small", es: "pequeño", say: "SMOL", example: { text: "Krohna is small.", subtitle: "Krohna es pequeño." } },
+  { en: "warm", es: "cálido", say: "UÓRM", example: { text: "The campfire is warm.", subtitle: "La fogata es cálida." } },
+  { en: "cold", es: "frío", say: "KÓULD", example: { text: "Snow is cold.", subtitle: "La nieve es fría." } },
+  { en: "apple", es: "manzana", say: "Á-pel", example: { text: "An apple a day!", subtitle: "¡Una manzana al día!" } },
+  { en: "read", es: "leer", say: "RÍID", example: { text: "I read every night.", subtitle: "Leo cada noche." } },
+  { en: "write", es: "escribir", say: "RÁIT", example: { text: "Write a new word.", subtitle: "Escribe una palabra nueva." } },
+  { en: "laugh", es: "reír", say: "LAF", example: { text: "Your jokes make me laugh.", subtitle: "Tus chistes me hacen reír." } },
+  { en: "sky", es: "cielo", say: "SKÁI", example: { text: "The sky is pink today.", subtitle: "El cielo está rosado hoy." } },
+  { en: "brave", es: "valiente", say: "BRÉIV", example: { text: "Vladi is brave... mostly.", subtitle: "Vladi es valiente... casi siempre." } },
+  { en: "beautiful", es: "hermoso", say: "BIÚ-ti-ful", example: { text: "What a beautiful garden!", subtitle: "¡Qué jardín tan hermoso!" } },
+  { en: "thank you", es: "gracias", say: "ZÉNK IU", example: { text: "Thank you for the gift!", subtitle: "¡Gracias por el regalo!" } },
+  { en: "tomorrow", es: "mañana", say: "tu-MÓ-rrou", example: { text: "See you tomorrow!", subtitle: "¡Nos vemos mañana!" } }
+];

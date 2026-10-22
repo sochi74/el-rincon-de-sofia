@@ -1,9 +1,9 @@
 // Small panel that shows the game clock with the weather of the day (its word next to the mouse), the magic coins, who is selected, their needs, friendship, a button to pick each character,
 // and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕),
 // and another one next to it changes the sound (🔊 / 🎵 / 🔇). Some buttons show their word in English next to the mouse. Every button goes "pling", and selling goes "cling".
-// Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
+// Also the little social menu that opens next to a character (with "📖 Palabra del día" on top for Professor Hoot), the seed menu that opens next to an empty garden plot,
 // the recipe menu that opens next to the Estufa or the Fogata,
-// the backpack window (it takes turns with the goals window of js/goals.js) with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
+// the backpack window (it takes turns with the goals window of js/goals.js and the Diario of js/lessons.js) with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
 // the gift when more than one can), and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 // On wide screens the open panel keeps a column on the left and the house and the city are drawn beside it (js/main.js);
@@ -16,7 +16,7 @@ var UI = (function () {
   var soundToggle, buttonWordShown = false;
   var clockText, weatherEl;
   var panel, clockEl, nameEl, hintEl, needsEl, friendshipEl, pauseButton, menu, characterButtons;
-  var onMenuPick = null;
+  var onMenuPick = null, lessonButton;
   var seedMenu, seedButtons = [], onSeedPick = null;
   var cookMenu, cookButtons = [], campfireButton, onCookPick = null, onCookClose = null;
   var backpack, backpackList, backpackShown = null, eatButtons = [], giftButtons = [];
@@ -119,6 +119,14 @@ var UI = (function () {
       if (pick) pick("campfire");
     });
     cookMenu.appendChild(campfireButton);
+
+    // "📖 Palabra del día", on top of the social menu; it only shows for Professor Hoot (see openMenu).
+    lessonButton = document.createElement("button");
+    lessonButton.type = "button";
+    lessonButton.setAttribute("data-type", "lesson");
+    lessonButton.hidden = true;
+    menu.insertBefore(lessonButton, menu.firstChild);
+    bindWord(lessonButton, "word");
 
     Array.prototype.forEach.call(menu.querySelectorAll("button"), function (button) {
       button.addEventListener("click", function () {
@@ -260,8 +268,12 @@ var UI = (function () {
   }
 
   // Open the social menu next to a spot on the screen, kept inside the window.
-  function openMenu(x, y, onPick) {
+  // "lesson" is for Professor Hoot ({ done }): "📖 Palabra del día" shows on top, faded with "Vuelve mañana 🌙" once done today.
+  function openMenu(x, y, onPick, lesson) {
     onMenuPick = onPick;
+    lessonButton.hidden = !lesson;
+    lessonButton.disabled = !!lesson && lesson.done;
+    lessonButton.textContent = lesson && lesson.done ? "📖 Palabra del día · Vuelve mañana 🌙" : "📖 Palabra del día";
     menu.hidden = false;
     Sound.play("pling");
     place(menu, x, y);
@@ -340,6 +352,7 @@ var UI = (function () {
 
   // Close the social menu, the seed menu, the recipe menu and the gift menu.
   function closeMenu() {
+    if (!menu.hidden && !lessonButton.hidden) forgetButtonWord();
     var closed = onCookClose;
     onMenuPick = null;
     onSeedPick = null;
@@ -359,12 +372,14 @@ var UI = (function () {
 
   // ---------- Backpack ----------
 
-  // The goals window closes when the backpack opens (js/goals.js closes the backpack the other way round).
+  // The goals window and the Diario close when the backpack opens (js/goals.js and js/lessons.js close the backpack
+  // the other way round).
   function setBackpackOpen(open) {
     backpack.hidden = !open;
     backpackShown = null;
     if (open) {
       Goals.close();
+      Lessons.closeDiary();
       updateBackpack();
     }
   }
@@ -615,10 +630,10 @@ var UI = (function () {
     return { x: x, y: y };
   }
 
-  // True if a spot on the screen is over the panel, the ☰ button, the backpack, the goals window or an open menu,
-  // so the word tag never shows what is under them.
+  // True if a spot on the screen is over the panel, the ☰ button, the backpack, the goals window, the Diario,
+  // the question of the word of the day or an open menu, so the word tag never shows what is under them.
   function coversSpot(x, y) {
-    if (Goals.covers(x, y)) return true;
+    if (Goals.covers(x, y) || Lessons.covers(x, y)) return true;
     return [panelOpen ? panel : null, menuToggle, soundToggle, backpack, menu, seedMenu, cookMenu, giftMenu].some(function (el) {
       if (!el || el.hidden) return false;
       var r = el.getBoundingClientRect();
@@ -630,12 +645,14 @@ var UI = (function () {
   // "id" is a word of js/words.js, or a word itself as { es, en, say } (like Krohna's).
   // With the mouse it goes below and to the right so it never covers the cursor;
   // with a finger it goes above, and hides by itself after "seconds".
+  // The first time a word shows up, it goes to the Diario (js/lessons.js).
   function showWord(id, x, y, seconds) {
     var word = typeof id === "string" ? WORDS[id] : id;
     if (!word) {
       hideWord();
       return;
     }
+    Lessons.discover(word, x, y);
     if (wordEs.textContent !== word.es) {
       wordEs.textContent = word.es;
       wordEn.textContent = word.en;
