@@ -23,10 +23,24 @@ var Cooking = (function () {
 
   // Where the character stands to cook at each place, by the id of the furniture or city thing.
   // At the Fogata it is on the other side of the fire from the log, so one can cook while the other sits.
+  // At the Estufa it is in front of it, wherever Modo decorar put it (js/house.js says where).
   var STATIONS = {
-    stove: { place: "house", spot: { x: 280, y: 200 } },
+    stove: { place: "house" },
     campfire: { place: "city", spot: { x: 870, y: 490 } }
   };
+
+  function spotAt(station) {
+    var s = STATIONS[station.id];
+    if (s.spot) return s.spot;
+    var b = House.bounds(station);
+    return House.useSpot(station.id) || { x: b.x + b.w / 2, y: b.y + b.h + 20 };
+  }
+
+  // The middle of the Estufa or the Fogata, to look at it while cooking.
+  function middleOf(station) {
+    var b = STATIONS[station.id].place === "house" ? House.bounds(station) : station;
+    return { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+  }
 
   // What each character is doing, by character id:
   // cooking { sim, kind: "cook", station, recipe, phase: "walking" | "doing" | "busy", elapsed }
@@ -61,8 +75,8 @@ var Cooking = (function () {
   // At the Fogata the menu also has "Junto a la fogata 🔥", to sit by the fire as before.
   // Closing the menu without picking stops the character where it is.
   function tap(sim, station, screenX, screenY) {
-    var s = STATIONS[station.id];
-    Sims.walkTo(sim, s.spot.x, s.spot.y);
+    var spot = spotAt(station);
+    Sims.walkTo(sim, spot.x, spot.y);
     UI.openCookMenu(screenX, screenY, station.id === "campfire", function () {
       sim.path = [];
     }, function (pick) {
@@ -71,7 +85,7 @@ var Cooking = (function () {
         return;
       }
       current[sim.data.id] = { sim: sim, kind: "cook", station: station, recipe: recipe(pick), phase: "walking", elapsed: 0 };
-      Sims.walkTo(sim, s.spot.x, s.spot.y);
+      Sims.walkTo(sim, spot.x, spot.y);
     });
   }
 
@@ -161,6 +175,16 @@ var Cooking = (function () {
     return !!current[id];
   }
 
+  // Modo decorar moved the Estufa: whoever was walking there to cook walks to where it is now.
+  function refresh() {
+    Object.keys(current).forEach(function (id) {
+      var a = current[id];
+      if (a.kind !== "cook" || a.phase !== "walking" || STATIONS[a.station.id].place !== "house") return;
+      var spot = spotAt(a.station);
+      Sims.walkTo(a.sim, spot.x, spot.y);
+    });
+  }
+
   // How many seconds it takes.
   function timeFor(a) {
     if (a.kind === "cook") return K.cookTime;
@@ -183,7 +207,8 @@ var Cooking = (function () {
         if (a.sim.path.length > 0) return;
         a.phase = isCookingAt(a.station, id) ? "busy" : "doing";
         a.elapsed = 0;
-        if (a.phase === "doing") Sims.face(a.sim, a.station.x + a.station.w / 2, a.station.y + a.station.h / 2);
+        var mid = middleOf(a.station);
+        if (a.phase === "doing") Sims.face(a.sim, mid.x, mid.y);
         if (a.phase === "doing") Sound.playAt(a.sim.place, "sizzle");
         return;
       }
@@ -258,6 +283,7 @@ var Cooking = (function () {
     hasBerryFor: hasBerryFor,
     anyDish: anyDish,
     cancel: cancel,
+    refresh: refresh,
     isActive: isActive,
     isCookingAt: isCookingAt,
     update: update,

@@ -21,10 +21,30 @@
 - Los rasgos de los vecinos que cambian necesidades y su actividad favorita todavía no hacen nada (solo Bromista funciona).
 - Nadie empieza solo una conversación con los vecinos (pero Lumi y Vladi ya charlan entre ellos de noche).
 - Con el panel abierto se tapa la casa del árbol de Lumi en pantallas chicas.
-- El florero está sobre el mueble de la tele: si lo tocas, el personaje va a ver tele.
 - Lumi y Vladi solo charlan si se cruzan de noche; como pasean por lugares distintos, a veces pasa un buen rato sin que charlen.
 - El cartel "¡Meta cumplida!" puede tapar un poquito el panel unos segundos.
+- Al tocar ✅ Listo después de mover cosas en la casa, Krohna (si estaba en la casa) aparece junto a real.fixer, aunque no haya quedado encima de nada.
+- El nombre, la estrellita y la burbuja de quien duerme en una Cama girada quedan sobre sus pies, no sobre su cabeza.
+- La Guitarra y la Olla son solo decoración: los personajes y los vecinos pueden pasar por encima.
+- El Dormitorio es chico: para poner la Televisión y el Sofá ahí, primero hay que llevar la Cama a otra habitación.
 - real.fixer no va solo al bosque a buscar bayas: solo se come las que ya están en la mochila.
+
+## 2026-10-22 · Hito 20: 🛋️ Mover muebles
+- Botón nuevo "🛠️ Decorar" en el panel (junto a Pausa). Al tocarlo, todo se congela como con Pausa (el botón Pausa se apaga mientras tanto), y aparece el cartel "🛠️ Modo decorar: arrastra para mover" con los botones "🔄 Girar", "↩️ Como al principio" y "✅ Listo". En pantallas anchas el cartel va arriba a la derecha; en pantallas más angostas va abajo, en el medio.
+- En Modo decorar, tocar ya no camina, no usa muebles ni abre menús: solo elige y arrastra, con mouse o con el dedo. Lo que se puede mover brilla al pasar el mouse; lo último que tocaste queda con un borde punteado; mientras arrastras brilla verde si el lugar está bien y rojo si no. Si lo sueltas en rojo, vuelve a donde estaba. Funciona en el lugar que se está viendo (la casa o la ciudad).
+- Casa, en el piso y a cualquier habitación: Refrigerador, Estufa, Cama, Televisión, Sofá, la Alfombra de la Sala, el Caballete y el Florero. El Florero ahora va en el piso de la Sala (arriba a la derecha), más grande, como una maceta con flores, y los personajes lo rodean. El cartel con el nombre de cada mueble se mueve con él.
+- Casa, en la pared: el Póster y los Banderines se deslizan por cualquier pared de cualquier habitación (nunca al piso, nunca sobre una puerta) y no se giran. En una pared de costado, el póster escribe "That's / what / she / said!" en cuatro renglones.
+- Ciudad: la Guitarra y la Olla (cuando ya están desbloqueadas) van a cualquier pasto libre: no sobre el río, el puente, los caminos de piedra, la plaza, el jardín, las casas, la carpa, la fogata, los carteles, debajo de los árboles, ni encima de una moneda o de algo del bosque.
+- Un lugar de la casa está bien si queda dentro del piso de una habitación, no se encima con otro mueble ni decoración (los muebles sí pueden ir sobre la alfombra), no tapa ninguna puerta ni el paso por las puertas ni la puerta mágica, y desde la puerta se sigue pudiendo llegar caminando a todas las habitaciones y a todos los muebles.
+- 🔄 Girar gira un cuarto de vuelta lo último que tocaste. Si girado no cabe, no gira y sale la burbuja "No cabe aquí". Los muebles se dibujan bien en las 4 direcciones. El Caballete muestra el cuadro de Krohna, su espalda o su costado. Si el lugar de adelante queda contra una pared, el personaje usa el mueble desde el otro lado o desde el lugar libre más cercano.
+- Usar los muebles respeta cómo están girados: en la Cama se acuesta a lo largo con la cabeza en la almohada; en el Sofá se sienta mirando hacia donde mira el Sofá (de espaldas, de frente o de costado); en la Televisión, la Estufa y el Refrigerador se para adelante. El brillo de la tele de noche sale de la pantalla, donde esté.
+- ↩️ Como al principio pregunta "¿Volver todo a como estaba al principio?" con Sí y No. Con Sí, todo vuelve a su lugar y dirección de siempre, en la casa y en la ciudad.
+- ✅ Listo sale del Modo decorar. Si ya estaba en Pausa, sigue en pausa. Quien quedó encima de algo que se movió aparece en el lugar libre más cercano, y quien iba caminando a un mueble que se movió va a su lugar nuevo.
+- Todo usa los lugares nuevos: los caminos (js/path.js), el libre albedrío, la cocina, las etiquetas de palabras, el brillo de la tele y las monedas (nunca aparecen sobre la Guitarra ni la Olla). Si el lugar donde espera real.fixer en sus visitas queda tapado, espera en el lugar libre más cercano de la Sala.
+- Si el Florero o los Banderines se desbloquean y su lugar está ocupado por algo que moviste, aparecen en el lugar libre más cercano.
+- Guardado: recuerda dónde está y hacia dónde mira cada cosa. Una partida vieja carga con todo en su lugar de siempre. "Reiniciar" también vuelve todo a como estaba al principio.
+- Palabras nuevas en js/words.js: Decorar · decorate (DÉ-ko-reit), Girar · turn (TERN), Listo · done (DAN) (al pasar el mouse por sus botones) y Alfombra · rug (RAG) (al pasar el mouse por la alfombra).
+- Archivo nuevo: js/decorate.js (el Modo decorar), en el orden de scripts entre audio y ui.
 
 ## 2026-10-22 · Extra: 🍒 real.fixer come bayas
 - Se cumplió el deseo de Sofía: "quiero que fixer pueda alimentarse de las bayas".

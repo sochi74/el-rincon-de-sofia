@@ -2,7 +2,8 @@
 // the day and hour of the game clock, the magic coins (the counter and the shiny coins on the ground), the garden plots,
 // the backpack (with its dishes) and the things in the forest, how many gifts each one got today,
 // where each neighbor is (and whether Vladi is inside his castle) with its friendship toward each one,
-// and each one's goals: the goal it is on, how far it got, and so the decorations of the goals already met.
+// and each one's goals: the goal it is on, how far it got, and so the decorations of the goals already met,
+// and where Modo decorar put each thing and which way it is turned (in the house and in the city).
 // It also remembers, apart from the game, whether the panel was open or closed.
 // Every use of localStorage is inside try/catch, so the game keeps working if it fails.
 var Save = (function () {
@@ -14,7 +15,7 @@ var Save = (function () {
   function snapshot() {
     var data = { characters: {}, clock: Time.get(), coins: Coins.get(), garden: Garden.get(),
       inventory: Gifts.withPending(Cooking.withPending(Inventory.get())), forest: Gather.get(), gifts: Gifts.get(),
-      neighbors: Neighbors.get(), goals: Goals.get() };
+      neighbors: Neighbors.get(), goals: Goals.get(), layout: { house: House.getLayout(), city: City.getLayout() } };
     Sims.list().forEach(function (sim) {
       var id = sim.data.id;
       var friendship = friendshipOf(id);
@@ -69,14 +70,18 @@ var Save = (function () {
     }
     if (!data || typeof data.characters !== "object") return;
     if (data.clock && typeof data.clock === "object") Time.set(data.clock.day, data.clock.minute);
+    // An old saved game has no goals: everyone starts on goal 1 (the Amistad ones are checked right away).
+    Goals.set(data.goals);
+    // Where each thing is, before anything looks for free spots. An old saved game has everything in its first spot.
+    var layout = data.layout && typeof data.layout === "object" ? data.layout : {};
+    House.setLayout(layout.house);
+    City.setLayout(layout.city);
     // The forest first, so the coins can stay off its things.
     Gather.set(data.forest);
     Coins.set(data.coins);
     Garden.set(data.garden);
     Inventory.set(data.inventory);
     Gifts.set(data.gifts);
-    // An old saved game has no goals: everyone starts on goal 1 (the Amistad ones are checked right away).
-    Goals.set(data.goals);
     // An old saved game has no neighbors: they start by their homes, and all their friendship at 0.
     Neighbors.set(data.neighbors);
     var neighbors = data.neighbors && typeof data.neighbors === "object" ? data.neighbors : {};
@@ -112,8 +117,9 @@ var Save = (function () {
     }
   }
 
-  // Close the page or reload it.
+  // Close the page or reload it. A thing being dragged in Modo decorar goes back to where it was first.
   function onLeave() {
+    Decorate.cancelDrag();
     if (running) save();
   }
 

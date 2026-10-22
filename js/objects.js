@@ -12,25 +12,42 @@ var Objects = (function () {
 
   // Usable furniture: its action and the free spot next to it where the character walks to use it,
   // and where it stands up again when it finishes.
-  // "look" is where it looks while using it (on the Sofá, at the Televisión); otherwise it looks at the piece.
+  // "look" is where it looks while using it; otherwise it looks at the piece.
   // "owner" is the only one who may use it; anyone else gets the "notYours" bubble.
   // "pose" is how it is drawn while using it (js/sims.js): lying in the Cama with its head on the pillow, sitting on
   // the Sofá, inside the Carpa (only the "Zzz" are seen) or sitting on the log by the Fogata. "x", "y" is where its feet go.
+  // In the house the spot, the look and the pose come from js/house.js, because Modo decorar moves and turns the furniture:
+  // in front of the piece as it is turned, lying along the Cama and sitting looking where the Sofá looks.
   // The Estufa has no action of its own: tapping it opens the recipe menu (js/cooking.js), like the Fogata.
   // Cooking at the Fogata uses another spot, on the other side of the fire (js/cooking.js).
   var SEAT = City.campfireSeat;
   var USABLE = {
     stove: {},
-    fridge: { action: "eat", spot: { x: 115, y: 200 } },
-    bed: { action: "sleep", spot: { x: 690, y: 200 }, pose: { kind: "lie", x: 774, y: 204 } },
-    tv: { action: "watchTv", spot: { x: 600, y: 495 } },
-    sofa: { action: "watchTv", spot: { x: 720, y: 532 }, look: { x: 720, y: 387 }, pose: { kind: "sofa", x: 720, y: 652 } },
+    fridge: { action: "eat" },
+    bed: { action: "sleep" },
+    tv: { action: "watchTv" },
+    sofa: { action: "watchTv" },
     tent: {
       action: "sleepTent", spot: { x: 850, y: 395 }, owner: "realfixer", notYours: "Es la carpa de real.fixer",
       pose: { kind: "tent", zzz: { x: 856, y: 318 } }
     },
     campfire: { action: "campfire", spot: { x: SEAT.x, y: SEAT.y + 34 }, pose: { kind: "log", x: SEAT.x, y: SEAT.y + 10 } }
   };
+
+  // Where a character stands to use a piece of furniture or a thing of the city.
+  function spotOf(furniture) {
+    if (placeOf(furniture) === "city") return USABLE[furniture.id].spot;
+    var b = House.bounds(furniture);
+    return House.useSpot(furniture.id) || { x: b.x + b.w / 2, y: b.y + b.h + 20 };
+  }
+
+  function poseOf(furniture) {
+    return placeOf(furniture) === "city" ? USABLE[furniture.id].pose || null : House.poseFor(furniture.id);
+  }
+
+  function lookOf(furniture) {
+    return placeOf(furniture) === "city" ? USABLE[furniture.id].look : House.lookFor(furniture.id);
+  }
 
   // How long the "Ocupado" bubble stays, in seconds.
   var BUSY_TIME = 1.5;
@@ -98,7 +115,18 @@ var Objects = (function () {
       multiplier: gainMultiplier(sim.data, use.action) * (favorite ? CONFIG.favoriteBonus : 1),
       favorite: favorite
     };
-    Sims.walkTo(sim, use.spot.x, use.spot.y);
+    var spot = spotOf(furniture);
+    Sims.walkTo(sim, spot.x, spot.y);
+  }
+
+  // Modo decorar moved the furniture: whoever was walking to use a piece walks to where it is now.
+  function refresh() {
+    Object.keys(current).forEach(function (id) {
+      var a = current[id];
+      if (a.phase !== "walking" || placeOf(a.furniture) !== "house") return;
+      var spot = spotOf(a.furniture);
+      Sims.walkTo(a.sim, spot.x, spot.y);
+    });
   }
 
   // Stop what a character is doing; true if it was doing something.
@@ -138,7 +166,7 @@ var Objects = (function () {
   // Turn the character toward what it uses.
   function lookAt(a) {
     var f = a.furniture;
-    var look = USABLE[f.id].look;
+    var look = lookOf(f);
     var b = placeOf(f) === "city" ? f : House.bounds(f);
     if (look) Sims.face(a.sim, look.x, look.y);
     else Sims.face(a.sim, b.x + b.w / 2, b.y + b.h / 2);
@@ -148,7 +176,7 @@ var Objects = (function () {
   function poseFor(id) {
     var a = current[id];
     if (!a || a.phase !== "doing") return null;
-    return USABLE[a.furniture.id].pose || null;
+    return poseOf(a.furniture);
   }
 
   // True if someone is watching tele right now, on the Sofá or at the Televisión.
@@ -209,6 +237,7 @@ var Objects = (function () {
     start: start,
     isTaken: isTaken,
     cancel: cancel,
+    refresh: refresh,
     update: update,
     bubbleFor: bubbleFor,
     poseFor: poseFor,

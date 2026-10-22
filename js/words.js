@@ -81,5 +81,11 @@ var WORDS = {
   lantern: { es: "Farol", en: "lantern", say: "LÁN-tern" },
   fairyLights: { es: "Guirnalda de luces", en: "fairy lights", say: "FÉ-ri LÁITS" },
   pot: { es: "Olla", en: "pot", say: "POT" },
-  heart: { es: "Corazón", en: "heart", say: "JÁRT" }
+  heart: { es: "Corazón", en: "heart", say: "JÁRT" },
+
+  // Modo decorar
+  decorate: { es: "Decorar", en: "decorate", say: "DÉ-ko-reit" },
+  turn: { es: "Girar", en: "turn", say: "TERN" },
+  done: { es: "Listo", en: "done", say: "DAN" },
+  rug: { es: "Alfombra", en: "rug", say: "RAG" }
 };

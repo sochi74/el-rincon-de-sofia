@@ -497,6 +497,7 @@ h1 {
 .character-button,
 #backpack-button,
 #goals-button,
+#decorate-button,
 #pause-button,
 #reset-button {
   padding: 6px 16px;
@@ -522,15 +523,27 @@ h1 {
 .character-button:hover,
 #backpack-button:hover,
 #goals-button:hover,
-#pause-button:hover,
+#decorate-button:hover,
+#pause-button:hover:not(:disabled),
 #reset-button:hover {
   background: #C8664A;
+}
+
+/* While Modo decorar is on, its button stays lit and Pausa can not be used. */
+#decorate-button.on {
+  background: #C8664A;
+}
+
+#pause-button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .character-button:active,
 #backpack-button:active,
 #goals-button:active,
-#pause-button:active,
+#decorate-button:active,
+#pause-button:active:not(:disabled),
 #reset-button:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #4A3428;
@@ -617,6 +630,106 @@ h1 {
   to {
     opacity: 1;
     transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Modo decorar: the sign at the top with its buttons, and the question before putting everything back. */
+#decorate-bar,
+#decorate-ask {
+  position: fixed;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 14px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 18px;
+  color: #4A3428;
+  background: #F5EBDD;
+  border: 3px solid #4A3428;
+  border-radius: 20px;
+  box-shadow: 0 4px 0 #4A3428;
+  transform: translateX(-50%);
+}
+
+#decorate-bar {
+  top: 16px;
+  right: 16px;
+  left: auto;
+  flex-direction: column;
+  gap: 8px;
+  transform: none;
+}
+
+#decorate-ask {
+  top: 50%;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+}
+
+#decorate-ask p {
+  margin: 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+#decorate-bar[hidden],
+#decorate-ask[hidden] {
+  display: none;
+}
+
+.decorate-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.decorate-buttons button {
+  padding: 6px 14px;
+  font: inherit;
+  font-weight: 700;
+  color: #F5EBDD;
+  background: #B07A4F;
+  border: 3px solid #4A3428;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #4A3428;
+  cursor: pointer;
+}
+
+.decorate-buttons button:hover:not(:disabled) {
+  background: #C8664A;
+}
+
+.decorate-buttons button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #4A3428;
+}
+
+.decorate-buttons button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* While dragging with a finger, the page does not scroll or zoom. */
+body.decorating #game {
+  touch-action: none;
+}
+
+/* On narrower screens the sign goes to the bottom in the middle, in one row when it fits,
+   away from the ☰ and 🔊 buttons and the panel. */
+@media (max-width: 1100px) {
+  #decorate-bar {
+    top: auto;
+    right: auto;
+    bottom: 8px;
+    left: 50%;
+    flex-direction: row;
+    width: max-content;
+    padding: 6px 14px;
+    transform: translateX(-50%);
   }
 }
 

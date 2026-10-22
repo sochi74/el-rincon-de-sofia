@@ -15,9 +15,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 
 ## Estado
-Extra ✅ real.fixer come bayas
+Hito 20 ✅ Mover muebles
 
-## ⭐ Estrellas de inglés: 33
+## ⭐ Estrellas de inglés: 34
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -172,6 +172,10 @@ Extra ✅ real.fixer come bayas
 - pot: olla
 - heart: corazón
 - dark: oscuro
+- decorate: decorar
+- turn: girar
+- done: listo
+- rug: alfombra
 - Yum!: ¡Mmm!
 
 ## Para el Modo Planear (continuación)
@@ -200,7 +204,7 @@ Extra ✅ real.fixer come bayas
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - Próximo regalo: a las 35 ⭐
-- Siguiente paso: Pack 3, Hito 20: 🛋️ Mover muebles y más habitaciones (ahí Sofía quiere acomodar el florero que quedó sobre el mueble de la tele).
+- Siguiente paso: Sofía elige entre ⬜ Extra 🛁 Baño con bañera de burbujas, ⬜ Extra 🏡 Mover casas en la ciudad o Hito 21 🌧️ Clima y magia.
 - Pendiente: la skill de hito.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
 - Decisiones grandes pendientes, para hablar con Robert: pixel art con imágenes; canciones reales de real.fixer (archivos de audio); jugar con amigos por internet.
