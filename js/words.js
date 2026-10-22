@@ -101,6 +101,16 @@ var WORDS = {
   towel: { es: "Toalla", en: "towel", say: "TÁU-el" },
   toothbrush: { es: "Cepillo de dientes", en: "toothbrush", say: "TÚZ-brash" },
 
+  // Weather (js/weather.js)
+  weather: { es: "Clima", en: "weather", say: "UÉ-der" },
+  sunny: { es: "Soleado", en: "sunny", say: "SÁ-ni" },
+  rain: { es: "Lluvia", en: "rain", say: "RÉIN" },
+  fog: { es: "Niebla", en: "fog", say: "FOG" },
+  snow: { es: "Nieve", en: "snow", say: "SNÓU" },
+  rainbowSky: { es: "Arcoíris", en: "rainbow", say: "RÉIN-bou" },
+  snowman: { es: "Muñeco de nieve", en: "snowman", say: "SNÓU-man" },
+  puddle: { es: "Charco", en: "puddle", say: "PÁ-del" },
+
   // Krohna's bed by the Carpa
   krohnaBed: { es: "Cama de Krohna", en: "Krohna's bed", say: "KRÓ-nas BED" }
 };

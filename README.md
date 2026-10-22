@@ -15,9 +15,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 
 ## Estado
-Extra ✅ Pulido 3
+Hito 21 ✅ Clima y magia
 
-## ⭐ Estrellas de inglés: 36
+## ⭐ Estrellas de inglés: 37
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -187,6 +187,16 @@ Extra ✅ Pulido 3
 - plant: planta
 - towel: toalla
 - toothbrush: cepillo de dientes
+- weather: clima
+- sunny: soleado
+- rain: lluvia
+- fog: niebla
+- snow: nieve
+- snowman: muñeco de nieve
+- puddle: charco
+- tab: pestaña
+- loud: fuerte
+- quiet: bajito
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -215,7 +225,7 @@ Extra ✅ Pulido 3
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
   - Próximo regalo: a las 40 ⭐
-- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 21 🌧️ Clima y magia (Extra 🧹 Pulido 3 ya está hecho).
+- Siguiente paso: Sofía elige entre ⬜ Extra 🏡 Mover casas en la ciudad o Hito 22 📖 Vecino profe y diario de palabras (Hito 21 🌧️ Clima y magia ya está hecho).
 - Pendiente: la skill de hito.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.

@@ -8,7 +8,6 @@
 - La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta (Sofía prefirió que siga abriéndose abajo a la derecha, como siempre).
 - Nadie cuida el jardín, pesca, recolecta, cocina ni regala solo.
 - Si recargas mientras alguien pesca o recolecta, esa acción se pierde.
-- Todavía no hay sonido de lluvia (llega con el clima).
 - Los personajes y los vecinos no se esquivan entre ellos: a veces uno pasa por encima de otro.
 - Los rasgos de los vecinos que cambian necesidades y su actividad favorita todavía no hacen nada (solo Bromista funciona).
 - Nadie empieza solo una conversación con los vecinos (pero Lumi y Vladi ya charlan entre ellos de noche).
@@ -22,6 +21,24 @@
 - En pantallas anchas, con el panel abierto la casa y la ciudad se ven más chicas (usan el espacio al lado del panel); al cerrarlo con ✕ vuelven a su tamaño.
 - En pantallas anchas, el cartel de Modo decorar (arriba a la derecha) puede tapar un poquito la esquina de arriba a la derecha de la casa o la ciudad.
 - La ventanita 🌟 Metas elige su lugar al abrirse; si después el personaje camina hasta ahí, puede quedar tapado.
+- Las palabras Clima · weather y Charco · puddle ya están en js/words.js, pero todavía no aparecen al pasar el mouse por ningún lado.
+- El muñeco de nieve se dibuja debajo de los personajes: si alguien camina justo detrás de él, se ve por encima del muñeco.
+
+## 2026-10-22 · Hito 21: 🌧️ Clima y magia
+- Cada día del juego, a las 06:00, se elige el clima del día: ☀️ Soleado 50 %, 🌧️ Lluvia 20 %, 🌫️ Niebla mágica 20 % o ❄️ Nieve 10 %, y dura hasta las 06:00 siguiente. La partida nueva empieza con el Día 1 soleado.
+- Días de lluvia: llueve hasta las 16:00; de 16:00 a 18:00 sale un 🌈 arcoíris sobre la ciudad, y después queda soleado.
+- El panel muestra el clima al lado del reloj ("☀️ Día 3 · 10:30 · 🌧️"); al pasar el mouse por el emoji, su palabra (por ejemplo "Lluvia · rain").
+- 🌧️ Lluvia en la ciudad: gotitas finas en diagonal, el cielo un poco más gris, ondas en el río y charquitos que se forman poco a poco en el pasto y en la piedra, y se secan solos después.
+- 🌈 Arcoíris: un arco grande y translúcido que aparece y se va suavemente, por debajo de los carteles para que siempre se lean.
+- 🌫️ Niebla mágica: capas de niebla blanco lila que se mueven despacio, brillitos que titilan y luces redondas que flotan y suben; de noche las luces brillan más.
+- ❄️ Nieve: copitos que caen despacio y se mecen; poco a poco se ponen blancos los techos (Casa de Sofía, castillito de Vladi, casita del árbol de Lumi y la carpa) y el pasto, y en la plaza, a la derecha de la fuente, aparece un ⛄ muñeco de nieve con bufanda terracota, nariz de zanahoria y botones. Es solo decoración: los personajes lo rodean. Al día siguiente, si ya no nieva, todo vuelve a verse normal y el muñeco se derrite.
+- Dentro de la casa, por las ventanas: gotitas con lluvia, vidrios blanquecinos con niebla y copitos con nieve.
+- 🔊 Sonidos (js/audio.js): lluvia suave en la ciudad y más bajita dentro de la casa, como en el techo; con lluvia no cantan los pájaros; con nieve los sonidos del lugar suenan un poco más suaves. Al cambiar de pestaña se calla como todo.
+- Lo que cambia en el juego: 🌸 mientras llueve, todas las parcelas con semilla quedan regadas solas (también las que se plantan mientras llueve); 🎣 mientras llueve, el Pez arcoíris sale 25 % y el Pez plateado 30 %; 💎 en días de niebla el bosque puede tener hasta 7 cosas a la vez y la mitad de las nuevas son cristales.
+- Los cambios de clima se ven poco a poco, en unos segundos. Pausa y Modo decorar congelan el clima. Todo funciona de día y de noche.
+- Guardado: recuerda el clima del día, los charcos, la nieve y el muñeco (y así el arcoíris). Una partida vieja carga con el día de hoy soleado; "Reiniciar" vuelve al Día 1 soleado.
+- Palabras nuevas en js/words.js: Clima · weather (UÉ-der), Soleado · sunny (SÁ-ni), Lluvia · rain (RÉIN), Niebla · fog (FOG), Nieve · snow (SNÓU), Arcoíris · rainbow (RÉIN-bou), Muñeco de nieve · snowman (SNÓU-man) (también al pasar el mouse sobre él) y Charco · puddle (PÁ-del).
+- Archivo nuevo: js/weather.js (el clima del día, sus efectos y su dibujo), en el orden de scripts entre time y house.
 
 ## 2026-10-22 · Extra: 🧹 Pulido 3
 - 🐱 Krohna y la puerta: cuando real.fixer pasa por la puerta (de la casa a la ciudad o al revés), Krohna camina hasta la misma puerta y sale del otro lado un momento después, y camina hasta él. Si real.fixer vuelve antes, Krohna se queda con él.

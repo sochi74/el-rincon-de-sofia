@@ -233,8 +233,13 @@ var Garden = (function () {
       }
     });
 
-    // Watered plants grow while the game runs.
+    // Watered plants grow while the game runs. While it rains, every plot with a seed gets watered by itself.
     if (Needs.isPaused()) return;
+    if (Weather.isRaining()) {
+      plots.forEach(function (state) {
+        if (state.flower) state.watered = true;
+      });
+    }
     plots.forEach(function (state) {
       if (state.flower && state.watered) state.growth = Math.min(G.growTime, state.growth + dt);
     });

@@ -2,6 +2,8 @@
 // Short effects (buttons, coins, garden, fishing, cooking, gifts, friendship and Krohna's meow),
 // soft place sounds (in the city the river, birds by day, crickets by night and the campfire; in the house
 // the tele while someone watches it) and calm music that turns softer at night.
+// The weather (js/weather.js): soft rain in the city, softer and lower in the house like rain on the roof, and no birds
+// while it rains; with snow, the place sounds are a little softer.
 // Nothing sounds until "Jugar" is tapped. The 🔊 button goes 🔊 everything → 🎵 no music (effects only) → 🔇 silence,
 // and the mode is remembered (localStorage inside try/catch). Pausa hushes the place sounds and the music.
 // The campfire crackles louder the closer the selected one is to it. When the tab is hidden or the window is minimized,
@@ -15,7 +17,7 @@ var Sound = (function () {
 
   var ac = null;
   var master, effectsBus, ambienceBus, musicBus, noise;
-  var river, tv, tvVoice, tvFilter;
+  var river, tv, tvVoice, tvFilter, rain, rainFilter;
   var mode = loadMode();
   // The last volume asked of each group, so each one is only changed when it needs to.
   var levels = {};
@@ -200,6 +202,7 @@ var Sound = (function () {
 
       river = loopRiver();
       loopTv();
+      loopRain();
       apply();
       document.addEventListener("visibilitychange", hush);
       hush();
@@ -249,6 +252,26 @@ var Sound = (function () {
     return gain;
   }
 
+  // The rain: noise without its lowest part, through a filter that is open in the city and lower in the house.
+  function loopRain() {
+    var src = ac.createBufferSource();
+    src.buffer = noise;
+    src.loop = true;
+    var low = ac.createBiquadFilter();
+    low.type = "highpass";
+    low.frequency.value = 400;
+    rainFilter = ac.createBiquadFilter();
+    rainFilter.type = "lowpass";
+    rainFilter.frequency.value = 5000;
+    rain = ac.createGain();
+    rain.gain.value = 0;
+    src.connect(low);
+    low.connect(rainFilter);
+    rainFilter.connect(rain);
+    rain.connect(ambienceBus);
+    src.start();
+  }
+
   // The tele: muffled voices, made from noise whose loudness and tone change like syllables.
   function loopTv() {
     var src = ac.createBufferSource();
@@ -278,13 +301,14 @@ var Sound = (function () {
     param.setTargetAtTime(value, ac.currentTime, K.fade / 3);
   }
 
-  // The volume of each group, from the mode, the pause and the time of day.
+  // The volume of each group, from the mode, the pause and the time of day. With snow the place sounds are softer.
   function apply() {
     if (!ac) return;
     var paused = Needs.isPaused();
     var night = Time.darkness() >= 0.5;
+    var hush = 1 - K.snowHush * Weather.snowLevel();
     glide("effects", effectsBus.gain, mode === "mute" ? 0 : K.effects);
-    glide("ambience", ambienceBus.gain, mode === "mute" || paused ? 0 : K.ambience);
+    glide("ambience", ambienceBus.gain, mode === "mute" || paused ? 0 : Math.round(K.ambience * hush * 1000) / 1000);
     glide("music", musicBus.gain, mode !== "all" || paused ? 0 : (night ? K.music.night : K.music.day));
   }
 
@@ -328,6 +352,9 @@ var Sound = (function () {
   function ambience(dt, place, night) {
     var city = place === "city";
     glide("river", river.gain, city ? 0.55 : 0);
+    var wet = Weather.rainLevel();
+    glide("rain", rain.gain, Math.round(wet * (city ? K.rain.city : K.rain.house) * 100) / 100);
+    glide("rainTone", rainFilter.frequency, city ? 5000 : 900);
     var watching = !city && Objects.isWatchingTv();
     glide("tv", tv.gain, watching ? 0.5 : 0);
     var t = ac.currentTime + 0.02;
@@ -350,7 +377,7 @@ var Sound = (function () {
       timers.fire = between(0.08, 0.6);
       if (fire > 0.01) hiss(ambienceBus, t, between(0.015, 0.04), "bandpass", between(1500, 4000), between(0.05, 0.15) * fire, null, 1.5);
     }
-    if (!night && timers.bird <= 0) {
+    if (!night && wet === 0 && timers.bird <= 0) {
       timers.bird = between(1.5, 5);
       chirp(t);
     }

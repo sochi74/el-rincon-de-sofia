@@ -1,5 +1,5 @@
 // Saves and loads the game in the browser: needs, where each character is (house or city), stands and looks, friendship,
-// the day and hour of the game clock, the magic coins (the counter and the shiny coins on the ground), the garden plots,
+// the day and hour of the game clock, the weather of the day (with its puddles, snow and snowman), the magic coins (the counter and the shiny coins on the ground), the garden plots,
 // the backpack (with its dishes) and the things in the forest, how many gifts each one got today,
 // where each neighbor is (and whether Vladi is inside his castle) with its friendship toward each one,
 // and each one's goals: the goal it is on, how far it got, and so the decorations of the goals already met,
@@ -13,7 +13,7 @@ var Save = (function () {
   var enabled = true;
 
   function snapshot() {
-    var data = { characters: {}, clock: Time.get(), coins: Coins.get(), garden: Garden.get(),
+    var data = { characters: {}, clock: Time.get(), weather: Weather.get(), coins: Coins.get(), garden: Garden.get(),
       inventory: Gifts.withPending(Cooking.withPending(Inventory.get())), forest: Gather.get(), gifts: Gifts.get(),
       neighbors: Neighbors.get(), goals: Goals.get(), layout: { house: House.getLayout(), city: City.getLayout() } };
     Sims.list().forEach(function (sim) {
@@ -70,6 +70,8 @@ var Save = (function () {
     }
     if (!data || typeof data.characters !== "object") return;
     if (data.clock && typeof data.clock === "object") Time.set(data.clock.day, data.clock.minute);
+    // After the clock, and before the forest (on foggy days it holds more). An old saved game has a sunny day today.
+    Weather.set(data.weather);
     // An old saved game has no goals: everyone starts on goal 1 (the Amistad ones are checked right away).
     Goals.set(data.goals);
     // Where each thing is, before anything looks for free spots. An old saved game has everything in its first spot.

@@ -5,6 +5,7 @@
 // At night the campfire, the house windows and the fireflies shine.
 // The decorations that goals give (js/goals.js) are drawn here too: real.fixer's guitar and moon lantern by his tent,
 // Lumi's crystal lantern and fairy lights on her tree, and Vladi's shiny pot and golden heart at his castle.
+// The weather (js/weather.js) draws on the map too: snow on the grass and the roofs, puddles, rings on the river and the snowman.
 // Krohna's round bed sits by the tent too (always there), where the kitten sleeps while real.fixer sleeps in the tent.
 // They are only decoration: nothing walks around them. Modo decorar (js/decorate.js) can move and turn the guitar, the pot
 // and Krohna's bed to open grass; the rest stays where it is.
@@ -140,12 +141,13 @@ var City = (function () {
 
   // True if a character cannot stand here: off the map, in the water, or on something solid
   // (the house, the fountain, the tent, the campfire, a tree, the garden fence, the rope ladder of the treehouse
-  // or Vladi's castle). Used by js/path.js.
+  // or Vladi's castle, and the snowman on snowy days). Used by js/path.js.
   // Small things (coins, berries, mushrooms, crystals, the flowers in the plots and the log) are not solid.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (inBox(x, y, grow(HOUSE, CLEAR))) return true;
     if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN + CLEAR)) return true;
+    if (Weather.snowmanBlocks(x, y, CLEAR)) return true;
     if (inBox(x, y, grow(TENT, CLEAR)) || inBox(x, y, grow(FIRE, 10))) return true;
     if (inBox(x, y, grow(CASTLE, CLEAR)) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return true;
     for (var t = 0; t < TREES.length; t++) {
@@ -426,6 +428,7 @@ var City = (function () {
     }
     ctx.restore();
     fillRound(ctx, roofX + 4, ridge - 4, roofW - 8, 8, 4, "#A9533C");
+    Weather.roofSnow(ctx, function () { roundRect(ctx, roofX + 3, roofTop + 3, roofW - 6, roofBottom - roofTop - 6, 12); });
 
     // Chimney
     fillRound(ctx, x + w - 52, roofTop + 12, 26, 26, 5, C.darkBrown);
@@ -493,6 +496,7 @@ var City = (function () {
       ctx.stroke();
     }
     ctx.restore();
+    Weather.roofSnow(ctx, function () { roundRect(ctx, x + 3, y + 3, w - 6, h - 6, 10); });
 
     // Entrance: a dark opening at the front with cream flaps tied to each side
     ctx.fillStyle = C.darkBrown;
@@ -804,6 +808,15 @@ var City = (function () {
       ctx.closePath();
       ctx.fill();
     });
+    Weather.roofSnow(ctx, function () {
+      ctx.beginPath();
+      ctx.moveTo(cx - 29, wallTop + 2);
+      ctx.lineTo(cx - 15, TREEHOUSE.y + 5);
+      ctx.lineTo(cx + 15, TREEHOUSE.y + 5);
+      ctx.lineTo(cx + 29, wallTop + 2);
+      ctx.quadraticCurveTo(cx, wallTop - 4, cx - 29, wallTop + 2);
+      ctx.closePath();
+    });
     fillRound(ctx, cx - 17, TREEHOUSE.y + 1, 34, 6, 3, "#A9533C");
 
     if (highlight) drawThingHighlight(ctx, TREEHOUSE);
@@ -824,6 +837,9 @@ var City = (function () {
       fillRound(ctx, x + tw - 4, wallTop, w - (tw - 4) * 2, bottom - wallTop, 4, C.stone);
     });
     for (var bx = x + tw; bx < x + w - tw - 4; bx += 14) fillRound(ctx, bx, wallTop - 9, 9, 12, 2, C.stone);
+    for (var nx = x + tw; nx < x + w - tw - 4; nx += 14) {
+      Weather.roofSnow(ctx, roundRect.bind(null, ctx, nx, wallTop - 10, 9, 5, 2));
+    }
     // Stone blocks
     ctx.save();
     ctx.strokeStyle = "rgba(74, 52, 40, 0.22)";
@@ -852,6 +868,14 @@ var City = (function () {
       ctx.lineTo(tx + tw + 4, y + 12);
       ctx.closePath();
       ctx.fill();
+      Weather.roofSnow(ctx, function () {
+        ctx.beginPath();
+        ctx.moveTo(tx - 1, y + 9);
+        ctx.lineTo(tx + tw / 2, y - 20);
+        ctx.lineTo(tx + tw + 1, y + 9);
+        ctx.quadraticCurveTo(tx + tw / 2, y + 3, tx - 1, y + 9);
+        ctx.closePath();
+      });
       circle(ctx, tx + tw / 2, y - 22, 3, "#E2B44B");
       // A narrow tower window
       fillRound(ctx, tx + tw / 2 - 3, y + 26, 6, 13, 3, C.darkBrown);
@@ -1343,10 +1367,14 @@ var City = (function () {
     roundRect(ctx, 0, 0, W, H, 40);
     ctx.clip();
     drawGrass(ctx);
+    Weather.drawSnowyGrass(ctx);
     drawPaths(ctx);
     drawRiver(ctx, time);
+    Weather.drawRiverRings(ctx);
     drawBridge(ctx);
     drawPlaza(ctx, time);
+    Weather.drawPuddles(ctx);
+    Weather.drawSnowman(ctx);
     drawHouse(ctx, highlightHouse);
     Garden.draw(ctx, time);
     drawTent(ctx);
@@ -1415,6 +1443,7 @@ var City = (function () {
     if (home) return home;
     var garden = Garden.wordAt(x, y);
     if (garden) return garden;
+    if (Weather.snowmanAt(x, y)) return "snowman";
     if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN)) return "fountain";
     if (houseAt(x, y)) return "house";
     var half = RIVER.half + 34;

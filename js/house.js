@@ -1117,6 +1117,8 @@ var House = (function () {
     drawTurned(ctx, "rug", function (b) { drawRug(ctx, b); });
 
     drawWalls(ctx);
+    // Rain, fog or snow seen through the windows (js/weather.js).
+    Weather.drawWindows(ctx);
     drawPoster(ctx);
     if (isOn("bunting")) drawBunting(ctx);
     drawShelf(ctx);
