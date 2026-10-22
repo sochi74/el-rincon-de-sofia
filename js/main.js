@@ -8,6 +8,8 @@
   var view = { width: 0, height: 0, dpr: 1, scale: 1, offsetX: 0, offsetY: 0 };
   var hovered = null;
   var hoveredHouse = false;
+  // "treehouse" or "castle" when the mouse is over a neighbor's home, else null.
+  var hoveredHome = null;
   // Last spot of the mouse on the screen, for the word tag (null when it is away or with a finger).
   var mouse = null;
 
@@ -34,7 +36,7 @@
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
     if (Sims.viewPlace() === "city") {
-      City.draw(ctx, time, hoveredHouse, hovered && hovered.id);
+      City.draw(ctx, time, hoveredHouse, (hovered && hovered.id) || hoveredHome);
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
@@ -50,6 +52,7 @@
       Gather.drawTop(ctx, time);
       Coins.draw(ctx, time, Time.darkness());
     }
+    Neighbors.drawTop(ctx, time);
     Pet.draw(ctx);
     Sims.draw(ctx, time);
     if (Sims.viewPlace() === "city") Gather.drawPops(ctx);
@@ -102,6 +105,7 @@
     Cooking.update(dt);
     Gifts.update(dt);
     Sims.update(dt);
+    Neighbors.update(dt);
     Pet.update(dt);
     Needs.update(dt);
     Objects.update(dt);
@@ -140,6 +144,8 @@
     if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
     if (inCity && Gather.thingAt(p.x, p.y)) return Gather.wordAt(p.x, p.y);
     if (Sims.simAt(p.x, p.y)) return null;
+    var neighbor = inCity ? Neighbors.at(p.x, p.y) : null;
+    if (neighbor) return neighbor.data.id;
     if (Pet.at(p.x, p.y)) return Pet.word();
     if (inCity) return Coins.wordAt(p.x, p.y) || City.wordAt(p.x, p.y);
     return House.wordAt(p.x, p.y);
@@ -159,22 +165,25 @@
     }
   }
 
-  // Light up the usable furniture, or in the city the house, tent, campfire, a garden plot or a forest thing, under the mouse
-  // (characters in front win). The front door and the river get a pointer too.
+  // Light up the usable furniture, or in the city the house, tent, campfire, a neighbor's home, a garden plot or a forest thing,
+  // under the mouse (characters and neighbors in front win). The front door, the river and the neighbors get a pointer too.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
     var p = toWorld(event);
-    var free = !Sims.simAt(p.x, p.y);
     var inCity = Sims.viewPlace() === "city";
+    var neighbor = inCity && !Sims.simAt(p.x, p.y) && !!Neighbors.at(p.x, p.y);
+    var free = !Sims.simAt(p.x, p.y) && !neighbor;
     hovered = free ? Objects.at(p.x, p.y, inCity ? "city" : "house") : null;
     hoveredHouse = free && inCity && City.houseAt(p.x, p.y);
+    hoveredHome = free && inCity ? City.neighborHomeAt(p.x, p.y) : null;
     var plot = inCity ? Garden.plotAt(p.x, p.y) : -1;
     Garden.setHover(plot);
     var wild = inCity ? Gather.thingAt(p.x, p.y) : null;
     Gather.setHover(wild);
     var door = free && !inCity && House.doorAt(p.x, p.y);
     var river = free && inCity && City.riverAt(p.x, p.y);
-    canvas.style.cursor = hovered || hoveredHouse || door || river || plot >= 0 || wild ? "pointer" : "";
+    var talk = neighbor && !!Sims.selectedSim();
+    canvas.style.cursor = hovered || hoveredHouse || door || river || plot >= 0 || wild || talk ? "pointer" : "";
   }
 
   function startGame() {
@@ -187,10 +196,12 @@
     window.requestAnimationFrame(loop);
   }
 
-  Needs.init(CHARACTERS);
+  // Only Sofía and real.fixer have needs; everyone has friendship.
+  Needs.init(playableCharacters());
   Social.init(CHARACTERS);
   UI.init();
   Sims.init(UI.showSelected);
+  Neighbors.init();
   Save.load();
   Pet.init();
 
@@ -200,6 +211,7 @@
   canvas.addEventListener("pointerleave", function () {
     hovered = null;
     hoveredHouse = false;
+    hoveredHome = null;
     Garden.setHover(-1);
     Gather.setHover(null);
     mouse = null;

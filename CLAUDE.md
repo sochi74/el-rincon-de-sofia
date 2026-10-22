@@ -8,7 +8,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - Funciona igual con doble clic en index.html (file://) y en GitHub Pages: <script src> clásicos en orden fijo, sin módulos ES, sin fetch, todos los datos dentro de archivos .js.
 - Nombres de archivo en minúsculas; referencias con las mismas mayúsculas exactas.
 - Nunca usar "Sims", "The Sims", nombres o logos de EA, Simlish ni arte de EA.
-- Exactamente dos personajes: Sofía y real.fixer. Una casa con Cocina, Dormitorio y Sala.
+- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi y Vladi (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio y Sala; las casas de los vecinos se ven solo desde afuera en la ciudad.
 - Guardado (Hito 6): localStorage dentro de try/catch; el juego funciona aunque falle.
 - Repo público; GitHub Pages desde main, carpeta raíz.
 
@@ -24,6 +24,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/city.js: mapa de la ciudad y sus lugares
 - js/coins.js: monedas mágicas y monedas brillantes
 - js/sims.js: dibujo, selección y movimiento
+- js/neighbors.js: los vecinos Lumi y Vladi: dibujo, paseo y horarios
 - js/ui.js: panel
 - js/main.js: arranque y bucle del juego
 - js/needs.js: necesidades y cómo bajan
@@ -38,7 +39,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/gifts.js: regalos desde la mochila
 - js/pet.js: Krohna, el gatito de real.fixer
 - js/audio.js: sonidos y música creados con código
-- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, cooking, path, sims, needs, objects, social, gifts, pet, audio, ui, save, main
+- Orden de scripts: config, words, characters, time, house, city, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, pet, audio, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

@@ -1,9 +1,10 @@
 // The fantasy city map seen from above: Sofía's house, the river and its bridge, the forest, the plaza,
 // real.fixer's tent with its campfire and fireflies on the other side of the bridge, and Sofía's garden next to her house.
+// The neighbors' homes too: Lumi's treehouse on a big forest tree and Vladi's little castle, seen only from outside.
 // Berries, mushrooms and crystals from js/gather.js grow in the forest.
 // At night the campfire, the house windows and the fireflies shine.
 // Also where characters may walk: never on the water (they cross on the bridge), never off the map,
-// and around the house, the trees, the fountain, the tent, the campfire and the garden fence.
+// and around the house, the trees, the fountain, the tent, the campfire, the garden fence and the neighbors' homes.
 var City = (function () {
   var C = CONFIG.colors;
   var W = CONFIG.world.width, H = CONFIG.world.height;
@@ -30,6 +31,8 @@ var City = (function () {
   // How close a character's feet may get to solid things, and the radius of the fountain's stone rim.
   var CLEAR = 14;
   var FOUNTAIN = 42;
+  // The neighbors' homes: Lumi's treehouse (with its rope ladder) and Vladi's castle.
+  var TREEHOUSE = CONFIG.neighbors.houses.treehouse, CASTLE = CONFIG.neighbors.houses.castle;
 
   // Where a character stands outside, in front of the house door.
   var doorSpot = { x: HOUSE.x + HOUSE.w / 2, y: HOUSE.y + HOUSE.h + 35 };
@@ -127,13 +130,15 @@ var City = (function () {
   }
 
   // True if a character cannot stand here: off the map, in the water, or on something solid
-  // (the house, the fountain, the tent, the campfire, a tree or the garden fence). Used by js/path.js.
+  // (the house, the fountain, the tent, the campfire, a tree, the garden fence, the rope ladder of the treehouse
+  // or Vladi's castle). Used by js/path.js.
   // Small things (coins, berries, mushrooms, crystals, the flowers in the plots and the log) are not solid.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (inBox(x, y, grow(HOUSE, CLEAR))) return true;
     if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN + CLEAR)) return true;
     if (inBox(x, y, grow(TENT, CLEAR)) || inBox(x, y, grow(FIRE, 10))) return true;
+    if (inBox(x, y, grow(CASTLE, CLEAR)) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return true;
     for (var t = 0; t < TREES.length; t++) {
       if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] * 0.6 + CLEAR)) return true;
     }
@@ -154,7 +159,8 @@ var City = (function () {
   }
 
   // True if the spot is open grass where a character can walk: not on the river or the bridge,
-  // the house, the garden, the plaza, the stone paths, the tent, the campfire or under a tree (used for the shiny coins).
+  // the house, the garden, the plaza, the stone paths, the tent, the campfire, the neighbors' homes or under a tree
+  // (used for the shiny coins and the forest things).
   function isOpenGrass(x, y) {
     if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
     if (Garden.isGardenAt(x, y)) return false;
@@ -164,6 +170,7 @@ var City = (function () {
     if (inBox(x, y, { x: TENT.x - 25, y: TENT.y - 50, w: TENT.w + 50, h: TENT.h + 75 })) return false;
     if (inBox(x, y, { x: FIRE.x - 25, y: FIRE.y - 25, w: FIRE.w + 50, h: FIRE.h + 50 })) return false;
     if (inBox(x, y, { x: SEAT.x - 45, y: SEAT.y - 40, w: 90, h: 70 })) return false;
+    if (inBox(x, y, grow(TREEHOUSE, 20)) || inBox(x, y, { x: CASTLE.x - 25, y: CASTLE.y - 60, w: CASTLE.w + 50, h: CASTLE.h + 85 })) return false;
     for (var t = 0; t < TREES.length; t++) {
       if (near(x, y, TREES[t][0], TREES[t][1], TREES[t][2] + 20)) return false;
     }
@@ -662,6 +669,28 @@ var City = (function () {
       ctx.fillRect(wx, WINDOW_Y + 10, 26, 2);
     });
 
+    // The round window of the treehouse and the arched window of the castle, lit in yellow.
+    [[TREE_WINDOW, 6, 30], [CASTLE_WINDOW, 7, 34]].forEach(function (wnd) {
+      var p = wnd[0];
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 1;
+      halo(ctx, p.x, p.y, wnd[2], N.warmLight, 0.4 * dark);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = dark;
+      circle(ctx, p.x, p.y, wnd[1], N.windowLight);
+    });
+
+    // The castle lanterns: a warm halo around each one, and the flame bright again on top.
+    LANTERNS.forEach(function (lx) {
+      var ly = CASTLE.y + CASTLE.h - 36;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 1;
+      halo(ctx, lx, ly, 62 + Math.sin(time * 4 + lx) * 3, N.warmLight, 0.5 * dark);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = dark;
+      drawLantern(ctx, lx, ly, time);
+    });
+
     // Moon flowers in the garden, with their blue-silver halo.
     ctx.globalAlpha = 1;
     Garden.drawNightLights(ctx, time, dark);
@@ -687,6 +716,194 @@ var City = (function () {
     ctx.lineWidth = 5;
     ctx.stroke();
     ctx.restore();
+  }
+
+  // ---------- The neighbors' homes ----------
+
+  // Lumi's treehouse, on top of a big forest tree: a wooden platform, a little wooden house with a terracotta roof,
+  // a round window, a little door and a rope ladder down to the grass.
+  function drawTreehouse(ctx, highlight) {
+    var cx = TREEHOUSE.x + TREEHOUSE.w / 2, L = TREEHOUSE.ladder;
+    var wallTop = 118, bottom = 152;
+
+    // Rope ladder: two ropes with wooden rungs, down from the platform to the grass.
+    ctx.save();
+    ctx.strokeStyle = C.cream;
+    ctx.lineWidth = 2;
+    [L.x + 2, L.x + L.w - 2].forEach(function (rx) {
+      ctx.beginPath();
+      ctx.moveTo(rx, L.y + 4);
+      ctx.lineTo(rx, L.y + L.h);
+      ctx.stroke();
+    });
+    ctx.restore();
+    for (var ry = L.y + 12; ry < L.y + L.h; ry += 8) fillRound(ctx, L.x, ry, L.w, 3, 1.5, C.wood);
+
+    // Platform
+    withShadow(ctx, function () {
+      ctx.fillStyle = C.wood;
+      ctx.beginPath();
+      ctx.ellipse(cx, bottom + 2, 34, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.fillStyle = "#C99A6E";
+    ctx.beginPath();
+    ctx.ellipse(cx, bottom, 32, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Wooden walls with planks
+    fillRound(ctx, cx - 24, wallTop, 48, bottom - wallTop, 4, C.wood);
+    ctx.save();
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.3)";
+    ctx.lineWidth = 1.5;
+    for (var py = wallTop + 8; py < bottom; py += 8) {
+      ctx.beginPath();
+      ctx.moveTo(cx - 23, py);
+      ctx.lineTo(cx + 23, py);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Round window with its cross, and the little arched door
+    circle(ctx, cx - 11, wallTop + 15, 8, C.darkBrown);
+    circle(ctx, cx - 11, wallTop + 15, 6, "#BFE0EA");
+    ctx.fillStyle = C.darkBrown;
+    ctx.fillRect(cx - 12, wallTop + 9, 2, 12);
+    ctx.fillRect(cx - 17, wallTop + 14, 12, 2);
+    ctx.fillStyle = C.darkBrown;
+    ctx.beginPath();
+    ctx.moveTo(cx + 5, bottom);
+    ctx.lineTo(cx + 5, bottom - 12);
+    ctx.arc(cx + 11, bottom - 12, 6, Math.PI, 0);
+    ctx.lineTo(cx + 17, bottom);
+    ctx.closePath();
+    ctx.fill();
+    circle(ctx, cx + 14.5, bottom - 7, 1.3, "#E2B44B");
+
+    // Terracotta roof, with a darker ridge
+    withShadow(ctx, function () {
+      ctx.fillStyle = C.terracotta;
+      ctx.beginPath();
+      ctx.moveTo(cx - 32, wallTop + 4);
+      ctx.lineTo(cx - 16, TREEHOUSE.y + 4);
+      ctx.lineTo(cx + 16, TREEHOUSE.y + 4);
+      ctx.lineTo(cx + 32, wallTop + 4);
+      ctx.closePath();
+      ctx.fill();
+    });
+    fillRound(ctx, cx - 17, TREEHOUSE.y + 1, 34, 6, 3, "#A9533C");
+
+    if (highlight) drawThingHighlight(ctx, TREEHOUSE);
+  }
+
+  // Where the window of the treehouse is, for its light at night.
+  var TREE_WINDOW = { x: TREEHOUSE.x + TREEHOUSE.w / 2 - 11, y: 133 };
+
+  // Vladi's little stone castle: a wall with battlements between two little towers with pointed roofs,
+  // an arched window, a wooden door and two lanterns that are always lit.
+  function drawCastle(ctx, time, highlight) {
+    var x = CASTLE.x, y = CASTLE.y, w = CASTLE.w, h = CASTLE.h;
+    var bottom = y + h, cx = x + w / 2, tw = 32;
+    var wallTop = y + 22;
+
+    // The middle wall, with its battlements
+    withShadow(ctx, function () {
+      fillRound(ctx, x + tw - 4, wallTop, w - (tw - 4) * 2, bottom - wallTop, 4, C.stone);
+    });
+    for (var bx = x + tw; bx < x + w - tw - 4; bx += 14) fillRound(ctx, bx, wallTop - 9, 9, 12, 2, C.stone);
+    // Stone blocks
+    ctx.save();
+    ctx.strokeStyle = "rgba(74, 52, 40, 0.22)";
+    ctx.lineWidth = 1.5;
+    for (var row = 0, sy = wallTop + 12; sy < bottom - 2; sy += 12, row++) {
+      ctx.beginPath();
+      ctx.moveTo(x + tw - 4, sy);
+      ctx.lineTo(x + w - tw + 4, sy);
+      for (var sx = x + tw + (row % 2) * 10; sx < x + w - tw; sx += 20) {
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx, sy - 12);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // The two towers, with pointed dark roofs and a golden tip
+    [x, x + w - tw].forEach(function (tx) {
+      withShadow(ctx, function () {
+        fillRound(ctx, tx, y + 8, tw, bottom - y - 8, 5, C.stoneLight);
+      });
+      ctx.fillStyle = C.darkBrown;
+      ctx.beginPath();
+      ctx.moveTo(tx - 4, y + 12);
+      ctx.lineTo(tx + tw / 2, y - 22);
+      ctx.lineTo(tx + tw + 4, y + 12);
+      ctx.closePath();
+      ctx.fill();
+      circle(ctx, tx + tw / 2, y - 22, 3, "#E2B44B");
+      // A narrow tower window
+      fillRound(ctx, tx + tw / 2 - 3, y + 26, 6, 13, 3, C.darkBrown);
+    });
+
+    // Arched window over the door, where the "Zzz" come out by day
+    ctx.fillStyle = C.darkBrown;
+    ctx.beginPath();
+    ctx.moveTo(cx - 10, wallTop + 30);
+    ctx.lineTo(cx - 10, wallTop + 18);
+    ctx.arc(cx, wallTop + 18, 10, Math.PI, 0);
+    ctx.lineTo(cx + 10, wallTop + 30);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#6E6AAE";
+    ctx.beginPath();
+    ctx.moveTo(cx - 7, wallTop + 28);
+    ctx.lineTo(cx - 7, wallTop + 18);
+    ctx.arc(cx, wallTop + 18, 7, Math.PI, 0);
+    ctx.lineTo(cx + 7, wallTop + 28);
+    ctx.closePath();
+    ctx.fill();
+
+    // Wooden door with a round top and a stone step
+    fillRound(ctx, cx - 20, bottom - 4, 40, 8, 4, C.stone);
+    ctx.fillStyle = C.wood;
+    ctx.beginPath();
+    ctx.moveTo(cx - 14, bottom - 2);
+    ctx.lineTo(cx - 14, bottom - 22);
+    ctx.arc(cx, bottom - 22, 14, Math.PI, 0);
+    ctx.lineTo(cx + 14, bottom - 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = C.darkBrown;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, bottom - 36);
+    ctx.lineTo(cx, bottom - 2);
+    ctx.stroke();
+    circle(ctx, cx + 6, bottom - 16, 2, "#E2B44B");
+
+    // Two lanterns on posts beside the door, always lit
+    LANTERNS.forEach(function (lx) {
+      fillRound(ctx, lx - 2, bottom - 30, 4, 30, 2, C.darkBrown);
+      drawLantern(ctx, lx, bottom - 36, time);
+    });
+
+    if (highlight) drawThingHighlight(ctx, { x: x, y: y - 22, w: w, h: h + 22 });
+  }
+
+  // Where the two lanterns stand, and the window of the castle.
+  var LANTERNS = [CASTLE.x + CASTLE.w / 2 - 30, CASTLE.x + CASTLE.w / 2 + 30];
+  var CASTLE_WINDOW = { x: CASTLE.x + CASTLE.w / 2, y: CASTLE.y + 22 + 22 };
+
+  // A little lantern: a dark frame with a warm flame that flickers a little.
+  function drawLantern(ctx, x, y, time) {
+    fillRound(ctx, x - 6, y - 8, 12, 15, 3, C.darkBrown);
+    var flicker = 0.85 + Math.sin(time * 9 + x) * 0.15;
+    ctx.save();
+    ctx.globalAlpha = flicker;
+    fillRound(ctx, x - 4, y - 6, 8, 11, 2, "#FFD66B");
+    ctx.restore();
+    fillRound(ctx, x - 7, y - 10, 14, 3, 1.5, C.darkBrown);
   }
 
   // ---------- Forest ----------
@@ -734,10 +951,12 @@ var City = (function () {
     Garden.draw(ctx, time);
     drawTent(ctx);
     drawCampfire(ctx, time);
+    drawCastle(ctx, time, highlightId === "castle");
     CONFIG.cityObjects.forEach(function (f) {
       if (f.id === highlightId) drawThingHighlight(ctx, f);
     });
     TREES.forEach(function (t, i) { drawTree(ctx, t[0], t[1], t[2], i); });
+    drawTreehouse(ctx, highlightId === "treehouse");
     Gather.draw(ctx, time);
     drawFireflies(ctx, time);
     ctx.restore();
@@ -753,6 +972,8 @@ var City = (function () {
     label(ctx, "Carpa de real.fixer", TENT.x + TENT.w / 2, TENT.y - 30, 20);
     var fence = CONFIG.garden.fence;
     label(ctx, "Jardín de Sofía", fence.x + fence.w / 2, fence.y - 16, 16);
+    label(ctx, "Casa de Lumi", TREEHOUSE.x + TREEHOUSE.w / 2, TREEHOUSE.y - 14, 16);
+    label(ctx, "Castillito de Vladi", CASTLE.x + CASTLE.w / 2, CASTLE.y - 38, 16);
   }
 
   // ---------- What is under the mouse ----------
@@ -765,6 +986,13 @@ var City = (function () {
     return x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
   }
 
+  // "treehouse" or "castle" if the spot is on one of the neighbors' homes (roofs and ladder included), or null.
+  function neighborHomeAt(x, y) {
+    if (inBox(x, y, TREEHOUSE)) return "treehouse";
+    if (inBox(x, y, { x: CASTLE.x, y: CASTLE.y - 22, w: CASTLE.w, h: CASTLE.h + 22 })) return "castle";
+    return null;
+  }
+
   // The id of the word for what is at a spot of the map, or null. Small things win over big places.
   function wordAt(x, y) {
     if (x < 0 || x > W || y < 0 || y > H) return null;
@@ -774,6 +1002,8 @@ var City = (function () {
     }
     if (inBox(x, y, FIRE)) return "campfire";
     if (inBox(x, y, TENT)) return "tent";
+    var home = neighborHomeAt(x, y);
+    if (home) return home;
     var garden = Garden.wordAt(x, y);
     if (garden) return garden;
     if (near(x, y, PLAZA.x, PLAZA.y, FOUNTAIN)) return "fountain";
@@ -800,6 +1030,8 @@ var City = (function () {
     walkableSpot: walkableSpot,
     campfireSeat: SEAT,
     houseAt: houseAt,
+    neighborHomeAt: neighborHomeAt,
+    castleWindow: CASTLE_WINDOW,
     isOpenGrass: isOpenGrass,
     isForestFloor: isForestFloor,
     riverAt: riverAt,

@@ -225,10 +225,13 @@ h1 {
   border-radius: 999px;
 }
 
+/* One line of Amistad for each one: the other one and the neighbors. */
 #friendship {
   margin-top: 8px;
   font-size: 0.95rem;
   font-weight: 700;
+  line-height: 1.35;
+  white-space: pre-line;
   color: #4A3428;
 }
 
@@ -236,7 +239,8 @@ h1 {
   display: none;
 }
 
-#social-menu {
+#social-menu,
+#gift-menu {
   position: fixed;
   display: grid;
   gap: 6px;
@@ -247,11 +251,18 @@ h1 {
   box-shadow: 0 4px 0 #4A3428;
 }
 
-#social-menu[hidden] {
+#social-menu[hidden],
+#gift-menu[hidden] {
   display: none;
 }
 
-#social-menu button {
+/* The menu to pick who gets a gift goes over the backpack. */
+#gift-menu {
+  z-index: 5;
+}
+
+#social-menu button,
+#gift-menu button {
   padding: 6px 16px;
   font: inherit;
   font-weight: 700;
@@ -262,7 +273,8 @@ h1 {
   cursor: pointer;
 }
 
-#social-menu button:hover {
+#social-menu button:hover,
+#gift-menu button:hover {
   background: #C8664A;
 }
 
@@ -521,5 +533,17 @@ h1 {
 @media (max-width: 420px) {
   .need-track {
     width: 100px;
+  }
+
+  #friendship {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-height: 560px) {
+  #friendship {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    line-height: 1.2;
   }
 }

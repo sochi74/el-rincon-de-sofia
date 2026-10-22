@@ -11,9 +11,11 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 ## Personajes
 - 💗 Sofía: dormilona, glotona y creativa; le encanta ver tele. "Pizza and a movie!" Lleva su Princess crown 👑
 - 🧢 real.fixer: tranquilo, creativo y conversador; le encanta charlar. "Let's fix it." Vive en una carpa junto al río. Su gatito naranja se llama Krohna 🐱
+- 🧚 Lumi: hada vecina, energética, bromista y fiestera; vive en una casita en un árbol del bosque y pasea volando. "¡A volar se ha dicho!"
+- 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 
 ## Estado
-Hito 17 ✅ Sonidos y música. ¡Pack 2 completo! 🌸
+Hito 18 ✅ Vecinos nuevos
 
 ## ⭐ Estrellas de inglés: 29
 
@@ -150,6 +152,14 @@ Hito 17 ✅ Sonidos y música. ¡Pack 2 completo! 🌸
 - meow: miau
 - mute: silenciar
 - Yes!: ¡Sí!
+- neighbor: vecino
+- fairy: hada
+- vampire: vampiro
+- treehouse: casa del árbol
+- castle: castillo
+- wings: alas
+- teddy bear: osito de peluche
+- Is it dark in here?: ¿Está oscuro aquí?
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -176,7 +186,8 @@ Hito 17 ✅ Sonidos y música. ¡Pack 2 completo! 🌸
   - 20 ⭐: Butterflies 🦋 en el jardín
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
   - Próximo regalo: a las 30 ⭐
-- Siguiente paso: Pack 3, Hito 18: 🧚 Vecinos nuevos.
+- Siguiente paso: Pack 3, Hito 19: 🌟 Sueños y metas.
+- Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
 - Decisiones grandes pendientes, para hablar con Robert: pixel art con imágenes; canciones reales de real.fixer (archivos de audio); jugar con amigos por internet.
 
 ### Proceso de traspaso entre arquitectos (estándar)

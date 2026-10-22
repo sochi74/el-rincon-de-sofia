@@ -17,6 +17,25 @@
 - El crujido de la fogata se escucha igual en toda la ciudad, no solo cerca de la carpa.
 - Todavía no hay sonido de lluvia (llega con el clima).
 - Si cambias de pestaña, la música se detiene, pero el río o la tele pueden seguir sonando bajito.
+- Los personajes y los vecinos no se esquivan entre ellos: a veces uno pasa por encima de otro.
+- Los rasgos de los vecinos que cambian necesidades y su actividad favorita todavía no hacen nada (solo Bromista funciona).
+- Nadie empieza solo una conversación con los vecinos, y los vecinos no hablan entre ellos.
+- Con el panel abierto se tapa la casa del árbol de Lumi en pantallas chicas.
+
+## 2026-10-21 · Hito 18: 🧚 Vecinos nuevos
+- Sofía cambió la regla fija de los personajes: siguen siendo dos jugables (Sofía y real.fixer), y llegan dos vecinos que no se seleccionan, Lumi y Vladi. Solo la casa de Sofía tiene interior; las casas de los vecinos se ven solo desde afuera en la ciudad.
+- Fichas nuevas en CHARACTERS.md y js/characters.js: 🧚 Lumi, un hada pelirroja con trenzas, vestido durazno y alas doradas (Energética, Bromista, Fiestera; le encantan los cristales), y 🧛 Vladi, un vampiro que le tiene miedo a la oscuridad, con capa negra y roja y su osito de peluche (Gamer, Tranquilo, Dormilón; le encantan los cangrejos). Campos nuevos para todos: Tipo (jugable o vecino) y Mascota. Sofía y real.fixer tienen Amistad 0 con Lumi y con Vladi.
+- Casas en el mapa de la ciudad, dibujadas con código y con su cartel: la "Casa de Lumi", una casita de madera arriba de un árbol grande del bosque, con techo terracota, ventana redonda, puertita y escalerita de cuerda; y el "Castillito de Vladi", abajo a la derecha, de piedra con dos torrecitas, puerta de madera y dos faroles siempre encendidos. De noche brillan sus ventanas y los faroles tienen un halo de luz cálida. Brillan al pasar el mouse. Son obstáculos para los caminos, y las monedas y las cosas del bosque nunca aparecen encima.
+- Lumi y Vladi se dibujan de frente, de espalda y de costado, parpadean y respiran. Lumi es más bajita, flota sobre una sombra suave y aletea siempre. Caminan un poco más despacio que los jugables, rodean obstáculos y no recogen monedas. Nunca entran a la casa de Sofía.
+- Lumi pasea día y noche entre su casa, el bosque, la plaza, el puente y la entrada del jardín, y se queda unos segundos en cada lugar. De noche deja una estela corta de brillitos dorados.
+- Vladi duerme de día (07:00 a 19:00) dentro de su castillito y de su ventana salen "Zzz". De noche sale y pasea despacio cerca de su castillito, la plaza y la fogata; a veces se detiene, tiembla abrazando su osito y dice "😨" o "Is it dark in here?" (¿Está oscuro aquí?). A las 07:00 vuelve a entrar.
+- Hablar con los vecinos: con Sofía o real.fixer seleccionado en la ciudad, tocar a Lumi (o a Vladi de noche) abre el menú "Charlar", "Contar un chiste" y "Chocar los cinco". El vecino se detiene, el seleccionado camina hacia él y alternan sus frases (Lumi en español; Vladi en inglés con subtítulos). Cada par tiene su propia Amistad. Los chistes de Lumi dan Amistad ×1.5 (Bromista).
+- Regalos a los vecinos: "Regalar" funciona si hay alguien más en el mismo lugar. Si pueden recibir varios, aparece un menú pequeño con sus nombres. Cristal es el favorito de Lumi y Cangrejo el de Vladi. Cada vecino acepta hasta 3 regalos por día.
+- El panel muestra una línea de Amistad por cada uno: con el otro jugable, con Lumi y con Vladi. Al subir de nivel con un vecino caen corazones y aparece el cartel "¡Ahora son…!".
+- Palabras nuevas en js/words.js: Lumi · fairy (FÉ-ri), Vladi · vampire (VÁM-pai-er), Casa del árbol · treehouse (TRÍI-jaus), Castillo · castle (KÁ-sel), Vecino · neighbor (NÉI-bor), Alas · wings (UÍNGS) y Osito de peluche · teddy bear (TÉ-di BER).
+- El guardado recuerda dónde está cada vecino (y si Vladi está en su castillito), la Amistad de cada par y los regalos del día. Una partida vieja carga bien: los vecinos aparecen junto a su casa con Amistad 0.
+- Nuevo archivo js/neighbors.js.
+- Problemas conocidos: Los personajes y los vecinos no se esquivan entre ellos: a veces uno pasa por encima de otro. Los rasgos de los vecinos que cambian necesidades y su actividad favorita todavía no hacen nada (solo Bromista funciona). Nadie empieza solo una conversación con los vecinos, y los vecinos no hablan entre ellos. Con el panel abierto se tapa la casa del árbol de Lumi en pantallas chicas.
 
 ## 2026-10-21 · Continuidad
 - Se agregaron notas para continuar en el Modo Planear, el proceso de traspaso entre arquitectos, y se revisó la coherencia de las biblias.

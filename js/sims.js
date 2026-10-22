@@ -1,4 +1,5 @@
 // The characters: drawing, selection and walking, in the house or in the city.
+// Only Sofía and real.fixer are here; the neighbors (js/neighbors.js) are drawn among them and reuse the body parts.
 var Sims = (function () {
   var C = CONFIG.colors;
   var sims = [];
@@ -9,7 +10,7 @@ var Sims = (function () {
 
   function init(selectCallback) {
     onSelect = selectCallback || onSelect;
-    sims = CHARACTERS.map(function (data, i) {
+    sims = playableCharacters().map(function (data, i) {
       var look = CONFIG.characterLooks[data.id];
       return {
         // "front", "back", "left" or "right"
@@ -822,12 +823,28 @@ var Sims = (function () {
     return sims.some(function (s) { return s.place === "house"; }) ? "house" : "city";
   }
 
+  // The name tag and the bubble of a neighbor (no mood star and no thought bubble: neighbors have no needs yet).
+  function drawTags(ctx, who, at, time, bubble) {
+    drawNameTag(ctx, who, at);
+    if (bubble && bubble.speech) {
+      drawSpeechBubble(ctx, at, time, bubble);
+    } else if (bubble) {
+      drawActionBubble(ctx, at, time, bubble);
+    }
+  }
+
   function draw(ctx, time) {
     var view = viewPlace();
-    // Whoever is lower on screen is drawn last, so they appear in front.
-    sims.filter(function (s) { return s.place === view; })
-      .sort(function (a, b) { return drawnAt(a).y - drawnAt(b).y; })
-      .forEach(function (sim) { drawSim(ctx, sim, time); });
+    // Everyone on screen, neighbors too: whoever is lower on screen is drawn last, so they appear in front.
+    var all = sims.filter(function (s) { return s.place === view; }).map(function (sim) {
+      return { y: drawnAt(sim).y, draw: function () { drawSim(ctx, sim, time); } };
+    });
+    if (view === "city") {
+      Neighbors.visible().forEach(function (n) {
+        all.push({ y: n.y, draw: function () { Neighbors.drawOne(ctx, n, time); } });
+      });
+    }
+    all.sort(function (a, b) { return a.y - b.y; }).forEach(function (one) { one.draw(); });
   }
 
   // ---------- Walking ----------
@@ -1134,6 +1151,7 @@ var Sims = (function () {
   }
 
   // A tap on the other character opens the social menu; tapping it again selects it.
+  // In the city, a tap on a neighbor who is outside opens the social menu too (neighbors are never selected).
   // A tap on a character selects it and stops what it was doing.
   // A tap on furniture sends the selected one to use it (the Estufa opens the recipe menu); a tap on the floor walks it there.
   // A tap on the front door takes it out to the city; in the city, a tap on the house takes it back in,
@@ -1146,12 +1164,23 @@ var Sims = (function () {
     var inCity = !!selected && selected.place === "city";
     var onPlot = inCity && (Garden.plotAt(x, y) >= 0 || !!Gather.thingAt(x, y));
     var sim = onPlot ? null : simAt(x, y);
+    var neighbor = onPlot || sim || viewPlace() !== "city" ? null : Neighbors.at(x, y);
     var again = false;
     if (UI.isMenuOpen()) {
       UI.closeMenu();
       again = !!sim && sim === menuFor;
       menuFor = null;
       if (!again) return;
+    }
+    if (neighbor) {
+      if (!selected) return;
+      var giver = selected, friend = neighbor;
+      menuFor = neighbor;
+      UI.openMenu(screenX, screenY, function (type) {
+        menuFor = null;
+        Social.start(giver, friend, type);
+      });
+      return;
     }
     if (sim && selected && sim !== selected && !again) {
       var from = selected, to = sim;
@@ -1244,6 +1273,25 @@ var Sims = (function () {
     placeOf: placeOf,
     isIdle: isIdle,
     selectedSim: function () { return selected; },
+    menuTarget: function () { return menuFor; },
+    turn: turn,
+    drawTags: drawTags,
+    drawZzz: drawZzz,
+    // Body parts and drawing helpers, for the neighbors (origin at the feet, up is negative y).
+    parts: {
+      roundRect: roundRect,
+      fillRound: fillRound,
+      circle: circle,
+      ellipse: ellipse,
+      strokeLine: strokeLine,
+      drawLegs: drawLegs,
+      drawArms: drawArms,
+      drawSideArm: drawSideArm,
+      drawTorso: drawTorso,
+      drawHead: drawHead,
+      drawEye: drawEye,
+      drawEyes: drawEyes
+    },
     viewPlace: viewPlace
   };
 })();
