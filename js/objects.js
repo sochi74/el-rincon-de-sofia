@@ -27,6 +27,8 @@ var Objects = (function () {
   // in front of the piece as it is turned, lying along the Cama and sitting looking where the Sofá looks.
   // The Estufa has no action of its own: tapping it opens the recipe menu (js/cooking.js), like the Fogata.
   // Cooking at the Fogata uses another spot, on the other side of the fire (js/cooking.js).
+  // In the city these are the first spots: Modo decorar may move the tent with its campfire and log, and then they go along
+  // ("City.follow").
   var SEAT = City.campfireSeat;
   var USABLE = {
     stove: {},
@@ -45,14 +47,24 @@ var Objects = (function () {
 
   // Where a character stands to use a piece of furniture or a thing of the city (at the Televisión, where it sits on the floor).
   function spotOf(furniture) {
-    if (placeOf(furniture) === "city") return USABLE[furniture.id].spot;
+    if (placeOf(furniture) === "city") return City.follow("tent", USABLE[furniture.id].spot);
     if (furniture.id === "tv") return House.floorSeat();
     var b = House.bounds(furniture);
     return House.useSpot(furniture.id) || { x: b.x + b.w / 2, y: b.y + b.h + 20 };
   }
 
   function poseOf(furniture) {
-    return placeOf(furniture) === "city" ? USABLE[furniture.id].pose || null : House.poseFor(furniture.id);
+    if (placeOf(furniture) !== "city") return House.poseFor(furniture.id);
+    var pose = USABLE[furniture.id].pose;
+    if (!pose) return null;
+    var out = { kind: pose.kind };
+    if (pose.zzz) out.zzz = City.follow("tent", pose.zzz);
+    if (pose.x !== undefined) {
+      var at = City.follow("tent", pose);
+      out.x = at.x;
+      out.y = at.y;
+    }
+    return out;
   }
 
   function lookOf(furniture) {
@@ -139,11 +151,11 @@ var Objects = (function () {
     Sims.walkTo(sim, spot.x, spot.y);
   }
 
-  // Modo decorar moved the furniture: whoever was walking to use a piece walks to where it is now.
+  // Modo decorar moved the furniture (or the tent): whoever was walking to use a piece walks to where it is now.
   function refresh() {
     Object.keys(current).forEach(function (id) {
       var a = current[id];
-      if (a.phase !== "walking" || placeOf(a.furniture) !== "house") return;
+      if (a.phase !== "walking") return;
       var spot = spotOf(a.furniture);
       Sims.walkTo(a.sim, spot.x, spot.y);
     });

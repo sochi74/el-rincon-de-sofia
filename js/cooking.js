@@ -22,7 +22,8 @@ var Cooking = (function () {
   var YUM_TIME = 2.5;
 
   // Where the character stands to cook at each place, by the id of the furniture or city thing.
-  // At the Fogata it is on the other side of the fire from the log, so one can cook while the other sits.
+  // At the Fogata it is on the other side of the fire from the log, so one can cook while the other sits
+  // (this is its first spot: it goes along when Modo decorar moves the tent with its campfire).
   // At the Estufa it is in front of it, wherever Modo decorar put it (js/house.js says where).
   var STATIONS = {
     stove: { place: "house" },
@@ -31,7 +32,7 @@ var Cooking = (function () {
 
   function spotAt(station) {
     var s = STATIONS[station.id];
-    if (s.spot) return s.spot;
+    if (s.spot) return City.follow("tent", s.spot);
     var b = House.bounds(station);
     return House.useSpot(station.id) || { x: b.x + b.w / 2, y: b.y + b.h + 20 };
   }
@@ -175,11 +176,11 @@ var Cooking = (function () {
     return !!current[id];
   }
 
-  // Modo decorar moved the Estufa: whoever was walking there to cook walks to where it is now.
+  // Modo decorar moved the Estufa (or the Fogata, with the tent): whoever was walking there to cook walks to where it is now.
   function refresh() {
     Object.keys(current).forEach(function (id) {
       var a = current[id];
-      if (a.kind !== "cook" || a.phase !== "walking" || STATIONS[a.station.id].place !== "house") return;
+      if (a.kind !== "cook" || a.phase !== "walking") return;
       var spot = spotAt(a.station);
       Sims.walkTo(a.sim, spot.x, spot.y);
     });

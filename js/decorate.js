@@ -1,5 +1,6 @@
-// Modo decorar: Sofía arranges her house her way (the Baño too), and in the city Krohna's bed and the guitar and the pot
-// of the goals.
+// Modo decorar: Sofía arranges her house her way (the Baño too), and in the city Krohna's bed, the guitar and the pot
+// of the goals, and also the homes (her house, her garden, real.fixer's tent with its campfire, and the neighbors' homes),
+// the fountain and each tree. Homes, trees and the fountain are never turned: "🔄 Girar" says "No se puede girar".
 // The "🛠️ Decorar" button in the panel turns it on: everything freezes like with Pausa, and a sign at the top says what to do,
 // with buttons to turn the thing picked ("🔄 Girar"), to put everything back as it was at first ("↩️ Como al principio",
 // after asking) and to finish ("✅ Listo"). Taps only pick and drag: what can be moved glows under the mouse, the last one
@@ -8,7 +9,7 @@
 // or the city (js/city.js). With "Listo" everything goes on: whoever was left on something steps to the closest free spot.
 var Decorate = (function () {
   var GREEN = "#5FB35A", RED = "#E0533D";
-  // How long "No cabe aquí" stays over the thing that did not fit, in seconds.
+  // How long "No cabe aquí" (or "No se puede girar") stays over the thing, in seconds.
   var NO_ROOM_TIME = 1.6;
 
   var on = false;
@@ -18,8 +19,8 @@ var Decorate = (function () {
   var hover = null, picked = null;
   // The thing being dragged: { id, place, from (where it was), dx, dy (from the finger to its middle), ok, dirty }.
   var drag = null;
-  // Seconds left of "No cabe aquí".
-  var noRoom = 0;
+  // Seconds left of "No cabe aquí", and what it says.
+  var noRoom = 0, noRoomText = "";
   // The places where something moved, so "Listo" lets everyone there step off it.
   var changed = {};
   var button, bar, turnButton, ask, pauseButton;
@@ -96,6 +97,7 @@ var Decorate = (function () {
     document.body.classList.add("decorating");
     hover = picked = drag = null;
     changed = {};
+    City.beginMoves();
     UI.forgetButtonWord();
   }
 
@@ -117,6 +119,13 @@ var Decorate = (function () {
     Object.keys(changed).forEach(function (place) { Sims.settle(place); });
     Objects.refresh();
     Cooking.refresh();
+    // In the city the neighbors, the garden, the shiny coins and the forest things find their places too.
+    if (changed.city) {
+      Neighbors.settle();
+      Garden.refresh();
+      Coins.settle();
+      Gather.settle();
+    }
     // Krohna stays where it is, unless it was left on something: then it steps to the closest free spot.
     Object.keys(changed).forEach(function (place) { Pet.settle(place); });
     changed = {};
@@ -184,12 +193,18 @@ var Decorate = (function () {
     if (!picked || picked.place !== where() || drag) return;
     var M = things(picked.place);
     if (!M.canTurn(picked.id)) return;
+    if (M.noTurn && M.noTurn(picked.id)) {
+      noRoomText = "No se puede girar";
+      noRoom = NO_ROOM_TIME;
+      return;
+    }
     var from = M.getPos(picked.id);
     M.turn(picked.id);
     if (M.fits(picked.id)) {
       changed[picked.place] = true;
     } else {
       M.setPos(picked.id, from);
+      noRoomText = "No cabe aquí";
       noRoom = NO_ROOM_TIME;
     }
     Path.reset();
@@ -246,7 +261,7 @@ var Decorate = (function () {
   }
 
   function drawNoRoom(ctx, b) {
-    var text = "No cabe aquí";
+    var text = noRoomText;
     var cx = b.x + b.w / 2, cy = Math.max(30, b.y - 28);
     ctx.save();
     ctx.globalAlpha = Math.min(1, noRoom / 0.3);

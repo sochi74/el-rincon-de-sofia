@@ -998,6 +998,34 @@ var Neighbors = (function () {
     return hit;
   }
 
+  // ---------- Modo decorar ----------
+
+  // Homes moved in the city: Professor Hoot stands by his door where it is now, whoever was left on something steps
+  // to the closest free spot, Vladi on his way in goes to his door where it is now, and whoever was walking near a home
+  // that moved walks to the same spot by it.
+  function settle() {
+    list.forEach(function (n) {
+      if (n.data.id === "hoot") {
+        n.x = n.cfg.home.x;
+        n.y = n.cfg.home.y;
+        n.path = [];
+        return;
+      }
+      if (n.inside) return;
+      if (City.isSolid(n.x, n.y)) {
+        var spot = Path.free("city", n.x, n.y);
+        n.x = spot.x;
+        n.y = spot.y;
+      }
+      if (n.goingIn) {
+        walk(n, n.cfg.home.x, n.cfg.home.y);
+      } else if (n.path.length > 0) {
+        var end = n.path[n.path.length - 1], to = City.carry(end.x, end.y);
+        walk(n, to.x, to.y);
+      }
+    });
+  }
+
   // ---------- Saving ----------
 
   // Where each one is, the way it looks, and whether Vladi (or Professor Hoot) is inside his home.
@@ -1051,6 +1079,7 @@ var Neighbors = (function () {
     visible: visible,
     list: function () { return list; },
     at: at,
+    settle: settle,
     get: get,
     set: set
   };
