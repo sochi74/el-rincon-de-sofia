@@ -24,6 +24,16 @@
 - El florero está sobre el mueble de la tele: si lo tocas, el personaje va a ver tele.
 - Lumi y Vladi solo charlan si se cruzan de noche; como pasean por lugares distintos, a veces pasa un buen rato sin que charlen.
 - El cartel "¡Meta cumplida!" puede tapar un poquito el panel unos segundos.
+- real.fixer no va solo al bosque a buscar bayas: solo se come las que ya están en la mochila.
+
+## 2026-10-22 · Extra: 🍒 real.fixer come bayas
+- Se cumplió el deseo de Sofía: "quiero que fixer pueda alimentarse de las bayas".
+- Libre albedrío de real.fixer: cuando no está seleccionado, está libre y el Hambre es su necesidad más baja (debajo de 50), si hay al menos una 🍒 Baya en la mochila se come una donde está, sin caminar. Prefiere las bayas; si no hay, sigue como antes (el plato más barato de la mochila y, si no hay platos, el Refrigerador).
+- Comer una baya: burbuja "Comiendo 🍒" unos 2 segundos, sale 1 baya de la mochila y Hambre +25 (nunca más de 100). Al terminar, más o menos 1 de cada 2 veces dice "Yum, berries!" con subtítulo "¡Mmm, bayas!". Si sigue con hambre y quedan bayas, puede comerse otra la próxima vez que decida.
+- Sofía nunca come bayas sola, y los vecinos tampoco. En la Mochila las bayas no tienen botón "Comer" (siguen con Vender y Regalar).
+- Si lo seleccionas o tocas otra cosa, deja de comer y la baya vuelve a la mochila. Pausa congela todo. El guardado devuelve a la mochila la baya que se estaba comiendo. Las metas no cambian.
+- Palabra nueva en js/words.js: Comer · eat (ÍIT).
+- Problemas conocidos: real.fixer no va solo al bosque a buscar bayas: solo se come las que ya están en la mochila.
 
 ## 2026-10-22 · Hito 19: 🌟 Sueños y metas
 - Cada personaje tiene un sueño: 2 metas en fila (campo nuevo "Metas" en CHARACTERS.md y js/characters.js). Lo que pasa antes de que una meta esté activa no cuenta para ella.

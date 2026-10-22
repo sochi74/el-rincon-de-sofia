@@ -12,7 +12,7 @@
 - "real.fixer es homeless y yo vivo sola"
 - "crear una ciudad de fantasia estilo dreamlight valley"
 - "podriamos agregar el menu al juego? (en la pantalla del juego) y yo poder abrir y cerar el menu?"
-- "quiero que fixer pueda alimentarse de las bayas" (solo real.fixer, y solo cuando tiene hambre; lo hace solo, con bayas de la mochila)
+- ✅ "quiero que fixer pueda alimentarse de las bayas" (solo real.fixer, y solo cuando tiene hambre; lo hace solo, con bayas de la mochila)
 - "agrega este proceso de continuacion entre sesiones de arquitectos como proceso establecido en nuestros estandares"
 
 ## Parte B: Diseño del juego completo
@@ -39,6 +39,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 ### 🏡 Pack 3: Vecinos y hogar
 - ✅ Hito 18: 🧚 Vecinos nuevos. Lumi, el hada, y Vladi, el vampiro miedoso, con su ficha completa y su casa en el mapa (casa del árbol y castillito); pasean solos, se puede charlar con ellos y hacerles regalos.
 - ✅ Hito 19: 🌟 Sueños y metas. Cada personaje tiene un sueño de 2 metas, con la ventana 🌟 Metas; cumplir una da celebración, monedas y una decoración en su casa. Lumi y Vladi charlan solos de noche.
+- ✅ Extra: 🍒 real.fixer come bayas
 - ⬜ Hito 20: 🛋️ Mover muebles y más habitaciones. Arrastrar muebles para acomodarlos, y nuevas habitaciones (por ejemplo, un estudio de pintura).
 - ⬜ Hito 21: 🌧️ Clima y magia. Lluvia, sol y niebla mágica, con brillitos y luces que flotan.
 - ⬜ Hito 22: 📖 Vecino profe y diario de palabras. Un vecino que enseña una palabra en inglés por día, y un diario en el juego con las palabras aprendidas.

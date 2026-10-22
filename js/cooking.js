@@ -1,6 +1,7 @@
 // Cooking and eating. Tapping the Estufa in the Cocina or the Fogata by real.fixer's tent opens a menu with the recipes;
 // the character walks there, cooks for a while and the dish goes into the shared backpack (js/inventory.js).
 // Dishes are eaten from the backpack, right where the character stands. Pausa freezes it all.
+// real.fixer also eats berries from the backpack on his own when he is hungry.
 var Cooking = (function () {
   var K = CONFIG.cooking;
 
@@ -12,6 +13,14 @@ var Cooking = (function () {
     { id: "magicDish", ingredients: { rainbowFish: 1, crystal: 1 }, effect: { hunger: 60, energy: 40 } }
   ];
 
+  // A berry as a snack: only real.fixer eats them, on his own (free will), and they have no "Comer" button.
+  // About half the times he says "Yum, berries!" when he finishes.
+  var BERRY = { id: "berry", effect: { hunger: 25 }, time: 2 };
+  var BERRY_EATER = "realfixer";
+  var YUM = { text: "Yum, berries!", subtitle: "¡Mmm, bayas!" };
+  var YUM_CHANCE = 0.5;
+  var YUM_TIME = 2.5;
+
   // Where the character stands to cook at each place, by the id of the furniture or city thing.
   // At the Fogata it is on the other side of the fire from the log, so one can cook while the other sits.
   var STATIONS = {
@@ -21,7 +30,8 @@ var Cooking = (function () {
 
   // What each character is doing, by character id:
   // cooking { sim, kind: "cook", station, recipe, phase: "walking" | "doing" | "busy", elapsed }
-  // eating { sim, kind: "eat", recipe, phase: "doing", elapsed } (the dish is already out of the backpack)
+  // eating { sim, kind: "eat", recipe, phase: "doing", elapsed } (the dish or berry is already out of the backpack)
+  // saying "Yum, berries!" { sim, kind: "yum", phase: "doing", elapsed }
   var current = {};
 
   // Texts floating up when a dish is ready, as { x, y, place, text, age }.
@@ -102,6 +112,18 @@ var Cooking = (function () {
     return true;
   }
 
+  // Free will: real.fixer eats a berry right where he stands; false if there is none or he is busy.
+  function eatBerry(sim) {
+    if (sim.data.id !== BERRY_EATER || !Sims.isIdle(sim) || !Inventory.take(BERRY.id, 1)) return false;
+    current[sim.data.id] = { sim: sim, kind: "eat", recipe: BERRY, phase: "doing", elapsed: 0 };
+    return true;
+  }
+
+  // Free will: true if this character would eat a berry now (only real.fixer, with berries in the backpack).
+  function hasBerryFor(sim) {
+    return sim.data.id === BERRY_EATER && Inventory.count(BERRY.id) > 0;
+  }
+
   // Free will: the cheapest dish there is in the backpack, or null (so the Plato mágico is kept while there is something simpler).
   function anyDish() {
     var best = null;
@@ -117,6 +139,10 @@ var Cooking = (function () {
     Object.keys(a.recipe.effect).forEach(function (need) {
       values[need] = Math.min(100, values[need] + a.recipe.effect[need]);
     });
+    if (a.recipe === BERRY) {
+      if (Math.random() < YUM_CHANCE) current[a.sim.data.id] = { sim: a.sim, kind: "yum", phase: "doing", elapsed: 0 };
+      return;
+    }
     Goals.notify("eat", a.sim.data.id, a.recipe.id);
   }
 
@@ -133,6 +159,13 @@ var Cooking = (function () {
 
   function isActive(id) {
     return !!current[id];
+  }
+
+  // How many seconds it takes.
+  function timeFor(a) {
+    if (a.kind === "cook") return K.cookTime;
+    if (a.kind === "yum") return YUM_TIME;
+    return a.recipe.time || K.eatTime;
   }
 
   function update(dt) {
@@ -161,11 +194,11 @@ var Cooking = (function () {
       }
       if (Needs.isPaused()) return;
       a.elapsed += dt;
-      if (a.elapsed < (a.kind === "cook" ? K.cookTime : K.eatTime)) return;
+      if (a.elapsed < timeFor(a)) return;
       delete current[id];
       if (a.kind === "cook") {
         finishCooking(a);
-      } else {
+      } else if (a.kind === "eat") {
         finishEating(a);
       }
     });
@@ -176,7 +209,9 @@ var Cooking = (function () {
     var a = current[id];
     if (!a || a.phase === "walking") return null;
     if (a.phase === "busy") return { text: "Ocupado", heart: false };
-    return { text: a.kind === "cook" ? "Cocinando 🍳" : "Comiendo 🍽️", heart: false };
+    if (a.kind === "yum") return { text: YUM.text, subtitle: YUM.subtitle, heart: false, speech: true };
+    if (a.kind === "cook") return { text: "Cocinando 🍳", heart: false };
+    return { text: a.recipe === BERRY ? "Comiendo 🍒" : "Comiendo 🍽️", heart: false };
   }
 
   // The floating texts when a dish is ready, over everything, only in the place on screen.
@@ -202,7 +237,7 @@ var Cooking = (function () {
 
   // ---------- Saving ----------
 
-  // The backpack to save: dishes being eaten right now go back in, so reloading never loses one.
+  // The backpack to save: dishes and berries being eaten right now go back in, so reloading never loses one.
   function withPending(saved) {
     Object.keys(current).forEach(function (id) {
       var a = current[id];
@@ -219,6 +254,8 @@ var Cooking = (function () {
     isStation: isStation,
     tap: tap,
     eat: eat,
+    eatBerry: eatBerry,
+    hasBerryFor: hasBerryFor,
     anyDish: anyDish,
     cancel: cancel,
     isActive: isActive,
