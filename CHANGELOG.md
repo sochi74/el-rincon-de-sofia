@@ -19,8 +19,28 @@
 - Si cambias de pestaña, la música se detiene, pero el río o la tele pueden seguir sonando bajito.
 - Los personajes y los vecinos no se esquivan entre ellos: a veces uno pasa por encima de otro.
 - Los rasgos de los vecinos que cambian necesidades y su actividad favorita todavía no hacen nada (solo Bromista funciona).
-- Nadie empieza solo una conversación con los vecinos, y los vecinos no hablan entre ellos.
+- Nadie empieza solo una conversación con los vecinos (pero Lumi y Vladi ya charlan entre ellos de noche).
 - Con el panel abierto se tapa la casa del árbol de Lumi en pantallas chicas.
+- El florero está sobre el mueble de la tele: si lo tocas, el personaje va a ver tele.
+- Lumi y Vladi solo charlan si se cruzan de noche; como pasean por lugares distintos, a veces pasa un buen rato sin que charlen.
+- El cartel "¡Meta cumplida!" puede tapar un poquito el panel unos segundos.
+
+## 2026-10-22 · Hito 19: 🌟 Sueños y metas
+- Cada personaje tiene un sueño: 2 metas en fila (campo nuevo "Metas" en CHARACTERS.md y js/characters.js). Lo que pasa antes de que una meta esté activa no cuenta para ella.
+  - 💗 Sofía: 🌸 Cosechar 5 flores (cuenta cada cosecha de Sofía), después 🥧 Comer una Tarta de bayas (con Comer o por libre albedrío).
+  - 🧢 real.fixer: 💬 Charlar con todos los vecinos (la primera charla con Lumi y la primera con Vladi), después 🌙 Pescar un Pez luna.
+  - 🧚 Lumi: 🎉 Ser amiga de todos (Amistad 30 o más con Sofía y con real.fixer), después 🦋 Ser amiga de Vladi (30 o más).
+  - 🧛 Vladi: 💛 Tener un mejor amigo (70 o más con cualquiera), después 🦀 Recibir una Sopa de cangrejo de regalo.
+  - Las metas de Amistad miran el valor actual: si ya se cumple cuando la meta empieza, se cumple enseguida.
+- Botón "🌟 Metas" en el panel: abre una ventanita con una fila por personaje, su meta actual con emoji, texto, avance (por ejemplo "🌸 Cosechar 5 flores · 2/5") y una barrita dorada, y las metas cumplidas con ✅ debajo, más clarito. Con las 2 cumplidas: "💫 ¡Todos sus sueños cumplidos!". Se cierra con ✕ o con el mismo botón, se actualiza sola, y se turna con la Mochila (al abrir una se cierra la otra). Se ajusta a pantallas chicas.
+- Al cumplir una meta: cartel grande unos 3 segundos ("🌟 ¡Meta cumplida! Sofía cosechó 5 flores 🌸"), la fanfarria de subir de nivel, +30 🪙 por la Meta 1 o +50 🪙 por la Meta 2, y enseguida la meta siguiente. Si el personaje está en el lugar que se ve, le cae una lluvia de estrellitas doradas y flota "+30 🪙" (o "+50 🪙"). Si se cumplen dos a la vez, los carteles se turnan. Pausa congela la celebración.
+- Decoraciones dibujadas con código, que quedan para siempre: florero con flores del jardín sobre el mueble de la tele (Sofía, Meta 1); banderines de colores en la pared de la Cocina (Sofía, Meta 2); guitarra apoyada al costado de la carpa (real.fixer, Meta 1); farolito con forma de luna colgado de la esquina de la carpa, que brilla de noche (real.fixer, Meta 2); farol de cristal colgado del techo de la casita del árbol, que brilla de noche (Lumi, Meta 1); guirnalda de lucecitas de colores en su árbol, que titilan de noche (Lumi, Meta 2); olla brillante junto a la puerta del castillito (Vladi, Meta 1); corazón dorado en la torrecita derecha (Vladi, Meta 2). No son obstáculos y no tapan puertas, carteles, muebles, caminos ni el póster.
+- Lumi y Vladi charlan solos: de noche, cuando los dos están afuera, cerca y libres, como máximo una vez cada 1 a 2 minutos de juego se detienen, se miran y alternan 2 o 3 burbujas con sus frases de saludo y charlar (Vladi en inglés con subtítulo). Cada charla da Amistad +5 a los dos (sin multiplicar por rasgos); si suben de nivel, caen corazones y sale "¡Ahora son…!". Si tocas a uno durante la charla, la charla termina y se abre el menú social de siempre. Al amanecer la charla termina. Pausa la congela.
+- Palabras nuevas en js/words.js: Meta · goal (GÓUL), Sueño · dream (DRÍIM), Caballete · easel (Í-sel), Cuadro · painting (PÉIN-ting), Florero · vase (VÉIS), Banderines · bunting (BÁN-ting), Guitarra · guitar (gui-TÁR), Farol · lantern (LÁN-tern), Guirnalda de luces · fairy lights (FÉ-ri LÁITS), Olla · pot (POT) y Corazón · heart (JÁRT). Aparecen al pasar el mouse sobre cada decoración.
+- El guardado recuerda la meta de cada uno, su avance y cuáles se cumplieron (y por eso sus decoraciones). Una partida vieja carga bien: todos empiezan en la Meta 1 con avance 0 (las de Amistad se revisan enseguida). "Reiniciar" vuelve todas las metas a la Meta 1 y quita las decoraciones.
+- ⭐ Extra desbloqueado (30 ⭐): Painting easel 🎨. En la esquina de abajo a la derecha de la Sala, un caballete de madera con un cuadro de Krohna durmiendo: un gatito naranja con rayitas, enroscado sobre un cojín, con una "z" chiquita. Es obstáculo (los personajes lo rodean) y nunca se quita. Al pasar el mouse: "Caballete · easel (Í-sel)".
+- Nuevo archivo js/goals.js.
+- Problemas conocidos: El florero está sobre el mueble de la tele: si lo tocas, el personaje va a ver tele. Lumi y Vladi solo charlan si se cruzan de noche; como pasean por lugares distintos, a veces pasa un buen rato sin que charlen. El cartel "¡Meta cumplida!" puede tapar un poquito el panel unos segundos.
 
 ## 2026-10-21 · Hito 18: 🧚 Vecinos nuevos
 - Sofía cambió la regla fija de los personajes: siguen siendo dos jugables (Sofía y real.fixer), y llegan dos vecinos que no se seleccionan, Lumi y Vladi. Solo la casa de Sofía tiene interior; las casas de los vecinos se ven solo desde afuera en la ciudad.

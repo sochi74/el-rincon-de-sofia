@@ -3,7 +3,7 @@
 // and another one next to it changes the sound (🔊 / 🎵 / 🔇). Every button goes "pling", and selling goes "cling".
 // Also the little social menu that opens next to a character, the seed menu that opens next to an empty garden plot,
 // the recipe menu that opens next to the Estufa or the Fogata,
-// the backpack window with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
+// the backpack window (it takes turns with the goals window of js/goals.js) with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
 // the gift when more than one can), and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 var UI = (function () {
@@ -352,10 +352,14 @@ var UI = (function () {
 
   // ---------- Backpack ----------
 
+  // The goals window closes when the backpack opens (js/goals.js closes the backpack the other way round).
   function setBackpackOpen(open) {
     backpack.hidden = !open;
     backpackShown = null;
-    if (open) updateBackpack();
+    if (open) {
+      Goals.close();
+      updateBackpack();
+    }
   }
 
   // Rebuild the list only when what is in the backpack changes (it can change while it is open, when fishing).
@@ -476,9 +480,10 @@ var UI = (function () {
     }, 1200);
   }
 
-  // True if a spot on the screen is over the panel, the ☰ button, the backpack or an open menu,
+  // True if a spot on the screen is over the panel, the ☰ button, the backpack, the goals window or an open menu,
   // so the word tag never shows what is under them.
   function coversSpot(x, y) {
+    if (Goals.covers(x, y)) return true;
     return [panelOpen ? panel : null, menuToggle, soundToggle, backpack, menu, seedMenu, cookMenu, giftMenu].some(function (el) {
       if (!el || el.hidden) return false;
       var r = el.getBoundingClientRect();
@@ -548,6 +553,7 @@ var UI = (function () {
     openSeedMenu: openSeedMenu,
     openCookMenu: openCookMenu,
     closeMenu: closeMenu,
-    isMenuOpen: isMenuOpen
+    isMenuOpen: isMenuOpen,
+    closeBackpack: function () { setBackpackOpen(false); }
   };
 })();

@@ -1,4 +1,6 @@
 // Draws the house seen from above: floors, walls, room names and furniture.
+// Also the decorations: Sofía's painting easel in the Sala (always there), and the ones her goals give (js/goals.js):
+// a vase with garden flowers on the TV stand and colored bunting on the Cocina wall.
 // At night the Televisión gives a soft glow while someone watches it.
 // Also where characters may walk: inside the rooms, through the doorways, and never on the furniture.
 var House = (function () {
@@ -174,6 +176,173 @@ var House = (function () {
     ctx.fillStyle = C.terracotta;
     ctx.fillText("That's what", x + w / 2, y + h / 2 - 9);
     ctx.fillText("she said!", x + w / 2, y + h / 2 + 10);
+    ctx.restore();
+  }
+
+  // ---------- Decorations ----------
+
+  // The painting easel in the bottom right corner of the Sala, and the spot it takes on the floor (characters go around it).
+  var EASEL = { x: 878, y: 568, w: 56, h: 92 };
+  var EASEL_FEET = { x: 882, y: 622, w: 48, h: 38 };
+  // The vase stands on the right end of the TV stand, like the plant on the left end; the bunting hangs on the Cocina wall.
+  var VASE = { x: 821, y: 358, w: 28, h: 44 };
+  var BUNTING = { x: 48, y: 38, w: 364, h: 32 };
+  var KROHNA = { fur: "#E8913A", stripe: "#B9621F", belly: "#F6C48A" };
+
+  function strokePath(ctx, color, width, points) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    points.forEach(function (p, i) {
+      if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+    });
+    ctx.stroke();
+  }
+
+  // A wooden easel with a canvas where Sofía painted Krohna sleeping: an orange striped kitten curled up, with a little "z".
+  function drawEasel(ctx) {
+    var cx = EASEL.x + EASEL.w / 2, feet = EASEL.y + EASEL.h - 2;
+    ctx.save();
+    ctx.fillStyle = "rgba(74, 52, 40, 0.22)";
+    ctx.beginPath();
+    ctx.ellipse(cx, feet, 30, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Back leg, then the two front legs and the ledge the canvas sits on
+    strokePath(ctx, "#8A5C38", 4, [[cx, EASEL.y + 6], [cx + 4, feet - 8]]);
+    strokePath(ctx, C.wood, 5, [[cx - 3, EASEL.y + 2], [cx - 24, feet]]);
+    strokePath(ctx, C.wood, 5, [[cx + 3, EASEL.y + 2], [cx + 24, feet]]);
+    fillRound(ctx, EASEL.x + 1, EASEL.y + 48, EASEL.w - 2, 6, 3, "#8A5C38");
+
+    // The canvas, with a cream frame
+    var px = EASEL.x + 3, py = EASEL.y + 6, pw = EASEL.w - 6, ph = 42;
+    withShadow(ctx, function () {
+      fillRound(ctx, px, py, pw, ph, 3, C.white);
+    });
+    fillRound(ctx, px + 3, py + 3, pw - 6, ph - 6, 2, "#DCE7D6");
+    // A sage cushion under the kitten
+    ctx.fillStyle = C.sage;
+    ctx.beginPath();
+    ctx.ellipse(cx, py + ph - 10, 19, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Krohna curled up: the tail around the body, the round body with stripes, and the head with closed eyes
+    var kx = cx + 2, ky = py + ph - 15;
+    strokePath(ctx, KROHNA.fur, 3.5, [[kx + 12, ky + 3], [kx + 8, ky + 8], [kx - 4, ky + 8], [kx - 12, ky + 5]]);
+    ctx.fillStyle = KROHNA.fur;
+    ctx.beginPath();
+    ctx.ellipse(kx, ky, 13, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    [-5, 0, 5].forEach(function (dx) {
+      strokePath(ctx, KROHNA.stripe, 1.6, [[kx + dx, ky - 7], [kx + dx + 1.5, ky - 2]]);
+    });
+    var hx = kx - 12, hy = ky + 1;
+    ctx.fillStyle = KROHNA.fur;
+    [-1, 1].forEach(function (side) {
+      ctx.beginPath();
+      ctx.moveTo(hx + side * 5.5, hy - 2);
+      ctx.lineTo(hx + side * 4.5, hy - 9);
+      ctx.lineTo(hx + side * 0.5, hy - 5);
+      ctx.closePath();
+      ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.arc(hx, hy, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = KROHNA.belly;
+    ctx.beginPath();
+    ctx.ellipse(hx, hy + 2.5, 3, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    strokePath(ctx, C.darkBrown, 1, [[hx - 3.5, hy - 0.5], [hx - 1.5, hy + 0.5]]);
+    strokePath(ctx, C.darkBrown, 1, [[hx + 1.5, hy + 0.5], [hx + 3.5, hy - 0.5]]);
+    // The little "z"
+    ctx.font = "700 10px " + CONFIG.fontFamily;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = C.darkBrown;
+    ctx.fillText("z", hx + 6, py + 11);
+    ctx.font = "700 7px " + CONFIG.fontFamily;
+    ctx.fillText("z", hx + 12, py + 8);
+    ctx.restore();
+  }
+
+  // A light blue vase with colorful flowers from the garden.
+  function drawVase(ctx) {
+    var cx = VASE.x + VASE.w / 2, base = VASE.y + VASE.h - 2;
+    ctx.save();
+    // Stems
+    [[-8, 16], [-3, 10], [3, 12], [8, 17], [0, 20]].forEach(function (f) {
+      strokePath(ctx, C.sage, 1.6, [[cx + f[0] * 0.3, base - 18], [cx + f[0], base - 18 - f[1]]]);
+    });
+    // Flowers: terracotta tulip, white lily, a rainbow one in pink and yellow, and a blue moon flower
+    [[-8, 16, C.terracotta], [-3, 10, C.white], [3, 12, "#E795AE"], [8, 17, "#9FC3E8"], [0, 20, "#F2C230"]].forEach(function (f) {
+      var fx = cx + f[0], fy = base - 18 - f[1];
+      for (var i = 0; i < 5; i++) {
+        var a = i * Math.PI * 2 / 5;
+        ctx.fillStyle = f[2];
+        ctx.beginPath();
+        ctx.arc(fx + Math.cos(a) * 2.6, fy + Math.sin(a) * 2.6, 2.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = "#E2B44B";
+      ctx.beginPath();
+      ctx.arc(fx, fy, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    // The vase: round belly, narrow neck, with a shine
+    withShadow(ctx, function () {
+      ctx.fillStyle = "#7DB9D6";
+      ctx.beginPath();
+      ctx.moveTo(cx - 4, base - 20);
+      ctx.lineTo(cx + 4, base - 20);
+      ctx.quadraticCurveTo(cx + 4, base - 15, cx + 9, base - 10);
+      ctx.quadraticCurveTo(cx + 11, base, cx + 5, base);
+      ctx.lineTo(cx - 5, base);
+      ctx.quadraticCurveTo(cx - 11, base, cx - 9, base - 10);
+      ctx.quadraticCurveTo(cx - 4, base - 15, cx - 4, base - 20);
+      ctx.closePath();
+      ctx.fill();
+    });
+    fillRound(ctx, cx - 5, base - 22, 10, 3, 1.5, "#5E9DBB");
+    strokePath(ctx, "rgba(255, 253, 248, 0.7)", 1.6, [[cx - 6, base - 10], [cx - 5, base - 4]]);
+    ctx.restore();
+  }
+
+  // Colored bunting along the top wall of the Cocina: two swags of little flags.
+  function drawBunting(ctx) {
+    var colors = [C.terracotta, "#F2C230", C.sage, "#E795AE", "#7DB9D6", C.cream];
+    var swags = [[52, 230], [230, 408]];
+    var top = BUNTING.y + 6, sag = 9;
+    ctx.save();
+    var n = 0;
+    swags.forEach(function (sw) {
+      var w = sw[1] - sw[0];
+      var at = function (x) {
+        var t = (x - sw[0]) / w;
+        return top + sag * 4 * t * (1 - t);
+      };
+      ctx.strokeStyle = C.darkBrown;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (var x = sw[0]; x <= sw[1]; x += 4) {
+        if (x === sw[0]) ctx.moveTo(x, at(x)); else ctx.lineTo(x, at(x));
+      }
+      ctx.stroke();
+      for (var fx = sw[0] + 12; fx < sw[1] - 8; fx += 22) {
+        var y1 = at(fx - 6), y2 = at(fx + 6);
+        ctx.fillStyle = colors[n++ % colors.length];
+        ctx.beginPath();
+        ctx.moveTo(fx - 6, y1);
+        ctx.lineTo(fx + 6, y2);
+        ctx.lineTo(fx, (y1 + y2) / 2 + 13);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.fillStyle = C.wood;
+      ctx.beginPath();
+      ctx.arc(sw[0], top, 3, 0, Math.PI * 2);
+      ctx.arc(sw[1], top, 3, 0, Math.PI * 2);
+      ctx.fill();
+    });
     ctx.restore();
   }
 
@@ -368,11 +537,14 @@ var House = (function () {
 
     drawWalls(ctx);
     drawPoster(ctx);
+    if (Goals.isMet("sofia", 1)) drawBunting(ctx);
 
     CONFIG.furniture.forEach(function (f) {
       drawers[f.id](ctx, f);
       if (f.id === highlightId) drawHighlight(ctx, f);
     });
+    if (Goals.isMet("sofia", 0)) drawVase(ctx);
+    drawEasel(ctx);
   }
 
   // Room and furniture names, drawn over the night tint so they always read well.
@@ -427,8 +599,11 @@ var House = (function () {
     return x >= d.x && x <= d.x + d.w && y >= d.y && y <= d.y + d.h;
   }
 
-  // The id of the word for what is at a spot: a piece of furniture, the front door or a room, or null.
+  // The id of the word for what is at a spot: a decoration, a piece of furniture, the front door or a room, or null.
   function wordAt(x, y) {
+    if (inBox(x, y, EASEL)) return "easel";
+    if (Goals.isMet("sofia", 0) && inBox(x, y, VASE)) return "vase";
+    if (Goals.isMet("sofia", 1) && inBox(x, y, BUNTING)) return "bunting";
     for (var i = CONFIG.furniture.length - 1; i >= 0; i--) {
       var b = bounds(CONFIG.furniture[i]);
       if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) return CONFIG.furniture[i].id;
@@ -460,14 +635,16 @@ var House = (function () {
     return { x: d.x - half, y: d.y - m.bottom - 2, w: half * 2, h: m.bottom + m.top + 4 };
   }
 
-  // True if a character cannot stand here: outside the rooms (walls are only crossed at the doorways)
-  // or on a piece of furniture. Used by js/path.js.
+  // True if a character cannot stand here: outside the rooms (walls are only crossed at the doorways),
+  // on a piece of furniture or on the easel. Used by js/path.js.
   function isSolid(x, y) {
     var m = CONFIG.walkMargin;
     var inRoom = CONFIG.rooms.some(function (r) {
       return inBox(x, y, { x: r.x + m.side, y: r.y + m.top, w: r.w - m.side * 2, h: r.h - m.top - m.bottom });
     }) || CONFIG.doorways.some(function (d) { return inBox(x, y, doorPassage(d)); });
     if (!inRoom) return true;
+    if (inBox(x, y, { x: EASEL_FEET.x - CLEAR.side, y: EASEL_FEET.y - CLEAR.top, w: EASEL_FEET.w + CLEAR.side * 2,
+      h: EASEL_FEET.h + CLEAR.top + CLEAR.bottom })) return true;
     return CONFIG.furniture.some(function (f) {
       var b = bounds(f);
       return inBox(x, y, { x: b.x - CLEAR.side, y: b.y - CLEAR.top, w: b.w + CLEAR.side * 2, h: b.h + CLEAR.top + CLEAR.bottom });

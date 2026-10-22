@@ -3,6 +3,9 @@
 // The neighbors' homes too: Lumi's treehouse on a big forest tree and Vladi's little castle, seen only from outside.
 // Berries, mushrooms and crystals from js/gather.js grow in the forest.
 // At night the campfire, the house windows and the fireflies shine.
+// The decorations that goals give (js/goals.js) are drawn here too: real.fixer's guitar and moon lantern by his tent,
+// Lumi's crystal lantern and fairy lights on her tree, and Vladi's shiny pot and golden heart at his castle.
+// They are only decoration: nothing walks around them.
 // Also where characters may walk: never on the water (they cross on the bridge), never off the map,
 // and around the house, the trees, the fountain, the tent, the campfire, the garden fence and the neighbors' homes.
 var City = (function () {
@@ -691,6 +694,9 @@ var City = (function () {
       drawLantern(ctx, lx, ly, time);
     });
 
+    // The lanterns and fairy lights that goals give.
+    drawDecorationLights(ctx, time, dark);
+
     // Moon flowers in the garden, with their blue-silver halo.
     ctx.globalAlpha = 1;
     Garden.drawNightLights(ctx, time, dark);
@@ -906,6 +912,225 @@ var City = (function () {
     fillRound(ctx, x - 7, y - 10, 14, 3, 1.5, C.darkBrown);
   }
 
+  // ---------- Decorations from the goals ----------
+
+  // Where each one is, for drawing it and for its word.
+  var GUITAR = { x: 744, y: 268, w: 34, h: 80 };
+  var MOON_LANTERN = { x: 773, y: 340, w: 26, h: 40, cx: 786, cy: 368 };
+  var CRYSTAL_LANTERN = { x: 252, y: 120, w: 20, h: 34, cx: 262, cy: 141 };
+  var FAIRY_LIGHTS = { x: 250, y: 156, w: 80, h: 34 };
+  var POT = { x: 828, y: 660, w: 28, h: 24, cx: 842, cy: 674 };
+  var HEART = { x: 929, y: 614, w: 20, h: 20, cx: 939, cy: 624 };
+  // The little lights along the garland, with their colors.
+  var BULBS = (function () {
+    var colors = ["#E8607E", "#F2C230", "#B5DCEC", "#C6DCA4", "#F4B494"];
+    var out = [];
+    for (var i = 0; i <= 10; i++) {
+      var t = i / 10;
+      out.push({ x: 256 + t * 68, y: 160 + 24 * 4 * t * (1 - t), color: colors[i % colors.length], phase: i * 1.7 });
+    }
+    return out;
+  })();
+
+  // real.fixer's guitar, leaning against the side of his tent.
+  function drawGuitar(ctx) {
+    ctx.save();
+    ctx.translate(760, 336);
+    ctx.rotate(0.22);
+    withShadow(ctx, function () {
+      circle(ctx, 0, 0, 11, C.wood);
+      circle(ctx, 0, -14, 8.5, C.wood);
+    });
+    circle(ctx, 0, -7, 3.6, C.darkBrown);
+    fillRound(ctx, -4.5, 4, 9, 2.5, 1.2, C.darkBrown);
+    fillRound(ctx, -2, -60, 4, 46, 2, "#8A5C38");
+    fillRound(ctx, -3.5, -70, 7, 11, 2, C.darkBrown);
+    [-66, -62].forEach(function (py) {
+      circle(ctx, -4.5, py, 1.3, "#E2B44B");
+      circle(ctx, 4.5, py, 1.3, "#E2B44B");
+    });
+    ctx.strokeStyle = "rgba(255, 253, 248, 0.75)";
+    ctx.lineWidth = 0.6;
+    [-1, 1].forEach(function (dx) {
+      ctx.beginPath();
+      ctx.moveTo(dx, -60);
+      ctx.lineTo(dx, 5);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  // A crescent moon: a round light with a bite taken out of it.
+  function crescent(ctx, x, y, r, color) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.moveTo(x + r * 1.3, y - r * 0.2);
+    ctx.arc(x + r * 0.5, y - r * 0.2, r * 0.8, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill("evenodd");
+    ctx.restore();
+  }
+
+  // The moon lantern hanging from the front corner of real.fixer's tent.
+  function drawMoonLantern(ctx, lit) {
+    var L = MOON_LANTERN;
+    if (!lit) {
+      ctx.save();
+      ctx.strokeStyle = C.darkBrown;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(L.cx, L.y + 2);
+      ctx.lineTo(L.cx, L.cy - 10);
+      ctx.stroke();
+      ctx.restore();
+      fillRound(ctx, L.cx - 3, L.cy - 12, 6, 3, 1.5, C.darkBrown);
+    }
+    crescent(ctx, L.cx, L.cy, 10, lit ? "#FFF1B8" : "#E8D9A0");
+    circle(ctx, L.cx - 4, L.cy + 1, 1.3, lit ? "#FFFFFF" : "#C9B66E");
+  }
+
+  // Lumi's crystal lantern, hanging from the edge of her treehouse roof.
+  function drawCrystalLantern(ctx, lit) {
+    var L = CRYSTAL_LANTERN;
+    if (!lit) {
+      ctx.save();
+      ctx.strokeStyle = C.darkBrown;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(L.cx, L.y + 2);
+      ctx.lineTo(L.cx, L.cy - 9);
+      ctx.stroke();
+      ctx.restore();
+      fillRound(ctx, L.cx - 4, L.cy - 10, 8, 3, 1.5, "#E2B44B");
+    }
+    ctx.fillStyle = lit ? "#E6F6FC" : C.waterLight;
+    ctx.beginPath();
+    ctx.moveTo(L.cx, L.cy - 8);
+    ctx.lineTo(L.cx + 5.5, L.cy - 2);
+    ctx.lineTo(L.cx + 4, L.cy + 6);
+    ctx.lineTo(L.cx, L.cy + 10);
+    ctx.lineTo(L.cx - 4, L.cy + 6);
+    ctx.lineTo(L.cx - 5.5, L.cy - 2);
+    ctx.closePath();
+    ctx.fill();
+    if (!lit) {
+      ctx.strokeStyle = "#7FB7C9";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+
+  // Lumi's fairy lights along her tree, under the treehouse. At night each one twinkles at its own pace.
+  function drawFairyLights(ctx, time, lit) {
+    if (!lit) {
+      ctx.save();
+      ctx.strokeStyle = C.darkBrown;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      BULBS.forEach(function (b, i) {
+        if (i === 0) ctx.moveTo(b.x, b.y - 2); else ctx.lineTo(b.x, b.y - 2);
+      });
+      ctx.stroke();
+      ctx.restore();
+    }
+    var base = ctx.globalAlpha;
+    BULBS.forEach(function (b) {
+      ctx.globalAlpha = lit ? base * (0.55 + 0.45 * Math.sin(time * 3 + b.phase)) : base;
+      circle(ctx, b.x, b.y, 2.4, b.color);
+    });
+    ctx.globalAlpha = base;
+  }
+
+  // Vladi's shiny pot, by the door of his castle.
+  function drawPot(ctx) {
+    var x = POT.cx, y = POT.cy;
+    withShadow(ctx, function () {
+      fillRound(ctx, x - 11, y - 7, 22, 15, 6, "#B8743E");
+    });
+    fillRound(ctx, x - 13, y - 4, 4, 4, 2, "#8A5C38");
+    fillRound(ctx, x + 9, y - 4, 4, 4, 2, "#8A5C38");
+    fillRound(ctx, x - 12, y - 10, 24, 5, 2.5, "#D18F55");
+    circle(ctx, x, y - 11, 2.2, "#8A5C38");
+    // Shine
+    fillRound(ctx, x - 7, y - 4, 3, 8, 1.5, "rgba(255, 241, 184, 0.85)");
+    ctx.save();
+    ctx.fillStyle = "#FFF1B8";
+    ctx.translate(x + 7, y - 15);
+    ctx.beginPath();
+    for (var i = 0; i < 8; i++) {
+      var a = i * Math.PI / 4, d = i % 2 === 0 ? 4 : 1.2;
+      ctx.lineTo(Math.cos(a) * d, Math.sin(a) * d);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // A golden heart on the right tower of Vladi's castle.
+  function drawHeart(ctx) {
+    var x = HEART.cx, y = HEART.cy - 5;
+    ctx.save();
+    ctx.fillStyle = "#E2B44B";
+    ctx.strokeStyle = "#B8862E";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x, y + 12);
+    ctx.bezierCurveTo(x - 13, y + 3, x - 7, y - 7, x, y - 1);
+    ctx.bezierCurveTo(x + 7, y - 7, x + 13, y + 3, x, y + 12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    circle(ctx, x - 3.5, y + 1.5, 1.5, "#FFF1B8");
+    ctx.restore();
+  }
+
+  // The night glow of the lanterns and the fairy lights, over the darkened map.
+  function drawDecorationLights(ctx, time, dark) {
+    var N = CONFIG.night;
+    if (Goals.isMet("realfixer", 1)) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 1;
+      halo(ctx, MOON_LANTERN.cx, MOON_LANTERN.cy, 40 + Math.sin(time * 2) * 2, "255, 241, 184", 0.45 * dark);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = dark;
+      drawMoonLantern(ctx, true);
+    }
+    if (Goals.isMet("lumi", 0)) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 1;
+      halo(ctx, CRYSTAL_LANTERN.cx, CRYSTAL_LANTERN.cy, 34 + Math.sin(time * 2.6) * 2, CONFIG.gather.crystalLight, 0.5 * dark);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = dark;
+      drawCrystalLantern(ctx, true);
+    }
+    if (Goals.isMet("lumi", 1)) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 1;
+      BULBS.forEach(function (b) {
+        halo(ctx, b.x, b.y, 9, N.warmLight, (0.25 + 0.25 * Math.sin(time * 3 + b.phase)) * dark);
+      });
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = dark;
+      drawFairyLights(ctx, time, true);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // The word of a decoration at a spot, or null.
+  function decorationAt(x, y) {
+    if (Goals.isMet("realfixer", 1) && inBox(x, y, MOON_LANTERN)) return "lantern";
+    if (Goals.isMet("realfixer", 0) && inBox(x, y, GUITAR)) return "guitar";
+    if (Goals.isMet("lumi", 0) && inBox(x, y, CRYSTAL_LANTERN)) return "lantern";
+    if (Goals.isMet("lumi", 1) && inBox(x, y, FAIRY_LIGHTS)) return "fairyLights";
+    if (Goals.isMet("vladi", 0) && inBox(x, y, POT)) return "pot";
+    if (Goals.isMet("vladi", 1) && inBox(x, y, HEART)) return "heart";
+    return null;
+  }
+
   // ---------- Forest ----------
 
   // Seconds of wind so far; it stops while the game is paused, so the trees stand still.
@@ -950,13 +1175,19 @@ var City = (function () {
     drawHouse(ctx, highlightHouse);
     Garden.draw(ctx, time);
     drawTent(ctx);
+    if (Goals.isMet("realfixer", 0)) drawGuitar(ctx);
+    if (Goals.isMet("realfixer", 1)) drawMoonLantern(ctx, false);
     drawCampfire(ctx, time);
     drawCastle(ctx, time, highlightId === "castle");
+    if (Goals.isMet("vladi", 0)) drawPot(ctx);
+    if (Goals.isMet("vladi", 1)) drawHeart(ctx);
     CONFIG.cityObjects.forEach(function (f) {
       if (f.id === highlightId) drawThingHighlight(ctx, f);
     });
     TREES.forEach(function (t, i) { drawTree(ctx, t[0], t[1], t[2], i); });
     drawTreehouse(ctx, highlightId === "treehouse");
+    if (Goals.isMet("lumi", 1)) drawFairyLights(ctx, time, false);
+    if (Goals.isMet("lumi", 0)) drawCrystalLantern(ctx, false);
     Gather.draw(ctx, time);
     drawFireflies(ctx, time);
     ctx.restore();
@@ -1000,6 +1231,8 @@ var City = (function () {
       var p = fireflySpot(FIREFLIES[i], lastTime);
       if (near(x, y, p.x, p.y, 14)) return "firefly";
     }
+    var decoration = decorationAt(x, y);
+    if (decoration) return decoration;
     if (inBox(x, y, FIRE)) return "campfire";
     if (inBox(x, y, TENT)) return "tent";
     var home = neighborHomeAt(x, y);

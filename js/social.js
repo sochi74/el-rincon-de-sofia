@@ -197,6 +197,10 @@ var Social = (function () {
       convo.elapsed = 0;
       if (convo.index < convo.lines.length) return;
       applyEffects();
+      if (convo.typeId === "chat") {
+        Goals.notify("chat", convo.a.data.id, convo.b.data.id);
+        Goals.notify("chat", convo.b.data.id, convo.a.data.id);
+      }
       if (convo.type.emoji) {
         convo.phase = "cheer";
       } else {

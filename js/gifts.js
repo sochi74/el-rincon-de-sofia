@@ -99,6 +99,7 @@ var Gifts = (function () {
       return { phrase: LINES[toId].enough, emoji: null, back: true };
     }
     counts[toId] = (counts[toId] || 0) + 1;
+    Goals.notify("gift", toId, gift.itemId);
     var favorite = (to.data.favoriteGifts || []).some(function (g) { return g.id === gift.itemId; });
     var result;
     if (favorite) {
