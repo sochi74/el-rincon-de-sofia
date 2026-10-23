@@ -83,6 +83,8 @@ var Save = (function () {
     var layout = data.layout && typeof data.layout === "object" ? data.layout : {};
     House.setLayout(layout.house);
     City.setLayout(layout.city);
+    // The goals and the layout say where the guitar and the pot are solid: whoever was saved on one steps off it.
+    Path.reset();
     // The forest first, so the coins can stay off its things.
     Gather.set(data.forest);
     Coins.set(data.coins);

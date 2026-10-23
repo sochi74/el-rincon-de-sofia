@@ -2,6 +2,7 @@
 // Each place is cut into small squares; a square is free when its middle is not solid (House.isSolid, City.isSolid).
 // The way found over the squares is then straightened and its corners are rounded, so the walk looks smooth.
 // Modo decorar (js/decorate.js) moves things, so the squares are worked out again after every move.
+// Characters also go around each other (js/sims.js): then the squares around the others count as solid for a moment.
 var Path = (function () {
   // Size of a square, in world units. The grid is big enough for the city and for the house (which is wider).
   var CELL = 6;
@@ -211,14 +212,11 @@ var Path = (function () {
 
   // ---------- What the rest of the game uses ----------
 
-  // Points to walk through from one spot to another in a place, going around everything solid.
-  // If the spot cannot be reached (inside furniture, in the water, off the map), the way ends at the
-  // closest spot that can. If the character starts on something solid, it first steps off it.
-  function find(place, fromX, fromY, toX, toY) {
-    var g = grid(place);
+  // The way over the squares "g" from one spot to another, and whether it gets right to the spot ("reached").
+  function route(place, g, fromX, fromY, toX, toY) {
     var startFree = !!g[cellOf(fromX, fromY)];
     var start = startFree ? cellOf(fromX, fromY) : closest(fromX, fromY, function (i) { return g[i]; });
-    if (start < 0) return [];
+    if (start < 0) return { way: [], reached: false };
     var target = cellOf(toX, toY);
     var exact = !!g[target] && !isSolid(place, toX, toY);
     var found = search(g, start, exact ? target : -1);
@@ -239,7 +237,14 @@ var Path = (function () {
 
     var way = roundCorners(g, straighten(g, points));
     // The first point is where it already stands.
-    return way.slice(1).map(function (p) { return { x: p.x, y: p.y }; });
+    return { way: way.slice(1).map(function (p) { return { x: p.x, y: p.y }; }), reached: exact };
+  }
+
+  // Points to walk through from one spot to another in a place, going around everything solid.
+  // If the spot cannot be reached (inside furniture, in the water, off the map), the way ends at the
+  // closest spot that can. If the character starts on something solid, it first steps off it.
+  function find(place, fromX, fromY, toX, toY) {
+    return route(place, grid(place), fromX, fromY, toX, toY).way;
   }
 
   // The closest spot of a place where a character may stand (the same spot if it is free).
@@ -290,5 +295,41 @@ var Path = (function () {
     };
   }
 
-  return { find: find, free: free, reset: reset, reach: reach };
+  // ---------- Making way for each other ----------
+
+  // The squares of a place, where the squares around each one of "people" ({ x, y, r }) are solid too.
+  function withPeople(place, people) {
+    var g = grid(place).slice();
+    people.forEach(function (p) {
+      var c0 = Math.max(0, Math.floor((p.x - p.r) / CELL)), c1 = Math.min(COLS - 1, Math.floor((p.x + p.r) / CELL));
+      var r0 = Math.max(0, Math.floor((p.y - p.r) / CELL)), r1 = Math.min(ROWS - 1, Math.floor((p.y + p.r) / CELL));
+      for (var r = r0; r <= r1; r++) {
+        for (var c = c0; c <= c1; c++) {
+          var dx = (c + 0.5) * CELL - p.x, dy = (r + 0.5) * CELL - p.y;
+          if (dx * dx + dy * dy <= p.r * p.r) g[r * COLS + c] = 0;
+        }
+      }
+    });
+    return g;
+  }
+
+  // A way from one spot to another that also goes around the people, or null if there is no room for it
+  // (like a person in a doorway or on the bridge).
+  function around(place, fromX, fromY, toX, toY, people) {
+    var r = route(place, withPeople(place, people), fromX, fromY, toX, toY);
+    return r.reached ? r.way : null;
+  }
+
+  // The closest spot to x, y that a character can walk to from where it stands, away from the people.
+  function clearOf(place, fromX, fromY, x, y, people) {
+    var g = withPeople(place, people);
+    var start = g[cellOf(fromX, fromY)] ? cellOf(fromX, fromY) : closest(fromX, fromY, function (i) { return g[i]; });
+    if (start < 0) return { x: x, y: y };
+    var found = search(g, start, -1);
+    if (found.dist[cellOf(x, y)] !== Infinity && !isSolid(place, x, y)) return { x: x, y: y };
+    var i = closest(x, y, function (k) { return found.dist[k] !== Infinity; });
+    return i < 0 ? { x: x, y: y } : center(i);
+  }
+
+  return { find: find, free: free, reset: reset, reach: reach, around: around, clearOf: clearOf };
 })();

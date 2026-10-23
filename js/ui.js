@@ -14,7 +14,7 @@
 // a little sign asks to turn it.
 var UI = (function () {
   var coinsEl;
-  var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
+  var wordTag, wordEs, wordEn, wordSay, wordSub, wordTimer = null;
   var menuToggle, panelOpen = true;
   var soundToggle, buttonWordShown = false;
   var clockText, weatherEl;
@@ -41,13 +41,13 @@ var UI = (function () {
     });
     menuToggle = document.getElementById("menu-toggle");
     clockEl = document.getElementById("clock");
-    // The clock, and the weather emoji after it with its word, like "Lluvia · rain".
+    // The clock, and the weather emoji after it with its word, like "Lluvia · rain", and "Clima · weather" smaller below.
     clockText = document.createElement("span");
     weatherEl = document.createElement("span");
     weatherEl.className = "clock-weather";
     clockEl.appendChild(clockText);
     clockEl.appendChild(weatherEl);
-    bindWord(weatherEl, Weather.wordId);
+    bindWord(weatherEl, Weather.wordId, "weather");
     coinsEl = document.getElementById("coins");
     nameEl = document.getElementById("selection-name");
     hintEl = document.getElementById("selection-hint");
@@ -60,6 +60,11 @@ var UI = (function () {
     wordEs = wordTag.querySelector(".word-es");
     wordEn = wordTag.querySelector(".word-en");
     wordSay = wordTag.querySelector(".word-say");
+    // A second, smaller word below, for the weather emoji.
+    wordSub = document.createElement("div");
+    wordSub.className = "word-sub";
+    wordSub.hidden = true;
+    wordTag.appendChild(wordSub);
 
     Array.prototype.forEach.call(characterButtons, function (button) {
       button.addEventListener("click", function () {
@@ -601,6 +606,12 @@ var UI = (function () {
     return boxes;
   }
 
+  // True if a window covers the Carpa, the Fogata or the selected one where they are now.
+  function coversSeen(el) {
+    var box = rectOf(el);
+    return keepSeen().some(function (b) { return overlap(box, b) > 0; });
+  }
+
   // Open the goals window in a corner where it covers the least of the Carpa, the Fogata and
   // the selected one, and never the panel or the round buttons when it can help it: first the bottom right,
   // then the bottom left, the top right and the top left. It stays put while it is open.
@@ -698,8 +709,9 @@ var UI = (function () {
   // "id" is a word of js/words.js, or a word itself as { es, en, say } (like Krohna's).
   // With the mouse it goes below and to the right so it never covers the cursor;
   // with a finger it goes above ("seconds" is given), and hides by itself after "seconds" (0: while the finger is held).
-  // The first time a word shows up, it goes to the Diario (js/lessons.js).
-  function showWord(id, x, y, seconds) {
+  // The first time a word shows up, it goes to the Diario (js/lessons.js). "subId" is a second word, smaller below
+  // (it goes to the Diario too).
+  function showWord(id, x, y, seconds, subId) {
     var word = typeof id === "string" ? WORDS[id] : id;
     if (!word) {
       hideWord();
@@ -711,6 +723,13 @@ var UI = (function () {
       wordEn.textContent = word.en;
       wordSay.textContent = "(" + word.say + ")";
     }
+    var sub = subId ? WORDS[subId] : null;
+    if (sub) {
+      Lessons.discover(sub, x, y);
+      var subText = sub.es + " · " + sub.en + " (" + sub.say + ")";
+      if (wordSub.textContent !== subText) wordSub.textContent = subText;
+    }
+    if (wordSub.hidden === !!sub) wordSub.hidden = !sub;
     wordTag.hidden = false;
     var w = wordTag.offsetWidth, h = wordTag.offsetHeight;
     var left, top;
@@ -741,12 +760,13 @@ var UI = (function () {
   }
 
   // A button that shows its word next to the mouse while it is over it, like "Sonido · sound" on the 🔊 button.
-  // "id" can also be a function that says which word, for words that change (like the weather's).
-  function bindWord(button, id) {
+  // "id" can also be a function that says which word, for words that change (like the weather's); "subId" is a second
+  // word, smaller below (like "Clima · weather").
+  function bindWord(button, id, subId) {
     button.addEventListener("pointermove", function (event) {
       if (event.pointerType === "touch") return;
       buttonWordShown = true;
-      showWord(typeof id === "function" ? id() : id, event.clientX, event.clientY);
+      showWord(typeof id === "function" ? id() : id, event.clientX, event.clientY, undefined, subId);
     });
     button.addEventListener("pointerleave", forgetButtonWord);
   }
@@ -785,6 +805,7 @@ var UI = (function () {
     isSmall: isSmall,
     setToScreen: setToScreen,
     placeWindow: placeWindow,
+    coversSeen: coversSeen,
     placeSign: placeSign,
     clearSpot: clearSpot,
     closeBackpack: function () { setBackpackOpen(false); }

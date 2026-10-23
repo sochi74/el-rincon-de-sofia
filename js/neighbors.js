@@ -37,6 +37,12 @@ var Neighbors = (function () {
         x: cfg.home.x,
         y: cfg.home.y,
         path: [],
+        // Making way for the others (js/sims.js).
+        wait: 0,
+        waited: 0,
+        pass: 0,
+        retry: 0,
+        waitingFor: null,
         facing: "front",
         blink: 0,
         blinkWait: 2 + i * 1.7 + Math.random() * 2,
@@ -76,30 +82,17 @@ var Neighbors = (function () {
 
   // ---------- Walking ----------
 
+  // Like Sofía and real.fixer, they go around the others and wait when there is no room (js/sims.js), and never end
+  // a walk standing on someone.
   function walk(n, x, y) {
-    n.path = Path.find("city", n.x, n.y, x, y);
+    Sims.wayTo(n, x, y);
     n.walking = true;
   }
 
   function move(n, dt) {
     var fromX = n.x, fromY = n.y;
-    var step = n.cfg.speed * dt;
-    while (n.path.length > 0 && step > 0) {
-      var p = n.path[0];
-      var dx = p.x - n.x, dy = p.y - n.y;
-      var dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist <= step) {
-        n.x = p.x;
-        n.y = p.y;
-        step -= dist;
-        n.path.shift();
-      } else {
-        n.x += dx / dist * step;
-        n.y += dy / dist * step;
-        step = 0;
-      }
-    }
-    n.stepPhase = n.path.length > 0 ? n.stepPhase + dt * 9 : 0;
+    Sims.stepAlong(n, n.cfg.speed, dt);
+    n.stepPhase = Sims.isWalking(n) ? n.stepPhase + dt * 9 : 0;
     Sims.turn(n, n.x - fromX, n.y - fromY);
   }
 

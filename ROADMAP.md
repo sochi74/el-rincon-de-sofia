@@ -47,6 +47,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 22: 📖 Vecino profe y diario de palabras. Professor Hoot, el zorro bibliotecario, vive en un árbol hueco del bosque y enseña una palabra en inglés por día con una pregunta de 3 opciones; el 📖 Diario guarda las palabras del profe y las que Sofía descubre con el mouse.
 - ✅ Extra: 🏡 Mover casas en la ciudad. En Modo decorar se mueven la Casa de Sofía, el Jardín, la Carpa (con fogata, tronco y camita de Krohna), las casas de los vecinos, la fuente y cada árbol; vuelve el arbolito del bosque.
 - ✅ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas: panel como cajoncito abajo, botones grandes, mantener el dedo para ver la palabra y zoom con dos dedos. Con el Extra desbloqueado de 40 ⭐: Pizza oven 🍕 en la Cocina.
+- ✅ Extra: 🧹 Pulido 4
 
 ### 🌙 Algún día
 - Crear personajes dentro del juego.

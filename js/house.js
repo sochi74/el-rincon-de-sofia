@@ -870,15 +870,17 @@ var House = (function () {
     ctx.restore();
   }
 
-  // At night a warm halo around the mouth (only inside the oven's room), and the flames again over the dark so they shine more.
+  // At night a warm halo around the mouth, and the flames again over the dark so they shine more.
+  // The halo stays inside the oven's room: on its floor, not over its walls (nor through the doorways).
   function drawOvenLight(ctx, dark) {
     var t = ovenClock, m = fromMiddle("oven", OVEN.mouth), p = layout.oven;
     var flicker = 0.88 + Math.sin(t * 5.3) * 0.06 + Math.sin(t * 11.7) * 0.06;
+    var half = CONFIG.wallThickness / 2;
     ctx.save();
     CONFIG.rooms.forEach(function (r) {
       if (inBox(p.x, p.y, r)) {
         ctx.beginPath();
-        ctx.rect(r.x, r.y, r.w, r.h);
+        ctx.rect(r.x + half, r.y + half, r.w - half * 2, r.h - half * 2);
         ctx.clip();
       }
     });

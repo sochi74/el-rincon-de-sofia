@@ -8,10 +8,8 @@
 - La ventanita de la mochila tapa un poco la carpa de real.fixer mientras está abierta (Sofía prefirió que siga abriéndose abajo a la derecha, como siempre).
 - Nadie cuida el jardín, pesca, recolecta, cocina ni regala solo.
 - Si recargas mientras alguien pesca o recolecta, esa acción se pierde.
-- Los personajes y los vecinos no se esquivan entre ellos: a veces uno pasa por encima de otro.
 - Los rasgos de los vecinos que cambian necesidades y su actividad favorita todavía no hacen nada (solo Bromista funciona).
 - Nadie empieza solo una conversación con los vecinos (pero Lumi y Vladi ya charlan entre ellos de noche).
-- La Guitarra y la Olla son solo decoración: los personajes y los vecinos pueden pasar por encima.
 - El Dormitorio es chico: para poner la Televisión y el Sofá ahí, primero hay que llevar la Cama a otra habitación.
 - real.fixer no va solo al bosque a buscar bayas: solo se come las que ya están en la mochila.
 - Si la camita de Krohna se pone donde no se puede caminar (muy cerca del río o arriba del todo del mapa), Krohna duerme al lado, en el lugar libre más cercano.
@@ -19,10 +17,7 @@
 - En pantallas más angostas la casa se ve un poco más chica que la ciudad (porque es más ancha, por el Baño).
 - En pantallas anchas, con el panel abierto la casa y la ciudad se ven más chicas (usan el espacio al lado del panel); al cerrarlo con ✕ vuelven a su tamaño.
 - En pantallas anchas, el cartel de Modo decorar (arriba a la derecha) puede tapar un poquito la esquina de arriba a la derecha de la casa o la ciudad.
-- La ventanita 🌟 Metas elige su lugar al abrirse; si después el personaje camina hasta ahí, puede quedar tapado.
-- Las palabras Clima · weather, Charco · puddle y Zorro · fox ya están en js/words.js, pero todavía no aparecen solas al pasar el mouse (Professor Hoot muestra "Professor Hoot · fox").
 - El muñeco de nieve se dibuja debajo de los personajes: si alguien camina justo detrás de él, se ve por encima del muñeco.
-- En el 📖 Diario, las palabras de los vecinos se guardan como aparecen en su etiqueta (por ejemplo "Lumi · fairy" o "Professor Hoot · fox").
 - Professor Hoot no pasea ni charla solo con Lumi y Vladi; nadie va solo a aprender la palabra del día.
 - La ciudad está bastante llena: para llevar una casa lejos, primero hay que hacerle lugar moviendo árboles u otras cosas. La Casa de Sofía es grande y casi no tiene otro lugar libre hasta que se mueven árboles del bosque.
 - Los caminos de piedra no se mueven: si mueves la Casa de Sofía, el camino sigue empezando donde estaba su puerta.
@@ -30,9 +25,20 @@
 - La copa de un árbol puede quedar un poquito encima del borde de una casa (solo el tronco no deja ponerla encima).
 - Al tocar ✅ Listo, Lumi y Vladi se quedan donde estaban (si quedaron encima de algo, van al lugar libre más cercano) y van a los lugares nuevos en su próximo paseo.
 - En el celular acostado, con el cajoncito abierto la casa y la ciudad se ven chiquitas (caben enteras en el espacio de arriba): usa el zoom con dos dedos o cierra el cajoncito con ✕. Con Modo decorar y el cajoncito abiertos, queda aún menos lugar.
-- Con zoom en pantallas anchas, la casa o la ciudad se ven también un poquito por detrás del panel de la izquierda.
-- La luz del horno de pizza de noche se queda dentro de su habitación, pero llega hasta las paredes aunque el horno esté lejos de ellas.
 - Si el horno de pizza no encuentra ningún lugar libre al cargar una partida vieja (la Cocina y las habitaciones muy llenas), se queda en su lugar de siempre y lo que estaba ahí vuelve a su lugar.
+- En lugares angostos (una puerta, el puente), si alguien se queda parado o dos se encuentran de frente, después de esperar un momento uno pasa por encima del otro, porque no hay lugar para rodearlo.
+- Cuando Professor Hoot vuelve a aparecer junto a su puerta, puede quedar encima de alguien que esté parado justo ahí.
+- Si alguien está parado justo donde aparece la Guitarra o la Olla al cumplir la meta, se queda ahí hasta que camine.
+
+## 2026-10-23 · Extra: 🧹 Pulido 4
+- 🚶 Que se esquiven: Sofía, real.fixer, Lumi, Vladi y Professor Hoot ya no caminan por encima de otro. Quien camina hace una curva para rodear a quien está en el camino (parado o caminando); si no hay lugar (una puerta, el puente), espera un momento y sigue. Nadie termina un paseo encima de otro: va al lugar libre más cercano. Las charlas siguen a la misma distancia, Krohna sigue a real.fixer (y se puede sentar a su lado), Professor Hoot sigue quieto junto a su puerta y Vladi y Professor Hoot siguen entrando a sus casas.
+- 🎸 La Guitarra y la Olla ahora son sólidas: los personajes, los vecinos y Krohna las rodean al caminar. En Modo decorar se ven rojas si al soltarlas tapan el camino a un lugar importante (como las casas). En una partida vieja, quien estaba encima de una aparece en el lugar libre más cercano.
+- 🔍 En pantallas anchas, con el panel abierto y zoom, la casa y la ciudad se dibujan solo a la derecha del panel.
+- 🌟 Si el personaje seleccionado (o lo que la ventanita tapaba al abrirse) queda debajo de la ventanita 🌟 Metas, la ventanita se vuelve casi transparente; al pasar el mouse o tocarla vuelve a verse normal. No se mueve.
+- 🍕 De noche, la luz del horno de pizza se queda dentro de su habitación, sin pasar por encima de las paredes ni a otras habitaciones.
+- 🔤 Al pasar el mouse por un charco aparece "Charco · puddle (PÁ-del)". Al pasar el mouse por el emoji del clima en el panel aparece el clima del día (por ejemplo "Lluvia · rain (RÉIN)") y abajo, más chiquito, "Clima · weather (UÉ-der)". Las dos cuentan para el 📖 Diario.
+- 📖 Las palabras de los vecinos entran al Diario como "Hada · fairy (FÉ-ri)", "Vampiro · vampire (VÁM-pai-er)" y "Zorro · fox (FOKS)"; sus etiquetas siguen igual ("Lumi · fairy"). Los diarios guardados con "Lumi · fairy", "Vladi · vampire" o "Professor Hoot · fox" se cambian solos, sin repetir ni perder palabras.
+- Archivos: style.css, js/path.js, js/sims.js, js/neighbors.js, js/city.js, js/house.js, js/weather.js, js/words.js, js/lessons.js, js/goals.js, js/ui.js, js/main.js y js/save.js.
 
 ## 2026-10-23 · Hito 23: 📱 Jugar en el celular
 - Pantalla chica = pantalla táctil con el lado más corto de 500 px o menos. En pantallas grandes todo sigue igual.

@@ -290,6 +290,17 @@ var Weather = (function () {
     ctx.restore();
   }
 
+  // True if a spot of the city is on a puddle that can be seen (for its word, "Charco · puddle").
+  function puddleAt(x, y) {
+    if (puddles < 0.15) return false;
+    return K.puddles.spots.some(function (p) {
+      if (City.isWalkable(p.x, p.y) && City.isSolid(p.x, p.y)) return false;
+      var rx = p.r * (0.35 + 0.65 * puddles) + 1.5, ry = p.r * 0.5 * (0.35 + 0.65 * puddles) + 1.2;
+      var dx = (x - p.x) / rx, dy = (y - p.y) / ry;
+      return dx * dx + dy * dy <= 1;
+    });
+  }
+
   // White snow on a roof: "shape" draws the roof's outline as a path.
   function roofSnow(ctx, shape) {
     if (snow <= 0) return;
@@ -553,6 +564,7 @@ var Weather = (function () {
     wordId: wordId,
     snowmanBlocks: snowmanBlocks,
     snowmanAt: snowmanAt,
+    puddleAt: puddleAt,
     drawSnowman: drawSnowman,
     drawSnowyGrass: drawSnowyGrass,
     drawRiverRings: drawRiverRings,
