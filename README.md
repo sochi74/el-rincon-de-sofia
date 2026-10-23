@@ -16,7 +16,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
 
 ## Estado
-Extra ✅ Mover casas
+Hito 23 ✅ Jugar en el celular · Pack 3 completo 🎉
 
 ## ⭐ Estrellas de inglés: 40
 
@@ -204,6 +204,13 @@ Extra ✅ Mover casas
 - word: palabra
 - hollow tree: árbol hueco
 - chalkboard: pizarra
+- phone: celular
+- finger: dedo
+- zoom: acercar
+- oven: horno
+- pizza oven: horno de pizza
+- brick: ladrillo
+- smoke: humo
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -233,9 +240,9 @@ Extra ✅ Mover casas
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
-  - 40 ⭐: Pizza oven 🍕 (elegido, se construye en el Hito 23 como Extra desbloqueado: un horno de pizza decorativo en la Cocina)
+  - 40 ⭐: Pizza oven 🍕 ✅ construido en el Hito 23: un horno de pizza decorativo en la Cocina, con llamitas, pala con pizza y humito
   - Próximo regalo: a las 45 ⭐
-- Siguiente paso: Pack 3, Hito 23: 📱 Jugar en el celular (el último del Pack 3), con el Pizza oven 🍕. Extra 🏡 Mover casas en la ciudad ya está hecho.
+- Siguiente paso: Pack 3 completo. Elegir con Sofía: diseñar el Pack 4 o crear la skill de hito.
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
 - Ideas guardadas para después: ciudad más grande, caminos de piedra que sigan a la casa, metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.

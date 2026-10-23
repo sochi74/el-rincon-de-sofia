@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>El Rincón de Sofía</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -18,6 +18,13 @@
   <button id="menu-toggle" type="button" aria-controls="selection-panel" aria-expanded="true" aria-label="Cerrar el menú" hidden>✕</button>
 
   <button id="sound-toggle" type="button" aria-label="Sonido" hidden>🔊</button>
+
+  <button id="zoom-reset" type="button" aria-label="Ver todo el lugar" hidden>🔍</button>
+
+  <div id="rotate-hint" hidden>
+    <span>📱↔️ Gira tu celular para jugar mejor</span>
+    <button id="rotate-close" type="button" aria-label="Cerrar el cartel">✕</button>
+  </div>
 
   <div id="selection-panel" hidden>
     <div id="clock"></div>

@@ -1,12 +1,13 @@
 // Draws the house seen from above: floors, walls, room names and furniture.
 // Four rooms: Cocina, Dormitorio, Sala and, on the right of the Sala, the Baño with its bathtub full of bubbles,
 // its sink with a mirror, and its toilet, plant, soap shelf and towels (only decoration).
-// Also the decorations: Sofía's painting easel in the Sala (always there), and the ones her goals give (js/goals.js):
+// Also the decorations: Sofía's painting easel in the Sala (always there), the pizza oven in the Cocina (always there,
+// with little flames, a peel with a pizza and smoke; at night it glows), and the ones her goals give (js/goals.js):
 // a vase with garden flowers on the floor of the Sala and colored bunting on the Cocina wall.
 // At night the Televisión gives a soft glow while someone watches it.
 // Also where characters may walk: inside the rooms, through the doorways, and never on the furniture.
-// Everything that Modo decorar moves (js/decorate.js) has its place and turn here: the furniture, the rug, the easel
-// and the vase, the toilet and the plant on the floor of any room, and the poster, the bunting, the soap shelf and the towels
+// Everything that Modo decorar moves (js/decorate.js) has its place and turn here: the furniture, the rug, the easel,
+// the pizza oven and the vase, the toilet and the plant on the floor of any room, and the poster, the bunting, the soap shelf and the towels
 // on any wall. Where each one is, where a character
 // stands to use it and how it lies or sits on it all follow that place and turn.
 var House = (function () {
@@ -212,6 +213,8 @@ var House = (function () {
     sofa: { kind: "floor", w: 260, h: 90, start: { x: 720, y: 605 }, use: { x: 0, y: -73 }, label: { x: 0, y: -67 } },
     rug: { kind: "rug", w: 320, h: 92, start: { x: 720, y: 501 } },
     easel: { kind: "floor", w: 56, h: 92, start: { x: 906, y: 614 }, feet: { x: -24, y: 8, w: 48, h: 38 }, upright: true },
+    // The pizza oven with its peel, in the bottom left corner of the Cocina; only decoration.
+    oven: { kind: "floor", w: 100, h: 80, start: { x: 110, y: 262 } },
     vase: { kind: "floor", w: 48, h: 74, start: { x: 900, y: 390 }, feet: { x: -22, y: 12, w: 44, h: 24 }, upright: true,
       unlock: ["sofia", 0] },
     poster: { kind: "wall", length: 120, depth: 60, off: 12, start: { side: "top", line: 340, along: 395 } },
@@ -228,9 +231,9 @@ var House = (function () {
   };
   // The order they are drawn in; the last one is on top, so it is picked first.
   var ORDER = ["rug", "fridge", "stove", "bed", "tv", "sofa", "bathtub", "sink", "toilet", "plant", "vase", "easel",
-    "poster", "bunting", "shelf", "towels"];
+    "oven", "poster", "bunting", "shelf", "towels"];
   // The word of each thing when it is not the same as its id.
-  var WORD_OF = { shelf: "soap", towels: "towel" };
+  var WORD_OF = { shelf: "soap", towels: "towel", oven: "pizzaOven" };
   // How far from its spot in front a character may stand to use a piece of furniture, when that spot is taken.
   var USE_REACH = 70;
   // In front of the front door, inside the Sala: nothing goes here, so the door can always be used.
@@ -686,6 +689,214 @@ var House = (function () {
     ctx.restore();
   }
 
+  // ---------- Pizza oven ----------
+
+  // Seconds the flames and the smoke of the pizza oven have moved; they stand still with Pausa and in Modo decorar.
+  var ovenClock = 0;
+
+  function update(dt) {
+    if (!Needs.isPaused()) ovenClock += dt;
+  }
+
+  // The parts of the pizza oven, from its middle, as when it is not turned (its mouth looks down): the brick dome,
+  // the mouth in front, the chimney on top and the wooden peel with a pizza at its right.
+  var OVEN = { dome: { x: -14, y: -6, r: 32 }, mouth: { x: -14, y: 30 }, chimney: { x: -14, y: -22 }, peel: { x: 30, y: 18, r: 19 } };
+  var BRICK = { light: "#E39478", dark: "#A94F37", line: "rgba(110, 46, 28, 0.55)" };
+
+  // The little flames inside the mouth: they sway and flicker toward the back of the oven.
+  function drawFlames(ctx, x, y, t) {
+    var tongues = [[-6, 9, 1.7, "#E8562F"], [6, 8, 2.3, "#E8562F"], [0, 12, 2, "#F79A3B"], [-3, 7, 3.1, "#FFD66B"], [3, 6, 2.7, "#FFE9A8"]];
+    ctx.save();
+    ctx.shadowColor = "#FFB347";
+    ctx.shadowBlur = 10;
+    tongues.forEach(function (f, i) {
+      var sway = Math.sin(t * f[2] + i * 1.3) * 1.8;
+      var tall = f[1] * (0.82 + 0.18 * Math.sin(t * (f[2] + 2.2) + i));
+      ctx.fillStyle = f[3];
+      ctx.beginPath();
+      ctx.moveTo(x + f[0] - 4, y);
+      ctx.quadraticCurveTo(x + f[0] - 4, y - tall * 0.6, x + f[0] + sway, y - tall);
+      ctx.quadraticCurveTo(x + f[0] + 4, y - tall * 0.6, x + f[0] + 4, y);
+      ctx.closePath();
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  // The mouth: an arch of bricks in front of the dome, dark inside, with the flames.
+  function drawOvenMouth(ctx, t) {
+    var mx = OVEN.mouth.x;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(mx - 10, 37);
+    ctx.lineTo(mx - 10, 24);
+    ctx.arc(mx, 24, 10, Math.PI, 0);
+    ctx.lineTo(mx + 10, 37);
+    ctx.closePath();
+    ctx.fillStyle = "#2E1C14";
+    ctx.fill();
+    ctx.clip();
+    drawFlames(ctx, mx, 37, t);
+    ctx.restore();
+  }
+
+  // A round dome of terracotta bricks seen from above, with its mouth, its chimney, and the peel with a pizza beside it.
+  function drawOven(ctx, t) {
+    var d = OVEN.dome;
+    // The entrance under the mouth, a little block of bricks coming out of the dome.
+    withShadow(ctx, function () {
+      fillRound(ctx, d.x - 16, 8, 32, 31, 5, C.terracotta);
+    });
+    ctx.strokeStyle = BRICK.line;
+    ctx.lineWidth = 1.3;
+    [16, 24, 32].forEach(function (y) {
+      ctx.beginPath();
+      ctx.moveTo(d.x - 16, y);
+      ctx.lineTo(d.x + 16, y);
+      ctx.stroke();
+    });
+    // The dome, lit from the top left.
+    withShadow(ctx, function () {
+      var g = ctx.createRadialGradient(d.x - 10, d.y - 12, 4, d.x, d.y, d.r);
+      g.addColorStop(0, BRICK.light);
+      g.addColorStop(0.55, C.terracotta);
+      g.addColorStop(1, BRICK.dark);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    // Brick lines: rings around the top, and short lines between them, in turns.
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.strokeStyle = BRICK.line;
+    ctx.lineWidth = 1.4;
+    var rings = [9, 17, 25, 33];
+    rings.forEach(function (r, i) {
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
+      ctx.stroke();
+      if (i === 0) return;
+      var n = 6 + i * 4, inner = rings[i - 1];
+      for (var k = 0; k < n; k++) {
+        var a = (k + (i % 2) * 0.5) * Math.PI * 2 / n;
+        ctx.beginPath();
+        ctx.moveTo(d.x + Math.cos(a) * inner, d.y + Math.sin(a) * inner);
+        ctx.lineTo(d.x + Math.cos(a) * r, d.y + Math.sin(a) * r);
+        ctx.stroke();
+      }
+    });
+    ctx.restore();
+    drawOvenMouth(ctx, t);
+    // The arch of bricks around the mouth.
+    ctx.strokeStyle = BRICK.dark;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(OVEN.mouth.x - 11, 38);
+    ctx.lineTo(OVEN.mouth.x - 11, 24);
+    ctx.arc(OVEN.mouth.x, 24, 11, Math.PI, 0);
+    ctx.lineTo(OVEN.mouth.x + 11, 38);
+    ctx.stroke();
+    // The chimney: a little square of darker bricks with its dark hole.
+    var ch = OVEN.chimney;
+    fillRound(ctx, ch.x - 7, ch.y - 7, 14, 14, 3, "#8E4430");
+    ctx.fillStyle = "#3A2418";
+    ctx.beginPath();
+    ctx.arc(ch.x, ch.y, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    drawPeel(ctx);
+  }
+
+  // The wooden peel with a round pizza: golden dough, red sauce, cheese, little slices on top and the cuts.
+  function drawPeel(ctx) {
+    var p = OVEN.peel;
+    withShadow(ctx, function () {
+      fillRound(ctx, p.x - 3, -38, 6, 40, 3, C.wood);
+      ctx.fillStyle = C.woodLight;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.strokeStyle = C.wood;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = "#E9B65A";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#C8402F";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#F7E3A1";
+    [[-5, -4, 4], [4, -6, 3.5], [6, 3, 4], [-3, 6, 4], [-7, 2, 3]].forEach(function (c) {
+      ctx.beginPath();
+      ctx.arc(p.x + c[0], p.y + c[1], c[2], 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.fillStyle = "#A63A2A";
+    [[-1, -8], [7, -1], [1, 8], [-8, -1], [0, 0]].forEach(function (c) {
+      ctx.beginPath();
+      ctx.arc(p.x + c[0], p.y + c[1], 2.4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.strokeStyle = "rgba(122, 70, 30, 0.6)";
+    ctx.lineWidth = 1;
+    for (var k = 0; k < 3; k++) {
+      var a = k * Math.PI / 3;
+      ctx.beginPath();
+      ctx.moveTo(p.x - Math.cos(a) * 15, p.y - Math.sin(a) * 15);
+      ctx.lineTo(p.x + Math.cos(a) * 15, p.y + Math.sin(a) * 15);
+      ctx.stroke();
+    }
+  }
+
+  // Soft smoke out of the chimney: little puffs that rise up the screen, grow and fade (also when the oven is turned).
+  function drawOvenSmoke(ctx) {
+    var c = fromMiddle("oven", OVEN.chimney), t = ovenClock;
+    ctx.save();
+    for (var i = 0; i < 4; i++) {
+      var k = (t * 0.32 + i / 4) % 1;
+      var a = 0.55 * (1 - k) * Math.min(1, k / 0.15);
+      ctx.fillStyle = "rgba(214, 208, 202, " + a + ")";
+      ctx.beginPath();
+      ctx.arc(c.x + Math.sin(t * 1.1 + i * 2.1) * 6 * k + k * 10, c.y - 6 - k * 70, 5 + k * 10, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // At night a warm halo around the mouth (only inside the oven's room), and the flames again over the dark so they shine more.
+  function drawOvenLight(ctx, dark) {
+    var t = ovenClock, m = fromMiddle("oven", OVEN.mouth), p = layout.oven;
+    var flicker = 0.88 + Math.sin(t * 5.3) * 0.06 + Math.sin(t * 11.7) * 0.06;
+    ctx.save();
+    CONFIG.rooms.forEach(function (r) {
+      if (inBox(p.x, p.y, r)) {
+        ctx.beginPath();
+        ctx.rect(r.x, r.y, r.w, r.h);
+        ctx.clip();
+      }
+    });
+    ctx.globalCompositeOperation = "lighter";
+    var g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 120);
+    g.addColorStop(0, "rgba(" + CONFIG.night.warmLight + ", " + 0.5 * dark * flicker + ")");
+    g.addColorStop(1, "rgba(" + CONFIG.night.warmLight + ", 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, 120, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    drawTurned(ctx, "oven", function () {
+      ctx.globalAlpha = dark;
+      drawOvenMouth(ctx, t);
+    });
+  }
+
   // The rug of the Sala: sage green with a cream dashed line.
   function drawRug(ctx, b) {
     fillRound(ctx, b.x, b.y, b.w, b.h, b.h / 2, C.sage);
@@ -1132,6 +1343,8 @@ var House = (function () {
     drawTurned(ctx, "plant", function (b) { drawPlant(ctx, b, layout.plant.dir); });
     if (isOn("vase")) drawTurned(ctx, "vase", function (b) { drawVase(ctx, b, layout.vase.dir); });
     drawTurned(ctx, "easel", function (b) { drawEasel(ctx, b, layout.easel.dir); });
+    drawTurned(ctx, "oven", function () { drawOven(ctx, ovenClock); });
+    drawOvenSmoke(ctx);
   }
 
   // Room and furniture names, drawn over the night tint so they always read well.
@@ -1155,9 +1368,10 @@ var House = (function () {
     });
   }
 
-  // Drawn over the darkened house: a soft light from the TV screen while someone is watching it.
-  // "dark" goes from 0 (day) to 1 (night).
+  // Drawn over the darkened house: the warm glow of the pizza oven, and a soft light from the TV screen while someone
+  // is watching it. "dark" goes from 0 (day) to 1 (night).
   function drawNightLights(ctx, time, dark) {
+    drawOvenLight(ctx, dark);
     if (!Objects.isWatchingTv()) return;
     // The light flickers a tiny bit, like a show is on.
     var flicker = 0.9 + Math.sin(time * 4.1) * 0.05 + Math.sin(time * 9.7) * 0.05;
@@ -1197,7 +1411,7 @@ var House = (function () {
     if (inBox(x, y, boxOf("easel"))) return "easel";
     if (isOn("vase") && inBox(x, y, boxOf("vase"))) return "vase";
     if (isOn("bunting") && inBox(x, y, boxOf("bunting"))) return "bunting";
-    var deco = ["shelf", "towels", "plant", "toilet"];
+    var deco = ["oven", "shelf", "towels", "plant", "toilet"];
     for (var d = 0; d < deco.length; d++) {
       if (inBox(x, y, boxOf(deco[d]))) return WORD_OF[deco[d]] || deco[d];
     }
@@ -1473,9 +1687,12 @@ var House = (function () {
       });
       if (!inRoom) layout[id] = { x: d.start.x, y: d.start.y, dir: 0 };
     });
+    // A game saved before the pizza oven has it in its first spot: if something was moved there, it goes to the closest
+    // free spot instead (before the rest is checked, so what was moved there stays).
+    Path.reset();
+    if (!fitsFloor("oven") || !allReachable()) findSpot("oven");
     // A game saved before the Baño: anything left in front of its door (or on a wall where the door is now) goes back
     // to its first spot, and if a room or a piece of furniture still cannot be reached, everything does.
-    Path.reset();
     ORDER.forEach(function (id) {
       if (DEFS[id].kind === "rug") return;
       if (DEFS[id].kind === "wall" ? !fitsWall(id) : !fitsFloor(id)) {
@@ -1492,6 +1709,7 @@ var House = (function () {
   }
 
   return {
+    update: update,
     draw: draw,
     drawLabels: drawLabels,
     drawNightLights: drawNightLights,

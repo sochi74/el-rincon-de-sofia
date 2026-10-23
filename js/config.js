@@ -233,6 +233,12 @@ var CONFIG = {
   // Word tag: on a phone or tablet, how many seconds it stays after touching a thing.
   wordTag: { touchSeconds: 2 },
 
+  // Phones: a touch screen whose shorter side is at most "maxSide" pixels is a small screen (the panel is a drawer at the
+  // bottom, buttons are bigger). Keeping a finger still "holdSeconds" shows the word; moving it more than "holdMove" pixels
+  // is no longer holding still. Two fingers zoom from 1 up to "maxZoom", and the mouse wheel zooms "wheelStep" per notch.
+  // In the house and the city "margin" is smaller on small screens.
+  mobile: { maxSide: 500, holdSeconds: 0.5, holdMove: 12, maxZoom: 2.5, wheelStep: 0.0015, margin: 8 },
+
   // Magic coins: a new game starts with "start". Every "every.min" to "every.max" seconds of play a shiny coin
   // appears on the city grass, never more than "maxOnGround" at once. Walking within "reach" of one picks it up
   // and adds "value". "popTime" is how long the sparkle and the "+5" text last.
