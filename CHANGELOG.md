@@ -30,6 +30,12 @@
 - Cuando Professor Hoot vuelve a aparecer junto a su puerta, puede quedar encima de alguien que esté parado justo ahí.
 - Si alguien está parado justo donde aparece la Guitarra o la Olla al cumplir la meta, se queda ahí hasta que camine.
 
+## 2026-10-23 · Plan del Pack 4
+- En ROADMAP.md se escribió el 🧭 Pack 4: Más allá del valle, que diseñó Sofía: Hito 24 🧭 Al borde del valle (pasar a la zona de al lado caminando hasta un borde, la 🌸 Pradera de flores y el 🗺️ Mapa del valle), Hito 25 🏖️ Lago con playita (con una 🧜‍♀️ sirena), Hito 26 🍄 Bosque encantado (con ✨ espíritus del bosque), Hito 27 ⛰️ Montaña y cueva (con un 🐉 dragoncito bebé), Hito 28 💎 Tesoros y ranitas (cofres escondidos y 🐸 ranitas que cantan cuando llueve) y el Extra 🪨 Caminos que siguen.
+- En "🌙 Algún día" se quitó "Zonas por descubrir y criaturas mágicas" (ahora están en el Pack 4).
+- README.md: 42 ⭐, ocho palabras nuevas, siguiente paso (Pack 4, Hito 24) e ideas guardadas al día.
+- No cambió ningún archivo del juego.
+
 ## 2026-10-23 · Extra: 🧹 Pulido 4
 - 🚶 Que se esquiven: Sofía, real.fixer, Lumi, Vladi y Professor Hoot ya no caminan por encima de otro. Quien camina hace una curva para rodear a quien está en el camino (parado o caminando); si no hay lugar (una puerta, el puente), espera un momento y sigue. Nadie termina un paseo encima de otro: va al lugar libre más cercano. Las charlas siguen a la misma distancia, Krohna sigue a real.fixer (y se puede sentar a su lado), Professor Hoot sigue quieto junto a su puerta y Vladi y Professor Hoot siguen entrando a sus casas.
 - 🎸 La Guitarra y la Olla ahora son sólidas: los personajes, los vecinos y Krohna las rodean al caminar. En Modo decorar se ven rojas si al soltarlas tapan el camino a un lugar importante (como las casas). En una partida vieja, quien estaba encima de una aparece en el lugar libre más cercano.
