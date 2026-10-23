@@ -9,6 +9,9 @@
 // On wide screens the open panel keeps a column on the left and the house and the city are drawn beside it (js/main.js);
 // the goals window and the big signs go where the panel does not cover them, and the goals window also away from the Carpa,
 // the Fogata and the selected one (the backpack opens at the bottom right, as always).
+// On small screens (a phone: a touch screen whose shorter side is small) the panel is a drawer that slides up from the bottom,
+// the house and the city are drawn in the room above it, the buttons are bigger (style.css), and with the phone standing up
+// a little sign asks to turn it.
 var UI = (function () {
   var coinsEl;
   var wordTag, wordEs, wordEn, wordSay, wordTimer = null;
@@ -23,11 +26,19 @@ var UI = (function () {
   var giftMenu, onGiftPick = null;
   var current = null;
   var bars = {};
+  // True on a small screen; "started" once the game is on screen; "hintClosed" once the sign to turn the phone was closed.
+  var small = false, started = false, hintClosed = false;
+  var rotateHint, decorateBar = null, drawerShown = -1;
   // Turns a spot of the place on screen into a spot on the screen (js/main.js gives it).
   var toScreen = null;
 
   function init() {
     panel = document.getElementById("selection-panel");
+    rotateHint = document.getElementById("rotate-hint");
+    document.getElementById("rotate-close").addEventListener("click", function () {
+      hintClosed = true;
+      rotateHint.hidden = true;
+    });
     menuToggle = document.getElementById("menu-toggle");
     clockEl = document.getElementById("clock");
     // The clock, and the weather emoji after it with its word, like "Lluvia · rain".
@@ -200,12 +211,28 @@ var UI = (function () {
     showSelected(null);
   }
 
-  // When the game starts: the panel opens or stays closed as it was last time.
+  // When the game starts: the panel opens or stays closed as it was last time
+  // (the first time it starts open, or closed on a small screen).
   function show() {
-    setPanelOpen(Save.loadMenuOpen());
+    started = true;
+    checkSmall();
+    setPanelOpen(Save.loadMenuOpen(!small));
     panel.hidden = false;
     menuToggle.hidden = false;
     soundToggle.hidden = false;
+  }
+
+  // A small screen is a touch screen whose shorter side is at most CONFIG.mobile.maxSide: style.css then makes the panel
+  // a drawer and the buttons bigger. Checked again when the window changes (like turning the phone).
+  function checkSmall() {
+    var touch = (navigator.maxTouchPoints || 0) > 0 || (!!window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+    small = touch && Math.min(window.innerWidth, window.innerHeight) <= CONFIG.mobile.maxSide;
+    document.documentElement.classList.toggle("small", small);
+    rotateHint.hidden = !(started && small && !hintClosed && window.innerHeight > window.innerWidth);
+  }
+
+  function isSmall() {
+    return small;
   }
 
   function showSoundMode() {
@@ -251,6 +278,12 @@ var UI = (function () {
     if (!seedMenu.hidden) updateSeeds();
     if (!cookMenu.hidden) updateCook();
     if (!backpack.hidden) updateBackpack();
+    // How much of the screen the drawer covers, so the Modo decorar sign and the question of the word go above it.
+    var drawer = small ? drawerHeight() : 0;
+    if (drawer !== drawerShown) {
+      drawerShown = drawer;
+      document.documentElement.style.setProperty("--drawer", drawer + "px");
+    }
     if (!current) return;
     var values = Needs.get(current.id);
     CONFIG.needs.forEach(function (need) {
@@ -507,8 +540,25 @@ var UI = (function () {
   // How much of the left of the screen the open panel keeps for itself, on screens at least "panelColumn" wide
   // (there style.css makes it a narrow column). 0 when it is closed or the screen is narrower.
   function reservedLeft() {
-    if (!panelOpen || panel.hidden || window.innerWidth < CONFIG.panelColumn) return 0;
+    if (small || !panelOpen || panel.hidden || window.innerWidth < CONFIG.panelColumn) return 0;
     return panel.offsetLeft + panel.offsetWidth;
+  }
+
+  // How much of the bottom of the screen the drawer covers now (while it slides too), on small screens.
+  function drawerHeight() {
+    if (panel.hidden) return 0;
+    return Math.max(0, Math.round(window.innerHeight - panel.getBoundingClientRect().top));
+  }
+
+  // How much of the bottom of the screen the drawer and the Modo decorar sign over it keep, on small screens; else 0.
+  function reservedBottom() {
+    if (!small) return 0;
+    var keep = drawerHeight();
+    decorateBar = decorateBar || document.getElementById("decorate-bar");
+    if (decorateBar && !decorateBar.hidden) {
+      keep = Math.max(keep, window.innerHeight - decorateBar.getBoundingClientRect().top + 8);
+    }
+    return keep;
   }
 
   function setToScreen(fn) {
@@ -595,9 +645,12 @@ var UI = (function () {
 
   // The "¡Meta cumplida!" sign: at the top in the middle of the room the panel leaves; on narrower screens with the panel
   // open (it covers the top), at the bottom in the middle.
+  // On small screens it stays at the top, away from the drawer (style.css puts it below the round buttons).
   function placeSign(el) {
     var left = reservedLeft(), W = window.innerWidth;
-    if (left > 0) {
+    if (small) {
+      el.style.left = el.style.maxWidth = el.style.top = el.style.bottom = "";
+    } else if (left > 0) {
       el.style.left = (left + (W - left) / 2) + "px";
       el.style.maxWidth = (W - left - 32) + "px";
       el.style.top = el.style.bottom = "";
@@ -644,7 +697,7 @@ var UI = (function () {
   // Show the word for a thing near a spot on the screen, kept inside the window.
   // "id" is a word of js/words.js, or a word itself as { es, en, say } (like Krohna's).
   // With the mouse it goes below and to the right so it never covers the cursor;
-  // with a finger it goes above, and hides by itself after "seconds".
+  // with a finger it goes above ("seconds" is given), and hides by itself after "seconds" (0: while the finger is held).
   // The first time a word shows up, it goes to the Diario (js/lessons.js).
   function showWord(id, x, y, seconds) {
     var word = typeof id === "string" ? WORDS[id] : id;
@@ -661,7 +714,7 @@ var UI = (function () {
     wordTag.hidden = false;
     var w = wordTag.offsetWidth, h = wordTag.offsetHeight;
     var left, top;
-    if (seconds) {
+    if (seconds !== undefined) {
       left = x - w / 2;
       top = y - h - 36;
       if (top < 8) top = y + 36;
@@ -674,7 +727,7 @@ var UI = (function () {
     wordTag.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, left)) + "px";
     wordTag.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, top)) + "px";
     window.clearTimeout(wordTimer);
-    wordTimer = seconds ? window.setTimeout(hideWord, seconds * 1000) : null;
+    wordTimer = seconds > 0 ? window.setTimeout(hideWord, seconds * 1000) : null;
   }
 
   function hideWord() {
@@ -727,6 +780,9 @@ var UI = (function () {
     closeMenu: closeMenu,
     isMenuOpen: isMenuOpen,
     reservedLeft: reservedLeft,
+    reservedBottom: reservedBottom,
+    checkSmall: checkSmall,
+    isSmall: isSmall,
     setToScreen: setToScreen,
     placeWindow: placeWindow,
     placeSign: placeSign,

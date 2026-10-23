@@ -2,11 +2,14 @@
   box-sizing: border-box;
 }
 
+/* Fingers can slide what scrolls, but never zoom the page (the game has its own zoom, js/main.js). */
 html,
 body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y;
   background: #F5EBDD;
   color: #4A3428;
   font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
@@ -69,10 +72,16 @@ h1 {
   box-shadow: 0 2px 0 #4A3428;
 }
 
+/* js/main.js gives it the size of the window. Fingers on it never scroll, zoom or select text. */
 #game {
   display: block;
   width: 100vw;
   height: 100vh;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #game[hidden] {
@@ -101,17 +110,20 @@ h1 {
 }
 
 #menu-toggle[hidden],
-#sound-toggle[hidden] {
+#sound-toggle[hidden],
+#zoom-reset[hidden] {
   display: none;
 }
 
 #menu-toggle:hover,
-#sound-toggle:hover {
+#sound-toggle:hover,
+#zoom-reset:hover {
   background: #C8664A;
 }
 
 #menu-toggle:active,
-#sound-toggle:active {
+#sound-toggle:active,
+#zoom-reset:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #4A3428;
 }
@@ -132,6 +144,63 @@ h1 {
   border: 3px solid #4A3428;
   border-radius: 50%;
   box-shadow: 0 3px 0 #4A3428;
+  cursor: pointer;
+}
+
+/* With zoom, the 🔍 button goes back to the whole place; it sits right of the sound button, with the same look. */
+#zoom-reset {
+  position: fixed;
+  top: 16px;
+  left: 120px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  background: #B07A4F;
+  border: 3px solid #4A3428;
+  border-radius: 50%;
+  box-shadow: 0 3px 0 #4A3428;
+  cursor: pointer;
+}
+
+/* With the phone standing up: a soft sign at the top that asks to turn it, with ✕ to close it. */
+#rotate-hint {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 6px 6px 6px 16px;
+  font-weight: 700;
+  color: #4A3428;
+  background: rgba(245, 235, 221, 0.95);
+  border: 3px solid #8FA88A;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #6F9460;
+  transform: translateX(-50%);
+}
+
+#rotate-hint[hidden] {
+  display: none;
+}
+
+#rotate-close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  font: inherit;
+  font-weight: 700;
+  color: #F5EBDD;
+  background: #8FA88A;
+  border: 3px solid #4A3428;
+  border-radius: 50%;
   cursor: pointer;
 }
 
@@ -862,11 +931,6 @@ h1 {
   cursor: default;
 }
 
-/* While dragging with a finger, the page does not scroll or zoom. */
-body.decorating #game {
-  touch-action: none;
-}
-
 /* On narrower screens the sign goes to the bottom in the middle, in one row when it fits,
    away from the ☰ and 🔊 buttons and the panel. */
 @media (max-width: 1100px) {
@@ -919,4 +983,186 @@ body.decorating #game {
     font-size: 0.8rem;
     line-height: 1.2;
   }
+}
+
+/* ---------- Small screens (phones): js/ui.js adds the "small" class on touch screens whose shorter side is small ---------- */
+
+/* Nothing gets selected when a finger is held. */
+html.small body {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* The panel is a drawer that slides up from the bottom, at most 45 % of the height, and slides inside with a finger. */
+html.small #selection-panel {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  max-width: none;
+  max-height: 45vh;
+  max-height: 45dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 10px 16px 14px;
+  border-width: 3px 0 0;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -3px 0 #4A3428;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: transform 0.3s ease, visibility 0s linear 0s;
+}
+
+html.small #selection-panel.closed {
+  opacity: 1;
+  transform: translateY(105%);
+  transition: transform 0.3s ease, visibility 0s linear 0.3s;
+}
+
+html.small .need-track {
+  width: 120px;
+}
+
+/* With the phone lying down, the drawer has two columns: who is selected on the left, the buttons on the right. */
+@media (orientation: landscape) {
+  html.small #selection-panel:not([hidden]) {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-content: start;
+    column-gap: 20px;
+  }
+
+  html.small #selection-panel > * {
+    grid-column: 1;
+  }
+
+  html.small #selection-panel > .panel-buttons {
+    grid-column: 2;
+    grid-row: 1 / span 6;
+    align-content: flex-start;
+    margin-top: 0;
+  }
+}
+
+html.small #friendship {
+  font-size: 0.85rem;
+}
+
+/* Every button at least 44 × 44, with room between them. */
+html.small button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+html.small .panel-buttons,
+html.small .decorate-buttons,
+html.small .lesson-answers {
+  gap: 10px;
+}
+
+html.small #social-menu,
+html.small #gift-menu,
+html.small #seed-menu,
+html.small #cook-menu {
+  gap: 8px;
+}
+
+html.small .backpack-row {
+  gap: 8px;
+}
+
+html.small .backpack-row button {
+  padding: 4px 12px;
+  font-size: 0.9rem;
+}
+
+html.small #backpack-close,
+html.small #goals-close,
+html.small #diary-close {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+
+/* The little windows and the menus fit on the screen, and slide inside with a finger when they are long. */
+html.small #backpack,
+html.small #goals,
+html.small #diary {
+  right: 8px;
+  bottom: 8px;
+  width: min(460px, calc(100vw - 16px));
+  max-height: calc(100vh - 16px);
+  max-height: calc(100dvh - 16px);
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+html.small #social-menu,
+html.small #gift-menu,
+html.small #seed-menu,
+html.small #cook-menu {
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+html.small #seed-menu button,
+html.small #cook-menu button {
+  padding: 6px 14px;
+}
+
+/* The question of the word of the day and the Modo decorar sign go above the drawer; the sign in rows, inside the screen. */
+html.small #lesson-quiz {
+  bottom: calc(var(--drawer, 0px) + 8px);
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+html.small #lesson-quiz p {
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+}
+
+html.small #decorate-bar {
+  top: auto;
+  right: auto;
+  bottom: calc(var(--drawer, 0px) + 8px);
+  left: 50%;
+  flex-direction: row;
+  width: max-content;
+  max-width: calc(100vw - 16px);
+  padding: 6px 10px;
+  gap: 4px 10px;
+  transform: translateX(-50%);
+}
+
+html.small #decorate-bar > b {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+html.small .decorate-buttons button {
+  padding: 4px 12px;
+}
+
+html.small #decorate-ask {
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+}
+
+/* The "¡Meta cumplida!" sign goes below the round buttons, away from the drawer. */
+html.small #goal-sign {
+  top: 68px;
+  max-width: calc(100vw - 16px);
+  padding: 8px 16px;
+  border-radius: 18px;
 }

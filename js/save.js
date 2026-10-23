@@ -141,12 +141,14 @@ var Save = (function () {
     window.location.reload();
   }
 
-  // Whether the panel was open last time. If nothing was saved or it fails, it starts open.
-  function loadMenuOpen() {
+  // Whether the panel was open last time. If nothing was saved or it fails, it starts as "first" says
+  // (open, or closed on a small screen).
+  function loadMenuOpen(first) {
     try {
-      return window.localStorage.getItem(CONFIG.save.menuKey) !== "closed";
+      var saved = window.localStorage.getItem(CONFIG.save.menuKey);
+      return saved ? saved !== "closed" : first;
     } catch (e) {
-      return true;
+      return first;
     }
   }
 

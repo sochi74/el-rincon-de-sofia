@@ -16,7 +16,6 @@
 - real.fixer no va solo al bosque a buscar bayas: solo se come las que ya están en la mochila.
 - Si la camita de Krohna se pone donde no se puede caminar (muy cerca del río o arriba del todo del mapa), Krohna duerme al lado, en el lugar libre más cercano.
 - Nadie va solo al Baño todavía.
-- En pantallas chicas (celular), con el panel abierto todavía se tapa parte del mapa (la parte de arriba, el bosque y la casa del árbol de Lumi): ciérralo con ✕ para ver todo.
 - En pantallas más angostas la casa se ve un poco más chica que la ciudad (porque es más ancha, por el Baño).
 - En pantallas anchas, con el panel abierto la casa y la ciudad se ven más chicas (usan el espacio al lado del panel); al cerrarlo con ✕ vuelven a su tamaño.
 - En pantallas anchas, el cartel de Modo decorar (arriba a la derecha) puede tapar un poquito la esquina de arriba a la derecha de la casa o la ciudad.
@@ -30,6 +29,20 @@
 - La Guitarra y la Olla se quedan donde están cuando mueves la Carpa o el Castillito (se mueven solas, como antes). Si las sueltas justo en su lugar de siempre, junto a la carpa o la puerta del castillito, se ven rojas y vuelven.
 - La copa de un árbol puede quedar un poquito encima del borde de una casa (solo el tronco no deja ponerla encima).
 - Al tocar ✅ Listo, Lumi y Vladi se quedan donde estaban (si quedaron encima de algo, van al lugar libre más cercano) y van a los lugares nuevos en su próximo paseo.
+- En el celular acostado, con el cajoncito abierto la casa y la ciudad se ven chiquitas (caben enteras en el espacio de arriba): usa el zoom con dos dedos o cierra el cajoncito con ✕. Con Modo decorar y el cajoncito abiertos, queda aún menos lugar.
+- Con zoom en pantallas anchas, la casa o la ciudad se ven también un poquito por detrás del panel de la izquierda.
+- La luz del horno de pizza de noche se queda dentro de su habitación, pero llega hasta las paredes aunque el horno esté lejos de ellas.
+- Si el horno de pizza no encuentra ningún lugar libre al cargar una partida vieja (la Cocina y las habitaciones muy llenas), se queda en su lugar de siempre y lo que estaba ahí vuelve a su lugar.
+
+## 2026-10-23 · Hito 23: 📱 Jugar en el celular
+- Pantalla chica = pantalla táctil con el lado más corto de 500 px o menos. En pantallas grandes todo sigue igual.
+- 📱 Pantalla: el navegador ya no hace zoom con pellizco ni con doble toque; el juego llena toda la pantalla, sin barras de scroll, y mantener el dedo no selecciona texto ni abre menús. Con el celular parado (vertical) aparece el cartelito "📱↔️ Gira tu celular para jugar mejor", que se cierra con ✕.
+- 🗄️ Cajoncito: en pantalla chica el panel sale desde abajo con una animación suave (☰ / ✕), ocupa como máximo el 45 % de la altura y se desliza con el dedo por dentro. Con el celular acostado tiene dos columnas: quién está seleccionado a la izquierda y los botones a la derecha. Con el cajoncito abierto, la casa y la ciudad se dibujan enteras arriba y los toques caen en su lugar. La primera vez en pantalla chica empieza cerrado; después se recuerda como siempre.
+- 👆 Botones de al menos 44 × 44 px, con espacio entre ellos (panel, ☰, 🔊, 🔍, Mochila, Metas, Diario, menús, Modo decorar y las preguntas de Professor Hoot). Las ventanitas y los menús caben en la pantalla y se deslizan con el dedo. El cartel de Modo decorar y la pregunta de la palabra del día van arriba del cajoncito.
+- 🔤 Tocar y soltar rápido hace lo de siempre. Mantener el dedo quieto medio segundo muestra la etiqueta (español · inglés (pronunciación)) arriba del dedo, sin caminar ni usar nada; al soltar queda 2 segundos. Cuenta para el 📖 Diario.
+- 🔍 Pellizcar con dos dedos acerca o aleja la casa o la ciudad (de ×1 a ×2,5), centrado entre los dedos, y moverlos juntos desliza la vista, sin ver nunca fuera del borde. Con zoom aparece el botón 🔍 junto a ☰ y 🔊 para volver a ×1. Al cambiar entre la casa y la ciudad vuelve a ×1, y no se guarda. En la computadora, la rueda del mouse también hace zoom.
+- 🍕 Extra desbloqueado (40 ⭐): Pizza oven en la Cocina, abajo a la izquierda: cúpula de ladrillos terracota, boca con llamitas que se mueven y brillan (de noche más, con un halo de luz cálida), una pala de madera con pizza al lado y humito que sale de la chimenea. Es solo decoración y obstáculo. Pausa y Modo decorar congelan las llamas y el humito. Se mueve y se gira en Modo decorar (con su pala), "↩️ Como al principio" lo devuelve a su lugar y la partida recuerda dónde está. Una partida vieja lo carga en su lugar o, si está ocupado, en el lugar libre más cercano. Palabra nueva: "Horno de pizza · pizza oven (PÍT-sa Á-ven)".
+- Archivos: index.html, style.css, js/config.js, js/words.js, js/house.js, js/main.js, js/ui.js y js/save.js.
 
 ## 2026-10-23 · Continuidad 2
 - Notas para el próximo arquitecto en README.md: 40 ⭐, regalos de 30, 35 y 40 ⭐ (Pizza oven 🍕, que se construye en el Hito 23), siguiente paso (Hito 23: 📱 Jugar en el celular), la skill de hito pendiente e ideas guardadas para después.

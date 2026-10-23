@@ -36,7 +36,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 16: 🎁 Amistad y regalos. Niveles de amistad (conocidos, amigos, mejores amigos) y dar regalos que suben la Amistad.
 - ✅ Hito 17: 🎵 Sonidos y música. Sonidos de botones, sonidos del mundo (río, pájaros, fogata, lluvia) y música de fondo tranquila, todo creado con código, con botón para silenciar.
 
-### 🏡 Pack 3: Vecinos y hogar
+### 🏡 Pack 3: Vecinos y hogar ✅ completo
 - ✅ Hito 18: 🧚 Vecinos nuevos. Lumi, el hada, y Vladi, el vampiro miedoso, con su ficha completa y su casa en el mapa (casa del árbol y castillito); pasean solos, se puede charlar con ellos y hacerles regalos.
 - ✅ Hito 19: 🌟 Sueños y metas. Cada personaje tiene un sueño de 2 metas, con la ventana 🌟 Metas; cumplir una da celebración, monedas y una decoración en su casa. Lumi y Vladi charlan solos de noche.
 - ✅ Extra: 🍒 real.fixer come bayas
@@ -46,7 +46,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 21: 🌧️ Clima y magia. Cada día amanece soleado, con lluvia (y arcoíris después), niebla mágica o nieve (con techos blancos y muñeco de nieve); la lluvia riega el jardín y ayuda a pescar, y la niebla trae más cristales al bosque.
 - ✅ Hito 22: 📖 Vecino profe y diario de palabras. Professor Hoot, el zorro bibliotecario, vive en un árbol hueco del bosque y enseña una palabra en inglés por día con una pregunta de 3 opciones; el 📖 Diario guarda las palabras del profe y las que Sofía descubre con el mouse.
 - ✅ Extra: 🏡 Mover casas en la ciudad. En Modo decorar se mueven la Casa de Sofía, el Jardín, la Carpa (con fogata, tronco y camita de Krohna), las casas de los vecinos, la fuente y cada árbol; vuelve el arbolito del bosque.
-- ⬜ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas.
+- ✅ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas: panel como cajoncito abajo, botones grandes, mantener el dedo para ver la palabra y zoom con dos dedos. Con el Extra desbloqueado de 40 ⭐: Pizza oven 🍕 en la Cocina.
 
 ### 🌙 Algún día
 - Crear personajes dentro del juego.

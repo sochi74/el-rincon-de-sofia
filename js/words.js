@@ -92,6 +92,7 @@ var WORDS = {
   turn: { es: "Girar", en: "turn", say: "TERN" },
   done: { es: "Listo", en: "done", say: "DAN" },
   rug: { es: "Alfombra", en: "rug", say: "RAG" },
+  pizzaOven: { es: "Horno de pizza", en: "pizza oven", say: "PÍT-sa Á-ven" },
 
   // Baño
   bathroom: { es: "Baño", en: "bathroom", say: "BÁZ-rum" },
