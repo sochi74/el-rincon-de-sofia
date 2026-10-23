@@ -18,7 +18,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 ## Estado
 Extra ✅ Mover casas
 
-## ⭐ Estrellas de inglés: 39
+## ⭐ Estrellas de inglés: 40
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -222,7 +222,9 @@ Extra ✅ Mover casas
   - Antes de cada hito, ella diseña los detalles (qué flores, qué recetas, qué regalos) con botones.
   - Un mini quiz de inglés en cada hito, con botones, antes de revisar el informe.
   - Recordarle: no tomar captura de pantalla después de copiar el informe (la captura reemplaza lo copiado), no pegar el prompt en el chat del Modo Planear (va dentro de Claude Code), y no escribir /exit hasta que Claude Code se lo diga.
+  - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
+- ⭐ Estrellas de inglés: 40
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -231,9 +233,11 @@ Extra ✅ Mover casas
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
-  - Próximo regalo: a las 40 ⭐
-- Siguiente paso: Pack 3, Hito 23 📱 Jugar en el celular (el último del Pack 3). Extra 🏡 Mover casas en la ciudad ya está hecho.
-- Pendiente: la skill de hito.
+  - 40 ⭐: Pizza oven 🍕 (elegido, se construye en el Hito 23 como Extra desbloqueado: un horno de pizza decorativo en la Cocina)
+  - Próximo regalo: a las 45 ⭐
+- Siguiente paso: Pack 3, Hito 23: 📱 Jugar en el celular (el último del Pack 3), con el Pizza oven 🍕. Extra 🏡 Mover casas en la ciudad ya está hecho.
+- Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
+- Ideas guardadas para después: ciudad más grande, caminos de piedra que sigan a la casa, metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
