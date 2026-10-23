@@ -48,12 +48,19 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: 🏡 Mover casas en la ciudad. En Modo decorar se mueven la Casa de Sofía, el Jardín, la Carpa (con fogata, tronco y camita de Krohna), las casas de los vecinos, la fuente y cada árbol; vuelve el arbolito del bosque.
 - ✅ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas: panel como cajoncito abajo, botones grandes, mantener el dedo para ver la palabra y zoom con dos dedos. Con el Extra desbloqueado de 40 ⭐: Pizza oven 🍕 en la Cocina.
 
+### 🧭 Pack 4: Más allá del valle
+- ⬜ Hito 24: 🧭 Al borde del valle. Al caminar hasta un borde de la ciudad se pasa a la zona de al lado (como la puerta mágica). La primera zona nueva es 🌸 la Pradera de flores, con flores silvestres y colinas suaves. Llega el 🗺️ Mapa del valle, una ventanita que se va llenando con cada zona descubierta.
+- ⬜ Hito 25: 🏖️ Lago con playita. Una zona con lago, arena, muelle y patos, donde vive una 🧜‍♀️ sirena (idea de Sofía: "sirena de playa").
+- ⬜ Hito 26: 🍄 Bosque encantado. Hongos gigantes y luces mágicas, con ✨ espíritus del bosque (bolitas de luz que te siguen).
+- ⬜ Hito 27: ⛰️ Montaña y cueva. Una cueva con cristales que brillan, donde vive un 🐉 dragoncito bebé tímido que escupe chispitas.
+- ⬜ Hito 28: 💎 Tesoros y ranitas. Cofres y sorpresas escondidos en lugares secretos de todas las zonas, y 🐸 ranitas que cantan cuando llueve.
+- ⬜ Extra: 🪨 Caminos que siguen. Los caminos de piedra siguen a la Casa de Sofía cuando se mueve en Modo decorar.
+
 ### 🌙 Algún día
 - Crear personajes dentro del juego.
 - Familias y romance.
 - Estaciones del año.
 - Habilidades y oficios (pintura, música, magia).
-- Zonas por descubrir y criaturas mágicas.
 - Modo construcción.
 - Álbum de recuerdos.
 - Decisiones grandes, a decidir con Robert: pixel art con imágenes; real.fixer toca canciones de verdad (archivos de audio); jugar con amigos por internet (necesita servidor).

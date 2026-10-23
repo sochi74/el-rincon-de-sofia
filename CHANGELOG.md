@@ -34,6 +34,12 @@
 - La luz del horno de pizza de noche se queda dentro de su habitación, pero llega hasta las paredes aunque el horno esté lejos de ellas.
 - Si el horno de pizza no encuentra ningún lugar libre al cargar una partida vieja (la Cocina y las habitaciones muy llenas), se queda en su lugar de siempre y lo que estaba ahí vuelve a su lugar.
 
+## 2026-10-23 · Plan del Pack 4
+- En ROADMAP.md se escribió el 🧭 Pack 4: Más allá del valle, que diseñó Sofía: Hito 24 🧭 Al borde del valle (pasar a la zona de al lado caminando hasta un borde, la 🌸 Pradera de flores y el 🗺️ Mapa del valle), Hito 25 🏖️ Lago con playita (con una 🧜‍♀️ sirena), Hito 26 🍄 Bosque encantado (con ✨ espíritus del bosque), Hito 27 ⛰️ Montaña y cueva (con un 🐉 dragoncito bebé), Hito 28 💎 Tesoros y ranitas (cofres escondidos y 🐸 ranitas que cantan cuando llueve) y el Extra 🪨 Caminos que siguen.
+- En "🌙 Algún día" se quitó "Zonas por descubrir y criaturas mágicas" (ahora están en el Pack 4).
+- README.md: 42 ⭐, ocho palabras nuevas, siguiente paso (Pack 4, Hito 24) e ideas guardadas al día.
+- No cambió ningún archivo del juego.
+
 ## 2026-10-23 · Hito 23: 📱 Jugar en el celular
 - Pantalla chica = pantalla táctil con el lado más corto de 500 px o menos. En pantallas grandes todo sigue igual.
 - 📱 Pantalla: el navegador ya no hace zoom con pellizco ni con doble toque; el juego llena toda la pantalla, sin barras de scroll, y mantener el dedo no selecciona texto ni abre menús. Con el celular parado (vertical) aparece el cartelito "📱↔️ Gira tu celular para jugar mejor", que se cierra con ✕.
