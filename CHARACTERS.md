@@ -109,7 +109,7 @@ Glotón/a: Hambre baja ×1.5 · Dormilón/a: Energía baja ×1.5 · Energético/
 ## Professor Hoot
 - Nombre y apodo: Professor Hoot. Zorro bibliotecario, el profe de inglés del valle. Vive en un árbol hueco del bosque.
 - Tipo: vecino
-- Apariencia: zorro naranja con pecho y punta de la cola blancos; cola esponjosa; lentes redondos; saco café; corbatín rojo; siempre lleva un libro bajo el brazo.
+- Apariencia: zorro naranja con pecho y punta de la cola blancos; orejas puntiagudas naranjas; hocico blanco; cola esponjosa; lentes redondos; saco café; corbatín rojo; patas oscuras; siempre lleva un libro bajo el brazo.
 - Rasgos: 🧘 Tranquilo, 🎨 Creativo, 🙈 Tímido
 - Actividad favorita: enseñar palabras
 - Frase típica: "Every day, a new word!" (¡Cada día, una palabra nueva!)

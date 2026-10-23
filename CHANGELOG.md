@@ -31,6 +31,11 @@
 - La copa de un árbol puede quedar un poquito encima del borde de una casa (solo el tronco no deja ponerla encima).
 - Al tocar ✅ Listo, Lumi y Vladi se quedan donde estaban (si quedaron encima de algo, van al lugar libre más cercano) y van a los lugares nuevos en su próximo paseo.
 
+## 2026-10-23 · Continuidad 2
+- Notas para el próximo arquitecto en README.md: 40 ⭐, regalos de 30, 35 y 40 ⭐ (Pizza oven 🍕, que se construye en el Hito 23), siguiente paso (Hito 23: 📱 Jugar en el celular), la skill de hito pendiente e ideas guardadas para después.
+- Se revisó que las biblias coincidan con el código (archivos, orden de scripts, personajes y reglas fijas). Arreglos solo en las biblias: la apariencia de Professor Hoot en CHARACTERS.md ahora dice todo lo que tiene js/characters.js (orejas, hocico y patas), y en ROADMAP.md el Extra 🏡 Mover casas quedó después del Hito 22, en el orden en que se hizo.
+- Se revisó la lista de problemas conocidos: completa y sin repetidos.
+
 ## 2026-10-22 · Extra: 🏡 Mover casas en la ciudad
 - 🛠️ En Modo decorar, en la ciudad, ahora también se arrastran: 🏠 la Casa de Sofía (con su puerta), 🌸 el Jardín de Sofía (sus 6 parcelas con lo que tienen plantado, la cerca y su cartel), ⛺ la Carpa de real.fixer junto con su fogata, el tronco y la camita de Krohna (sin cambiar cómo están ubicados entre sí; la camita se sigue pudiendo mover sola), 🏰 el Castillito de Vladi, 🌳 la Casa de Lumi (su árbol con la casita), 🌳 el Árbol de Professor Hoot (con su pizarrita), ⛲ la fuente (dentro o fuera de la plaza) y 🌲 cada árbol del bosque, uno por uno. Se toman tocando la cosa o su cartel.
 - Con cada casa se mueven sus decoraciones colgadas (farolito de luna, farol de cristal, guirnalda, corazón dorado), la nieve de su techo, su cartel y su ventana que brilla de noche. Las luciérnagas se mueven con la carpa.
