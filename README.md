@@ -16,9 +16,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
 
 ## Estado
-Hito 23 ✅ Jugar en el celular · Pack 3 completo 🎉
+Extra ✅ Plan del Pack 4
 
-## ⭐ Estrellas de inglés: 40
+## ⭐ Estrellas de inglés: 42
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -211,6 +211,14 @@ Hito 23 ✅ Jugar en el celular · Pack 3 completo 🎉
 - pizza oven: horno de pizza
 - brick: ladrillo
 - smoke: humo
+- explore: explorar
+- edge: borde
+- map: mapa
+- mermaid: sirena
+- dragon: dragón
+- treasure: tesoro
+- meadow: pradera
+- lake: lago
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -231,7 +239,7 @@ Hito 23 ✅ Jugar en el celular · Pack 3 completo 🎉
   - Recordarle: no tomar captura de pantalla después de copiar el informe (la captura reemplaza lo copiado), no pegar el prompt en el chat del Modo Planear (va dentro de Claude Code), y no escribir /exit hasta que Claude Code se lo diga.
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 40
+- ⭐ Estrellas de inglés: 42
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -242,9 +250,9 @@ Hito 23 ✅ Jugar en el celular · Pack 3 completo 🎉
   - 35 ⭐: Krohna's bed 🐾
   - 40 ⭐: Pizza oven 🍕 ✅ construido en el Hito 23: un horno de pizza decorativo en la Cocina, con llamitas, pala con pizza y humito
   - Próximo regalo: a las 45 ⭐
-- Siguiente paso: Pack 3 completo. Elegir con Sofía: diseñar el Pack 4 o crear la skill de hito.
+- Siguiente paso: Pack 4, Hito 24: 🧭 Al borde del valle
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
-- Ideas guardadas para después: ciudad más grande, caminos de piedra que sigan a la casa, metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño.
+- Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
