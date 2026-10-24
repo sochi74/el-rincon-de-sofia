@@ -1,5 +1,6 @@
 // Words shown when the mouse is over furniture, rooms and places: Spanish, English and how to say
 // the English word, written the way a Spanish speaker would read it. Only data.
+// "diary" is the word that goes to the 📖 Diario instead, when the tag shows a name (like "Lumi · fairy" → "Hada · fairy").
 // Also the list of words Professor Hoot teaches (LESSON_WORDS, at the end).
 var WORDS = {
   // House
@@ -60,14 +61,16 @@ var WORDS = {
   kitten: { es: "Gatito", en: "kitten", say: "KÍ-ten" },
 
   // Neighbors
-  lumi: { es: "Lumi", en: "fairy", say: "FÉ-ri" },
-  vladi: { es: "Vladi", en: "vampire", say: "VÁM-pai-er" },
+  lumi: { es: "Lumi", en: "fairy", say: "FÉ-ri", diary: "fairy" },
+  vladi: { es: "Vladi", en: "vampire", say: "VÁM-pai-er", diary: "vampire" },
+  fairy: { es: "Hada", en: "fairy", say: "FÉ-ri" },
+  vampire: { es: "Vampiro", en: "vampire", say: "VÁM-pai-er" },
   treehouse: { es: "Casa del árbol", en: "treehouse", say: "TRÍI-jaus" },
   castle: { es: "Castillo", en: "castle", say: "KÁ-sel" },
   neighbor: { es: "Vecino", en: "neighbor", say: "NÉI-bor" },
   wings: { es: "Alas", en: "wings", say: "UÍNGS" },
   teddyBear: { es: "Osito de peluche", en: "teddy bear", say: "TÉ-di BER" },
-  hoot: { es: "Professor Hoot", en: "fox", say: "FOKS" },
+  hoot: { es: "Professor Hoot", en: "fox", say: "FOKS", diary: "fox" },
   hollowTree: { es: "Árbol hueco", en: "hollow tree", say: "JÓ-lou TRÍI" },
   chalkboard: { es: "Pizarra", en: "chalkboard", say: "CHÓK-bord" },
 

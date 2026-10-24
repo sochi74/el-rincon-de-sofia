@@ -28,7 +28,13 @@ var Sims = (function () {
         // "house" or "city"
         place: look.start.place,
         // The place it goes to when it gets to the door it is walking to, or null.
-        goal: null
+        goal: null,
+        // Making way for the others (see "Making way for each other").
+        wait: 0,
+        waited: 0,
+        pass: 0,
+        retry: 0,
+        waitingFor: null
       };
     });
   }
@@ -941,8 +947,187 @@ var Sims = (function () {
   // the furniture; in the city over the bridge and around the house, the trees, the fountain, the tent, the
   // campfire and the garden fence. If the spot cannot be reached, it walks to the closest spot it can reach.
   function walkTo(sim, x, y) {
-    sim.path = Path.find(sim.place, sim.x, sim.y, x, y);
+    wayTo(sim, x, y);
     sim.goal = null;
+  }
+
+  // ---------- Making way for each other ----------
+
+  // Sofía, real.fixer, Lumi and Vladi go around each other (and around Professor Hoot): a walker looks "LOOK" world units
+  // ahead and, if someone's feet are closer than "SPACE" to its way, it finds a smooth way around them (js/path.js).
+  // If there is no room (a doorway, the bridge) or the way around is more than "DETOUR" longer, it waits "WAIT" seconds
+  // and looks again; after "WAIT_MAX" seconds of waiting in all, or if the other one is waiting for it, it goes on.
+  // Krohna is never in the way, and whoever stands at the end of its walk (like the one it goes to talk with) is not either.
+  // A way around keeps "SPACE" away, but only coming "NEAR" closer than that counts as in the way, so it does not keep
+  // finding a new way around the same one.
+  var SPACE = 30, NEAR = 8, LOOK = 50, WAIT = 0.6, WAIT_MAX = 3, DETOUR = 250, RETRY = 0.3, PASS = 1.5;
+
+  // Everyone else seen in the same place: Sofía and real.fixer where they are drawn, and in the city the neighbors
+  // who are outside (Vladi and Professor Hoot inside their homes are not).
+  function othersOf(w) {
+    var out = [];
+    sims.forEach(function (s) {
+      if (s === w || s.place !== w.place) return;
+      var at = drawnAt(s);
+      out.push({ who: s, x: at.x, y: at.y, r: SPACE });
+    });
+    if (w.place === "city") {
+      Neighbors.visible().forEach(function (n) {
+        if (n !== w) out.push({ who: n, x: n.x, y: n.y, r: SPACE });
+      });
+    }
+    return out;
+  }
+
+  function apart(a, x, y) {
+    return Math.sqrt((a.x - x) * (a.x - x) + (a.y - y) * (a.y - y));
+  }
+
+  // Find a way for a walker (a character or a neighbor) to a spot in its place. If someone stands there, or is walking
+  // there, it goes to the closest free spot instead, so nobody ends a walk standing on someone else.
+  function wayTo(w, x, y) {
+    var taken = othersOf(w).map(function (o) {
+      var end = o.who.path.length > 0 ? o.who.path[o.who.path.length - 1] : o;
+      return { x: end.x, y: end.y, r: SPACE };
+    });
+    if (taken.some(function (o) { return apart(o, x, y) < o.r; })) {
+      var spot = Path.clearOf(w.place, w.x, w.y, x, y, taken);
+      x = spot.x;
+      y = spot.y;
+    }
+    w.path = Path.find(w.place, w.x, w.y, x, y);
+    w.wait = w.waited = w.pass = w.retry = 0;
+    w.waitingFor = null;
+  }
+
+  function wayLength(from, path) {
+    var total = 0, at = from;
+    path.forEach(function (p) {
+      total += apart(at, p.x, p.y);
+      at = p;
+    });
+    return total;
+  }
+
+  // The others in the way of the next "LOOK" world units of a walk: not the ones right by its end (it goes to them)
+  // and not the ones it already stands next to (they just step apart).
+  function inTheWay(w) {
+    var end = w.path[w.path.length - 1];
+    var others = othersOf(w).filter(function (o) {
+      return apart(o, end.x, end.y) >= o.r && apart(o, w.x, w.y) >= o.r;
+    });
+    if (!others.length) return null;
+    var at = { x: w.x, y: w.y }, left = LOOK;
+    for (var i = 0; i < w.path.length && left > 0; i++) {
+      var p = w.path[i], d = apart(at, p.x, p.y), go = Math.min(d, left);
+      for (var t = 0; t <= go; t += 6) {
+        var x = at.x + (p.x - at.x) * (d > 0 ? t / d : 0), y = at.y + (p.y - at.y) * (d > 0 ? t / d : 0);
+        for (var k = 0; k < others.length; k++) {
+          if (apart(others[k], x, y) < others[k].r - NEAR) return { first: others[k], all: others };
+        }
+      }
+      left -= d;
+      at = p;
+    }
+    return null;
+  }
+
+  // Who goes first when two walk into each other: Sofía, then real.fixer, then the neighbors.
+  function rank(w) {
+    var i = sims.indexOf(w);
+    return i >= 0 ? i : sims.length + Neighbors.list().indexOf(w);
+  }
+
+  // The others, and for the ones walking also the next stretch of their walk, so a way around them does not
+  // cross where they are going.
+  function aheadOf(w, others) {
+    var end = w.path[w.path.length - 1], out = [];
+    others.forEach(function (o) {
+      out.push(o);
+      if (!isWalking(o.who)) return;
+      var at = { x: o.x, y: o.y }, left = LOOK;
+      for (var i = 0; i < o.who.path.length && left > 0; i++) {
+        var p = o.who.path[i], d = apart(at, p.x, p.y);
+        for (var t = 10; t <= Math.min(d, left); t += 10) {
+          var spot = { x: at.x + (p.x - at.x) * t / d, y: at.y + (p.y - at.y) * t / d, r: o.r };
+          if (apart(spot, w.x, w.y) >= spot.r && apart(spot, end.x, end.y) >= spot.r) out.push(spot);
+        }
+        left -= d;
+        at = p;
+      }
+    });
+    return out;
+  }
+
+  // Someone is in the way: go around them, or wait a moment. True if it may keep walking now.
+  // When two walk into each other, only the one that goes second makes way.
+  function makeWay(w, ahead, dt) {
+    var other = ahead.first.who;
+    if (isWalking(other) && rank(other) > rank(w)) {
+      var theirs = inTheWay(other);
+      if (theirs && theirs.first.who === w) return true;
+    }
+    if (w.wait > 0) {
+      w.wait -= dt;
+      return false;
+    }
+    if (w.retry > 0) return false;
+    var end = w.path[w.path.length - 1];
+    var way = Path.around(w.place, w.x, w.y, end.x, end.y, aheadOf(w, ahead.all));
+    if (way && way.length && wayLength(w, way) <= wayLength(w, w.path) + DETOUR) {
+      w.path = way;
+      w.retry = RETRY;
+      return true;
+    }
+    if (other.waitingFor === w || w.waited >= WAIT_MAX) {
+      w.pass = PASS;
+      w.waited = 0;
+      w.waitingFor = null;
+      return true;
+    }
+    w.wait = WAIT;
+    w.waited += WAIT;
+    w.waitingFor = other;
+    return false;
+  }
+
+  // One step of a walk at "speed" world units per second, making way for the others. The neighbors use it too.
+  function stepAlong(w, speed, dt) {
+    if (w.path.length === 0) {
+      w.wait = w.waited = 0;
+      w.waitingFor = null;
+      return;
+    }
+    if (w.pass > 0) w.pass -= dt;
+    if (w.retry > 0) w.retry -= dt;
+    var step = speed * dt;
+    var ahead = w.pass > 0 ? null : inTheWay(w);
+    if (ahead) {
+      if (!makeWay(w, ahead, dt)) step = 0;
+    } else {
+      w.wait = w.waited = 0;
+      w.waitingFor = null;
+    }
+    while (w.path.length > 0 && step > 0) {
+      var p = w.path[0];
+      var dx = p.x - w.x, dy = p.y - w.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist <= step) {
+        w.x = p.x;
+        w.y = p.y;
+        step -= dist;
+        w.path.shift();
+      } else {
+        w.x += dx / dist * step;
+        w.y += dy / dist * step;
+        step = 0;
+      }
+    }
+  }
+
+  // True while it walks (not while it waits for someone to pass).
+  function isWalking(w) {
+    return w.path.length > 0 && !(w.wait > 0);
   }
 
   // ---------- Going out and coming back ----------
@@ -973,23 +1158,8 @@ var Sims = (function () {
     var paused = Needs.isPaused();
     sims.forEach(function (sim) {
       var fromX = sim.x, fromY = sim.y;
-      var step = paused ? 0 : CONFIG.walkSpeed * dt;
-      while (sim.path.length > 0 && step > 0) {
-        var p = sim.path[0];
-        var dx = p.x - sim.x, dy = p.y - sim.y;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist <= step) {
-          sim.x = p.x;
-          sim.y = p.y;
-          step -= dist;
-          sim.path.shift();
-        } else {
-          sim.x += dx / dist * step;
-          sim.y += dy / dist * step;
-          step = 0;
-        }
-      }
-      if (!paused) sim.stepPhase = sim.path.length > 0 ? sim.stepPhase + dt * 11 : 0;
+      if (!paused) stepAlong(sim, CONFIG.walkSpeed, dt);
+      if (!paused) sim.stepPhase = isWalking(sim) ? sim.stepPhase + dt * 11 : 0;
       turn(sim, sim.x - fromX, sim.y - fromY);
       if (!paused && sim.path.length === 0 && sim.goal) goThrough(sim);
       live(sim, dt);
@@ -1388,6 +1558,9 @@ var Sims = (function () {
     draw: draw,
     handleTap: handleTap,
     walkTo: walkTo,
+    wayTo: wayTo,
+    stepAlong: stepAlong,
+    isWalking: isWalking,
     face: face,
     simAt: simAt,
     roomAt: roomAt,

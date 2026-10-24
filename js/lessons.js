@@ -296,8 +296,9 @@ var Lessons = (function () {
   }
 
   // A word tag showed up (js/ui.js): the first time a word shows up, it goes to "Descubiertas"
-  // and "📖 ¡Palabra nueva!" floats near the spot on the screen.
+  // and "📖 ¡Palabra nueva!" floats near the spot on the screen. A neighbor's tag ("Lumi · fairy") gives its word ("Hada · fairy").
   function discover(word, x, y) {
+    if (word && word.diary && WORDS[word.diary]) word = WORDS[word.diary];
     if (!word || !word.en) return;
     var key = keyOf(word.en);
     if (known[key]) return;
@@ -424,16 +425,33 @@ var Lessons = (function () {
       if (Array.isArray(saved.found)) {
         diary.found = saved.found.filter(function (f) {
           return f && typeof f.es === "string" && typeof f.en === "string" && typeof f.say === "string";
-        });
+        }).map(asWord);
       }
     }
     diary.teacher.forEach(function (en) { known[keyOf(en)] = true; });
+    var count = diary.found.length;
     diary.found = diary.found.filter(function (f) {
       var key = keyOf(f.en);
       if (known[key]) return false;
       known[key] = true;
       return true;
     });
+    if (renamed || diary.found.length !== count) saveDiary();
+  }
+
+  // A Diario saved before keeps the neighbors' words as their tag ("Lumi · fairy"): they become their word ("Hada · fairy").
+  var renamed = false;
+
+  function asWord(f) {
+    for (var id in WORDS) {
+      var w = WORDS[id];
+      if (w.diary && WORDS[w.diary] && w.es === f.es && keyOf(w.en) === keyOf(f.en)) {
+        renamed = true;
+        var word = WORDS[w.diary];
+        return { es: word.es, en: word.en, say: word.say };
+      }
+    }
+    return f;
   }
 
   // The place in the list of words, saved with the game.

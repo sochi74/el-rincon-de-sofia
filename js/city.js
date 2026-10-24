@@ -8,8 +8,8 @@
 // Lumi's crystal lantern and fairy lights on her tree, and Vladi's shiny pot and golden heart at his castle.
 // The weather (js/weather.js) draws on the map too: snow on the grass and the roofs, puddles, rings on the river and the snowman.
 // Krohna's round bed sits by the tent too (always there), where the kitten sleeps while real.fixer sleeps in the tent.
-// They are only decoration: nothing walks around them. Modo decorar (js/decorate.js) can move and turn the guitar, the pot
-// and Krohna's bed to open grass. It can also move (never turn) Sofía's house, her garden, real.fixer's tent (with its
+// The guitar and the pot are solid: characters, neighbors and Krohna walk around them. Krohna's bed is only decoration.
+// Modo decorar (js/decorate.js) can move and turn the guitar, the pot and Krohna's bed to open grass. It can also move (never turn) Sofía's house, her garden, real.fixer's tent (with its
 // campfire, its log and Krohna's bed), the neighbors' homes, the fountain and each tree, to any free spot from where
 // everything can still be reached walking; what hangs on them, their signs and the spots by their doors go with them.
 // The river, the bridge, the stone paths, the plaza, the forest ground with its "Bosque" sign and the snowman stay.
@@ -153,10 +153,12 @@ var City = (function () {
 
   // True if a character cannot stand here: off the map, in the water, or on something solid
   // (the house, the fountain, the tent, the campfire, a tree, the garden fence, the rope ladder of the treehouse,
-  // Vladi's castle, Professor Hoot's hollow tree and its chalkboard, and the snowman on snowy days). Used by js/path.js.
-  // Small things (coins, berries, mushrooms, crystals, the flowers in the plots and the log) are not solid.
+  // Vladi's castle, Professor Hoot's hollow tree and its chalkboard, the snowman on snowy days, and the guitar and the pot
+  // once their goals are met). Used by js/path.js.
+  // Small things (coins, berries, mushrooms, crystals, the flowers in the plots, the log and Krohna's bed) are not solid.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
+    if (SOLID_DECOR.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), DECOR_CLEAR)); })) return true;
     if (inBox(x, y, grow(HOUSE, CLEAR))) return true;
     if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + CLEAR)) return true;
     if (Weather.snowmanBlocks(x, y, CLEAR)) return true;
@@ -1388,6 +1390,9 @@ var City = (function () {
   // Small decorations: the guitar and the pot can be moved and turned (js/decorate.js), once their goal is met,
   // and Krohna's bed always. "w", "h" is the spot each one takes when it is not turned; "start" is the middle of its first spot.
   var SMALL = ["petBed", "guitar", "pot"];
+  // The decorations characters walk around, and how close their feet may get to them.
+  var SOLID_DECOR = ["guitar", "pot"];
+  var DECOR_CLEAR = 6;
   var DECOR = { guitar: GUITAR, pot: POT, petBed: PET_BED };
   var UNLOCK = { guitar: ["realfixer", 0], pot: ["vladi", 0] };
   // Big things, moved but never turned: Sofía's house, her garden, real.fixer's tent (with its campfire, its log and
@@ -1657,7 +1662,8 @@ var City = (function () {
   }
 
   // True if a decoration is all on grass where it can stand (see above), off the signs, the other decorations,
-  // the forest things and the shiny coins.
+  // the forest things and the shiny coins. The guitar and the pot are solid, so (like the homes) everything must still
+  // be reached walking from the door of Sofía's house.
   function fitsSmall(id) {
     var b = boxOf(id);
     var cols = Math.ceil(b.w / 10), rows = Math.ceil(b.h / 10);
@@ -1669,7 +1675,8 @@ var City = (function () {
     }
     if (SMALL.some(function (other) { return other !== id && isOn(other) && overlap(grow(b, 6), boxOf(other)); })) return false;
     if (Object.keys(signs).some(function (k) { return overlap(b, signs[k]); })) return false;
-    return !Gather.isNear(b.x + b.w / 2, b.y + b.h / 2, Math.max(b.w, b.h) / 2 + 16);
+    if (Gather.isNear(b.x + b.w / 2, b.y + b.h / 2, Math.max(b.w, b.h) / 2 + 16)) return false;
+    return SOLID_DECOR.indexOf(id) < 0 || canReachAll();
   }
 
   // Spots inside a shape, every few world units, for checking the ground under it.
@@ -1966,6 +1973,7 @@ var City = (function () {
     var garden = Garden.wordAt(x, y);
     if (garden) return garden;
     if (Weather.snowmanAt(x, y)) return "snowman";
+    if (Weather.puddleAt(x, y)) return "puddle";
     if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN)) return "fountain";
     if (houseAt(x, y)) return "house";
     var half = RIVER.half + 34;

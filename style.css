@@ -435,6 +435,15 @@ h1 {
   display: none;
 }
 
+/* Over the selected one (or what it covered when it opened), the goals window lets it be seen; with the mouse or a finger on it, it looks as always. */
+#goals {
+  transition: opacity 0.25s;
+}
+
+#goals.see-through:not(:hover):not(.touched) {
+  opacity: 0.3;
+}
+
 .backpack-top {
   display: flex;
   align-items: center;
@@ -565,6 +574,15 @@ h1 {
   border-radius: 10px;
   box-shadow: 0 3px 0 #4A3428;
   pointer-events: none;
+}
+
+#word-tag .word-sub {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+#word-tag .word-sub[hidden] {
+  display: none;
 }
 
 #word-tag[hidden] {

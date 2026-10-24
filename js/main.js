@@ -96,6 +96,14 @@
     ctx.fillStyle = CONFIG.colors.cream;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // With the panel open on a wide screen, the place is drawn only in the room at its right (even with zoom).
+    ctx.save();
+    var left = UI.reservedLeft();
+    if (left > 0) {
+      ctx.beginPath();
+      ctx.rect(left * view.dpr, 0, canvas.width - left * view.dpr, canvas.height);
+      ctx.clip();
+    }
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
     if (Sims.viewPlace() === "city") {
@@ -130,6 +138,7 @@
     Goals.draw(ctx, time);
     Lessons.draw(ctx);
     Decorate.draw(ctx, time);
+    ctx.restore();
   }
 
   // Mix two "#RRGGBB" colors: t = 0 gives a, t = 1 gives b.

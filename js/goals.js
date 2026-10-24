@@ -65,6 +65,10 @@ var Goals = (function () {
     panel.appendChild(top);
     panel.appendChild(list);
     document.body.appendChild(panel);
+    // A finger on the window makes it look as always, until a finger or the mouse goes down somewhere else.
+    document.addEventListener("pointerdown", function (event) {
+      panel.classList.toggle("touched", event.pointerType === "touch" && panel.contains(event.target));
+    });
 
     // The big "¡Meta cumplida!" sign.
     sign = document.createElement("div");
@@ -129,6 +133,8 @@ var Goals = (function () {
     s.progress = 0;
     s.chatted = [];
     Coins.add(REWARDS[step]);
+    // The guitar and the pot are solid once they show up (js/city.js): the ways are worked out again.
+    Path.reset();
     queue.push({ id: id, step: step });
     // The next goal may be met already (the Amistad ones).
     check(id);
@@ -169,7 +175,11 @@ var Goals = (function () {
         sign.hidden = true;
       }
     }
-    if (!panel.hidden) render();
+    if (!panel.hidden) {
+      render();
+      // It stays where it opened; over the selected one (or what it covered when it opened) it lets it be seen.
+      panel.classList.toggle("see-through", UI.coversSeen(panel));
+    }
   }
 
   // A little five-pointed star.

@@ -18,7 +18,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 ## Estado
 Extra ✅ Plan del Pack 4
 
-## ⭐ Estrellas de inglés: 42
+## ⭐ Estrellas de inglés: 43
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -211,6 +211,9 @@ Extra ✅ Plan del Pack 4
 - pizza oven: horno de pizza
 - brick: ladrillo
 - smoke: humo
+- avoid: esquivar
+- window: ventana
+- glow: brillo
 - explore: explorar
 - edge: borde
 - map: mapa
@@ -239,7 +242,7 @@ Extra ✅ Plan del Pack 4
   - Recordarle: no tomar captura de pantalla después de copiar el informe (la captura reemplaza lo copiado), no pegar el prompt en el chat del Modo Planear (va dentro de Claude Code), y no escribir /exit hasta que Claude Code se lo diga.
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 42
+- ⭐ Estrellas de inglés: 43
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
