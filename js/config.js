@@ -336,7 +336,7 @@ var CONFIG = {
       dry: 45,
       // Where puddles form, on the grass and on the stones, as { x, y, r } (r: how wide when full).
       spots: [
-        { x: 262, y: 618, r: 16 }, { x: 398, y: 632, r: 14 }, { x: 500, y: 420, r: 14 }, { x: 60, y: 410, r: 18 },
+        { x: 262, y: 618, r: 16 }, { x: 398, y: 632, r: 14 }, { x: 500, y: 420, r: 14 }, { x: 52, y: 655, r: 18 },
         { x: 330, y: 690, r: 16 }, { x: 530, y: 688, r: 14 }, { x: 700, y: 592, r: 18 }, { x: 905, y: 470, r: 16 },
         { x: 705, y: 168, r: 14 }, { x: 430, y: 322, r: 15 }
       ]
@@ -360,6 +360,49 @@ var CONFIG = {
       fog: "238, 230, 248",
       fogLight: "246, 236, 255"
     }
+  },
+
+  // The edge of the valley (js/valleymap.js): the little dirt trail at the top of the city that goes to the Pradera de flores,
+  // as its middle "x" and how far down it comes ("bottom"). A character walks to "edge" to go to the Pradera, and coming back
+  // it appears at "foot". The small "Próximamente" signs on the other edges stand at "soon" (their middles).
+  // "discoverTime" is how long "🗺️ ¡Zona descubierta!" stays, in seconds.
+  valley: {
+    trail: { x: 705, bottom: 178, half: 18 },
+    edge: { x: 705, y: 132 },
+    foot: { x: 705, y: 158 },
+    sign: { x: 842, y: 100 },
+    soon: [{ x: 42, y: 400 }, { x: 960, y: 470 }, { x: 470, y: 686 }],
+    discoverTime: 3
+  },
+
+  // The Pradera de flores (js/meadow.js), a map as big as the city. Its trail comes in at the bottom: a character walks to
+  // "edge" to go back to the city and arrives at "foot". Wild flowers to gather (like in the forest): "min" to "max" at once,
+  // a new one "regrow.min" to "regrow.max" seconds of play after one is gathered, "gatherTime" seconds each.
+  // The swing gives "swingFun" Diversión in "swingTime" seconds; sitting on the picnic blanket "sitFun" in "sitTime",
+  // and eating a dish there takes "eatTime" seconds and gives "eatFun" Diversión more than the dish.
+  // "Ocupado" stays "busyTime" seconds. "bees" is how many bees fly around.
+  meadow: {
+    edge: { x: 705, y: 698 },
+    foot: { x: 705, y: 668 },
+    min: 3,
+    max: 5,
+    regrow: { min: 45, max: 90 },
+    gatherTime: 2,
+    swingFun: 30,
+    swingTime: 4,
+    sitFun: 15,
+    sitTime: 4,
+    eatTime: 3,
+    eatFun: 10,
+    busyTime: 1.5,
+    popTime: 1.8,
+    bees: 5,
+    dirt: "#C9A276",
+    dirtLight: "#DDBD92",
+    honey: "#E2B44B",
+    honeyDark: "#B8862E",
+    lavender: "#9B7BC4",
+    poppy: "#D94A3A"
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.

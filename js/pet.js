@@ -1,6 +1,7 @@
 // Krohna, real.fixer's orange kitten. Only decoration: no needs, it cannot be selected and it changes nothing in the game.
-// It follows real.fixer a little behind, in the same place (house or city), going around things with js/path.js.
-// When he goes through the door, it walks to the same door and comes out on the other side a moment after him.
+// It follows real.fixer a little behind, in the same place (house, city or Pradera), going around things with js/path.js.
+// When he goes through the door (or up or down the trail of the Pradera), it walks to the same door (or the end of the
+// trail) and comes out on the other side a moment after him.
 // When he stands still it sits by his side and wags its tail; when he sleeps in the Carpa it sleeps curled up in its bed
 // by the Carpa (js/city.js), wherever Modo decorar put it.
 // With Pausa it stays still.
@@ -19,7 +20,7 @@ var Pet = (function () {
 
   // Where real.fixer is seen: on the furniture while he lies or sits, else where he stands.
   function ownerSpot(sim) {
-    var pose = Objects.poseFor(sim.data.id);
+    var pose = Sims.poseFor(sim.data.id);
     if (pose && pose.x !== undefined) return { x: pose.x, y: pose.y };
     return { x: sim.x, y: sim.y };
   }
@@ -51,9 +52,9 @@ var Pet = (function () {
     pet = { place: sim.place, x: spot.x, y: spot.y, path: [], facing: 1, clock: 0, step: 0, timer: 0, target: null, door: null };
   }
 
-  // The door of Sofía's house on each side: in the Sala by the front door, or in the city in front of the house.
-  function doorSpot(place) {
-    return place === "house" ? CONFIG.frontDoor.inside : City.doorSpot;
+  // The next place on the way to him: from the house or the Pradera always the city, and from the city where he is.
+  function nextPlace(from, to) {
+    return from === "city" ? to : "city";
   }
 
   // Modo decorar moved things in a place: if the kitten was left on something, it steps to the closest free spot;
@@ -90,11 +91,13 @@ var Pet = (function () {
     pet.step = pet.path.length > 0 ? pet.step + dt * 14 : 0;
   }
 
-  // He went through the door: the kitten walks to the same door and, a moment after him, comes out on the other side
-  // (then it walks to him as always). If he comes back before that, it just stays with him.
+  // He went through the door (or along the trail): the kitten walks to the same door and, a moment after him, comes out
+  // on the other side (then it walks to him as always). If he comes back before that, it just stays with him.
+  // From the house to the Pradera (or back) it goes through the city on the way.
   function followThroughDoor(sim, dt) {
+    var next = nextPlace(pet.place, sim.place);
     if (pet.door === null) {
-      var door = doorSpot(pet.place);
+      var door = Sims.exitSpot(pet.place, next);
       pet.door = K.doorWait;
       pet.path = Path.find(pet.place, pet.x, pet.y, door.x, door.y);
       pet.target = null;
@@ -102,8 +105,8 @@ var Pet = (function () {
     pet.door -= dt;
     walk(dt);
     if (pet.path.length > 0 || pet.door > 0) return;
-    var out = doorSpot(sim.place);
-    pet.place = sim.place;
+    var out = Sims.arriveSpot(next, pet.place);
+    pet.place = next;
     pet.x = out.x;
     pet.y = out.y;
     pet.door = null;
@@ -297,7 +300,7 @@ var Pet = (function () {
     return { es: "Krohna", en: WORDS.kitten.en, say: WORDS.kitten.say };
   }
 
-  // Where the kitten is ("house" or "city"), for its meow.
+  // Where the kitten is ("house", "city" or "meadow"), for its meow.
   function place() {
     return pet ? pet.place : null;
   }

@@ -7,6 +7,8 @@
 // The decorations that goals give (js/goals.js) are drawn here too: real.fixer's guitar and moon lantern by his tent,
 // Lumi's crystal lantern and fairy lights on her tree, and Vladi's shiny pot and golden heart at his castle.
 // The weather (js/weather.js) draws on the map too: snow on the grass and the roofs, puddles, rings on the river and the snowman.
+// The edge of the valley (js/valleymap.js) is drawn here too: the dirt trail at the top that goes up to the Pradera de flores,
+// with its sign, and the small "Próximamente" signs on the other edges (solid, and they never move).
 // Krohna's round bed sits by the tent too (always there), where the kitten sleeps while real.fixer sleeps in the tent.
 // The guitar and the pot are solid: characters, neighbors and Krohna walk around them. Krohna's bed is only decoration.
 // Modo decorar (js/decorate.js) can move and turn the guitar, the pot and Krohna's bed to open grass. It can also move (never turn) Sofía's house, her garden, real.fixer's tent (with its
@@ -153,8 +155,8 @@ var City = (function () {
 
   // True if a character cannot stand here: off the map, in the water, or on something solid
   // (the house, the fountain, the tent, the campfire, a tree, the garden fence, the rope ladder of the treehouse,
-  // Vladi's castle, Professor Hoot's hollow tree and its chalkboard, the snowman on snowy days, and the guitar and the pot
-  // once their goals are met). Used by js/path.js.
+  // Vladi's castle, Professor Hoot's hollow tree and its chalkboard, the snowman on snowy days, the guitar and the pot
+  // once their goals are met, and the "Próximamente" signs). Used by js/path.js.
   // Small things (coins, berries, mushrooms, crystals, the flowers in the plots, the log and Krohna's bed) are not solid.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
@@ -162,6 +164,7 @@ var City = (function () {
     if (inBox(x, y, grow(HOUSE, CLEAR))) return true;
     if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + CLEAR)) return true;
     if (Weather.snowmanBlocks(x, y, CLEAR)) return true;
+    if (ValleyMap.isSolid(x, y)) return true;
     if (inBox(x, y, grow(TENT, CLEAR)) || inBox(x, y, grow(FIRE, 10))) return true;
     if (inBox(x, y, grow(CASTLE, CLEAR)) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return true;
     if (inBox(x, y, grow(HOLLOW.trunk, CLEAR)) || inBox(x, y, grow(CHALKBOARD, 4))) return true;
@@ -197,7 +200,7 @@ var City = (function () {
   function isOpenGround(x, y) {
     if (SMALL.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), 10)); })) return false;
     if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
-    if (Garden.isGardenAt(x, y)) return false;
+    if (Garden.isGardenAt(x, y) || ValleyMap.isNear(x, y, 30)) return false;
     if (Math.abs(x - riverX(y)) < RIVER.half + RIVER.bank + 20) return false;
     if (houseAt(x, y) || (x > HOUSE.x - 20 && x < HOUSE.x + HOUSE.w + 20 && y > HOUSE.y - 70)) return false;
     if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20) || near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + 20)) return false;
@@ -1641,6 +1644,7 @@ var City = (function () {
     if (Math.abs(x - riverX(y)) < RIVER.half + 6) return false;
     if (Math.abs(x - riverX(BRIDGE.y)) <= RIVER.half + BRIDGE.reach && Math.abs(y - BRIDGE.y) <= BRIDGE.half + 14) return false;
     if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 4) || Garden.isGardenAt(x, y) || houseAt(x, y)) return false;
+    if (ValleyMap.isNear(x, y, 4)) return false;
     if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + 4)) return false;
     if (neighborHomeAt(x, y) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return false;
     if ([TENT, FIRE, MOON_LANTERN, HEART, { x: SEAT.x - 30, y: SEAT.y - 16, w: 60, h: 32 }].some(function (b) {
@@ -1761,6 +1765,8 @@ var City = (function () {
       if (signs[text]) hits.push({ s: grow(signs[text], -4), withSign: true, overTree: true });
     });
     hits.push({ s: snowmanBox(), withSign: true });
+    // The trail to the Pradera, its sign and the "Próximamente" signs never move and are never covered.
+    ValleyMap.boxes().forEach(function (b) { hits.push({ s: b.box, withSign: true, overTree: b.sign }); });
     var feet = isTree ? mine.map(function (s) { return { cx: s.cx, cy: s.cy, r: s.r * TRUNK }; }) : mine;
     if (hits.some(function (h) {
       if ((h.home ? feet : mine).some(function (s) { return !(isTree && h.overTree) && touches(s, h.s); })) return true;
@@ -1781,14 +1787,14 @@ var City = (function () {
   }
 
   // True if, from the door of Sofía's house, a character can walk to the doors of every home, the garden plots,
-  // the tent, the campfire and its log, both banks of the river and the forest.
+  // the tent, the campfire and its log, both banks of the river, the forest and the trail to the Pradera.
   function canReachAll() {
     var N = CONFIG.neighbors;
     var r = Path.reach("city", doorSpot.x, doorSpot.y);
     reachable = null;
     var spots = [N.vladi.home, N.lumi.home, N.hoot.home, N.lumi.spots[5],
       { x: TENT.x + TENT.w / 2, y: TENT.y + TENT.h + 40 }, { x: FIRE.x + FIRE.w + 32, y: FIRE.y + 50 },
-      { x: SEAT.x, y: SEAT.y + 34 }].concat(Garden.standSpots());
+      { x: SEAT.x, y: SEAT.y + 34 }, ValleyMap.edge].concat(Garden.standSpots());
     // Close enough counts: a character walks to the closest spot it can (like a plot right by the fence).
     if (!spots.every(function (p) { return r.any({ x: p.x - 10, y: p.y - 10, w: 20, h: 20 }); })) return false;
     var banks = [-1, 1].every(function (side) {
@@ -1893,6 +1899,7 @@ var City = (function () {
     drawGrass(ctx);
     Weather.drawSnowyGrass(ctx);
     drawPaths(ctx);
+    ValleyMap.drawTrail(ctx);
     drawRiver(ctx, time);
     Weather.drawRiverRings(ctx);
     drawBridge(ctx);
@@ -1935,6 +1942,7 @@ var City = (function () {
       var sign = signOf(id);
       if (sign) label(ctx, sign[0], sign[1], sign[2], sign[3]);
     });
+    ValleyMap.drawLabels(ctx);
   }
 
   // ---------- What is under the mouse ----------
@@ -1966,6 +1974,8 @@ var City = (function () {
     }
     var decoration = decorationAt(x, y);
     if (decoration) return decoration;
+    var edge = ValleyMap.wordAt(x, y);
+    if (edge) return edge;
     if (inBox(x, y, FIRE)) return "campfire";
     if (inBox(x, y, TENT)) return "tent";
     var home = neighborHomeAt(x, y);

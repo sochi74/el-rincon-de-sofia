@@ -8,7 +8,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - Funciona igual con doble clic en index.html (file://) y en GitHub Pages: <script src> clásicos en orden fijo, sin módulos ES, sin fetch, todos los datos dentro de archivos .js.
 - Nombres de archivo en minúsculas; referencias con las mismas mayúsculas exactas.
 - Nunca usar "Sims", "The Sims", nombres o logos de EA, Simlish ni arte de EA.
-- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi, Vladi y Professor Hoot (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad.
+- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi, Vladi y Professor Hoot (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad. El mundo tiene la ciudad y zonas alrededor a las que se llega caminando por sus bordes (por ahora la Pradera de flores).
 - Guardado (Hito 6): localStorage dentro de try/catch; el juego funciona aunque falle.
 - Repo público; GitHub Pages desde main, carpeta raíz.
 
@@ -43,7 +43,9 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/audio.js: sonidos y música creados con código
 - js/decorate.js: Modo decorar: mover y girar muebles y decoraciones, y volver a como estaba
 - js/weather.js: el clima de cada día (sol, lluvia con arcoíris, niebla mágica, nieve), sus efectos en el juego y su dibujo
-- Orden de scripts: config, words, characters, time, weather, house, city, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
+- js/valleymap.js: el borde del valle (el senderito de arriba a la Pradera y los carteles Próximamente) y el 🗺️ Mapa del valle
+- js/meadow.js: la Pradera de flores: dibujo, flores silvestres, columpio, manta de picnic y abejitas
+- Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

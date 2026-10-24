@@ -2,8 +2,8 @@
 // and the Pausa and Reiniciar buttons. A round button in the corner opens and closes the panel (☰ / ✕),
 // and another one next to it changes the sound (🔊 / 🎵 / 🔇). Some buttons show their word in English next to the mouse. Every button goes "pling", and selling goes "cling".
 // Also the little social menu that opens next to a character (with "📖 Palabra del día" on top for Professor Hoot), the seed menu that opens next to an empty garden plot,
-// the recipe menu that opens next to the Estufa or the Fogata,
-// the backpack window (it takes turns with the goals window of js/goals.js and the Diario of js/lessons.js) with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
+// the recipe menu that opens next to the Estufa or the Fogata, the little menu of the picnic blanket of the Pradera,
+// the backpack window (it takes turns with the goals window of js/goals.js, the Diario of js/lessons.js and the Mapa del valle of js/valleymap.js) with everything in it and its sell, eat and gift buttons (with a little menu to pick who gets
 // the gift when more than one can), and the word tag that shows
 // the name of a thing in Spanish and English next to the mouse.
 // On wide screens the open panel keeps a column on the left and the house and the city are drawn beside it (js/main.js);
@@ -24,6 +24,7 @@ var UI = (function () {
   var cookMenu, cookButtons = [], campfireButton, onCookPick = null, onCookClose = null;
   var backpack, backpackList, backpackShown = null, eatButtons = [], giftButtons = [];
   var giftMenu, onGiftPick = null;
+  var picnicMenu, onPicnicPick = null;
   var current = null;
   var bars = {};
   // True on a small screen; "started" once the game is on screen; "hintClosed" once the sign to turn the phone was closed.
@@ -179,6 +180,12 @@ var UI = (function () {
     giftMenu.id = "gift-menu";
     giftMenu.hidden = true;
     document.body.appendChild(giftMenu);
+
+    // The menu of the picnic blanket (js/meadow.js); its buttons are made each time it opens.
+    picnicMenu = document.createElement("div");
+    picnicMenu.id = "picnic-menu";
+    picnicMenu.hidden = true;
+    document.body.appendChild(picnicMenu);
 
     backpack = document.getElementById("backpack");
     backpackList = document.getElementById("backpack-list");
@@ -388,7 +395,29 @@ var UI = (function () {
     place(giftMenu, x - giftMenu.offsetWidth - 28, y);
   }
 
-  // Close the social menu, the seed menu, the recipe menu and the gift menu.
+  // Open the menu of the picnic blanket next to a spot on the screen: one button per option ({ id, text }).
+  function openPicnicMenu(x, y, options, onPick) {
+    closeMenu();
+    onPicnicPick = onPick;
+    picnicMenu.textContent = "";
+    options.forEach(function (option) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "seed-name";
+      button.textContent = option.text;
+      button.addEventListener("click", function () {
+        var pick = onPicnicPick;
+        closeMenu();
+        if (pick) pick(option.id);
+      });
+      picnicMenu.appendChild(button);
+    });
+    picnicMenu.hidden = false;
+    Sound.play("pling");
+    place(picnicMenu, x, y);
+  }
+
+  // Close the social menu, the seed menu, the recipe menu, the gift menu and the picnic menu.
   function closeMenu() {
     if (!menu.hidden && !lessonButton.hidden) forgetButtonWord();
     var closed = onCookClose;
@@ -397,15 +426,17 @@ var UI = (function () {
     onCookPick = null;
     onCookClose = null;
     onGiftPick = null;
+    onPicnicPick = null;
     menu.hidden = true;
     seedMenu.hidden = true;
     cookMenu.hidden = true;
     giftMenu.hidden = true;
+    picnicMenu.hidden = true;
     if (closed) closed();
   }
 
   function isMenuOpen() {
-    return !menu.hidden || !seedMenu.hidden || !cookMenu.hidden || !giftMenu.hidden;
+    return !menu.hidden || !seedMenu.hidden || !cookMenu.hidden || !giftMenu.hidden || !picnicMenu.hidden;
   }
 
   // ---------- Backpack ----------
@@ -598,7 +629,7 @@ var UI = (function () {
     }
     var sim = Sims.selectedSim();
     if (sim && sim.place === view) {
-      var pose = Objects.poseFor(sim.data.id);
+      var pose = Sims.poseFor(sim.data.id);
       var at = pose && pose.x !== undefined ? pose : sim;
       var k = CONFIG.characterScale;
       boxes.push(screenBox({ x: at.x - 34 * k, y: at.y - 110 * k, w: 68 * k, h: 140 * k }));
@@ -694,11 +725,11 @@ var UI = (function () {
     return { x: x, y: y };
   }
 
-  // True if a spot on the screen is over the panel, the ☰ button, the backpack, the goals window, the Diario,
+  // True if a spot on the screen is over the panel, the ☰ button, the backpack, the goals window, the Diario, the map,
   // the question of the word of the day or an open menu, so the word tag never shows what is under them.
   function coversSpot(x, y) {
-    if (Goals.covers(x, y) || Lessons.covers(x, y)) return true;
-    return [panelOpen ? panel : null, menuToggle, soundToggle, backpack, menu, seedMenu, cookMenu, giftMenu].some(function (el) {
+    if (Goals.covers(x, y) || Lessons.covers(x, y) || ValleyMap.covers(x, y)) return true;
+    return [panelOpen ? panel : null, menuToggle, soundToggle, backpack, menu, seedMenu, cookMenu, giftMenu, picnicMenu].some(function (el) {
       if (!el || el.hidden) return false;
       var r = el.getBoundingClientRect();
       return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
@@ -797,6 +828,7 @@ var UI = (function () {
     openMenu: openMenu,
     openSeedMenu: openSeedMenu,
     openCookMenu: openCookMenu,
+    openPicnicMenu: openPicnicMenu,
     closeMenu: closeMenu,
     isMenuOpen: isMenuOpen,
     reservedLeft: reservedLeft,
