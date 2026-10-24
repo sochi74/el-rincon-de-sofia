@@ -1,9 +1,10 @@
 // Sounds and music made with code, with the browser's own audio (Web Audio): no sound files.
 // Short effects (buttons, coins, garden, fishing, cooking, gifts, friendship and Krohna's meow),
 // soft place sounds (in the city the river, birds by day, crickets by night and the campfire; in the Pradera birds and
-// a soft buzz of bees by day and crickets by night; in the house the tele while someone watches it) and calm music
-// that turns softer at night. A soft chime when a zone of the Mapa del valle is found.
-// The weather (js/weather.js): soft rain in the city and the Pradera, softer and lower in the house like rain on the roof, and no birds
+// a soft buzz of bees by day and crickets by night; in the Lago soft little waves, birds by day and crickets by night;
+// in the house the tele while someone watches it) and calm music that turns softer at night.
+// A soft chime when a zone of the Mapa del valle is found. In the Lago the ducks' soft "cuac" and Pacífica's short song.
+// The weather (js/weather.js): soft rain outside, softer and lower in the house like rain on the roof, and no birds
 // while it rains; with snow, the place sounds are a little softer.
 // Nothing sounds until "Jugar" is tapped. The 🔊 button goes 🔊 everything → 🎵 no music (effects only) → 🔇 silence,
 // and the mode is remembered (localStorage inside try/catch). Pausa hushes the place sounds and the music.
@@ -18,7 +19,7 @@ var Sound = (function () {
 
   var ac = null;
   var master, effectsBus, ambienceBus, musicBus, noise;
-  var river, tv, tvVoice, tvFilter, rain, rainFilter;
+  var river, waves, tv, tvVoice, tvFilter, rain, rainFilter;
   var mode = loadMode();
   // The last volume asked of each group, so each one is only changed when it needs to.
   var levels = {};
@@ -151,6 +152,34 @@ var Sound = (function () {
       note(effectsBus, freqOf(84), t + 0.39, 0.8, "triangle", 0.4);
       note(effectsBus, freqOf(88), t + 0.39, 0.8, "sine", 0.15);
     },
+    // A soft "cuac": a short nasal tone that drops a little, through a filter, twice.
+    quack: function (t) {
+      [0, 0.22].forEach(function (d) {
+        var osc = ac.createOscillator(), filter = ac.createBiquadFilter(), gain = ac.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(420, t + d);
+        osc.frequency.linearRampToValueAtTime(330, t + d + 0.14);
+        filter.type = "bandpass";
+        filter.Q.value = 4;
+        filter.frequency.value = 1100;
+        gain.gain.setValueAtTime(0.0001, t + d);
+        gain.gain.exponentialRampToValueAtTime(0.12, t + d + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.16);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(effectsBus);
+        osc.start(t + d);
+        osc.stop(t + d + 0.2);
+      });
+    },
+    // Pacífica's song: a short, soft melody that floats up and down, with a little shimmer.
+    song: function (t) {
+      [[76, 0], [79, 0.32], [83, 0.64], [81, 0.96], [79, 1.28], [76, 1.6], [74, 1.92], [76, 2.3]].forEach(function (n) {
+        var f = freqOf(n[0]);
+        note(effectsBus, f, t + n[1], n[1] >= 2.3 ? 1.1 : 0.55, "sine", 0.12);
+        note(effectsBus, f * 2, t + n[1], 0.25, "sine", 0.025);
+      });
+    },
     // A small, soft "miau": the pitch goes up and down through a filter that opens and closes like a mouth.
     meow: function (t) {
       var osc = ac.createOscillator(), filter = ac.createBiquadFilter(), gain = ac.createGain();
@@ -209,6 +238,7 @@ var Sound = (function () {
       for (var i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
 
       river = loopRiver();
+      waves = loopWaves();
       loopTv();
       loopRain();
       apply();
@@ -254,6 +284,33 @@ var Sound = (function () {
     gain.gain.value = 0;
     src.connect(filter);
     filter.connect(gain);
+    gain.connect(ambienceBus);
+    src.start();
+    wave.start();
+    return gain;
+  }
+
+  // The little waves of the Lago: soft low noise that swells and calms slowly, like water coming to the shore.
+  function loopWaves() {
+    var src = ac.createBufferSource();
+    src.buffer = noise;
+    src.loop = true;
+    var filter = ac.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 420;
+    var gain = ac.createGain();
+    gain.gain.value = 0;
+    var swell = ac.createGain();
+    swell.gain.value = 0.5;
+    var wave = ac.createOscillator();
+    wave.frequency.value = 0.12;
+    var depth = ac.createGain();
+    depth.gain.value = 0.45;
+    wave.connect(depth);
+    depth.connect(swell.gain);
+    src.connect(filter);
+    filter.connect(swell);
+    swell.connect(gain);
     gain.connect(ambienceBus);
     src.start();
     wave.start();
@@ -378,8 +435,9 @@ var Sound = (function () {
 
   // Random sounds of the place, each with its own little timer.
   function ambience(dt, place, night) {
-    var city = place === "city", meadow = place === "meadow", outside = city || meadow;
+    var city = place === "city", meadow = place === "meadow", lake = place === "lake", outside = city || meadow || lake;
     glide("river", river.gain, city ? 0.55 : 0);
+    glide("waves", waves.gain, lake ? 0.6 : 0);
     var wet = Weather.rainLevel();
     glide("rain", rain.gain, Math.round(wet * (outside ? K.rain.city : K.rain.house) * 100) / 100);
     glide("rainTone", rainFilter.frequency, outside ? 5000 : 900);
@@ -394,12 +452,12 @@ var Sound = (function () {
       tvVoice.gain.setTargetAtTime(Math.random() < 0.2 ? 0.05 : between(0.4, 1), t, 0.03);
       tvFilter.frequency.setTargetAtTime(between(600, 1600), t, 0.04);
     }
-    if (meadow) {
+    if (meadow || lake) {
       if (!night && wet === 0 && timers.bird <= 0) {
         timers.bird = between(1.5, 5);
         chirp(t);
       }
-      if (!night && timers.buzz <= 0) {
+      if (meadow && !night && timers.buzz <= 0) {
         timers.buzz = between(2, 5);
         buzz(t);
       }

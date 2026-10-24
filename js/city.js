@@ -7,8 +7,9 @@
 // The decorations that goals give (js/goals.js) are drawn here too: real.fixer's guitar and moon lantern by his tent,
 // Lumi's crystal lantern and fairy lights on her tree, and Vladi's shiny pot and golden heart at his castle.
 // The weather (js/weather.js) draws on the map too: snow on the grass and the roofs, puddles, rings on the river and the snowman.
-// The edge of the valley (js/valleymap.js) is drawn here too: the dirt trail at the top that goes up to the Pradera de flores,
-// with its sign, and the small "Próximamente" signs on the other edges (solid, and they never move).
+// The edge of the valley (js/valleymap.js) is drawn here too: the dirt trail at the top that goes up to the Pradera de flores
+// and the sand trail on the right that goes to the Lago, with their signs, and the small "Próximamente" signs on the other
+// edges (solid, and they never move).
 // Krohna's round bed sits by the tent too (always there), where the kitten sleeps while real.fixer sleeps in the tent.
 // The guitar and the pot are solid: characters, neighbors and Krohna walk around them. Krohna's bed is only decoration.
 // Modo decorar (js/decorate.js) can move and turn the guitar, the pot and Krohna's bed to open grass. It can also move (never turn) Sofía's house, her garden, real.fixer's tent (with its
@@ -1765,7 +1766,7 @@ var City = (function () {
       if (signs[text]) hits.push({ s: grow(signs[text], -4), withSign: true, overTree: true });
     });
     hits.push({ s: snowmanBox(), withSign: true });
-    // The trail to the Pradera, its sign and the "Próximamente" signs never move and are never covered.
+    // The trails to the Pradera and the Lago, their signs and the "Próximamente" signs never move and are never covered.
     ValleyMap.boxes().forEach(function (b) { hits.push({ s: b.box, withSign: true, overTree: b.sign }); });
     var feet = isTree ? mine.map(function (s) { return { cx: s.cx, cy: s.cy, r: s.r * TRUNK }; }) : mine;
     if (hits.some(function (h) {
@@ -1787,14 +1788,14 @@ var City = (function () {
   }
 
   // True if, from the door of Sofía's house, a character can walk to the doors of every home, the garden plots,
-  // the tent, the campfire and its log, both banks of the river, the forest and the trail to the Pradera.
+  // the tent, the campfire and its log, both banks of the river, the forest and the trails to the Pradera and the Lago.
   function canReachAll() {
     var N = CONFIG.neighbors;
     var r = Path.reach("city", doorSpot.x, doorSpot.y);
     reachable = null;
     var spots = [N.vladi.home, N.lumi.home, N.hoot.home, N.lumi.spots[5],
       { x: TENT.x + TENT.w / 2, y: TENT.y + TENT.h + 40 }, { x: FIRE.x + FIRE.w + 32, y: FIRE.y + 50 },
-      { x: SEAT.x, y: SEAT.y + 34 }, ValleyMap.edge].concat(Garden.standSpots());
+      { x: SEAT.x, y: SEAT.y + 34 }, ValleyMap.edge, ValleyMap.lakeEdge].concat(Garden.standSpots());
     // Close enough counts: a character walks to the closest spot it can (like a plot right by the fence).
     if (!spots.every(function (p) { return r.any({ x: p.x - 10, y: p.y - 10, w: 20, h: 20 }); })) return false;
     var banks = [-1, 1].every(function (side) {

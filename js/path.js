@@ -1,6 +1,6 @@
-// Paths that go around everything solid, in the house, in the city and in the Pradera de flores.
+// Paths that go around everything solid, in the house, in the city, in the Pradera de flores and in the Lago.
 // Each place is cut into small squares; a square is free when its middle is not solid (House.isSolid, City.isSolid,
-// Meadow.isSolid).
+// Meadow.isSolid, Lake.isSolid).
 // The way found over the squares is then straightened and its corners are rounded, so the walk looks smooth.
 // Modo decorar (js/decorate.js) moves things, so the squares are worked out again after every move.
 // Characters also go around each other (js/sims.js): then the squares around the others count as solid for a moment.
@@ -26,6 +26,7 @@ var Path = (function () {
 
   function isSolid(place, x, y) {
     if (place === "meadow") return Meadow.isSolid(x, y);
+    if (place === "lake") return Lake.isSolid(x, y);
     return place === "city" ? City.isSolid(x, y) : House.isSolid(x, y);
   }
 

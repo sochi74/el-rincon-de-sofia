@@ -18,6 +18,8 @@
   var hoveredHome = null;
   // In the Pradera: "swing", "picnic" or "trail" when the mouse is over it, else null.
   var hoveredMeadow = null;
+  // In the Lago: a shell, or "trail", "chair0", "chair1", "castle", "mermaid" or "water" when the mouse is over it, else null.
+  var hoveredLake = null;
   // Last spot of the mouse on the screen, for the word tag (null when it is away or with a finger).
   var mouse = null;
 
@@ -109,12 +111,14 @@
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
     var place = Sims.viewPlace();
-    // Outside (the city and the Pradera) the weather of the day shows.
+    // Outside (the city, the Pradera and the Lago) the weather of the day shows.
     var outside = place !== "house";
     if (place === "city") {
       City.draw(ctx, time, hoveredHouse, (hovered && hovered.id) || hoveredHome);
     } else if (place === "meadow") {
       Meadow.draw(ctx);
+    } else if (place === "lake") {
+      Lake.draw(ctx);
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
@@ -127,6 +131,8 @@
       City.drawLabels(ctx);
     } else if (place === "meadow") {
       Meadow.drawLabels(ctx);
+    } else if (place === "lake") {
+      Lake.drawLabels(ctx);
     } else {
       House.drawLabels(ctx);
     }
@@ -135,6 +141,7 @@
       Gather.drawTop(ctx, time);
       Coins.draw(ctx, time, Time.darkness());
     }
+    if (place === "lake") Lake.drawTop(ctx);
     Neighbors.drawTop(ctx, time);
     // Krohna is drawn among the characters (js/sims.js).
     Sims.draw(ctx, time);
@@ -142,6 +149,7 @@
     if (outside) Weather.drawFalling(ctx);
     if (place === "city") Gather.drawPops(ctx);
     if (place === "meadow") Meadow.drawPops(ctx);
+    if (place === "lake") Lake.drawPops(ctx);
     Cooking.drawPops(ctx);
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
@@ -173,7 +181,7 @@
     ctx.fillStyle = mix("#FFFFFF", CONFIG.night.tint, dark);
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
-    // The Pradera has nothing that glows at night.
+    // The Pradera and the Lago have nothing that glows at night.
     if (Sims.viewPlace() === "city") {
       City.drawNightLights(ctx, time, dark);
     } else if (Sims.viewPlace() === "house") {
@@ -195,6 +203,7 @@
     Garden.update(dt);
     Gather.update(dt);
     Meadow.update(dt);
+    Lake.update(dt);
     Cooking.update(dt);
     Gifts.update(dt);
     Sims.update(dt);
@@ -365,6 +374,14 @@
       if (Pet.at(p.x, p.y)) return Pet.word();
       return Meadow.wordAt(p.x, p.y);
     }
+    // In the Lago the shells win over characters, like for taps.
+    if (Sims.viewPlace() === "lake") {
+      var shell = Lake.shellAt(p.x, p.y);
+      if (shell) return shell.kind;
+      if (Sims.simAt(p.x, p.y)) return null;
+      if (Pet.at(p.x, p.y)) return Pet.word();
+      return Lake.wordAt(p.x, p.y);
+    }
     // Garden plots and forest things win over characters, like for taps.
     if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
     if (inCity && Gather.thingAt(p.x, p.y)) return Gather.wordAt(p.x, p.y);
@@ -396,8 +413,9 @@
   }
 
   // Light up the usable furniture, or in the city the house, tent, campfire, a neighbor's home, a garden plot, a forest thing
-  // or the trail to the Pradera, or in the Pradera a wild flower, the swing, the picnic blanket or the trail, under the mouse
-  // (characters and neighbors in front win). The front door, the river and the neighbors get a pointer too.
+  // or a trail to the Pradera or the Lago, or in the Pradera a wild flower, the swing, the picnic blanket or the trail, or in
+  // the Lago a shell, a beach chair, the sandcastle spot, Pacífica or the trail, under the mouse (characters and neighbors
+  // in front win). The front door, the river, the lake and the neighbors get a pointer too.
   // In Modo decorar only what can be moved lights up (js/decorate.js), and it follows the finger while it is dragged.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
@@ -409,8 +427,10 @@
       Garden.setHover(-1);
       Gather.setHover(null);
       Meadow.setHover(null);
+      Lake.setHover(null);
       ValleyMap.setHover(false);
       hoveredMeadow = null;
+      hoveredLake = null;
       Decorate.move(p.x, p.y);
       canvas.style.cursor = Decorate.cursor();
       return;
@@ -429,6 +449,20 @@
     }
     Meadow.setHover(null);
     hoveredMeadow = null;
+    if (Sims.viewPlace() === "lake") {
+      var shell = Lake.shellAt(p.x, p.y);
+      hovered = null;
+      hoveredHouse = false;
+      hoveredHome = null;
+      hoveredLake = shell || (Sims.simAt(p.x, p.y) ? null : Lake.usableAt(p.x, p.y));
+      // The water only gets a pointer; it does not light up.
+      Lake.setHover(hoveredLake === "water" ? null : hoveredLake);
+      ValleyMap.setHover(false);
+      canvas.style.cursor = hoveredLake ? "pointer" : "";
+      return;
+    }
+    Lake.setHover(null);
+    hoveredLake = null;
     var neighbor = inCity && !Sims.simAt(p.x, p.y) && !!Neighbors.at(p.x, p.y);
     var free = !Sims.simAt(p.x, p.y) && !neighbor;
     hovered = free ? Objects.at(p.x, p.y, inCity ? "city" : "house") : null;
@@ -485,8 +519,10 @@
     Garden.setHover(-1);
     Gather.setHover(null);
     Meadow.setHover(null);
+    Lake.setHover(null);
     ValleyMap.setHover(false);
     hoveredMeadow = null;
+    hoveredLake = null;
     Decorate.leave();
     mouse = null;
   });

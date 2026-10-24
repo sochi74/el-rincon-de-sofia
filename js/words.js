@@ -139,7 +139,26 @@ var WORDS = {
   beehive: { es: "Colmena", en: "beehive", say: "BÍI-jaiv" },
   hill: { es: "Colina", en: "hill", say: "JIL" },
   map: { es: "Mapa", en: "map", say: "MAP" },
-  comingSoon: { es: "Próximamente", en: "coming soon", say: "KÁ-ming SÚUN" }
+  comingSoon: { es: "Próximamente", en: "coming soon", say: "KÁ-ming SÚUN" },
+
+  // The Lago (js/lake.js). Pacífica's tag says her name; in the Diario she is "Sirena · mermaid", like the neighbors.
+  lake: { es: "Lago", en: "lake", say: "LÉIK" },
+  beach: { es: "Playa", en: "beach", say: "BÍICH" },
+  sand: { es: "Arena", en: "sand", say: "SAND" },
+  pier: { es: "Muelle", en: "pier", say: "PÍIR" },
+  duck: { es: "Pato", en: "duck", say: "DAK" },
+  duckling: { es: "Patito", en: "duckling", say: "DÁK-ling" },
+  sandcastle: { es: "Castillo de arena", en: "sandcastle", say: "SÁND-ka-sel" },
+  shell: { es: "Concha", en: "shell", say: "SHEL" },
+  starfish: { es: "Estrella de mar", en: "starfish", say: "STÁR-fish" },
+  trout: { es: "Trucha", en: "trout", say: "TRÁUT" },
+  shrimp: { es: "Camarón", en: "shrimp", say: "SHRIMP" },
+  pearlFish: { es: "Pez perla", en: "pearl fish", say: "PÉRL FISH" },
+  beachChair: { es: "Silla de playa", en: "beach chair", say: "BÍICH CHER" },
+  umbrella: { es: "Sombrilla", en: "umbrella", say: "am-BRÉ-la" },
+  rock: { es: "Roca", en: "rock", say: "ROK" },
+  pacifica: { es: "Pacífica", en: "mermaid", say: "MÉR-meid", diary: "mermaid" },
+  mermaid: { es: "Sirena", en: "mermaid", say: "MÉR-meid" }
 };
 
 // The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).
