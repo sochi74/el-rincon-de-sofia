@@ -37,6 +37,12 @@
 - Los patitos aparecen de golpe dormidos en la playa cuando se hace de noche (y en el agua cuando amanece), y Pacífica aparece y se sumerge de golpe a las 08:00 y a las 18:00.
 - Si un castillo de arena se construye mientras llueve, se queda hasta las 06:00 del día siguiente (la lluvia solo lo borra cuando empieza a llover).
 
+## 2026-10-24 · Continuidad 3
+- Notas para la próxima arquitecta en README.md: Estado "Extra ✅ Continuidad 3", 46 ⭐, el regalo de 40 ⭐ (Pizza oven 🍕) como construido, el regalo nuevo de 45 ⭐ (Sunflower field 🌻, que se construye en el Hito 26 en la Pradera de flores) y el próximo a las 50 ⭐, siguiente paso (Hito 26: 🍄 Bosque encantado, con sus detalles todavía por diseñar con Sofía), los bordes de la ciudad, ideas guardadas nuevas de la Pradera y el Lago, el recordatorio de pegar el prompt dentro de Claude Code y cómo arreglar un merge con conflicto.
+- Se revisó que las biblias coincidan con el código (archivos de CLAUDE.md, orden de scripts en index.html, personajes y criaturas, zonas y reglas fijas): todo coincide, no hizo falta arreglar nada.
+- Se revisó la lista de problemas conocidos (incluidos los del Pulido 4, el Hito 24 y el Hito 25): completa y sin repetidos.
+- No cambió ningún archivo del juego.
+
 ## 2026-10-23 · Hito 25: 🏖️ Lago con playita
 - 🧭 Borde derecho: el cartel "Próximamente" de la derecha de la ciudad se cambió por un senderito de arena con conchitas que llega al borde, entre la camita de Krohna y el Castillito de Vladi (sin taparlo), con el cartel de madera "Lago ➡️". Con Sofía o real.fixer seleccionado, tocarlo lo hace caminar hasta el borde y pasar al Lago, donde aparece a la izquierda, en su senderito; tocar el senderito del Lago lo devuelve a la ciudad, al pie del senderito. Krohna sigue a real.fixer. En Modo decorar el senderito y su cartel no se mueven, nada se puede poner encima, y desde la puerta de la Casa de Sofía se tiene que poder llegar caminando al senderito. Quedan dos carteles "Próximamente" (izquierda y abajo).
 - 🗺️ Mapa del valle: el Lago se dibuja a la derecha de la Ciudad (agua azul, un poquito de arena y 🏖️), con 💗 y 🧢 si están ahí. La primera vez que alguien entra: "🗺️ ¡Zona descubierta! Lago".

@@ -17,9 +17,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧜‍♀️ Pacífica: sirena del Lago, criatura mágica; de día canta en su roca.
 
 ## Estado
-Hito 25 ✅ Lago con playita
+Extra ✅ Continuidad 3
 
-## ⭐ Estrellas de inglés: 43
+## ⭐ Estrellas de inglés: 46
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -264,8 +264,9 @@ Hito 25 ✅ Lago con playita
   - Un mini quiz de inglés en cada hito, con botones, antes de revisar el informe.
   - Recordarle: no tomar captura de pantalla después de copiar el informe (la captura reemplaza lo copiado), no pegar el prompt en el chat del Modo Planear (va dentro de Claude Code), y no escribir /exit hasta que Claude Code se lo diga.
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
+  - A veces pega el prompt en el chat del Modo Planear en vez de en Claude Code: recordarle con cariño que primero escriba claude, espere a que se abra y pegue ahí. Hacer el merge juntas después de la revisión, y confirmar con gh pr list.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 43
+- ⭐ Estrellas de inglés: 46
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -274,15 +275,18 @@ Hito 25 ✅ Lago con playita
   - 25 ⭐: Krohna 🐱, el gatito naranja de real.fixer
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
-  - 40 ⭐: Pizza oven 🍕 ✅ construido en el Hito 23: un horno de pizza decorativo en la Cocina, con llamitas, pala con pizza y humito
-  - Próximo regalo: a las 45 ⭐
-- Siguiente paso: Pack 4, Hito 26: 🍄 Bosque encantado
+  - 40 ⭐: Pizza oven 🍕, construido en el Hito 23
+  - 45 ⭐: Sunflower field 🌻 (elegido, se construye en el Hito 26 como Extra desbloqueado: un campo de girasoles altos en la Pradera de flores, solo decoración)
+  - Próximo regalo: a las 50 ⭐
+- Siguiente paso: Pack 4, Hito 26: 🍄 Bosque encantado, con el Sunflower field 🌻 como Extra desbloqueado. Sofía todavía no diseñó los detalles del Hito 26: diseñarlos con ella con botones (por qué borde se llega, qué hay, cómo son los espíritus del bosque).
+- Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25); izquierda y abajo tienen el cartel Próximamente, para el Bosque encantado y la Montaña.
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
-- Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza.
+- Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza, que Sofía o real.fixer vayan solos a la Pradera y al Lago, usar las flores silvestres en recetas o como regalos favoritos, que los patitos caminen hasta la playa al atardecer, una pose de verdad acostada en la reposera, que Pacífica aparezca y se sumerja suavemente, una meta o un regalo especial para Pacífica.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.
 - Decisiones grandes pendientes, para hablar con Robert: pixel art con imágenes; canciones reales de real.fixer (archivos de audio); jugar con amigos por internet.
+- Si un merge da conflicto (dos ramas cambiaron la misma biblia), se arregla con un prompt para Claude Code que hace git merge origin/main en la rama y conserva lo de las dos.
 
 ### Proceso de traspaso entre arquitectos (estándar)
 Cuándo: cuando el chat del Modo Planear se vuelve muy largo (más o menos cada 6 a 8 hitos), o cuando Sofía vuelve otro día.
