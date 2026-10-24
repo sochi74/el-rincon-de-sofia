@@ -1,8 +1,9 @@
 // Sounds and music made with code, with the browser's own audio (Web Audio): no sound files.
 // Short effects (buttons, coins, garden, fishing, cooking, gifts, friendship and Krohna's meow),
-// soft place sounds (in the city the river, birds by day, crickets by night and the campfire; in the house
-// the tele while someone watches it) and calm music that turns softer at night.
-// The weather (js/weather.js): soft rain in the city, softer and lower in the house like rain on the roof, and no birds
+// soft place sounds (in the city the river, birds by day, crickets by night and the campfire; in the Pradera birds and
+// a soft buzz of bees by day and crickets by night; in the house the tele while someone watches it) and calm music
+// that turns softer at night. A soft chime when a zone of the Mapa del valle is found.
+// The weather (js/weather.js): soft rain in the city and the Pradera, softer and lower in the house like rain on the roof, and no birds
 // while it rains; with snow, the place sounds are a little softer.
 // Nothing sounds until "Jugar" is tapped. The 🔊 button goes 🔊 everything → 🎵 no music (effects only) → 🔇 silence,
 // and the mode is remembered (localStorage inside try/catch). Pausa hushes the place sounds and the music.
@@ -21,7 +22,7 @@ var Sound = (function () {
   var mode = loadMode();
   // The last volume asked of each group, so each one is only changed when it needs to.
   var levels = {};
-  var timers = { bird: 2, cricket: 1, fire: 0.3, trickle: 1.5, tv: 0, meow: between(K.meow.min, K.meow.max) };
+  var timers = { bird: 2, cricket: 1, fire: 0.3, trickle: 1.5, buzz: 1, tv: 0, meow: between(K.meow.min, K.meow.max) };
 
   function between(min, max) {
     return min + Math.random() * (max - min);
@@ -135,6 +136,13 @@ var Sound = (function () {
         var m = SPARKLE_NOTES[Math.floor(Math.random() * SPARKLE_NOTES.length)];
         note(effectsBus, freqOf(m), t + i * 0.065, 0.3, "sine", 0.22);
       }
+    },
+    // A soft chime going up, for "🗺️ ¡Zona descubierta!".
+    discover: function (t) {
+      [67, 72, 76, 79].forEach(function (m, i) {
+        note(effectsBus, freqOf(m), t + i * 0.16, 0.7, "sine", 0.18);
+        note(effectsBus, freqOf(m + 12), t + i * 0.16, 0.3, "sine", 0.04);
+      });
     },
     fanfare: function (t) {
       [72, 76, 79].forEach(function (m, i) {
@@ -331,6 +339,26 @@ var Sound = (function () {
     }
   }
 
+  // A bee going by: a soft low buzz that comes and goes, through a filter.
+  function buzz(t) {
+    var length = between(0.8, 1.6);
+    var osc = ac.createOscillator(), filter = ac.createBiquadFilter(), gain = ac.createGain();
+    osc.type = "sawtooth";
+    var f = between(190, 240);
+    osc.frequency.setValueAtTime(f, t);
+    osc.frequency.linearRampToValueAtTime(f * between(0.9, 1.12), t + length);
+    filter.type = "lowpass";
+    filter.frequency.value = 700;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.05, t + length * 0.4);
+    gain.gain.linearRampToValueAtTime(0.0001, t + length);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ambienceBus);
+    osc.start(t);
+    osc.stop(t + length + 0.05);
+  }
+
   function cricket(t) {
     var f = between(4200, 4700);
     for (var i = 0; i < 3; i++) note(ambienceBus, f, t + i * 0.055, 0.035, "sine", 0.1);
@@ -350,12 +378,12 @@ var Sound = (function () {
 
   // Random sounds of the place, each with its own little timer.
   function ambience(dt, place, night) {
-    var city = place === "city";
+    var city = place === "city", meadow = place === "meadow", outside = city || meadow;
     glide("river", river.gain, city ? 0.55 : 0);
     var wet = Weather.rainLevel();
-    glide("rain", rain.gain, Math.round(wet * (city ? K.rain.city : K.rain.house) * 100) / 100);
-    glide("rainTone", rainFilter.frequency, city ? 5000 : 900);
-    var watching = !city && Objects.isWatchingTv();
+    glide("rain", rain.gain, Math.round(wet * (outside ? K.rain.city : K.rain.house) * 100) / 100);
+    glide("rainTone", rainFilter.frequency, outside ? 5000 : 900);
+    var watching = place === "house" && Objects.isWatchingTv();
     glide("tv", tv.gain, watching ? 0.5 : 0);
     var t = ac.currentTime + 0.02;
     for (var key in timers) {
@@ -365,6 +393,21 @@ var Sound = (function () {
       timers.tv = between(0.08, 0.2);
       tvVoice.gain.setTargetAtTime(Math.random() < 0.2 ? 0.05 : between(0.4, 1), t, 0.03);
       tvFilter.frequency.setTargetAtTime(between(600, 1600), t, 0.04);
+    }
+    if (meadow) {
+      if (!night && wet === 0 && timers.bird <= 0) {
+        timers.bird = between(1.5, 5);
+        chirp(t);
+      }
+      if (!night && timers.buzz <= 0) {
+        timers.buzz = between(2, 5);
+        buzz(t);
+      }
+      if (night && timers.cricket <= 0) {
+        timers.cricket = between(0.6, 1.4);
+        cricket(t);
+      }
+      return;
     }
     if (!city) return;
     if (timers.trickle <= 0) {

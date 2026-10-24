@@ -2,7 +2,8 @@
 // and it lasts until 06:00 the next day. A rainy day rains until 16:00, has a 🌈 rainbow until 18:00 and is sunny after.
 // What it changes in the game: the rain waters the garden (js/garden.js), the rain helps fishing and the fog
 // grows more crystals in the forest (js/gather.js).
-// What it looks like, all drawn with code: in the city rain drops, a grayer sky, rings on the river and puddles;
+// What it looks like, all drawn with code: in the city rain drops, a grayer sky, rings on the river and puddles
+// (in the Pradera de flores of js/meadow.js the rain, the rainbow, the fog, the snowflakes and the white grass too);
 // the rainbow; lilac fog with sparkles and floating lights; snowflakes, white roofs and grass, and a snowman in the plaza.
 // In the house, what is seen through the windows. Its sounds are in js/audio.js.
 // Pausa and Modo decorar freeze it all. Every change shows little by little, in a few seconds.

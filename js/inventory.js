@@ -1,5 +1,5 @@
 // The backpack: one for the whole house, shared by Sofía and real.fixer. It keeps what they fish in the river
-// and gather in the forest and the dishes they cook (js/cooking.js), and sells it for magic coins. Flowers from the garden are still sold when harvested.
+// and gather in the forest (and the wild flowers of the Pradera, js/meadow.js) and the dishes they cook (js/cooking.js), and sells it for magic coins. Flowers from the garden are still sold when harvested.
 var Inventory = (function () {
   // Everything that can go in the backpack, in the order the backpack shows it: name, emoji and price in coins.
   var ITEMS = [
@@ -11,6 +11,10 @@ var Inventory = (function () {
     { id: "berry", name: "Bayas", emoji: "🍒", price: 3 },
     { id: "mushroom", name: "Hongo", emoji: "🍄", price: 5 },
     { id: "crystal", name: "Cristal", emoji: "💎", price: 15 },
+    // Wild flowers of the Pradera (js/meadow.js)
+    { id: "daisy", name: "Margarita", emoji: "🌼", price: 4 },
+    { id: "poppy", name: "Amapola", emoji: "🌺", price: 6 },
+    { id: "lavender", name: "Lavanda", emoji: "💜", price: 9 },
     // Dishes
     { id: "fishMushroom", name: "Pescado con hongos", emoji: "🍛", price: 18 },
     { id: "crabSoup", name: "Sopa de cangrejo", emoji: "🦀", price: 25 },

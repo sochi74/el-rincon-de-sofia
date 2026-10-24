@@ -6,7 +6,7 @@
 // after asking) and to finish ("✅ Listo"). Taps only pick and drag: what can be moved glows under the mouse, the last one
 // touched keeps a soft border, and while dragging it glows green where it fits and red where it does not
 // (dropped in red, it goes back). It works in the place on screen: the house (js/house.js says what fits there)
-// or the city (js/city.js). With "Listo" everything goes on: whoever was left on something steps to the closest free spot.
+// or the city (js/city.js). In the Pradera de flores (js/meadow.js) nothing moves. With "Listo" everything goes on: whoever was left on something steps to the closest free spot.
 var Decorate = (function () {
   var GREEN = "#5FB35A", RED = "#E0533D";
   // How long "No cabe aquí" (or "No se puede girar") stays over the thing, in seconds.
@@ -31,6 +31,7 @@ var Decorate = (function () {
   }
 
   function things(place) {
+    if (place === "meadow") return Meadow;
     return place === "city" ? City : House;
   }
 

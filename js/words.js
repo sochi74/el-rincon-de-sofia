@@ -126,7 +126,20 @@ var WORDS = {
   fox: { es: "Zorro", en: "fox", say: "FOKS" },
   teacher: { es: "Profesor", en: "teacher", say: "TÍI-cher" },
   diary: { es: "Diario", en: "diary", say: "DÁI-a-ri" },
-  word: { es: "Palabra", en: "word", say: "UÓRD" }
+  word: { es: "Palabra", en: "word", say: "UÓRD" },
+
+  // The edge of the valley, the Pradera de flores and the Mapa del valle (js/valleymap.js and js/meadow.js)
+  meadow: { es: "Pradera", en: "meadow", say: "MÉ-dou" },
+  daisy: { es: "Margarita", en: "daisy", say: "DÉI-si" },
+  poppy: { es: "Amapola", en: "poppy", say: "PÓ-pi" },
+  lavender: { es: "Lavanda", en: "lavender", say: "LÁ-ven-der" },
+  swing: { es: "Columpio", en: "swing", say: "SUÍNG" },
+  picnic: { es: "Picnic", en: "picnic", say: "PÍK-nik" },
+  bee: { es: "Abeja", en: "bee", say: "BÍI" },
+  beehive: { es: "Colmena", en: "beehive", say: "BÍI-jaiv" },
+  hill: { es: "Colina", en: "hill", say: "JIL" },
+  map: { es: "Mapa", en: "map", say: "MAP" },
+  comingSoon: { es: "Próximamente", en: "coming soon", say: "KÁ-ming SÚUN" }
 };
 
 // The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).

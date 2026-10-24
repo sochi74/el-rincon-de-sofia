@@ -16,7 +16,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
 
 ## Estado
-Extra ✅ Plan del Pack 4
+Hito 24 ✅ Al borde del valle
 
 ## ⭐ Estrellas de inglés: 43
 
@@ -222,6 +222,15 @@ Extra ✅ Plan del Pack 4
 - treasure: tesoro
 - meadow: pradera
 - lake: lago
+- daisy: margarita
+- poppy: amapola
+- lavender: lavanda
+- swing: columpio
+- picnic: picnic
+- bee: abeja
+- beehive: colmena
+- hill: colina
+- coming soon: próximamente
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -253,7 +262,7 @@ Extra ✅ Plan del Pack 4
   - 35 ⭐: Krohna's bed 🐾
   - 40 ⭐: Pizza oven 🍕 ✅ construido en el Hito 23: un horno de pizza decorativo en la Cocina, con llamitas, pala con pizza y humito
   - Próximo regalo: a las 45 ⭐
-- Siguiente paso: Pack 4, Hito 24: 🧭 Al borde del valle
+- Siguiente paso: Pack 4, Hito 25: 🏖️ Lago con playita
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
 - Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.

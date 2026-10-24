@@ -16,6 +16,8 @@
   var hoveredHouse = false;
   // "treehouse", "castle", "hollowTree" or "chalkboard" when the mouse is over a neighbor's home, else null.
   var hoveredHome = null;
+  // In the Pradera: "swing", "picnic" or "trail" when the mouse is over it, else null.
+  var hoveredMeadow = null;
   // Last spot of the mouse on the screen, for the word tag (null when it is away or with a finger).
   var mouse = null;
 
@@ -43,7 +45,7 @@
       zoom.cx = zoom.cy = null;
     }
     var m = UI.isSmall() ? CONFIG.mobile.margin : CONFIG.margin;
-    var size = place === "city" ? CONFIG.world : CONFIG.houseWorld;
+    var size = place === "house" ? CONFIG.houseWorld : CONFIG.world;
     var W = size.width, H = size.height;
     var left = UI.reservedLeft(), room = view.width - left;
     var high = Math.max(1, view.height - UI.reservedBottom());
@@ -106,22 +108,29 @@
     }
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
-    if (Sims.viewPlace() === "city") {
+    var place = Sims.viewPlace();
+    // Outside (the city and the Pradera) the weather of the day shows.
+    var outside = place !== "house";
+    if (place === "city") {
       City.draw(ctx, time, hoveredHouse, (hovered && hovered.id) || hoveredHome);
+    } else if (place === "meadow") {
+      Meadow.draw(ctx);
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
     // The grayer sky of the rain and the rainbow, under the night tint and the signs (js/weather.js).
-    if (Sims.viewPlace() === "city") Weather.drawSky(ctx);
+    if (outside) Weather.drawSky(ctx);
     drawNight(time);
     // Signs go over the night tint, so they read the same by night as by day. The magic fog goes under them.
-    if (Sims.viewPlace() === "city") {
-      Weather.drawFog(ctx, Time.darkness());
+    if (outside) Weather.drawFog(ctx, Time.darkness());
+    if (place === "city") {
       City.drawLabels(ctx);
+    } else if (place === "meadow") {
+      Meadow.drawLabels(ctx);
     } else {
       House.drawLabels(ctx);
     }
-    if (Sims.viewPlace() === "city") {
+    if (place === "city") {
       Garden.drawTop(ctx, time);
       Gather.drawTop(ctx, time);
       Coins.draw(ctx, time, Time.darkness());
@@ -130,8 +139,9 @@
     // Krohna is drawn among the characters (js/sims.js).
     Sims.draw(ctx, time);
     // Rain drops and snowflakes fall over everyone.
-    if (Sims.viewPlace() === "city") Weather.drawFalling(ctx);
-    if (Sims.viewPlace() === "city") Gather.drawPops(ctx);
+    if (outside) Weather.drawFalling(ctx);
+    if (place === "city") Gather.drawPops(ctx);
+    if (place === "meadow") Meadow.drawPops(ctx);
     Cooking.drawPops(ctx);
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
@@ -163,9 +173,10 @@
     ctx.fillStyle = mix("#FFFFFF", CONFIG.night.tint, dark);
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
+    // The Pradera has nothing that glows at night.
     if (Sims.viewPlace() === "city") {
       City.drawNightLights(ctx, time, dark);
-    } else {
+    } else if (Sims.viewPlace() === "house") {
       House.drawNightLights(ctx, time, dark);
     }
   }
@@ -183,6 +194,7 @@
     Coins.update(dt);
     Garden.update(dt);
     Gather.update(dt);
+    Meadow.update(dt);
     Cooking.update(dt);
     Gifts.update(dt);
     Sims.update(dt);
@@ -193,6 +205,7 @@
     Social.update(dt);
     Goals.update(dt);
     Lessons.update(dt);
+    ValleyMap.update(dt);
     Sims.think(dt);
     Decorate.update(dt);
     Save.update(dt);
@@ -344,6 +357,14 @@
   function wordAt(spot) {
     var p = toWorld(spot);
     var inCity = Sims.viewPlace() === "city";
+    // In the Pradera the wild flowers win over characters, like for taps.
+    if (Sims.viewPlace() === "meadow") {
+      var wild = Meadow.flowerAt(p.x, p.y);
+      if (wild) return wild.kind;
+      if (Sims.simAt(p.x, p.y)) return null;
+      if (Pet.at(p.x, p.y)) return Pet.word();
+      return Meadow.wordAt(p.x, p.y);
+    }
     // Garden plots and forest things win over characters, like for taps.
     if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
     if (inCity && Gather.thingAt(p.x, p.y)) return Gather.wordAt(p.x, p.y);
@@ -374,8 +395,9 @@
     }
   }
 
-  // Light up the usable furniture, or in the city the house, tent, campfire, a neighbor's home, a garden plot or a forest thing,
-  // under the mouse (characters and neighbors in front win). The front door, the river and the neighbors get a pointer too.
+  // Light up the usable furniture, or in the city the house, tent, campfire, a neighbor's home, a garden plot, a forest thing
+  // or the trail to the Pradera, or in the Pradera a wild flower, the swing, the picnic blanket or the trail, under the mouse
+  // (characters and neighbors in front win). The front door, the river and the neighbors get a pointer too.
   // In Modo decorar only what can be moved lights up (js/decorate.js), and it follows the finger while it is dragged.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
@@ -386,11 +408,27 @@
       hoveredHome = null;
       Garden.setHover(-1);
       Gather.setHover(null);
+      Meadow.setHover(null);
+      ValleyMap.setHover(false);
+      hoveredMeadow = null;
       Decorate.move(p.x, p.y);
       canvas.style.cursor = Decorate.cursor();
       return;
     }
     var inCity = Sims.viewPlace() === "city";
+    if (Sims.viewPlace() === "meadow") {
+      var flower = Meadow.flowerAt(p.x, p.y);
+      hovered = null;
+      hoveredHouse = false;
+      hoveredHome = null;
+      hoveredMeadow = flower || Sims.simAt(p.x, p.y) ? null : Meadow.usableAt(p.x, p.y);
+      Meadow.setHover(flower || hoveredMeadow);
+      ValleyMap.setHover(false);
+      canvas.style.cursor = flower || hoveredMeadow ? "pointer" : "";
+      return;
+    }
+    Meadow.setHover(null);
+    hoveredMeadow = null;
     var neighbor = inCity && !Sims.simAt(p.x, p.y) && !!Neighbors.at(p.x, p.y);
     var free = !Sims.simAt(p.x, p.y) && !neighbor;
     hovered = free ? Objects.at(p.x, p.y, inCity ? "city" : "house") : null;
@@ -402,8 +440,10 @@
     Gather.setHover(wild);
     var door = free && !inCity && House.doorAt(p.x, p.y);
     var river = free && inCity && City.riverAt(p.x, p.y);
+    var trail = free && inCity && !hovered && !hoveredHouse && ValleyMap.trailAt(p.x, p.y);
+    ValleyMap.setHover(trail);
     var talk = neighbor && !!Sims.selectedSim();
-    canvas.style.cursor = hovered || hoveredHouse || door || river || plot >= 0 || wild || talk ? "pointer" : "";
+    canvas.style.cursor = hovered || hoveredHouse || door || river || plot >= 0 || wild || talk || trail ? "pointer" : "";
   }
 
   function startGame() {
@@ -423,6 +463,7 @@
   UI.setToScreen(toScreen);
   Goals.init();
   Lessons.init();
+  ValleyMap.init();
   Decorate.init();
   Sims.init(UI.showSelected);
   Neighbors.init();
@@ -443,6 +484,9 @@
     hoveredHome = null;
     Garden.setHover(-1);
     Gather.setHover(null);
+    Meadow.setHover(null);
+    ValleyMap.setHover(false);
+    hoveredMeadow = null;
     Decorate.leave();
     mouse = null;
   });

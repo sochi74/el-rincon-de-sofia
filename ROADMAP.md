@@ -50,7 +50,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: 🧹 Pulido 4
 
 ### 🧭 Pack 4: Más allá del valle
-- ⬜ Hito 24: 🧭 Al borde del valle. Al caminar hasta un borde de la ciudad se pasa a la zona de al lado (como la puerta mágica). La primera zona nueva es 🌸 la Pradera de flores, con flores silvestres y colinas suaves. Llega el 🗺️ Mapa del valle, una ventanita que se va llenando con cada zona descubierta.
+- ✅ Hito 24: 🧭 Al borde del valle. Al caminar hasta un borde de la ciudad se pasa a la zona de al lado (como la puerta mágica). La primera zona nueva es 🌸 la Pradera de flores, con flores silvestres y colinas suaves. Llega el 🗺️ Mapa del valle, una ventanita que se va llenando con cada zona descubierta.
 - ⬜ Hito 25: 🏖️ Lago con playita. Una zona con lago, arena, muelle y patos, donde vive una 🧜‍♀️ sirena (idea de Sofía: "sirena de playa").
 - ⬜ Hito 26: 🍄 Bosque encantado. Hongos gigantes y luces mágicas, con ✨ espíritus del bosque (bolitas de luz que te siguen).
 - ⬜ Hito 27: ⛰️ Montaña y cueva. Una cueva con cristales que brillan, donde vive un 🐉 dragoncito bebé tímido que escupe chispitas.

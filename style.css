@@ -364,7 +364,8 @@ h1 {
 }
 
 #seed-menu,
-#cook-menu {
+#cook-menu,
+#picnic-menu {
   position: fixed;
   display: grid;
   gap: 6px;
@@ -377,12 +378,14 @@ h1 {
 
 #seed-menu[hidden],
 #cook-menu[hidden],
+#picnic-menu[hidden],
 #cook-menu button[hidden] {
   display: none;
 }
 
 #seed-menu button,
-#cook-menu button {
+#cook-menu button,
+#picnic-menu button {
   display: grid;
   padding: 5px 16px;
   font: inherit;
@@ -395,7 +398,8 @@ h1 {
 }
 
 #seed-menu button:hover:not(:disabled),
-#cook-menu button:hover:not(:disabled) {
+#cook-menu button:hover:not(:disabled),
+#picnic-menu button:hover:not(:disabled) {
   background: #C8664A;
 }
 
@@ -415,7 +419,8 @@ h1 {
 
 #backpack,
 #goals,
-#diary {
+#diary,
+#valley-map {
   position: fixed;
   right: 16px;
   bottom: 16px;
@@ -431,7 +436,8 @@ h1 {
 
 #backpack[hidden],
 #goals[hidden],
-#diary[hidden] {
+#diary[hidden],
+#valley-map[hidden] {
   display: none;
 }
 
@@ -455,7 +461,8 @@ h1 {
 
 #backpack-close,
 #goals-close,
-#diary-close {
+#diary-close,
+#map-close {
   width: 32px;
   height: 32px;
   font: inherit;
@@ -528,7 +535,8 @@ h1 {
 .backpack-row button:hover:not(:disabled),
 #backpack-close:hover,
 #goals-close:hover,
-#diary-close:hover {
+#diary-close:hover,
+#map-close:hover {
   background: #C8664A;
 }
 
@@ -605,6 +613,7 @@ h1 {
 #backpack-button,
 #goals-button,
 #diary-button,
+#map-button,
 #decorate-button,
 #pause-button,
 #reset-button {
@@ -632,6 +641,7 @@ h1 {
 #backpack-button:hover,
 #goals-button:hover,
 #diary-button:hover,
+#map-button:hover,
 #decorate-button:hover,
 #pause-button:hover:not(:disabled),
 #reset-button:hover {
@@ -652,6 +662,7 @@ h1 {
 #backpack-button:active,
 #goals-button:active,
 #diary-button:active,
+#map-button:active,
 #decorate-button:active,
 #pause-button:active:not(:disabled),
 #reset-button:active {
@@ -707,8 +718,9 @@ h1 {
   color: #9A8676;
 }
 
-/* The big "¡Meta cumplida!" sign, at the top in the middle. */
-#goal-sign {
+/* The big "¡Meta cumplida!" sign, at the top in the middle (and "🗺️ ¡Zona descubierta!" the same way). */
+#goal-sign,
+#zone-sign {
   position: fixed;
   top: 18px;
   left: 50%;
@@ -728,7 +740,8 @@ h1 {
   animation: goal-sign 0.35s ease-out;
 }
 
-#goal-sign[hidden] {
+#goal-sign[hidden],
+#zone-sign[hidden] {
   display: none;
 }
 
@@ -741,6 +754,18 @@ h1 {
     opacity: 1;
     transform: translateX(-50%) scale(1);
   }
+}
+
+/* The Mapa del valle: an old parchment drawn on a canvas, as wide as the window lets it be. */
+#valley-map {
+  width: min(360px, calc(100vw - 32px));
+}
+
+#map-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 32 / 25;
 }
 
 /* The Diario de palabras: how many words, then "🎓 Del profe" and "🔍 Descubiertas", with a scroll when there are many. */
@@ -984,7 +1009,8 @@ h1 {
 }
 
 @media (max-width: 420px) {
-  #goal-sign {
+  #goal-sign,
+  #zone-sign {
     top: 70px;
     border-radius: 18px;
   }
@@ -1084,7 +1110,8 @@ html.small .lesson-answers {
 html.small #social-menu,
 html.small #gift-menu,
 html.small #seed-menu,
-html.small #cook-menu {
+html.small #cook-menu,
+html.small #picnic-menu {
   gap: 8px;
 }
 
@@ -1099,7 +1126,8 @@ html.small .backpack-row button {
 
 html.small #backpack-close,
 html.small #goals-close,
-html.small #diary-close {
+html.small #diary-close,
+html.small #map-close {
   width: 44px;
   height: 44px;
   flex: none;
@@ -1108,7 +1136,8 @@ html.small #diary-close {
 /* The little windows and the menus fit on the screen, and slide inside with a finger when they are long. */
 html.small #backpack,
 html.small #goals,
-html.small #diary {
+html.small #diary,
+html.small #valley-map {
   right: 8px;
   bottom: 8px;
   width: min(460px, calc(100vw - 16px));
@@ -1121,7 +1150,8 @@ html.small #diary {
 html.small #social-menu,
 html.small #gift-menu,
 html.small #seed-menu,
-html.small #cook-menu {
+html.small #cook-menu,
+html.small #picnic-menu {
   max-width: calc(100vw - 16px);
   max-height: calc(100vh - 16px);
   max-height: calc(100dvh - 16px);
@@ -1131,7 +1161,8 @@ html.small #cook-menu {
 }
 
 html.small #seed-menu button,
-html.small #cook-menu button {
+html.small #cook-menu button,
+html.small #picnic-menu button {
   padding: 6px 14px;
 }
 
@@ -1178,7 +1209,8 @@ html.small #decorate-ask {
 }
 
 /* The "¡Meta cumplida!" sign goes below the round buttons, away from the drawer. */
-html.small #goal-sign {
+html.small #goal-sign,
+html.small #zone-sign {
   top: 68px;
   max-width: calc(100vw - 16px);
   padding: 8px 16px;
