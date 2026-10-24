@@ -14,9 +14,10 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧚 Lumi: hada vecina, energética, bromista y fiestera; vive en una casita en un árbol del bosque y pasea volando. "¡A volar se ha dicho!"
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 - 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
+- 🧜‍♀️ Pacífica: sirena del Lago, criatura mágica; de día canta en su roca.
 
 ## Estado
-Hito 24 ✅ Al borde del valle
+Hito 25 ✅ Lago con playita
 
 ## ⭐ Estrellas de inglés: 43
 
@@ -231,6 +232,19 @@ Hito 24 ✅ Al borde del valle
 - beehive: colmena
 - hill: colina
 - coming soon: próximamente
+- beach: playa
+- sand: arena
+- pier: muelle
+- duck: pato
+- duckling: patito
+- sandcastle: castillo de arena
+- shell: concha
+- starfish: estrella de mar
+- trout: trucha
+- shrimp: camarón
+- beach chair: silla de playa
+- umbrella: sombrilla
+- rock: roca
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -262,7 +276,7 @@ Hito 24 ✅ Al borde del valle
   - 35 ⭐: Krohna's bed 🐾
   - 40 ⭐: Pizza oven 🍕 ✅ construido en el Hito 23: un horno de pizza decorativo en la Cocina, con llamitas, pala con pizza y humito
   - Próximo regalo: a las 45 ⭐
-- Siguiente paso: Pack 4, Hito 25: 🏖️ Lago con playita
+- Siguiente paso: Pack 4, Hito 26: 🍄 Bosque encantado
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
 - Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.

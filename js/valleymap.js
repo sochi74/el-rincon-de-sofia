@@ -1,23 +1,25 @@
 // The edge of the valley and the 🗺️ Mapa del valle.
 // At the top of the city a little dirt trail goes up to the edge, with a wooden sign "Pradera de flores ⬆️": walking up it
 // takes a character to the Pradera de flores (js/meadow.js), like the magic door (js/sims.js does the going).
-// On the other edges (left, right and bottom) a small wooden sign says "Próximamente": a small obstacle that never moves.
-// The trail and its sign never move either, and Modo decorar never covers them (js/city.js asks here).
+// On the right edge, between Krohna's bed and Vladi's castle, a little sand trail with the sign "Lago ➡️" goes to the Lago
+// (js/lake.js) the same way.
+// On the other edges (left and bottom) a small wooden sign says "Próximamente": a small obstacle that never moves.
+// The trails and their signs never move either, and Modo decorar never covers them (js/city.js asks here).
 // The "🗺️ Mapa" button of the panel opens the Mapa del valle, an old parchment that fills up with the zones found:
-// the Ciudad in the middle, the Pradera at the top, and "❓ Por descubrir" on the other sides, with 💗 and 🧢 where
-// Sofía and real.fixer are. The first time one of them goes into the Pradera, it shows on the map with
-// "🗺️ ¡Zona descubierta! Pradera de flores". The zones found are saved with the game.
+// the Ciudad in the middle, the Pradera at the top, the Lago at the right, and "❓ Por descubrir" on the other sides,
+// with 💗 and 🧢 where Sofía and real.fixer are. The first time one of them goes into a zone, it shows on the map with
+// "🗺️ ¡Zona descubierta! …". The zones found are saved with the game.
 var ValleyMap = (function () {
   var C = CONFIG.colors;
   var V = CONFIG.valley;
   var M = CONFIG.meadow;
 
   // The zones around the city that can be found (the city is always known).
-  var ZONES = [{ id: "meadow", name: "Pradera de flores", emoji: "🌸" }];
+  var ZONES = [{ id: "meadow", name: "Pradera de flores", emoji: "🌸" }, { id: "lake", name: "Lago", emoji: "🏖️" }];
   var found = {};
 
-  // True while the mouse is over the trail or its sign.
-  var hover = false;
+  // The trail under the mouse: "meadow", "lake" or null.
+  var hover = null;
 
   function inBox(x, y, b) {
     return x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
@@ -30,6 +32,7 @@ var ValleyMap = (function () {
   // ---------- In the city ----------
 
   var SIGN_TEXT = "Pradera de flores ⬆️", SIGN_SIZE = 15;
+  var LAKE_TEXT = "Lago ➡️";
   var SOON_TEXT = "Próximamente", SOON_SIZE = 10;
   var SOON = { w: 72, h: 24, post: 16 };
 
@@ -44,6 +47,18 @@ var ValleyMap = (function () {
     return signBoard || { x: V.sign.x - 100, y: V.sign.y - 14, w: 200, h: 28 };
   }
 
+  // The sand trail to the Lago, from where it starts to the right edge, and its sign (measured like the other one).
+  function lakeTrailBox() {
+    var t = V.lakeTrail;
+    return { x: t.left - 8, y: t.y - t.half - 10, w: CONFIG.world.width - t.left + 8, h: t.half * 2 + 20 };
+  }
+
+  var lakeBoard = null;
+
+  function lakeSignBox() {
+    return lakeBoard || { x: V.lakeSign.x - 48, y: V.lakeSign.y - 14, w: 96, h: 28 };
+  }
+
   // The board of each "Próximamente" sign, and its board with its post.
   function soonBox(s) {
     return { x: s.x - SOON.w / 2, y: s.y - SOON.h / 2, w: SOON.w, h: SOON.h };
@@ -53,13 +68,16 @@ var ValleyMap = (function () {
     return { x: s.x - SOON.w / 2, y: s.y - SOON.h / 2, w: SOON.w, h: SOON.h + SOON.post };
   }
 
-  // True if the spot is on the trail or its sign (a tap there walks up to the Pradera).
+  // "meadow" if the spot is on the trail to the Pradera or its sign, "lake" if it is on the trail to the Lago or its sign,
+  // else null (a tap there walks to that zone).
   function trailAt(x, y) {
-    return inBox(x, y, trailBox()) || inBox(x, y, grow(signBox(), 4));
+    if (inBox(x, y, trailBox()) || inBox(x, y, grow(signBox(), 4))) return "meadow";
+    if (inBox(x, y, lakeTrailBox()) || inBox(x, y, grow(lakeSignBox(), 4))) return "lake";
+    return null;
   }
 
-  function setHover(on) {
-    hover = !!on;
+  function setHover(which) {
+    hover = which || null;
   }
 
   // The "Próximamente" signs are solid (js/city.js).
@@ -71,19 +89,23 @@ var ValleyMap = (function () {
   // (the shiny coins, the forest things and the decorations stay off them).
   function isNear(x, y, by) {
     if (inBox(x, y, grow(trailBox(), by)) || inBox(x, y, grow(signBox(), by))) return true;
+    if (inBox(x, y, grow(lakeTrailBox(), by)) || inBox(x, y, grow(lakeSignBox(), by))) return true;
     return V.soon.some(function (s) { return inBox(x, y, grow(soonWhole(s), by)); });
   }
 
-  // What Modo decorar may not put things on (js/city.js): the trail, its sign and the "Próximamente" signs.
+  // What Modo decorar may not put things on (js/city.js): the trails, their signs and the "Próximamente" signs.
   function boxes() {
-    return [{ box: trailBox(), sign: false }, { box: signBox(), sign: true }].concat(V.soon.map(function (s) {
+    return [{ box: trailBox(), sign: false }, { box: signBox(), sign: true },
+      { box: lakeTrailBox(), sign: false }, { box: lakeSignBox(), sign: true }].concat(V.soon.map(function (s) {
       return { box: soonWhole(s), sign: false };
     }));
   }
 
-  // The word at a spot of the city: "Pradera · meadow" on the trail and its sign, "Próximamente · coming soon" on the others.
+  // The word at a spot of the city: "Pradera · meadow" or "Lago · lake" on a trail and its sign,
+  // "Próximamente · coming soon" on the others.
   function wordAt(x, y) {
-    if (trailAt(x, y)) return "meadow";
+    var trail = trailAt(x, y);
+    if (trail) return trail;
     if (V.soon.some(function (s) { return inBox(x, y, soonWhole(s)); })) return "comingSoon";
     return null;
   }
@@ -103,8 +125,9 @@ var ValleyMap = (function () {
   // Drawn on the ground of the city (js/city.js), under everything that stands.
   function drawTrail(ctx) {
     var t = V.trail;
+    drawLakeTrail(ctx);
     ctx.save();
-    if (hover) {
+    if (hover === "meadow") {
       ctx.save();
       ctx.shadowColor = C.cream;
       ctx.shadowBlur = 18;
@@ -134,6 +157,45 @@ var ValleyMap = (function () {
       ctx.fillStyle = "#A98760";
       ctx.beginPath();
       ctx.ellipse(t.x + p[0], p[1], 3, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  // The sand trail to the Lago, from inside the grass to the right edge, with a few little shells; it glows under the mouse.
+  function drawLakeTrail(ctx) {
+    var t = V.lakeTrail, W = CONFIG.world.width, L = CONFIG.lake;
+    ctx.save();
+    if (hover === "lake") {
+      ctx.save();
+      ctx.shadowColor = C.cream;
+      ctx.shadowBlur = 18;
+      var b = lakeTrailBox();
+      roundRect(ctx, b.x, b.y, b.w + 20, b.h, 20);
+      ctx.fillStyle = "rgba(245, 235, 221, 0.25)";
+      ctx.fill();
+      ctx.strokeStyle = C.sage;
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.fillStyle = L.sand;
+    ctx.beginPath();
+    ctx.moveTo(W + 4, t.y - t.half - 4);
+    for (var x = W; x >= t.left + 14; x -= 20) ctx.lineTo(x, t.y - t.half + Math.sin(x * 0.07) * 3);
+    ctx.quadraticCurveTo(t.left - 10, t.y, t.left + 14, t.y + t.half);
+    for (var x2 = t.left + 14; x2 <= W; x2 += 20) ctx.lineTo(x2, t.y + t.half + Math.sin(x2 * 0.05 + 1) * 3);
+    ctx.lineTo(W + 4, t.y + t.half + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = L.sandLight;
+    ctx.beginPath();
+    ctx.ellipse((t.left + W) / 2 + 6, t.y - 2, (W - t.left) / 2 - 16, t.half * 0.45, 0, 0, Math.PI * 2);
+    ctx.fill();
+    [[934, -6, "#F2C9C0"], [958, 7, "#FFFDF8"], [982, -4, "#F2C9C0"]].forEach(function (p) {
+      ctx.fillStyle = p[2];
+      ctx.beginPath();
+      ctx.ellipse(p[0], t.y + p[1], 3, 2.2, 0, 0, Math.PI * 2);
       ctx.fill();
     });
     ctx.restore();
@@ -173,6 +235,7 @@ var ValleyMap = (function () {
   // The signs, drawn over the night tint with the other signs of the city, so they always read well.
   function drawLabels(ctx) {
     signBoard = woodSign(ctx, SIGN_TEXT, V.sign.x, V.sign.y, SIGN_SIZE, 16);
+    lakeBoard = woodSign(ctx, LAKE_TEXT, V.lakeSign.x, V.lakeSign.y, SIGN_SIZE, 14);
     V.soon.forEach(function (s) {
       woodSign(ctx, SOON_TEXT, s.x, s.y, SOON_SIZE, SOON.post);
     });
@@ -264,7 +327,7 @@ var ValleyMap = (function () {
 
   // The zone where each one is: in the house it is the Ciudad.
   function zoneOf(sim) {
-    return sim.place === "meadow" ? "meadow" : "city";
+    return sim.place === "meadow" || sim.place === "lake" ? sim.place : "city";
   }
 
   function update(dt) {
@@ -355,7 +418,7 @@ var ValleyMap = (function () {
     city: { x: 115, y: 100, w: 90, h: 58 },
     meadow: { x: 115, y: 46, w: 90, h: 44 },
     left: { x: 30, y: 104, w: 74, h: 50 },
-    right: { x: 216, y: 104, w: 74, h: 50 },
+    lake: { x: 216, y: 104, w: 74, h: 50 },
     bottom: { x: 115, y: 168, w: 90, h: 40 }
   };
 
@@ -379,7 +442,7 @@ var ValleyMap = (function () {
     var c = BOXES.city;
     dots(ctx, c.x + c.w / 2, c.y, c.x + c.w / 2, BOXES.meadow.y + BOXES.meadow.h);
     dots(ctx, c.x, c.y + c.h / 2, BOXES.left.x + BOXES.left.w, c.y + c.h / 2);
-    dots(ctx, c.x + c.w, c.y + c.h / 2, BOXES.right.x, c.y + c.h / 2);
+    dots(ctx, c.x + c.w, c.y + c.h / 2, BOXES.lake.x, c.y + c.h / 2);
     dots(ctx, c.x + c.w / 2, c.y + c.h, c.x + c.w / 2, BOXES.bottom.y);
 
     // The Ciudad: the river, Sofía's little house and its name.
@@ -425,12 +488,31 @@ var ValleyMap = (function () {
     } else {
       unknown(ctx, m, 3);
     }
+    // The Lago, once someone has been there: blue water with a little sand on its left and a duck.
+    var l = BOXES.lake;
+    if (found.lake) {
+      handBox(ctx, l, 5, false);
+      ctx.fillStyle = "#EBD3A6";
+      ctx.beginPath();
+      ctx.ellipse(l.x + 22, l.y + 26, 14, 16, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#8EC3DD";
+      ctx.strokeStyle = "#5E9CC0";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.ellipse(l.x + 46, l.y + 25, 22, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      text(ctx, "🏖️", l.x + 12, l.y + 12, 12, false);
+      text(ctx, "Lago", l.x + l.w / 2, l.y + l.h - 8, 9, true);
+    } else {
+      unknown(ctx, l, 5);
+    }
     unknown(ctx, BOXES.left, 4);
-    unknown(ctx, BOXES.right, 5);
     unknown(ctx, BOXES.bottom, 6);
 
     // Where Sofía and real.fixer are: at the top right of their zone.
-    var slots = { city: 0, meadow: 0 };
+    var slots = { city: 0, meadow: 0, lake: 0 };
     Sims.list().forEach(function (sim) {
       var zone = zoneOf(sim), b = BOXES[zone];
       var x = b.x + b.w - 9 - slots[zone] * 16;
@@ -470,6 +552,8 @@ var ValleyMap = (function () {
   return {
     edge: V.edge,
     foot: V.foot,
+    lakeEdge: V.lakeEdge,
+    lakeFoot: V.lakeFoot,
     trailAt: trailAt,
     setHover: setHover,
     isSolid: isSolid,

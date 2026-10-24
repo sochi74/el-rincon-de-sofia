@@ -364,14 +364,19 @@ var CONFIG = {
 
   // The edge of the valley (js/valleymap.js): the little dirt trail at the top of the city that goes to the Pradera de flores,
   // as its middle "x" and how far down it comes ("bottom"). A character walks to "edge" to go to the Pradera, and coming back
-  // it appears at "foot". The small "Próximamente" signs on the other edges stand at "soon" (their middles).
+  // it appears at "foot". The little sand trail on the right edge goes to the Lago: its middle "y" and where it starts ("left"),
+  // with its own "edge", "foot" and sign. The small "Próximamente" signs on the other edges stand at "soon" (their middles).
   // "discoverTime" is how long "🗺️ ¡Zona descubierta!" stays, in seconds.
   valley: {
     trail: { x: 705, bottom: 178, half: 18 },
     edge: { x: 705, y: 132 },
     foot: { x: 705, y: 158 },
     sign: { x: 842, y: 100 },
-    soon: [{ x: 42, y: 400 }, { x: 960, y: 470 }, { x: 470, y: 686 }],
+    lakeTrail: { y: 496, left: 916, half: 15 },
+    lakeEdge: { x: 968, y: 496 },
+    lakeFoot: { x: 940, y: 496 },
+    lakeSign: { x: 948, y: 462 },
+    soon: [{ x: 42, y: 400 }, { x: 470, y: 686 }],
     discoverTime: 3
   },
 
@@ -403,6 +408,49 @@ var CONFIG = {
     honeyDark: "#B8862E",
     lavender: "#9B7BC4",
     poppy: "#D94A3A"
+  },
+
+  // The Lago (js/lake.js), a map as big as the city. Its trail comes in on the left: a character walks to "edge" to go back
+  // to the city and arrives at "foot". Fishing from the pier or the shore takes "fishTime" seconds and gives "fishFun"
+  // Diversión; two fishing closer than "fishGap" is "Ocupado". Shells and starfish on the sand, like the wild flowers of the
+  // Pradera: "min" to "max" at once, a new one "regrow.min" to "regrow.max" seconds of play after one is gathered.
+  // Building a sandcastle takes "castleTime" seconds and gives "castleFun" Diversión; lying in a beach chair takes
+  // "sunTime" seconds and gives "sunEnergy" Energía and "sunFun" Diversión. "Ocupado" stays "busyTime" seconds.
+  // Pacífica, the mermaid, is on her rock from "mermaid.from" to "mermaid.to" (minutes after midnight) and sings every
+  // "sing.min" to "sing.max" seconds of play; she waves at whoever is closer than "wave" to her rock.
+  // The ducks quack every "quack.min" to "quack.max" seconds.
+  lake: {
+    edge: { x: 32, y: 470 },
+    foot: { x: 60, y: 470 },
+    fishTime: 4,
+    fishFun: 10,
+    fishGap: 50,
+    min: 3,
+    max: 5,
+    regrow: { min: 45, max: 90 },
+    gatherTime: 2,
+    castleTime: 5,
+    castleFun: 30,
+    sunTime: 5,
+    sunEnergy: 20,
+    sunFun: 15,
+    busyTime: 1.5,
+    popTime: 1.8,
+    mermaid: { from: 480, to: 1080, sing: { min: 60, max: 120 }, singTime: 4, wave: 170, waveTime: 2.2 },
+    quack: { min: 12, max: 30 },
+    sand: "#EBD3A6",
+    sandLight: "#F4E3C2",
+    sandDark: "#D4B585",
+    deep: "#5FA3C7",
+    pier: "#A8774E",
+    pierDark: "#7A4E32",
+    tail: "#3FBFB0",
+    tailLight: "#8FE3D6",
+    hair: "#F08A6E",
+    hairDark: "#D8684F",
+    duck: "#FFFDF8",
+    duckling: "#F5D76E",
+    beak: "#F0A23C"
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.
