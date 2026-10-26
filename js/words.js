@@ -178,7 +178,23 @@ var WORDS = {
   littleLantern: { es: "Farolito", en: "little lantern", say: "LÍ-tel LÁN-tern" },
 
   // The sunflower field of the Pradera de flores (js/meadow.js)
-  sunflower: { es: "Girasol", en: "sunflower", say: "SÁN-flau-er" }
+  sunflower: { es: "Girasol", en: "sunflower", say: "SÁN-flau-er" },
+
+  // The Montaña (js/mountain.js). Its rocks, the curious ones too, say "Roca · rock" (above, from the Lago).
+  mountain: { es: "Montaña", en: "mountain", say: "MÁUN-ten" },
+  pine: { es: "Pino", en: "pine", say: "PÁIN" },
+  trail: { es: "Sendero", en: "trail", say: "TRÉIL" },
+  lookout: { es: "Mirador", en: "lookout", say: "LÚK-aut" },
+  bench: { es: "Banco", en: "bench", say: "BENCH" },
+  nest: { es: "Nido", en: "nest", say: "NEST" },
+  feather: { es: "Pluma", en: "feather", say: "FÉ-der" },
+  footprint: { es: "Huella", en: "footprint", say: "FÚT-print" },
+  mud: { es: "Barro", en: "mud", say: "MAD" },
+  leaf: { es: "Hoja", en: "leaf", say: "LÍIF" },
+  goat: { es: "Cabra", en: "goat", say: "GÓUT" },
+  babyGoat: { es: "Cabrita", en: "baby goat", say: "BÉI-bi GÓUT" },
+  stoneTower: { es: "Torre de piedras", en: "stone tower", say: "STÓUN TÁU-er" },
+  cave: { es: "Cueva", en: "cave", say: "KÉIV" }
 };
 
 // The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).

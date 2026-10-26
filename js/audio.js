@@ -2,10 +2,11 @@
 // Short effects (buttons, coins, garden, fishing, cooking, gifts, friendship and Krohna's meow),
 // soft place sounds (in the city the river, birds by day, crickets by night and the campfire; in the Pradera birds and
 // a soft buzz of bees by day and crickets by night; in the Lago soft little waves, birds by day and crickets by night;
-// in the Bosque encantado the stream, birds by day and crickets by night;
+// in the Bosque encantado the stream, birds by day and crickets by night; in the Montaña a soft wind and crickets by night;
 // in the house the tele while someone watches it) and calm music that turns softer at night.
 // A soft chime when a zone of the Mapa del valle is found. In the Lago the ducks' soft "cuac" and Pacífica's short song.
 // In the Bosque encantado a soft tinkle while the spirits dance and a quiet "sss" when a snake peeks out.
+// In the Montaña the goats' "beee" (higher for the baby) and the songbirds' short happy tunes by day.
 // The weather (js/weather.js): soft rain outside, softer and lower in the house like rain on the roof, and no birds
 // while it rains; with snow, the place sounds are a little softer.
 // Nothing sounds until "Jugar" is tapped. The 🔊 button goes 🔊 everything → 🎵 no music (effects only) → 🔇 silence,
@@ -21,7 +22,7 @@ var Sound = (function () {
 
   var ac = null;
   var master, effectsBus, ambienceBus, musicBus, noise;
-  var river, waves, tv, tvVoice, tvFilter, rain, rainFilter;
+  var river, waves, wind, tv, tvVoice, tvFilter, rain, rainFilter;
   var mode = loadMode();
   // The last volume asked of each group, so each one is only changed when it needs to.
   var levels = {};
@@ -193,6 +194,23 @@ var Sound = (function () {
         note(effectsBus, f * 2, t + n[1], 0.25, "sine", 0.025);
       });
     },
+    // A goat's "beee": a nasal tone that shakes quickly (like a bleat) and drops a little at the end, through a filter.
+    bleat: function (t) {
+      bleat(t, 330, 0.62);
+    },
+    bleatBaby: function (t) {
+      bleat(t, 560, 0.45);
+    },
+    // A songbird's tune: a few quick high notes that hop up and down, a little different each time.
+    songbird: function (t) {
+      var tunes = [[88, 91, 93, 91, 96], [93, 89, 93, 96, 98], [91, 95, 91, 95, 100, 98]];
+      var tune = tunes[Math.floor(Math.random() * tunes.length)], at = 0;
+      tune.forEach(function (m, i) {
+        var f = freqOf(m);
+        note(effectsBus, f, t + at, 0.09, "sine", 0.1, f * 1.08);
+        at += i % 2 ? 0.11 : 0.08;
+      });
+    },
     // A small, soft "miau": the pitch goes up and down through a filter that opens and closes like a mouth.
     meow: function (t) {
       var osc = ac.createOscillator(), filter = ac.createBiquadFilter(), gain = ac.createGain();
@@ -216,6 +234,34 @@ var Sound = (function () {
       osc.stop(t + 0.65);
     }
   };
+
+  // The bleat of a goat, from "freq" and "length" seconds long.
+  function bleat(t, freq, length) {
+    var osc = ac.createOscillator(), shake = ac.createOscillator(), depth = ac.createGain();
+    var filter = ac.createBiquadFilter(), gain = ac.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(freq, t);
+    osc.frequency.linearRampToValueAtTime(freq * 1.06, t + length * 0.3);
+    osc.frequency.linearRampToValueAtTime(freq * 0.88, t + length);
+    shake.frequency.value = 9;
+    depth.gain.value = freq * 0.05;
+    shake.connect(depth);
+    depth.connect(osc.frequency);
+    filter.type = "bandpass";
+    filter.Q.value = 3;
+    filter.frequency.value = freq * 3;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.16, t + 0.05);
+    gain.gain.linearRampToValueAtTime(0.12, t + length * 0.7);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + length);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(effectsBus);
+    osc.start(t);
+    shake.start(t);
+    osc.stop(t + length + 0.05);
+    shake.stop(t + length + 0.05);
+  }
 
   // Play an effect right now (nothing in silence or before "Jugar").
   function play(name) {
@@ -252,6 +298,7 @@ var Sound = (function () {
 
       river = loopRiver();
       waves = loopWaves();
+      wind = loopWind();
       loopTv();
       loopRain();
       apply();
@@ -327,6 +374,41 @@ var Sound = (function () {
     gain.connect(ambienceBus);
     src.start();
     wave.start();
+    return gain;
+  }
+
+  // The wind of the Montaña: soft noise around the middle tones that blows stronger and softer, slowly.
+  function loopWind() {
+    var src = ac.createBufferSource();
+    src.buffer = noise;
+    src.loop = true;
+    var filter = ac.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.value = 520;
+    filter.Q.value = 0.8;
+    var gust = ac.createOscillator();
+    gust.frequency.value = 0.09;
+    var sweep = ac.createGain();
+    sweep.gain.value = 260;
+    gust.connect(sweep);
+    sweep.connect(filter.frequency);
+    var swell = ac.createGain();
+    swell.gain.value = 0.55;
+    var blow = ac.createOscillator();
+    blow.frequency.value = 0.07;
+    var depth = ac.createGain();
+    depth.gain.value = 0.4;
+    blow.connect(depth);
+    depth.connect(swell.gain);
+    var gain = ac.createGain();
+    gain.gain.value = 0;
+    src.connect(filter);
+    filter.connect(swell);
+    swell.connect(gain);
+    gain.connect(ambienceBus);
+    src.start();
+    gust.start();
+    blow.start();
     return gain;
   }
 
@@ -449,9 +531,11 @@ var Sound = (function () {
   // Random sounds of the place, each with its own little timer.
   function ambience(dt, place, night) {
     var city = place === "city", meadow = place === "meadow", lake = place === "lake", forest = place === "enchanted";
-    var outside = city || meadow || lake || forest;
+    var mountain = place === "mountain";
+    var outside = city || meadow || lake || forest || mountain;
     glide("river", river.gain, city ? 0.55 : forest ? 0.3 : 0);
     glide("waves", waves.gain, lake ? 0.6 : 0);
+    glide("wind", wind.gain, mountain ? 0.5 : 0);
     var wet = Weather.rainLevel();
     glide("rain", rain.gain, Math.round(wet * (outside ? K.rain.city : K.rain.house) * 100) / 100);
     glide("rainTone", rainFilter.frequency, outside ? 5000 : 900);
@@ -475,6 +559,14 @@ var Sound = (function () {
         timers.buzz = between(2, 5);
         buzz(t);
       }
+      if (night && timers.cricket <= 0) {
+        timers.cricket = between(0.6, 1.4);
+        cricket(t);
+      }
+      return;
+    }
+    // In the Montaña the songbirds sing their own tunes (js/mountain.js); at night the crickets.
+    if (mountain) {
       if (night && timers.cricket <= 0) {
         timers.cricket = between(0.6, 1.4);
         cricket(t);

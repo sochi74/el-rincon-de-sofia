@@ -371,8 +371,9 @@ var CONFIG = {
   // as its middle "x" and how far down it comes ("bottom"). A character walks to "edge" to go to the Pradera, and coming back
   // it appears at "foot". The little sand trail on the right edge goes to the Lago: its middle "y" and where it starts ("left"),
   // with its own "edge", "foot" and sign. The little leafy dirt trail on the left edge goes to the Bosque encantado: its
-  // middle "y" and where it ends ("right"), with its own "edge", "foot" and sign. The small "Próximamente" sign on the
-  // bottom edge stands at "soon" (its middle). "discoverTime" is how long "🗺️ ¡Zona descubierta!" stays, in seconds.
+  // middle "y" and where it ends ("right"), with its own "edge", "foot" and sign. The little stone trail on the bottom edge
+  // goes to the Montaña: its middle "x" and where it starts ("top"), with its own "edge", "foot" and sign.
+  // "discoverTime" is how long "🗺️ ¡Zona descubierta!" stays, in seconds.
   valley: {
     trail: { x: 705, bottom: 178, half: 18 },
     edge: { x: 705, y: 132 },
@@ -386,7 +387,10 @@ var CONFIG = {
     forestEdge: { x: 32, y: 404 },
     forestFoot: { x: 60, y: 404 },
     forestSign: { x: 156, y: 371 },
-    soon: [{ x: 470, y: 686 }],
+    mountainTrail: { x: 470, top: 640, half: 15 },
+    mountainEdge: { x: 470, y: 694 },
+    mountainFoot: { x: 470, y: 664 },
+    mountainSign: { x: 396, y: 678 },
     discoverTime: 3
   },
 
@@ -524,6 +528,54 @@ var CONFIG = {
     turquoise: "#4FBFB3",
     stem: "#F2E6D0",
     spirit: ["#A6F0A0", "#A8E3F7", "#D9B8F5"]
+  },
+
+  // The Montaña (js/mountain.js), a map as big as the city. Its trail comes in at the top: a character walks to "edge" to go
+  // back to the city and arrives at "foot". Petting a goat takes "petTime" seconds and gives "petFun" Diversión; "Ocupado"
+  // stays "busyTime" seconds. The goats bleat every "bleat.min" to "bleat.max" seconds of play.
+  // A goat hop takes "hop.time" seconds and goes "hop.far" world units, "hop.high" up, with "hop.gap" seconds between hops
+  // (the baby's are "baby"). They stop for "rest" seconds on the grass and "perch" seconds on top of a rock; "onRock" of the
+  // times they go up a rock. The baby stays within "follow" of its mother.
+  // The songbirds hop to another branch every "birds.hop.min" to "birds.hop.max" seconds; "birds.fly" of the times they fly to
+  // another pine. By day each one sings every "birds.sing.min" to "birds.sing.max" seconds.
+  // A gust of wind lifts "gust.leaves" leaves every "gust.min" to "gust.max" seconds.
+  mountain: {
+    edge: { x: 330, y: 132 },
+    foot: { x: 330, y: 160 },
+    petTime: 3,
+    petFun: 15,
+    busyTime: 1.5,
+    popTime: 1.8,
+    bleat: { min: 15, max: 35 },
+    hop: { time: 0.42, far: 26, high: 12, gap: 0.22 },
+    baby: { time: 0.3, far: 18, high: 9, gap: 0.12 },
+    rest: { min: 2, max: 5 },
+    perch: { min: 4, max: 9 },
+    onRock: 0.45,
+    follow: 34,
+    birds: { hop: { min: 1.2, max: 3.5 }, fly: 0.25, sing: { min: 6, max: 16 } },
+    gust: { min: 4, max: 9, leaves: 6 },
+    grass: "#A3BF86",
+    grassDark: "#86A56C",
+    grassLight: "#BCD3A0",
+    rock: "#A9A49B",
+    rockLight: "#C9C4BA",
+    rockDark: "#7F7A72",
+    dirt: "#B89470",
+    dirtLight: "#CDAE8A",
+    pine: "#4F7D4A",
+    pineDark: "#3A6238",
+    pineLight: "#6E9A5A",
+    trunk: "#7A5236",
+    goatWhite: "#F7F3EA",
+    goatBrown: "#D8B48A",
+    horn: "#B8A68A",
+    hoof: "#5E4B3C",
+    mud: "#8A6A4C",
+    mudLight: "#A3815F",
+    egg: "#BFE3F2",
+    birdColors: ["#E0533D", "#4F8FD9", "#F2C341"],
+    featherColors: ["#E0533D", "#4F8FD9", "#F2C341"]
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.
