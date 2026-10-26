@@ -158,7 +158,24 @@ var WORDS = {
   umbrella: { es: "Sombrilla", en: "umbrella", say: "am-BRÉ-la" },
   rock: { es: "Roca", en: "rock", say: "ROK" },
   pacifica: { es: "Pacífica", en: "mermaid", say: "MÉR-meid", diary: "mermaid" },
-  mermaid: { es: "Sirena", en: "mermaid", say: "MÉR-meid" }
+  mermaid: { es: "Sirena", en: "mermaid", say: "MÉR-meid" },
+
+  // The Bosque encantado (js/enchanted.js) and the band-aid of a snake bite
+  enchanted: { es: "Bosque encantado", en: "enchanted forest", say: "en-CHÁN-ted FÓ-rest" },
+  giantMushroom: { es: "Hongo gigante", en: "giant mushroom", say: "YÁI-ant MÁSH-rum" },
+  fairyRing: { es: "Círculo de hongos", en: "fairy ring", say: "FÉ-ri RING" },
+  wish: { es: "Deseo", en: "wish", say: "UÍSH" },
+  stream: { es: "Arroyo", en: "stream", say: "STRÍIM" },
+  spirit: { es: "Espíritu", en: "spirit", say: "SPÍ-rit" },
+  snake: { es: "Víbora", en: "snake", say: "SNÉIK" },
+  hollowLog: { es: "Tronco hueco", en: "hollow log", say: "JÓ-lou LOG" },
+  bandAid: { es: "Curita", en: "band-aid", say: "BÁND-eid" },
+  leafFish: { es: "Pez hoja", en: "leaf fish", say: "LÍIF FISH" },
+  mushroomFish: { es: "Pez hongo", en: "mushroom fish", say: "MÁSH-rum FISH" },
+  spiritFish: { es: "Pez espíritu", en: "spirit fish", say: "SPÍ-rit FISH" },
+
+  // The sunflower field of the Pradera de flores (js/meadow.js)
+  sunflower: { es: "Girasol", en: "sunflower", say: "SÁN-flau-er" }
 };
 
 // The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).

@@ -365,8 +365,9 @@ var CONFIG = {
   // The edge of the valley (js/valleymap.js): the little dirt trail at the top of the city that goes to the Pradera de flores,
   // as its middle "x" and how far down it comes ("bottom"). A character walks to "edge" to go to the Pradera, and coming back
   // it appears at "foot". The little sand trail on the right edge goes to the Lago: its middle "y" and where it starts ("left"),
-  // with its own "edge", "foot" and sign. The small "Próximamente" signs on the other edges stand at "soon" (their middles).
-  // "discoverTime" is how long "🗺️ ¡Zona descubierta!" stays, in seconds.
+  // with its own "edge", "foot" and sign. The little leafy dirt trail on the left edge goes to the Bosque encantado: its
+  // middle "y" and where it ends ("right"), with its own "edge", "foot" and sign. The small "Próximamente" sign on the
+  // bottom edge stands at "soon" (its middle). "discoverTime" is how long "🗺️ ¡Zona descubierta!" stays, in seconds.
   valley: {
     trail: { x: 705, bottom: 178, half: 18 },
     edge: { x: 705, y: 132 },
@@ -376,7 +377,11 @@ var CONFIG = {
     lakeEdge: { x: 968, y: 496 },
     lakeFoot: { x: 940, y: 496 },
     lakeSign: { x: 948, y: 462 },
-    soon: [{ x: 42, y: 400 }, { x: 470, y: 686 }],
+    forestTrail: { y: 404, right: 78, half: 15 },
+    forestEdge: { x: 32, y: 404 },
+    forestFoot: { x: 60, y: 404 },
+    forestSign: { x: 156, y: 371 },
+    soon: [{ x: 470, y: 686 }],
     discoverTime: 3
   },
 
@@ -451,6 +456,48 @@ var CONFIG = {
     duck: "#FFFDF8",
     duckling: "#F5D76E",
     beak: "#F0A23C"
+  },
+
+  // The Bosque encantado (js/enchanted.js), a map as big as the city. Its trail comes in on the right: a character walks to
+  // "edge" to go back to the city and arrives at "foot". Resting on the low mushroom takes "restTime" seconds and gives
+  // "restEnergy" Energía. Making a wish in the fairy ring takes "wishTime" seconds and gives "wish.min" to "wish.max" coins,
+  // once a day. Fishing in the stream takes "fishTime" seconds and gives "fishFun" Diversión; two fishing closer than
+  // "fishGap" is "Ocupado". Playing with a forest spirit takes "playTime" seconds and gives "playFun" Diversión; there are
+  // "spirits.day" spirits by day and "spirits.night" at night. "Ocupado" stays "busyTime" seconds.
+  // The snakes of the hollow logs peek out every "peek.min" to "peek.max" seconds; whoever stands still closer than
+  // "bite.near" to a log for "bite.still" seconds gets bitten (a band-aid for "bite.bandAid" seconds of play), and that
+  // snake waits "bite.rest" seconds before it may bite again.
+  enchanted: {
+    edge: { x: 968, y: 470 },
+    foot: { x: 940, y: 470 },
+    restTime: 5,
+    restEnergy: 25,
+    wishTime: 3,
+    wish: { min: 10, max: 30 },
+    fishTime: 4,
+    fishFun: 10,
+    fishGap: 50,
+    playTime: 4,
+    playFun: 20,
+    spirits: { day: 3, night: 8 },
+    busyTime: 1.5,
+    popTime: 1.8,
+    peek: { min: 6, max: 14, time: 2.4 },
+    bite: { near: 95, still: 8, rest: 20, bandAid: 30, shout: 1.8, hop: 0.45 },
+    grass: "#6E9A5E",
+    grassDark: "#557D4A",
+    grassLight: "#88B074",
+    moss: "#5E8C4E",
+    bark: "#6B4A32",
+    barkLight: "#8A6446",
+    dirt: "#9C7A56",
+    leaf: "#7FA35C",
+    blueFlower: "#7FA7E0",
+    red: "#D9544A",
+    lilac: "#B497D6",
+    turquoise: "#4FBFB3",
+    stem: "#F2E6D0",
+    spirit: ["#A6F0A0", "#A8E3F7", "#D9B8F5"]
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.

@@ -1,5 +1,6 @@
-// The characters: drawing, selection and walking, in the house, in the city, in the Pradera de flores (js/meadow.js)
-// or in the Lago (js/lake.js).
+// The characters: drawing, selection and walking, in the house, in the city, in the Pradera de flores (js/meadow.js),
+// in the Lago (js/lake.js) or in the Bosque encantado (js/enchanted.js), where a snake's bite makes them hop and shout and
+// leaves a band-aid on the arm for a while.
 // Only Sofía and real.fixer are here; the neighbors (js/neighbors.js) are drawn among them and reuse the body parts.
 var Sims = (function () {
   var C = CONFIG.colors;
@@ -26,7 +27,7 @@ var Sims = (function () {
         y: look.start.y,
         path: [],
         stepPhase: 0,
-        // "house", "city", "meadow" or "lake"
+        // "house", "city", "meadow", "lake" or "enchanted"
         place: look.start.place,
         // The place it goes to when it gets to the door it is walking to, or null.
         goal: null,
@@ -567,6 +568,29 @@ var Sims = (function () {
     noLegs = false;
   }
 
+  // A band-aid 🩹 on the arm, after a snake bite in the Bosque encantado: on the right arm seen from the front or the back,
+  // on the near arm seen from the side (it swings with it). Lying in the Cama or in the Bañera the arms are not seen.
+  function drawBandAid(ctx, pose, view, step) {
+    if (pose && (pose.kind === "lie" || pose.kind === "bath" || pose.kind === "tent" || (pose.kind === "sofa" && pose.view === "back"))) return;
+    var sideways = pose ? pose.kind !== "floor" && pose.kind !== "swing" && pose.kind !== "sun" && pose.kind !== "sofa" :
+      view === "side";
+    if (pose && pose.kind === "floor") sideways = view === "side";
+    ctx.save();
+    if (sideways) {
+      ctx.translate(0, -35);
+      ctx.rotate(-Math.sin(step) * 0.35);
+      ctx.translate(0, 7);
+    } else {
+      ctx.translate(15, -29 + Math.sin(step) * 2);
+    }
+    ctx.rotate(-0.35);
+    fillRound(ctx, -5.5, -2.6, 11, 5.2, 2.6, "#F2C9A0");
+    fillRound(ctx, -2, -2.6, 4, 5.2, 1, "#E8B488");
+    circle(ctx, -4, -0.8, 0.5, "#C98E62");
+    circle(ctx, 4, 0.8, 0.5, "#C98E62");
+    ctx.restore();
+  }
+
   // Little "Z" letters floating up and fading, for someone asleep.
   function drawZzz(ctx, x, y, time) {
     ctx.save();
@@ -588,9 +612,9 @@ var Sims = (function () {
   }
 
   // How a character is drawn while it uses something: in the house and the city (js/objects.js), in the Pradera
-  // (js/meadow.js) or in the Lago (js/lake.js). Null when it just stands.
+  // (js/meadow.js), in the Lago (js/lake.js) or in the Bosque encantado (js/enchanted.js). Null when it just stands.
   function poseFor(id) {
-    return Objects.poseFor(id) || Meadow.poseFor(id) || Lake.poseFor(id);
+    return Objects.poseFor(id) || Meadow.poseFor(id) || Lake.poseFor(id) || Enchanted.poseFor(id);
   }
 
   // Where a character is drawn: where it stands, or on the furniture while it lies or sits on it.
@@ -871,7 +895,8 @@ var Sims = (function () {
     if (!pose || pose.kind === "floor") ellipse(ctx, at.x, at.y, 16 * k, 6 * k, "rgba(74, 52, 40, 0.25)");
 
     var walking = sim.path.length > 0;
-    var bounce = walking ? -Math.abs(Math.sin(sim.stepPhase)) * 5 : 0;
+    // Walking it bounces a little; right after a snake bite it hops.
+    var bounce = (walking ? -Math.abs(Math.sin(sim.stepPhase)) * 5 : 0) - Enchanted.hopFor(sim.data.id);
     // While standing still the body rises and falls a little with each breath.
     var breath = walking ? 1 : 1 + Math.sin(sim.breath) * CONFIG.alive.breathe.amount;
     // While talking they lean in a little toward each other.
@@ -894,6 +919,7 @@ var Sims = (function () {
     } else {
       bodies[sim.data.id][view](ctx, sim.look, walking ? sim.stepPhase : 0, sim.blink > 0);
     }
+    if (Enchanted.hasBandAid(sim.data.id)) drawBandAid(ctx, pose, view, walking ? sim.stepPhase : 0);
     ctx.restore();
     if (pose && pose.backrest) House.drawSofaBackrest(ctx);
     if (pose && pose.kind === "bath") House.drawBathFoam(ctx, at.x, at.y - House.bathDeep * k, Objects.elapsedFor(sim.data.id));
@@ -908,9 +934,9 @@ var Sims = (function () {
     drawMoodStar(ctx, sim, head, time);
     drawSparkle(ctx, head, Objects.sparkleFor(sim.data.id));
     var lift = 0;
-    var bubble = Social.bubbleFor(sim.data.id) || Gifts.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) ||
+    var bubble = Enchanted.shoutFor(sim.data.id) || Social.bubbleFor(sim.data.id) || Gifts.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) ||
       Garden.bubbleFor(sim.data.id) || Gather.bubbleFor(sim.data.id) || Cooking.bubbleFor(sim.data.id) ||
-      Meadow.bubbleFor(sim.data.id) || Lake.bubbleFor(sim.data.id);
+      Meadow.bubbleFor(sim.data.id) || Lake.bubbleFor(sim.data.id) || Enchanted.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
       lift = drawSpeechBubble(ctx, head, time, bubble);
     } else if (bubble) {
@@ -921,14 +947,15 @@ var Sims = (function () {
   }
 
   // The place the screen shows: where the selected character is; when nobody is, the house if someone is there,
-  // else the city if someone is there, else the Pradera if someone is there, else the Lago.
+  // else the city if someone is there, else the Pradera if someone is there, else the Lago if someone is there,
+  // else the Bosque encantado.
   function viewPlace() {
     if (selected) return selected.place;
-    var order = ["house", "city", "meadow"];
+    var order = ["house", "city", "meadow", "lake"];
     for (var i = 0; i < order.length; i++) {
       if (sims.some(function (s) { return s.place === order[i]; })) return order[i];
     }
-    return "lake";
+    return "enchanted";
   }
 
   // The name tag and the bubble of a neighbor (no mood star and no thought bubble: neighbors have no needs yet).
@@ -1166,22 +1193,27 @@ var Sims = (function () {
 
   // Where a character walks to in "from" to go to "to": the front door in the Sala, the door of Sofía's house in the city,
   // the top of the trail in the city (to the Pradera), the end of the sand trail on the right of the city (to the Lago),
-  // and the end of the trail in the Pradera or the Lago (back to the city).
+  // the end of the leafy trail on the left of the city (to the Bosque encantado), and the end of the trail in the Pradera,
+  // the Lago or the Bosque encantado (back to the city).
   function exitSpot(from, to) {
     if (from === "house") return CONFIG.frontDoor.inside;
     if (from === "meadow") return Meadow.edge;
     if (from === "lake") return Lake.edge;
+    if (from === "enchanted") return Enchanted.edge;
     if (to === "meadow") return ValleyMap.edge;
+    if (to === "enchanted") return ValleyMap.forestEdge;
     return to === "lake" ? ValleyMap.lakeEdge : City.doorSpot;
   }
 
   // Where a character comes out in "to" coming from "from": by the door on the other side, at the end of the trail
-  // in the Pradera or the Lago, or at the foot of that trail in the city.
+  // in the Pradera, the Lago or the Bosque encantado, or at the foot of that trail in the city.
   function arriveSpot(to, from) {
     if (to === "meadow") return Meadow.foot;
     if (to === "lake") return Lake.foot;
+    if (to === "enchanted") return Enchanted.foot;
     if (to === "house") return CONFIG.frontDoor.inside;
     if (from === "meadow") return ValleyMap.foot;
+    if (from === "enchanted") return ValleyMap.forestFoot;
     return from === "lake" ? ValleyMap.lakeFoot : City.doorSpot;
   }
 
@@ -1202,15 +1234,15 @@ var Sims = (function () {
     goTo(sim, "house");
   }
 
-  // At the door or the end of the trail: come out on the other side. Going into the Pradera or the Lago the first time,
-  // it shows on the Mapa del valle (js/valleymap.js).
+  // At the door or the end of the trail: come out on the other side. Going into the Pradera, the Lago or the Bosque
+  // encantado the first time, it shows on the Mapa del valle (js/valleymap.js).
   function goThrough(sim) {
     var spot = arriveSpot(sim.goal, sim.place);
     sim.place = sim.goal;
     sim.x = spot.x;
     sim.y = spot.y;
     sim.goal = null;
-    if (sim.place === "meadow" || sim.place === "lake") ValleyMap.visit(sim.place);
+    if (isZone(sim.place)) ValleyMap.visit(sim.place);
   }
 
   // With Pausa nobody walks: they stay where they are and go on when the game continues.
@@ -1270,6 +1302,11 @@ var Sims = (function () {
     return min + Math.random() * (max - min);
   }
 
+  // True for the zones around the city: the Pradera, the Lago and the Bosque encantado.
+  function isZone(place) {
+    return place === "meadow" || place === "lake" || place === "enchanted";
+  }
+
   // ---------- Free will ----------
 
   // Seconds until each character may decide something on its own, by id.
@@ -1278,11 +1315,11 @@ var Sims = (function () {
   function isIdle(sim) {
     var id = sim.data.id;
     return sim.path.length === 0 && !Objects.isActive(id) && !Garden.isActive(id) && !Gather.isActive(id) && !Cooking.isActive(id) &&
-      !Meadow.isActive(id) && !Lake.isActive(id) && !Social.isInvolved(id) && !Gifts.isInvolved(id) && !Lessons.isInvolved(id);
+      !Meadow.isActive(id) && !Lake.isActive(id) && !Enchanted.isActive(id) && !Social.isInvolved(id) && !Gifts.isInvolved(id) && !Lessons.isInvolved(id);
   }
 
   // Try to fix the lowest need; true if it found something to do.
-  // In the Pradera or the Lago it goes back to the city first, and from there it goes on as always.
+  // In the Pradera, the Lago or the Bosque encantado it goes back to the city first, and from there it goes on as always.
   // If the character has its own place for that need ("goesTo"), it walks there, going out or in first.
   // If not, in the city it goes back to the house first.
   function lookAfter(sim) {
@@ -1293,7 +1330,7 @@ var Sims = (function () {
     });
     if (values[lowest.id] >= CONFIG.freeWill.threshold) return false;
 
-    if (sim.place === "meadow" || sim.place === "lake") {
+    if (isZone(sim.place)) {
       goTo(sim, "city");
       return true;
     }
@@ -1329,7 +1366,7 @@ var Sims = (function () {
       // If the other one is using something, wait until it finishes instead of interrupting.
       var otherId = other.data.id;
       if (Objects.isActive(otherId) || Garden.isActive(otherId) || Gather.isActive(otherId) || Cooking.isActive(otherId) ||
-        Meadow.isActive(otherId) || Lake.isActive(otherId) || Gifts.isInvolved(otherId)) return false;
+        Meadow.isActive(otherId) || Lake.isActive(otherId) || Enchanted.isActive(otherId) || Gifts.isInvolved(otherId)) return false;
       Social.start(sim, other, "chat");
       return true;
     }
@@ -1367,7 +1404,7 @@ var Sims = (function () {
 
   // Every now and then the visitor walks to Sofía's house, stays a while in the Sala and goes back home.
   // If it is already in the house with nothing to do, it stays a while and then goes home too.
-  // A visit only starts from the city (never from the Pradera or the Lago).
+  // A visit only starts from the city (never from the Pradera, the Lago or the Bosque encantado).
   function visitStep(dt) {
     var sim = sims.filter(function (s) { return s.data.id === CONFIG.visit.who; })[0];
     if (!sim) return;
@@ -1377,7 +1414,7 @@ var Sims = (function () {
     }
     if (visit.phase === "staying") visit.stay -= dt;
     if (!isIdle(sim)) return;
-    if (sim.place === "meadow" || sim.place === "lake") {
+    if (isZone(sim.place)) {
       if (visit.phase) stopVisit();
       return;
     }
@@ -1445,14 +1482,15 @@ var Sims = (function () {
 
   var FACINGS = ["front", "back", "left", "right"];
 
-  // Put a character at a saved spot, if it is inside the house, on dry ground in the city or the Lago, or inside the Pradera,
+  // Put a character at a saved spot, if it is inside the house, on dry ground in the city, the Lago or the Bosque encantado,
+  // or inside the Pradera,
   // looking the way it looked when it was saved. A spot on something solid moves to the closest free spot.
   function place(sim, x, y, where, facing) {
     if (FACINGS.indexOf(facing) >= 0) sim.facing = facing;
-    where = where === "city" || where === "meadow" || where === "lake" ? where : "house";
+    where = where === "city" || isZone(where) ? where : "house";
     if (typeof x !== "number" || typeof y !== "number") return;
     var ok = where === "city" ? City.isWalkable(x, y) : where === "meadow" ? Meadow.isWalkable(x, y) :
-      where === "lake" ? Lake.isWalkable(x, y) : !!roomAt(x, y);
+      where === "lake" ? Lake.isWalkable(x, y) : where === "enchanted" ? Enchanted.isWalkable(x, y) : !!roomAt(x, y);
     if (!ok) return;
     var spot = Path.free(where, x, y);
     sim.place = where;
@@ -1525,15 +1563,18 @@ var Sims = (function () {
   // In the Lago, a tap on a shell gathers it, on the water fishes (from the tip of the pier or the closest shore),
   // on a beach chair lies in the sun, on the sandcastle spot builds one, and on the trail walks it back to the city.
   // A tap on Pacífica makes her wave and sing, whoever is selected (she is never selected).
+  // In the Bosque encantado, a tap on a spirit plays with it, on the low mushroom rests, on the fairy ring makes a wish,
+  // on the stream fishes (from the closest bank on that side), and on the trail walks it back to the city.
   // While the menu is open, a tap anywhere else only closes it.
   // In the city, garden plots and forest things win over characters, so a character working there never hides them
-  // from taps; in the Pradera, the wild flowers do, and in the Lago the shells.
+  // from taps; in the Pradera, the wild flowers do, in the Lago the shells, and in the Bosque encantado the spirits.
   function handleTap(x, y, screenX, screenY) {
     var inCity = !!selected && selected.place === "city";
     var inMeadow = !!selected && selected.place === "meadow";
     var inLake = !!selected && selected.place === "lake";
+    var inForest = !!selected && selected.place === "enchanted";
     var onPlot = (inCity && (Garden.plotAt(x, y) >= 0 || !!Gather.thingAt(x, y))) || (inMeadow && !!Meadow.flowerAt(x, y)) ||
-      (inLake && !!Lake.shellAt(x, y));
+      (inLake && !!Lake.shellAt(x, y)) || (inForest && !!Enchanted.spiritAt(x, y));
     var sim = onPlot ? null : simAt(x, y);
     var neighbor = onPlot || sim || viewPlace() !== "city" ? null : Neighbors.at(x, y);
     var again = false;
@@ -1579,6 +1620,7 @@ var Sims = (function () {
       if (Lessons.cancel(sim.data.id)) wasBusy = true;
       if (Meadow.cancel(sim.data.id)) wasBusy = true;
       if (Lake.cancel(sim.data.id)) wasBusy = true;
+      if (Enchanted.cancel(sim.data.id)) wasBusy = true;
       if (Garden.cancel(sim.data.id) || wasBusy) sim.path = [];
       Social.cancel(sim.data.id);
       selected = sim;
@@ -1595,6 +1637,25 @@ var Sims = (function () {
     Lessons.cancel(selected.data.id);
     Meadow.cancel(selected.data.id);
     Lake.cancel(selected.data.id);
+    Enchanted.cancel(selected.data.id);
+    if (inForest) {
+      var spirit = Enchanted.spiritAt(x, y);
+      var here = Enchanted.usableAt(x, y);
+      if (spirit) {
+        Enchanted.tapSpirit(selected, spirit);
+      } else if (here === "trail") {
+        goTo(selected, "city");
+      } else if (here === "rest") {
+        Enchanted.tapRest(selected);
+      } else if (here === "ring") {
+        if (!Enchanted.tapRing(selected)) selected.path = [];
+      } else if (here === "water") {
+        Enchanted.tapWater(selected, x, y);
+      } else {
+        walkTo(selected, x, y);
+      }
+      return;
+    }
     if (inLake) {
       var shell = Lake.shellAt(x, y);
       var spot = Lake.usableAt(x, y);

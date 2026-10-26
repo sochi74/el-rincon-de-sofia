@@ -4,7 +4,9 @@
 // 🌳 A big tree with a wooden swing (Diversión), 🧺 a picnic blanket with a basket to sit on and eat a dish of the backpack,
 // and 🐝 a beehive hanging from a smaller tree, with bees flying among the flowers by day (only decoration: at dusk they go
 // back to the hive, and at night they are not seen).
-// The trees, the beehive, the swing and the basket are solid (js/path.js); the flowers are not.
+// 🌻 A field of tall sunflowers at the bottom left (the gift of 45 ⭐): only decoration. They sway with the wind, look up by
+// day and bow their heads a little at night; with snow their leaves turn white.
+// The trees, the beehive, the swing, the basket and the sunflower field are solid (js/path.js); the flowers are not.
 // Day and night and the weather of the day show here too (js/weather.js), without puddles or snowman.
 // Modo decorar moves nothing here. The neighbors never come, and the shiny coins never appear here. Pausa freezes it all.
 var Meadow = (function () {
@@ -31,6 +33,13 @@ var Meadow = (function () {
   var BLANKET = { x: 520, y: 430, w: 140, h: 92 };
   var BASKET = { x: 626, y: 434, w: 40, h: 30 };
   var SEAT = { x: 575, y: 494 };
+  // The sunflower field: where each stem meets the grass and how tall it is, and the box the whole field takes.
+  var SUNFLOWERS = [
+    { x: 112, y: 596, h: 78 }, { x: 152, y: 586, h: 92 }, { x: 192, y: 600, h: 84 }, { x: 232, y: 588, h: 94 },
+    { x: 270, y: 598, h: 80 }, { x: 132, y: 636, h: 86 }, { x: 174, y: 632, h: 96 }, { x: 216, y: 640, h: 82 },
+    { x: 256, y: 634, h: 90 }
+  ];
+  var FIELD = { x: 92, y: 500, w: 196, h: 150 };
   // The sign of the place.
   var SIGN = { text: "Pradera de flores", x: 500, y: 92, size: 24 };
   // Soft hills: middle, size, and whether they are lighter or darker than the grass.
@@ -100,10 +109,11 @@ var Meadow = (function () {
     return x >= MARGIN.side && x <= W - MARGIN.side && y >= MARGIN.top && y <= H - MARGIN.bottom;
   }
 
-  // True if a character cannot stand here: off the map, or on a tree, the beehive, the swing or the basket.
-  // Used by js/path.js.
+  // True if a character cannot stand here: off the map, or on a tree, the beehive, the swing, the basket or the sunflower
+  // field. Used by js/path.js.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
+    if (inBox(x, y, grow(FIELD, 8))) return true;
     if (near(x, y, BIG_TREE.x, BIG_TREE.y, BIG_TREE.r * 0.6 + CLEAR) || inBox(x, y, grow(BIG_TREE.trunk, CLEAR))) return true;
     if (near(x, y, SMALL_TREE.x, SMALL_TREE.y, SMALL_TREE.r * 0.6 + CLEAR) || inBox(x, y, grow(SMALL_TREE.trunk, CLEAR))) return true;
     if (inBox(x, y, grow(HIVE, 8)) || inBox(x, y, grow(SWING_BOX, 8))) return true;
@@ -117,6 +127,7 @@ var Meadow = (function () {
   // True if nothing is drawn on this spot of the grass (for the little flowers and the wild ones), "by" away from it all.
   function isFreeGrass(x, y, by) {
     if (onTrail(x, y, by) || inBox(x, y, grow(BLANKET, by)) || inBox(x, y, grow(BASKET, by))) return false;
+    if (inBox(x, y, grow(FIELD, by))) return false;
     if (near(x, y, BIG_TREE.x, BIG_TREE.y, BIG_TREE.r + by) || inBox(x, y, grow(BIG_TREE.trunk, by))) return false;
     if (near(x, y, SMALL_TREE.x, SMALL_TREE.y, SMALL_TREE.r + by) || inBox(x, y, grow(HIVE, by))) return false;
     if (inBox(x, y, grow({ x: SWING.x - SWING.half - 6, y: SWING.top, w: SWING.half * 2 + 12, h: SWING.spot.y - SWING.top }, by))) return false;
@@ -578,6 +589,53 @@ var Meadow = (function () {
     if (!isSwinging()) drawSeat(ctx, SWING.x, seatY, 1);
   }
 
+  // A tall sunflower: a green stem with two leaves and a yellow face with a brown middle, swaying from where it meets the
+  // grass. By day it looks up; at night it bows its head a little. With snow its leaves turn white.
+  function drawSunflower(ctx, f, i, dark) {
+    var sway = Math.sin(clock * 1.3 + i * 0.9) * 0.06;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ellipse(ctx, 4, 2, 12, 4, "rgba(74, 52, 40, 0.18)");
+    ctx.rotate(sway);
+    ctx.strokeStyle = "#5E8C3A";
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(3, -f.h * 0.5, 0, -f.h);
+    ctx.stroke();
+    [[-1, 0.35], [1, 0.55]].forEach(function (l) {
+      var leaf = function () {
+        ctx.beginPath();
+        ctx.ellipse(l[0] * 10, -f.h * l[1], 10, 4.5, l[0] * -0.5, 0, Math.PI * 2);
+      };
+      leaf();
+      ctx.fillStyle = "#6FA34A";
+      ctx.fill();
+      Weather.roofSnow(ctx, leaf);
+    });
+    // The face, a little lower and flatter when it bows at night.
+    ctx.translate(0, -f.h + dark * 5);
+    ctx.rotate(dark * 0.25);
+    ctx.scale(1, 1 - dark * 0.3);
+    for (var p = 0; p < 12; p++) {
+      var a = p * Math.PI * 2 / 12;
+      ctx.beginPath();
+      ctx.ellipse(Math.cos(a) * 11, Math.sin(a) * 11, 6.5, 3.2, a, 0, Math.PI * 2);
+      ctx.fillStyle = p % 2 ? "#F5C93A" : "#F2B630";
+      ctx.fill();
+    }
+    circle(ctx, 0, 0, 8.5, "#7A4E2A");
+    for (var d = 0; d < 6; d++) circle(ctx, Math.cos(d) * 4.5, Math.sin(d * 1.7) * 4.5, 1.1, "#5A3A1E");
+    ctx.restore();
+  }
+
+  function drawSunflowers(ctx) {
+    var dark = Time.darkness();
+    SUNFLOWERS.map(function (f, i) { return { f: f, i: i }; }).sort(function (a, b) { return a.f.y - b.f.y; })
+      .forEach(function (one) { drawSunflower(ctx, one.f, one.i, dark); });
+  }
+
   // The wooden seat of the swing, its middle at x, y ("k": how big, 1 in the Pradera).
   function drawSeat(ctx, x, y, k) {
     fillRound(ctx, x - 26 * k, y - 4 * k, 52 * k, 8 * k, 3 * k, C.wood);
@@ -767,6 +825,7 @@ var Meadow = (function () {
     drawSwing(ctx);
     drawTree(ctx, SMALL_TREE, 1);
     drawHive(ctx);
+    drawSunflowers(ctx);
     flowers.forEach(function (f) {
       if (f === hover) drawFlowerHighlight(ctx, f);
       if (f.kind === "daisy") drawDaisy(ctx, f);
@@ -830,6 +889,7 @@ var Meadow = (function () {
     if (near(x, y, BIG_TREE.x, BIG_TREE.y, BIG_TREE.r) || inBox(x, y, BIG_TREE.trunk)) return "swing";
     if (near(x, y, SMALL_TREE.x, SMALL_TREE.y, SMALL_TREE.r) || inBox(x, y, SMALL_TREE.trunk)) return "tree";
     if (inBox(x, y, trailBox()) || inBox(x, y, signBox())) return "meadow";
+    if (inBox(x, y, FIELD)) return "sunflower";
     for (var i = 0; i < HILLS.length; i++) {
       var h = HILLS[i], dx = (x - h.x) / h.rx, dy = (y - h.y) / h.ry;
       if (dx * dx + dy * dy <= 1) return "hill";

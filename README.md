@@ -15,11 +15,12 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🧛 Vladi: vampiro vecino que le tiene miedo a la oscuridad; duerme de día en su castillito y de noche pasea abrazando su osito. "Is it dark in here?"
 - 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
 - 🧜‍♀️ Pacífica: sirena del Lago, criatura mágica; de día canta en su roca.
+- ✨ Espíritus del bosque y 🐍 víboras: criaturas mágicas del Bosque encantado; los espíritus bailan contigo y las víboras traviesas muerden si te quedas quieta junto a su tronco.
 
 ## Estado
-Extra ✅ Continuidad 3
+Hito 26 ✅
 
-## ⭐ Estrellas de inglés: 46
+## ⭐ Estrellas de inglés: 47
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -245,6 +246,19 @@ Extra ✅ Continuidad 3
 - beach chair: silla de playa
 - umbrella: sombrilla
 - rock: roca
+- enchanted forest: bosque encantado
+- giant mushroom: hongo gigante
+- fairy ring: círculo de hongos
+- wish: deseo
+- stream: arroyo
+- spirit: espíritu
+- snake: víbora
+- hollow log: tronco hueco
+- band-aid: curita
+- leaf fish: pez hoja
+- mushroom fish: pez hongo
+- spirit fish: pez espíritu
+- sunflower: girasol
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -266,7 +280,7 @@ Extra ✅ Continuidad 3
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - A veces pega el prompt en el chat del Modo Planear en vez de en Claude Code: recordarle con cariño que primero escriba claude, espere a que se abra y pegue ahí. Hacer el merge juntas después de la revisión, y confirmar con gh pr list.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 46
+- ⭐ Estrellas de inglés: 47
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -276,10 +290,10 @@ Extra ✅ Continuidad 3
   - 30 ⭐: Painting easel 🎨 con Krohna durmiendo
   - 35 ⭐: Krohna's bed 🐾
   - 40 ⭐: Pizza oven 🍕, construido en el Hito 23
-  - 45 ⭐: Sunflower field 🌻 (elegido, se construye en el Hito 26 como Extra desbloqueado: un campo de girasoles altos en la Pradera de flores, solo decoración)
+  - 45 ⭐: Sunflower field 🌻, construido en el Hito 26 (un campo de girasoles altos en la Pradera de flores, solo decoración)
   - Próximo regalo: a las 50 ⭐
-- Siguiente paso: Pack 4, Hito 26: 🍄 Bosque encantado, con el Sunflower field 🌻 como Extra desbloqueado. Sofía todavía no diseñó los detalles del Hito 26: diseñarlos con ella con botones (por qué borde se llega, qué hay, cómo son los espíritus del bosque).
-- Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25); izquierda y abajo tienen el cartel Próximamente, para el Bosque encantado y la Montaña.
+- Siguiente paso: Pack 4, Hito 27: ⛰️ Montaña y cueva (con el 🐉 dragoncito bebé tímido). Sofía todavía no diseñó sus detalles: diseñarlos con ella con botones (qué hay en la montaña y la cueva, cómo es el dragoncito, qué se puede hacer).
+- Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26); abajo queda el cartel Próximamente, para la Montaña.
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
 - Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza, que Sofía o real.fixer vayan solos a la Pradera y al Lago, usar las flores silvestres en recetas o como regalos favoritos, que los patitos caminen hasta la playa al atardecer, una pose de verdad acostada en la reposera, que Pacífica aparezca y se sumerja suavemente, una meta o un regalo especial para Pacífica.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
