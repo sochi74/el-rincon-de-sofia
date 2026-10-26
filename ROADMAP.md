@@ -54,6 +54,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 25: 🏖️ Lago con playita. Una zona con lago, arena, muelle y patos, donde vive una 🧜‍♀️ sirena (idea de Sofía: "sirena de playa").
 - ✅ Hito 26: 🍄 Bosque encantado. Por el borde izquierdo de la ciudad: hongos gigantes que brillan de noche, un hongo para descansar, un círculo de hongos para pedir un deseo, un arroyito con puentecito para pescar, ✨ espíritus del bosque que bailan contigo y 🐍 víboras traviesas en troncos huecos que muerden si te quedas quieta (idea de Sofía), con curita 🩹. Con el Extra desbloqueado de 45 ⭐: Sunflower field 🌻 en la Pradera.
 - ✅ Extra: 🍄 Casita de hongo con bellotitas
+- ✅ Extra: 🏮 Farolitos vivos y 🌠 Wishing stars (regalo de 50 ⭐)
 - ⬜ Hito 27: ⛰️ Montaña y cueva. Una cueva con cristales que brillan, donde vive un 🐉 dragoncito bebé tímido que escupe chispitas.
 - ⬜ Hito 28: 💎 Tesoros y ranitas. Cofres y sorpresas escondidos en lugares secretos de todas las zonas, y 🐸 ranitas que cantan cuando llueve.
 - ⬜ Extra: 🪨 Caminos que siguen. Los caminos de piedra siguen a la Casa de Sofía cuando se mueve en Modo decorar.

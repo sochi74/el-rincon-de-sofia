@@ -344,6 +344,11 @@ var CONFIG = {
     snow: { cover: 40, melt: 20, snowmanAt: 0.6, build: 5, thaw: 8 },
     snowman: { x: 484, y: 602, size: 1.3 },
     rainFish: { fish: 30, rainbowFish: 25 },
+    // 🌠 Wishing stars: at night (from "from" to "to"), outside and with a clear sky, a shooting star crosses the top every
+    // "every" seconds of play, taking "cross" seconds; "two" of the times another one follows "gap" seconds later.
+    // "tail" is how long its tail of light is, in city units.
+    shootingStars: { from: 20 * 60, to: 6 * 60, every: { min: 20, max: 60 }, cross: { min: 1, max: 2 }, two: 0.2,
+      gap: { min: 0.3, max: 0.8 }, tail: 110 },
     fogForest: { max: 7, crystal: 0.5 },
     // The rainbow arc: its middle and size (in city units), the width of each band and how see-through it is.
     rainbow: {
@@ -495,6 +500,15 @@ var CONFIG = {
     door: "#B07A4F",
     acornCap: ["#7A5230", "#8E6640", "#5E3E24", "#9C7448", "#6B4628"],
     acornBody: ["#D2A877", "#CFA270", "#D8B283", "#C99C68", "#D4AA7B"],
+    // The little lanterns: how many, their paper colors (two of each), their lid, handle and legs, and how they move.
+    // A hop takes "time" seconds and goes "far" world units, with "gap" seconds between hops ("flee" when they run to hide).
+    // They stop for "rest" seconds, look to a side and the other, and hop on. Someone walking closer than "scare" makes one
+    // run behind the closest giant mushroom; it comes out after nobody is closer than "back" for "calm" seconds. They keep
+    // "logAway" from the hollow logs. A tap: a happy hop and two blinks in "cheer" seconds.
+    lanterns: { count: 6, hop: { time: 0.36, far: 12, gap: 0.18 }, flee: { time: 0.2, far: 16, gap: 0.04 },
+      rest: { min: 1.6, max: 4 }, scare: 80, back: 130, calm: 2.5, logAway: 70, cheer: 1 },
+    lanternColor: ["#F2A291", "#F2A291", "#F3DC8C", "#F3DC8C", "#C6B0E2", "#C6B0E2"],
+    lanternLid: "#5E4436",
     cheek: "#F2A7A0",
     grass: "#6E9A5E",
     grassDark: "#557D4A",

@@ -7,6 +7,8 @@
 // white grass too);
 // the rainbow; lilac fog with sparkles and floating lights; snowflakes, white roofs and grass, and a snowman in the plaza.
 // In the house, what is seen through the windows. Its sounds are in js/audio.js.
+// 🌠 Wishing stars: at night with a clear sky, now and then a shooting star crosses the top of the places outside
+// (only to look at: they are not tapped and not saved).
 // Pausa and Modo decorar freeze it all. Every change shows little by little, in a few seconds.
 var Weather = (function () {
   var K = CONFIG.weather;
@@ -24,6 +26,11 @@ var Weather = (function () {
   var clock = 0;
   // Whether the snowman is there and so solid (characters walk around it).
   var standing = false;
+  // The shooting stars crossing now, as { x, y, dx, dy, age, time }, seconds until the next one, and the one that follows
+  // it right after (seconds until it comes), or -1.
+  var stars = [];
+  var starIn = between(K.shootingStars.every.min, K.shootingStars.every.max);
+  var nextStar = -1;
 
   function minute() {
     return Time.get().minute;
@@ -32,6 +39,10 @@ var Weather = (function () {
   function weatherDay() {
     var t = Time.get();
     return t.minute >= K.dayStart ? t.day : t.day - 1;
+  }
+
+  function between(min, max) {
+    return min + Math.random() * (max - min);
   }
 
   // A new weather for the day, by its chance out of 100.
@@ -106,6 +117,80 @@ var Weather = (function () {
       snowman = toward(snowman, 0, dt, K.snow.thaw);
     }
     refreshSnowman();
+    updateStars(dt);
+  }
+
+  // ---------- Wishing stars ----------
+
+  // True from 20:00 to 06:00 with a clear sky (no rain, fog or snow).
+  function starryNight() {
+    var S = K.shootingStars, m = minute();
+    return (m >= S.from || m < S.to) && !isRaining() && !isFoggy() && !isSnowing();
+  }
+
+  // A shooting star going down across the top, from one side to the other.
+  function addStar() {
+    var S = K.shootingStars, dir = Math.random() < 0.5 ? 1 : -1;
+    var x = dir > 0 ? between(-40, W * 0.45) : between(W * 0.55, W + 40);
+    stars.push({ x: x, y: between(20, 150), dx: dir * between(420, 640), dy: between(110, 190), age: 0,
+      time: between(S.cross.min, S.cross.max) });
+  }
+
+  function updateStars(dt) {
+    var S = K.shootingStars;
+    stars.forEach(function (s) { s.age += dt; });
+    stars = stars.filter(function (s) { return s.age < s.time; });
+    if (nextStar >= 0) {
+      nextStar -= dt;
+      if (nextStar < 0) addStar();
+    }
+    if (!starryNight()) return;
+    starIn -= dt;
+    if (starIn > 0) return;
+    starIn = between(S.every.min, S.every.max);
+    addStar();
+    if (Math.random() < S.two) nextStar = between(S.gap.min, S.gap.max);
+  }
+
+  // Each shooting star: a little white-golden star with a tail of light that fades behind it. It shows and goes softly.
+  function drawStars(ctx) {
+    if (stars.length === 0) return;
+    var tail = K.shootingStars.tail;
+    ctx.save();
+    clipCity(ctx);
+    ctx.lineCap = "round";
+    stars.forEach(function (s) {
+      var t = s.age / s.time, x = s.x + s.dx * t, y = s.y + s.dy * t;
+      var d = Math.sqrt(s.dx * s.dx + s.dy * s.dy), ux = s.dx / d, uy = s.dy / d;
+      ctx.globalAlpha = t < 0.15 ? t / 0.15 : t > 0.75 ? (1 - t) / 0.25 : 1;
+      var g = ctx.createLinearGradient(x, y, x - ux * tail, y - uy * tail);
+      g.addColorStop(0, "rgba(255, 244, 200, 0.9)");
+      g.addColorStop(1, "rgba(255, 244, 200, 0)");
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - ux * tail, y - uy * tail);
+      ctx.stroke();
+      var glow = ctx.createRadialGradient(x, y, 0, x, y, 12);
+      glow.addColorStop(0, "rgba(255, 236, 170, 0.8)");
+      glow.addColorStop(1, "rgba(255, 236, 170, 0)");
+      circle(ctx, x, y, 12, glow);
+      var k = 4.2;
+      ctx.fillStyle = "#FFFBEA";
+      ctx.beginPath();
+      ctx.moveTo(x, y - k);
+      ctx.lineTo(x + k * 0.3, y - k * 0.3);
+      ctx.lineTo(x + k, y);
+      ctx.lineTo(x + k * 0.3, y + k * 0.3);
+      ctx.lineTo(x, y + k);
+      ctx.lineTo(x - k * 0.3, y + k * 0.3);
+      ctx.lineTo(x - k, y);
+      ctx.lineTo(x - k * 0.3, y - k * 0.3);
+      ctx.closePath();
+      ctx.fill();
+    });
+    ctx.restore();
   }
 
   // When the snowman comes or goes, the ways around it are worked out again, and whoever stands on it steps aside.
@@ -350,7 +435,10 @@ var Weather = (function () {
 
   // The magic fog: soft lilac-white clouds drifting slowly, sparkles that twinkle and round lights that float up.
   // Drawn over the night tint, so at night the lights shine more. "dark" goes from 0 (day) to 1 (night).
+  // js/main.js draws it only outside, over the world and under the signs: the shooting stars go there too (they never
+  // come with fog).
   function drawFog(ctx, dark) {
+    drawStars(ctx);
     if (look.fog <= 0) return;
     var S = K.colors;
     ctx.save();
