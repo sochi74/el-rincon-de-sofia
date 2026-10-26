@@ -42,6 +42,22 @@
 - Si alguien se queda quieto junto a un tronco mientras hace algo (por ejemplo, charlando), igual lo pueden morder.
 - Los espíritus del bosque flotan por encima de todo, así que a veces pasan por delante de un hongo gigante o de un árbol.
 - Si recargas mientras alguien pesca, descansa, pide un deseo o juega con un espíritu, esa acción se pierde (el deseo no cuenta).
+- En la 🎒 Mochila la Bellota no muestra su palabra al pasar el mouse (ninguna cosa de la Mochila la muestra todavía); "Bellota · acorn" se ve sobre las bellotitas que se asoman y sobre el "+1 🌰" que sube.
+- Si los dos tocan la casita a la vez, el segundo dice "Ocupado" y tiene que volver a tocarla.
+- Si recargas mientras alguien visita la casita, la visita se pierde (las bellotas ya regaladas hoy sí se recuerdan).
+- Los espíritus del bosque pueden pasar por delante de la casita, como pasa con los otros hongos gigantes.
+
+## 2026-10-26 · Extra: 🍄 Casita de hongo con bellotitas
+- 🏠 Casita de hongo en el Bosque encantado, abajo entre el círculo de hongos y el arroyo, lejos de los troncos de las víboras y sin tapar el senderito, el arroyo, el puentecito, el círculo ni los otros hongos: un hongo gigante (el más grande del bosque) con sombrero rojo con puntitos crema, tronco ancho color crema, una puertita redonda de madera con tablitas y perilla dorada, y una ventana redonda con marco de madera. Es obstáculo. Cartel "Casita de hongo" arriba del sombrero. Con nieve el sombrero se pone blanco. En Modo decorar no se mueve (nada se mueve en el Bosque).
+- 🌰 Bellotitas (criaturas mágicas: no se seleccionan, no se charla con ellas, no reciben regalos y no tienen Amistad): 5 bellotas chiquitas con sombrerito café rugoso con un palito, cuerpo café clarito, ojitos negros, mejillas rosadas y una sonrisita; cada una un poquito distinta (más redonda o más alargada, sombrerito más claro u oscuro). Viven adentro y no salen a pasear.
+- Cada 5 a 15 segundos una bellotita se asoma por la ventana o por la puerta (que se entreabre), mira a un lado y al otro, parpadea y vuelve a entrar; 3 de cada 10 veces se asoman dos a la vez. De noche se asoman 2,5 veces menos seguido y por la ventana salen unas "z" chiquitas porque duermen adentro.
+- Sorpresa: con Sofía o real.fixer seleccionado, tocar la casita lo hace caminar al lado de la puerta (para no tapar a la bellotita) y mirar hacia ella; una bellotita se asoma por la puerta y da un saltito. 1 de cada 3 veces regala 🌰 Bellota (vale 4) a la 🎒 Mochila con "+1 🌰" flotando y un brillito; las otras veces solo saluda con un ✨ y un tintineo. Como máximo 3 bellotas por día del juego; después solo saluda. Brilla al pasar el mouse. Pausa congela a las bellotitas.
+- La Bellota se vende y se regala en la Mochila como las otras cosas.
+- 💾 Guardado: recuerda cuántas bellotas se regalaron hoy. Una partida vieja carga bien (sin bellotas regaladas hoy).
+- Palabras nuevas: Casita de hongo · mushroom house (MÁSH-rum JÁUS), sobre la casita y su cartel, y Bellota · acorn (ÉI-korn), sobre las bellotitas que se asoman y sobre el "+1 🌰". Cuentan para el 📖 Diario.
+- Revisión: no quedaba ningún truco temporal del Hito 26 (el reloj estaba en velocidad normal). El truco que se usó en esta prueba (reloj 10 veces más rápido) se quitó.
+- Por dentro: js/sims.js no se podía tocar, así que tocar la casita entra por el mismo camino que el círculo de hongos (js/enchanted.js sabe cuándo es la casita).
+- Archivos: js/enchanted.js, js/config.js, js/words.js y js/inventory.js. CLAUDE.md: las bellotitas en la regla de las criaturas mágicas y la casita en la línea de js/enchanted.js.
 
 ## 2026-10-26 · Hito 26: 🍄 Bosque encantado
 - 🧭 Borde izquierdo: el cartel "Próximamente" de la izquierda de la ciudad se cambió por un senderito de tierra con hojitas que llega al borde, entre el bosque y la Casa de Sofía, con el cartel de madera "⬅️ Bosque encantado". Con Sofía o real.fixer seleccionado, tocarlo lo hace caminar hasta el borde y pasar al Bosque encantado, donde aparece a la derecha, en su senderito; tocar el senderito del Bosque lo devuelve a la ciudad, al pie del senderito. Krohna sigue a real.fixer. En Modo decorar el senderito y su cartel no se mueven, nada se puede poner encima, y desde la puerta de la Casa de Sofía se tiene que poder llegar caminando al senderito. Queda un solo cartel "Próximamente" (abajo).

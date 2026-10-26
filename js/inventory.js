@@ -26,6 +26,8 @@ var Inventory = (function () {
     { id: "leafFish", name: "Pez hoja", emoji: "🍃", price: 7 },
     { id: "mushroomFish", name: "Pez hongo", emoji: "🍄", price: 12 },
     { id: "spiritFish", name: "Pez espíritu", emoji: "✨", price: 40 },
+    // What the little acorns of the mushroom house give (js/enchanted.js)
+    { id: "acorn", name: "Bellota", emoji: "🌰", price: 4 },
     // Dishes
     { id: "fishMushroom", name: "Pescado con hongos", emoji: "🍛", price: 18 },
     { id: "crabSoup", name: "Sopa de cangrejo", emoji: "🦀", price: 25 },

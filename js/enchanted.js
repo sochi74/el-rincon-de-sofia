@@ -14,6 +14,11 @@
 // 🐍 Three hollow logs (solid), each with a little magic snake inside (magical creatures too) that now and then peeks out
 // and flicks its tongue. Whoever stands still by a log too long gets a little bite: a hop, a shout and a band-aid 🩹 on the
 // arm for a while (no need changes). Krohna is never bitten.
+// 🏠 A mushroom house (solid): a giant red mushroom with cream dots, a wide cream trunk with a round wooden door and a round
+// window. Five little acorns live inside (magical creatures too) and never come out to walk: now and then one peeks out of
+// the window or the half-open door, looks to one side and the other, blinks and goes back in; at night they peek less and
+// sleep inside. A tap on the house walks the selected one to the door: an acorn peeks out with a hop, and sometimes gives
+// a Bellota 🌰 to the backpack (a few a day at most); the other times it only says hello with a ✨.
 // Day and night and the weather of the day show here too (js/weather.js), without puddles or snowman. Modo decorar moves
 // nothing here. The neighbors never come, and the shiny coins never appear here. Pausa freezes it all.
 var Enchanted = (function () {
@@ -50,6 +55,17 @@ var Enchanted = (function () {
   ];
   // The sign of the place.
   var SIGN = { text: "Bosque encantado", x: 500, y: 92, size: 24 };
+  // The mushroom house: where its trunk meets the grass, how tall and wide the trunk is and the size of its cap (like the
+  // giant mushrooms), its round door (its middle, width and height) and round window, where a visitor stands (beside the
+  // door, so it never hides the acorn that peeks out) and its sign over the cap.
+  var HOUSE = { x: 420, y: 650, stem: 120, sw: 96, rx: 92, ry: 42,
+    door: { x: 400, w: 32, h: 46 }, window: { x: 446, y: 586, r: 13 }, stand: { x: 350, y: 676 },
+    sign: { text: "Casita de hongo", x: 420, y: 446, size: 16 } };
+  // The five little acorns: each one a little rounder or longer ("w" and "h"), with its own cap and body color.
+  var ACORNS = [{ w: 1, h: 1 }, { w: 1.16, h: 0.88 }, { w: 0.86, h: 1.16 }, { w: 1.06, h: 1.04 }, { w: 0.94, h: 1.08 }]
+    .slice(0, K.acorns.count).map(function (a, i) {
+      return { w: a.w, h: a.h, cap: K.acornCap[i], body: K.acornBody[i] };
+    });
 
   // What comes out of the stream: the chance of each catch, out of 100 (by day the spirit fish are leaf fish).
   var CATCHES = [
@@ -62,14 +78,14 @@ var Enchanted = (function () {
   var ACTIONS = { rest: "Descansando 🍄", wish: "Pidiendo un deseo 🌠", fish: "Pescando 🎣", play: "Jugando con un espíritu ✨" };
 
   // What each character is doing here, by id:
-  // { sim, kind: "rest" | "wish" | "fish" | "play", spot, bob, spirit, phase: "walking" | "doing" | "busy", elapsed }
+  // { sim, kind: "rest" | "wish" | "fish" | "play" | "visit", spot, bob, spirit, phase: "walking" | "doing" | "busy", elapsed }
   var current = {};
   // The game day of the last wish, or 0.
   var wishDay = 0;
   // Texts floating up, as { x, y, text, age, word }, and the little sparkles going up from the fairy ring.
   var pops = [];
   var sparkles = [];
-  // What is under the mouse: a spirit, or "trail", "rest", "ring" or "water".
+  // What is under the mouse: a spirit, or "trail", "rest", "ring", "house" or "water".
   var hover = null;
   // Seconds of play here so far: the stream, the spirits and the snakes stop with Pausa.
   var clock = 0;
@@ -136,12 +152,13 @@ var Enchanted = (function () {
     return { x: l.x - l.len / 2, y: l.y - l.r, w: l.len, h: l.r * 2 };
   }
 
-  // True if a character cannot stand here: off the map, in the stream, or on a giant mushroom or a hollow log.
-  // Used by js/path.js.
+  // True if a character cannot stand here: off the map, in the stream, or on a giant mushroom, the mushroom house or a
+  // hollow log. Used by js/path.js.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (MUSHROOMS.some(function (m) { return inBox(x, y, grow(mushroomBox(m), CLEAR / 2)); })) return true;
     if (inBox(x, y, grow(mushroomBox(REST), CLEAR / 2))) return true;
+    if (inBox(x, y, grow(mushroomBox(HOUSE), CLEAR / 2))) return true;
     return LOGS.some(function (l) { return inBox(x, y, grow(logBox(l), 8)); });
   }
 
@@ -167,17 +184,32 @@ var Enchanted = (function () {
     return dx * dx + dy * dy <= 1;
   }
 
+  // The mushroom house, from the bottom of its trunk to the top of its cap.
+  function houseBox() {
+    return { x: HOUSE.x - HOUSE.rx, y: HOUSE.y - HOUSE.stem - HOUSE.ry * 1.5, w: HOUSE.rx * 2, h: HOUSE.stem + HOUSE.ry * 1.5 + 6 };
+  }
+
+  // True if the last spot given to usableAt was on the mushroom house.
+  var onHouse = false;
+
   // "trail", "rest", "ring" or "water" for what can be used at a spot, or null (the spirits are apart: spiritAt).
+  // js/sims.js and js/main.js only know those, so the mushroom house comes in through the ring's door: on it this says
+  // "ring" and remembers it, and the glow (setHover) and the tap (tapRing) that always come right after go to the house.
   function usableAt(x, y) {
+    onHouse = false;
     if (inBox(x, y, trailBox())) return "trail";
     if (restAt(x, y)) return "rest";
+    if (inBox(x, y, houseBox())) {
+      onHouse = true;
+      return "ring";
+    }
     if (ringAt(x, y)) return "ring";
     if (waterAt(x, y)) return "water";
     return null;
   }
 
   function setHover(what) {
-    hover = what;
+    hover = what === "ring" && onHouse ? "house" : what;
   }
 
   // ---------- Spirits ----------
@@ -270,8 +302,20 @@ var Enchanted = (function () {
     popAt(sim.x, sim.y - 78 * CONFIG.characterScale - CONFIG.moodStar.room - 30, text, word);
   }
 
+  // A tap on the mushroom house: walk to its door to visit the acorns.
+  function tapHouse(sim) {
+    current[sim.data.id] = { sim: sim, kind: "visit", phase: "walking", elapsed: 0 };
+    Sims.walkTo(sim, HOUSE.stand.x, HOUSE.stand.y);
+    return true;
+  }
+
   // A tap on the fairy ring: walk into its middle and make a wish; if today's wish is made, it says so over the ring.
+  // A tap on the mushroom house comes here too (see usableAt).
   function tapRing(sim) {
+    if (onHouse) {
+      onHouse = false;
+      return tapHouse(sim);
+    }
     if (wishDay === today()) {
       popAt(RING.x, RING.y - 50, "Vuelve mañana 🌙", "wish");
       return false;
@@ -314,13 +358,14 @@ var Enchanted = (function () {
     return !!current[id];
   }
 
-  // True if someone else is resting on the mushroom, making a wish, fishing right by here or playing with this spirit.
+  // True if someone else is resting on the mushroom, making a wish, visiting the acorns, fishing right by here or playing
+  // with this spirit.
   function isTaken(a, id) {
     if (a.kind === "play" && a.spirit.with && a.spirit.with !== id) return true;
     return Object.keys(current).some(function (other) {
       var b = current[other];
       if (other === id || b.phase !== "doing" || b.kind !== a.kind) return false;
-      if (a.kind === "rest" || a.kind === "wish") return true;
+      if (a.kind === "rest" || a.kind === "wish" || a.kind === "visit") return true;
       if (a.kind === "play") return b.spirit === a.spirit;
       var dx = b.sim.x - a.sim.x, dy = b.sim.y - a.sim.y;
       return dx * dx + dy * dy < K.fishGap * K.fishGap;
@@ -331,6 +376,7 @@ var Enchanted = (function () {
     if (a.kind === "rest") return K.restTime;
     if (a.kind === "wish") return K.wishTime;
     if (a.kind === "fish") return K.fishTime;
+    if (a.kind === "visit") return K.acorns.visitTime;
     return K.playTime;
   }
 
@@ -345,7 +391,8 @@ var Enchanted = (function () {
     return CATCHES[0];
   }
 
-  // When the action ends: the catch goes into the backpack, or the wish brings its coins.
+  // When the action ends: the catch goes into the backpack, the wish brings its coins, or the acorn at the door gives a
+  // Bellota (some of the times, a few a day at most) or says hello.
   function finish(a) {
     var id = a.sim.data.id;
     if (a.kind === "fish") {
@@ -361,6 +408,21 @@ var Enchanted = (function () {
       Coins.add(n);
       popOver(a.sim, "+" + n + " 🪙", "wish");
       Sound.playAt("enchanted", "cling");
+    } else if (a.kind === "visit") {
+      if (acornDay !== today()) {
+        acornDay = today();
+        acornsGiven = 0;
+      }
+      var over = { x: HOUSE.door.x, y: HOUSE.y - HOUSE.door.h - 18 };
+      if (acornsGiven < K.acorns.perDay && Math.random() < K.acorns.giftChance) {
+        acornsGiven += 1;
+        Inventory.add("acorn", 1);
+        popAt(over.x, over.y, "+1 🌰", "acorn");
+        Sound.playAt("enchanted", "sparkle");
+      } else {
+        popAt(over.x, over.y, "✨", "acorn");
+        Sound.playAt("enchanted", "chime");
+      }
     }
   }
 
@@ -375,17 +437,23 @@ var Enchanted = (function () {
     return true;
   }
 
-  // Look at what it uses: the water while fishing, the spirit; sitting on the mushroom and in the ring it looks to the front.
+  // Look at what it uses: the water while fishing, the spirit, the door of the mushroom house (on its right); sitting on the mushroom and
+  // in the ring it looks to the front.
   function face(a) {
     if (a.kind === "fish") a.sim.facing = a.bob.x < a.sim.x ? "left" : "right";
     else if (a.kind === "play") a.sim.facing = a.spirit.x < a.sim.x ? "left" : "right";
+    else if (a.kind === "visit") a.sim.facing = "right";
     else a.sim.facing = "front";
   }
 
-  // Start doing it: the spirit starts dancing around, the wish sparkles go up.
+  // Start doing it: the spirit starts dancing around, the wish sparkles go up, an acorn peeks out of the door with a hop.
   function begin(a) {
     face(a);
-    if (a.kind === "play") {
+    if (a.kind === "visit") {
+      var at = peeks.door;
+      peeks.door = { who: at ? at.who : freeAcorn(), age: at ? Math.min(at.age, K.acorns.peek.time * 0.18) : 0,
+        time: K.acorns.peek.time, hello: true };
+    } else if (a.kind === "play") {
       a.spirit.with = a.sim.data.id;
       a.spirit.dance = 0.001;
       Sound.playAt("enchanted", "chime");
@@ -457,6 +525,7 @@ var Enchanted = (function () {
     sparkles.forEach(function (p) { p.age += dt; });
     sparkles = sparkles.filter(function (p) { return p.age < 1.6; });
     updateSnakes(dt);
+    updateAcorns(dt);
   }
 
   // Little sparkles going up from the fairy ring while someone makes a wish.
@@ -471,11 +540,12 @@ var Enchanted = (function () {
       age: 0, color: ["#FFF3B0", "#F5D76E", "#D9B8F5", "#A8E3F7"][Math.floor(Math.random() * 4)] });
   }
 
-  // What to show over a character's head, or null.
+  // What to show over a character's head, or null. Visiting the acorns shows nothing: the acorn at the door says it all.
   function bubbleFor(id) {
     var a = current[id];
     if (!a || a.phase === "walking") return null;
     if (a.phase === "busy") return { text: "Ocupado", heart: false };
+    if (a.kind === "visit") return null;
     return { text: ACTIONS[a.kind], heart: false };
   }
 
@@ -594,6 +664,92 @@ var Enchanted = (function () {
       return near(x, y, at.x + 15 * k, at.y - 29 * k, 9) || near(x, y, at.x - 15 * k, at.y - 29 * k, 9) ||
         near(x, y, at.x, at.y - 29 * k, 9);
     });
+  }
+
+  // ---------- Little acorns ----------
+
+  // Who peeks out of the window and out of the door right now, as { who, age, time, hello }, or null. "who" is the index
+  // of the acorn, and "hello" is the hop of an acorn saying hello to a visitor.
+  var peeks = { window: null, door: null };
+  // Seconds until the next acorn peeks out.
+  var peekIn = between(2, K.acorns.peek.min);
+  // The game day of the last Bellota given, and how many were given that day.
+  var acornDay = 0;
+  var acornsGiven = 0;
+
+  // An acorn that is not peeking now, at random.
+  function freeAcorn() {
+    var busy = [peeks.window, peeks.door].filter(Boolean).map(function (p) { return p.who; });
+    var free = [];
+    for (var i = 0; i < ACORNS.length; i++) if (busy.indexOf(i) < 0) free.push(i);
+    return free[Math.floor(Math.random() * free.length)];
+  }
+
+  // Every little while one acorn peeks out of the window or the door, or two at once; at night less often.
+  function updateAcorns(dt) {
+    ["window", "door"].forEach(function (where) {
+      var p = peeks[where];
+      if (!p) return;
+      p.age += dt;
+      if (p.age >= p.time) peeks[where] = null;
+    });
+    peekIn -= dt;
+    if (peekIn > 0) return;
+    peekIn = between(K.acorns.peek.min, K.acorns.peek.max) * (Time.isDay() ? 1 : K.acorns.nightSlow);
+    var free = ["window", "door"].filter(function (where) { return !peeks[where]; });
+    if (free.length === 2 && Math.random() >= K.acorns.two) free = [free[Math.floor(Math.random() * 2)]];
+    free.forEach(function (where) {
+      peeks[where] = { who: freeAcorn(), age: 0, time: K.acorns.peek.time, hello: false };
+    });
+  }
+
+  // How far a peeking acorn is out, from 0 to 1: it comes out, stays a moment and goes back in.
+  function peekOut(p) {
+    var t = p.age / p.time;
+    return t < 0.18 ? t / 0.18 : t > 0.85 ? (1 - t) / 0.15 : 1;
+  }
+
+  // Where its eyes look, from -1 (left) to 1 (right): to one side and then to the other. Saying hello, to the front.
+  function peekLook(p) {
+    var t = p.age / p.time;
+    if (p.hello || t < 0.25 || t > 0.8) return 0;
+    return -Math.sin((t - 0.25) / 0.55 * Math.PI * 2);
+  }
+
+  // True while it blinks.
+  function peekBlink(p) {
+    var t = p.age / p.time;
+    return (t > 0.5 && t < 0.55) || (t > 0.2 && t < 0.24 && p.hello);
+  }
+
+  // How high it hops when it says hello to a visitor.
+  function peekHop(p) {
+    if (!p.hello || p.age < 0.4 || p.age > 0.9) return 0;
+    return Math.sin((p.age - 0.4) / 0.5 * Math.PI) * 8;
+  }
+
+  // Where the bottom of a peeking acorn is: rising in the window, or sliding into the half-open door.
+  function windowAcorn(p) {
+    var w = HOUSE.window, a = ACORNS[p.who], out = peekOut(p);
+    var hidden = w.y + w.r + 20 * a.h, shown = w.y + 9 * a.h + 3;
+    return { x: w.x, y: hidden + (shown - hidden) * out };
+  }
+
+  function doorAcorn(p) {
+    var d = HOUSE.door, out = peekOut(p);
+    var hidden = d.x + d.w / 2 + 10, shown = d.x + d.w * 0.16;
+    return { x: hidden + (shown - hidden) * out, y: HOUSE.y - 1 - peekHop(p) };
+  }
+
+  // The acorn peeking at a spot, as its index, or -1.
+  function acornAt(x, y) {
+    var w = peeks.window, d = peeks.door;
+    if (w && peekOut(w) > 0.3 && near(x, y, HOUSE.window.x, HOUSE.window.y, HOUSE.window.r + 3)) return w.who;
+    if (d && peekOut(d) > 0.3) {
+      var at = doorAcorn(d);
+      if (near(x, y, at.x, at.y - 9, 12)) return d.who;
+    }
+    return -1;
   }
 
   // ---------- Drawing ----------
@@ -847,6 +1003,176 @@ var Enchanted = (function () {
     });
   }
 
+  // A little acorn standing with its bottom at x, y: a light brown body, a rough brown cap with a tiny stem, black eyes
+  // that look to a side ("look" from -1 to 1) or are closed, pink cheeks and a tiny smile.
+  function drawAcorn(ctx, i, x, y, look, closed) {
+    var a = ACORNS[i], rx = 8 * a.w, ry = 9.5 * a.h, cy = y - ry;
+    ellipse(ctx, x, cy, rx, ry, a.body);
+    circle(ctx, x, y - 0.8, 1.6, a.cap);
+    ellipse(ctx, x - rx * 0.5, cy + ry * 0.2, 1.5, ry * 0.32, "rgba(255, 255, 255, 0.35)");
+    var capY = cy - ry * 0.3, capH = ry * 0.62;
+    ctx.beginPath();
+    ctx.ellipse(x, capY, rx + 1.8, capH, 0, Math.PI, 0);
+    ctx.ellipse(x, capY, rx + 1.8, 2.4, 0, 0, Math.PI);
+    ctx.closePath();
+    ctx.fillStyle = a.cap;
+    ctx.fill();
+    // Its rough little scales.
+    for (var r = 0; r < 2; r++) {
+      for (var c = -2; c <= 2; c++) {
+        var sx = x + (c + (r % 2) * 0.5) * rx * 0.36;
+        if (Math.abs(sx - x) < rx) circle(ctx, sx, capY - 1.2 - r * capH * 0.4, 0.9, "rgba(40, 24, 12, 0.35)");
+      }
+    }
+    fillRound(ctx, x - 1, capY - capH - 3, 2, 4, 1, a.cap);
+    var ey = cy + ry * 0.12, ex = look * 1.8;
+    if (closed) {
+      ctx.strokeStyle = "#1E1E1E";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x - 4 + ex, ey);
+      ctx.lineTo(x - 1.6 + ex, ey);
+      ctx.moveTo(x + 1.6 + ex, ey);
+      ctx.lineTo(x + 4 + ex, ey);
+      ctx.stroke();
+    } else {
+      circle(ctx, x - 2.7 + ex, ey, 1.4, "#1E1E1E");
+      circle(ctx, x + 2.7 + ex, ey, 1.4, "#1E1E1E");
+      circle(ctx, x - 2.3 + ex, ey - 0.5, 0.5, C.white);
+      circle(ctx, x + 3.1 + ex, ey - 0.5, 0.5, C.white);
+    }
+    ctx.save();
+    ctx.globalAlpha = 0.8;
+    circle(ctx, x - 4.6 + ex * 0.6, ey + 2.6, 1.6, K.cheek);
+    circle(ctx, x + 4.6 + ex * 0.6, ey + 2.6, 1.6, K.cheek);
+    ctx.restore();
+    ctx.strokeStyle = "#5A3A24";
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.arc(x + ex * 0.6, ey + 2.4, 1.4, 0.3, Math.PI - 0.3);
+    ctx.stroke();
+  }
+
+  // The round door: an arch, wooden with planks and a knob. While an acorn peeks out it opens a little (from its hinge
+  // on the left) and the acorn shows in the dark gap.
+  function doorPath(ctx, d) {
+    var r = d.w / 2;
+    ctx.beginPath();
+    ctx.moveTo(d.x - r, HOUSE.y);
+    ctx.lineTo(d.x - r, HOUSE.y - d.h + r);
+    ctx.arc(d.x, HOUSE.y - d.h + r, r, Math.PI, 0);
+    ctx.lineTo(d.x + r, HOUSE.y);
+    ctx.closePath();
+  }
+
+  function drawDoor(ctx) {
+    var d = HOUSE.door, p = peeks.door, open = p ? peekOut(p) : 0;
+    doorPath(ctx, { x: d.x, w: d.w + 6, h: d.h + 3 });
+    ctx.fillStyle = K.bark;
+    ctx.fill();
+    doorPath(ctx, d);
+    ctx.fillStyle = "#2A1C12";
+    ctx.fill();
+    ctx.save();
+    doorPath(ctx, d);
+    ctx.clip();
+    if (p) {
+      var at = doorAcorn(p);
+      drawAcorn(ctx, p.who, at.x, at.y, peekLook(p), peekBlink(p));
+    }
+    var hinge = d.x - d.w / 2;
+    ctx.translate(hinge, 0);
+    ctx.scale(1 - 0.55 * open, 1);
+    ctx.translate(-hinge, 0);
+    doorPath(ctx, d);
+    ctx.fillStyle = K.door;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(60, 36, 20, 0.45)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(d.x - d.w / 6, HOUSE.y - d.h + 3);
+    ctx.lineTo(d.x - d.w / 6, HOUSE.y);
+    ctx.moveTo(d.x + d.w / 6, HOUSE.y - d.h + 3);
+    ctx.lineTo(d.x + d.w / 6, HOUSE.y);
+    ctx.stroke();
+    circle(ctx, d.x + d.w / 2 - 5, HOUSE.y - d.h * 0.42, 1.8, "#F5D76E");
+    ctx.restore();
+  }
+
+  // The round window with a wooden frame; a peeking acorn rises in it.
+  function drawWindow(ctx) {
+    var w = HOUSE.window, p = peeks.window;
+    circle(ctx, w.x, w.y, w.r, "#2A1C12");
+    if (p) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2);
+      ctx.clip();
+      var at = windowAcorn(p);
+      drawAcorn(ctx, p.who, at.x, at.y, peekLook(p), peekBlink(p));
+      ctx.restore();
+    }
+    ctx.strokeStyle = K.door;
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.arc(w.x, w.y, w.r + 1, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // The mushroom house: a wide cream trunk with its door and window, under a big red cap with cream dots
+  // (white with snow).
+  function drawHouse(ctx) {
+    var m = HOUSE, cy = m.y - m.stem;
+    ellipse(ctx, m.x + 8, m.y + 3, m.rx * 0.85, m.ry * 0.5, "rgba(30, 50, 30, 0.28)");
+    ctx.beginPath();
+    ctx.moveTo(m.x - m.sw / 2, cy);
+    ctx.lineTo(m.x + m.sw / 2, cy);
+    ctx.quadraticCurveTo(m.x + m.sw / 2 + 2, m.y - 10, m.x + m.sw / 2 + 8, m.y);
+    ctx.lineTo(m.x - m.sw / 2 - 8, m.y);
+    ctx.quadraticCurveTo(m.x - m.sw / 2 - 2, m.y - 10, m.x - m.sw / 2, cy);
+    ctx.closePath();
+    ctx.fillStyle = K.houseTrunk;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(120, 90, 60, 0.3)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    fillRound(ctx, m.x - m.sw / 2 + 4, cy + 14, 6, m.stem - 22, 3, "rgba(255, 255, 255, 0.55)");
+    drawDoor(ctx);
+    drawWindow(ctx);
+    ellipse(ctx, m.x, cy, m.rx * 0.92, m.ry * 0.36, "#E8D9BC");
+    capPath(ctx, m.x, cy - 2, m);
+    ctx.fillStyle = K.houseCap;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(60, 30, 30, 0.25)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ellipse(ctx, m.x - m.rx * 0.35, cy - m.ry * 0.9, m.rx * 0.28, m.ry * 0.3, "rgba(255, 255, 255, 0.35)");
+    [[-0.62, -0.5, 6], [-0.3, -1.05, 5], [0.05, -0.62, 7], [0.4, -1.0, 5], [0.66, -0.45, 6], [-0.05, -1.32, 4.5],
+      [0.28, -0.3, 4]].forEach(function (d) {
+      ellipse(ctx, m.x + d[0] * m.rx, cy - 2 + d[1] * m.ry, d[2], d[2] * 0.75, C.cream);
+    });
+    Weather.roofSnow(ctx, function () {
+      ctx.beginPath();
+      ctx.ellipse(m.x, cy - 2, m.rx - 2, m.ry * 1.5 - 2, 0, Math.PI, 0);
+      ctx.closePath();
+    });
+  }
+
+  // At night the acorns sleep inside: little "z" float up from the window (while nobody peeks out of it).
+  function drawSleep(ctx, dark) {
+    if (dark < 0.5 || peeks.window) return;
+    ctx.save();
+    ctx.font = "bold 11px " + CONFIG.fontFamily;
+    ctx.textAlign = "center";
+    ctx.fillStyle = C.cream;
+    for (var i = 0; i < 2; i++) {
+      var t = (clock * 0.4 + i * 0.5) % 1;
+      ctx.globalAlpha = (dark - 0.5) * 2 * (t < 0.2 ? t / 0.2 : 1 - (t - 0.2) / 0.8);
+      ctx.fillText("z", HOUSE.window.x + 6 + t * 10, HOUSE.window.y - 8 - t * 24);
+    }
+    ctx.restore();
+  }
+
   // The slightly lighter grass of the fairy ring (under the snow).
   function drawRingGrass(ctx) {
     ctx.save();
@@ -1078,11 +1404,15 @@ var Enchanted = (function () {
     if (hover === "ring") drawGlow(ctx, { x: RING.x - RING.r - 6, y: RING.y - RING.r * 0.6 - 14, w: RING.r * 2 + 12, h: RING.r * 1.2 + 20 });
     drawRing(ctx);
     LOGS.forEach(function (l) { drawLog(ctx, l); });
-    // The mushrooms, the trees and the logs: whoever is lower is drawn last.
+    // The mushrooms, the mushroom house and the trees: whoever is lower is drawn last.
     var things = MUSHROOMS.map(function (m) { return { y: m.y, draw: function () { drawMushroom(ctx, m); } }; });
     things.push({ y: REST.y, draw: function () {
       if (hover === "rest") drawGlow(ctx, { x: REST.x - REST.rx, y: REST.y - REST.stem - REST.ry * 1.5, w: REST.rx * 2, h: REST.stem + REST.ry * 1.5 });
       drawMushroom(ctx, REST);
+    } });
+    things.push({ y: HOUSE.y, draw: function () {
+      if (hover === "house") drawGlow(ctx, houseBox());
+      drawHouse(ctx);
     } });
     BORDER.forEach(function (t, i) { things.push({ y: t.y, draw: function () { drawTallTree(ctx, t, i); } }); });
     things.sort(function (a, b) { return a.y - b.y; }).forEach(function (one) { one.draw(); });
@@ -1110,28 +1440,32 @@ var Enchanted = (function () {
     ctx.restore();
   }
 
-  // The sign, drawn over the night tint like the signs of the city.
-  var signMeasured = null;
-
-  function signBox() {
-    return signMeasured || { x: SIGN.x - 120, y: SIGN.y - 20, w: 240, h: 40 };
+  // The signs of the place and of the mushroom house, drawn over the night tint like the signs of the city.
+  // Each one remembers the box it took, for its word.
+  function signBox(sign) {
+    return sign.measured || { x: sign.x - sign.size * 5, y: sign.y - sign.size, w: sign.size * 10, h: sign.size * 2 };
   }
 
-  function drawLabels(ctx) {
+  function drawSign(ctx, sign) {
     ctx.save();
-    ctx.font = "700 " + SIGN.size + "px " + CONFIG.fontFamily;
+    ctx.font = "700 " + sign.size + "px " + CONFIG.fontFamily;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    var w = ctx.measureText(SIGN.text).width + SIGN.size * 1.2, h = SIGN.size * 1.7;
-    signMeasured = { x: SIGN.x - w / 2, y: SIGN.y - h / 2, w: w, h: h };
+    var w = ctx.measureText(sign.text).width + sign.size * 1.2, h = sign.size * 1.7;
+    sign.measured = { x: sign.x - w / 2, y: sign.y - h / 2, w: w, h: h };
     ctx.shadowColor = "rgba(74, 52, 40, 0.25)";
     ctx.shadowBlur = 10;
     ctx.shadowOffsetY = 5;
-    fillRound(ctx, SIGN.x - w / 2, SIGN.y - h / 2, w, h, h / 2, C.darkBrown);
+    fillRound(ctx, sign.x - w / 2, sign.y - h / 2, w, h, h / 2, C.darkBrown);
     ctx.shadowColor = "transparent";
     ctx.fillStyle = C.cream;
-    ctx.fillText(SIGN.text, SIGN.x, SIGN.y + 1);
+    ctx.fillText(sign.text, sign.x, sign.y + 1);
     ctx.restore();
+  }
+
+  function drawLabels(ctx) {
+    drawSign(ctx, SIGN);
+    drawSign(ctx, HOUSE.sign);
   }
 
   // A fishing rod in the hand and a bobber floating on the water, where it was thrown.
@@ -1172,8 +1506,8 @@ var Enchanted = (function () {
     ctx.restore();
   }
 
-  // After the night tint, before the characters: the rods of whoever is fishing, the snakes, the sparkles of a wish and the
-  // spirits, so they shine in the dark.
+  // After the night tint, before the characters: the rods of whoever is fishing, the snakes, the sleeping "z" of the acorns,
+  // the sparkles of a wish and the spirits, so they shine in the dark.
   function drawTop(ctx) {
     var dark = Time.darkness();
     Object.keys(current).forEach(function (id) {
@@ -1181,6 +1515,7 @@ var Enchanted = (function () {
       if (a.kind === "fish" && a.phase === "doing") drawRod(ctx, a);
     });
     snakes.forEach(function (s) { drawSnake(ctx, s); });
+    drawSleep(ctx, dark);
     sparkles.forEach(function (p) {
       var t = p.age / 1.6;
       ctx.save();
@@ -1230,7 +1565,8 @@ var Enchanted = (function () {
   // ---------- Words ----------
 
   // The id of the word for what is at a spot of the Bosque encantado, or null. Small things win over big ones.
-  // While a catch or a wish floats up, its text says what it is ("Pez hoja · leaf fish", "Deseo · wish").
+  // While a catch, a wish or an acorn's gift floats up, its text says what it is ("Pez hoja · leaf fish", "Deseo · wish",
+  // "Bellota · acorn").
   function wordAt(x, y) {
     if (x < 0 || x > W || y < 0 || y > H) return null;
     for (var i = pops.length - 1; i >= 0; i--) {
@@ -1242,7 +1578,9 @@ var Enchanted = (function () {
       var head = snakeHead(snakes[s]);
       if (head.out > 0.3 && near(x, y, head.x, head.y, 14)) return "snake";
     }
+    if (acornAt(x, y) >= 0) return "acorn";
     if (LOGS.some(function (l) { return inBox(x, y, grow(logBox(l), 4)); })) return "hollowLog";
+    if (inBox(x, y, houseBox()) || inBox(x, y, signBox(HOUSE.sign))) return "mushroomHouse";
     if (restAt(x, y)) return "giantMushroom";
     if (MUSHROOMS.some(function (m) {
       return inBox(x, y, { x: m.x - m.rx, y: m.y - m.stem - m.ry * 1.5, w: m.rx * 2, h: m.stem + m.ry * 1.5 });
@@ -1250,7 +1588,7 @@ var Enchanted = (function () {
     if (ringAt(x, y)) return "fairyRing";
     if (inBox(x, y, bridgeBox())) return "bridge";
     if (Math.abs(x - streamX(y)) <= STREAM.half + 2) return "stream";
-    if (inBox(x, y, trailBox()) || inBox(x, y, signBox())) return "enchanted";
+    if (inBox(x, y, trailBox()) || inBox(x, y, signBox(SIGN))) return "enchanted";
     if (BORDER.some(function (t) { return near(x, y, t.x, t.y, t.r); })) return "tree";
     return null;
   }
@@ -1260,13 +1598,19 @@ var Enchanted = (function () {
   function get() {
     var aids = {};
     Object.keys(bandAids).forEach(function (id) { aids[id] = bandAids[id]; });
-    return { wishDay: wishDay, bandAids: aids };
+    return { wishDay: wishDay, bandAids: aids, acornDay: acornDay, acornsGiven: acornsGiven };
   }
 
-  // Used when loading a saved game. Anything strange is left out. An old saved game has no wish made and no band-aids.
+  // Used when loading a saved game. Anything strange is left out. An old saved game has no wish made, no band-aids and no
+  // Bellota given today.
   function set(saved) {
     if (!saved || typeof saved !== "object") return;
     if (typeof saved.wishDay === "number" && isFinite(saved.wishDay)) wishDay = saved.wishDay;
+    if (typeof saved.acornDay === "number" && isFinite(saved.acornDay) && typeof saved.acornsGiven === "number" &&
+      isFinite(saved.acornsGiven)) {
+      acornDay = saved.acornDay;
+      acornsGiven = Math.max(0, Math.min(K.acorns.perDay, Math.floor(saved.acornsGiven)));
+    }
     var aids = saved.bandAids && typeof saved.bandAids === "object" ? saved.bandAids : {};
     Sims.list().forEach(function (sim) {
       var left = aids[sim.data.id];
