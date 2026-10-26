@@ -19,6 +19,12 @@
 // the window or the half-open door, looks to one side and the other, blinks and goes back in; at night they peek less and
 // sleep inside. A tap on the house walks the selected one to the door: an acorn peeks out with a hop, and sometimes gives
 // a Bellota 🌰 to the backpack (a few a day at most); the other times it only says hello with a ✨.
+// 🏮 Six little paper lanterns, magical creatures too (never selected, no chats, no gifts and no Amistad), with a warm
+// light inside that shines strong at night with a halo of their color. They hop around the forest, stop a while, look to
+// one side and the other and hop on; they never cross the stream but by the bridge, keep away from the hollow logs and are
+// not solid. Shy: when someone walks close, one hops quickly behind the closest giant mushroom, peeks out a little and comes
+// out when nobody is close. A tap on one, whoever is selected, makes it hop happily and blink twice; nobody walks to it.
+// They are not saved: they start at random spots of the forest.
 // Day and night and the weather of the day show here too (js/weather.js), without puddles or snowman. Modo decorar moves
 // nothing here. The neighbors never come, and the shiny coins never appear here. Pausa freezes it all.
 var Enchanted = (function () {
@@ -85,7 +91,7 @@ var Enchanted = (function () {
   // Texts floating up, as { x, y, text, age, word }, and the little sparkles going up from the fairy ring.
   var pops = [];
   var sparkles = [];
-  // What is under the mouse: a spirit, or "trail", "rest", "ring", "house" or "water".
+  // What is under the mouse: a spirit, a little lantern, or "trail", "rest", "ring", "house" or "water".
   var hover = null;
   // Seconds of play here so far: the stream, the spirits and the snakes stop with Pausa.
   var clock = 0;
@@ -192,11 +198,17 @@ var Enchanted = (function () {
   // True if the last spot given to usableAt was on the mushroom house.
   var onHouse = false;
 
+  // The little lantern the last spot given to usableAt was on, or null.
+  var onLantern = null;
+
   // "trail", "rest", "ring" or "water" for what can be used at a spot, or null (the spirits are apart: spiritAt).
   // js/sims.js and js/main.js only know those, so the mushroom house comes in through the ring's door: on it this says
   // "ring" and remembers it, and the glow (setHover) and the tap (tapRing) that always come right after go to the house.
+  // On a little lantern it says "lantern", for its glow and the pointer (its taps never get to js/sims.js: see the end).
   function usableAt(x, y) {
     onHouse = false;
+    onLantern = lanternAt(x, y);
+    if (onLantern) return "lantern";
     if (inBox(x, y, trailBox())) return "trail";
     if (restAt(x, y)) return "rest";
     if (inBox(x, y, houseBox())) {
@@ -209,7 +221,7 @@ var Enchanted = (function () {
   }
 
   function setHover(what) {
-    hover = what === "ring" && onHouse ? "house" : what;
+    hover = what === "ring" && onHouse ? "house" : what === "lantern" ? onLantern : what;
   }
 
   // ---------- Spirits ----------
@@ -526,6 +538,7 @@ var Enchanted = (function () {
     sparkles = sparkles.filter(function (p) { return p.age < 1.6; });
     updateSnakes(dt);
     updateAcorns(dt);
+    updateLanterns(dt);
   }
 
   // Little sparkles going up from the fairy ring while someone makes a wish.
@@ -751,6 +764,244 @@ var Enchanted = (function () {
     }
     return -1;
   }
+
+  // ---------- Little lanterns ----------
+
+  var L = K.lanterns;
+  // Each lantern a little different: taller or rounder ("w" and "h") and its handle tilted ("tilt").
+  var LANTERNS = [{ w: 1, h: 1.08, tilt: 0.25 }, { w: 1.14, h: 0.92, tilt: -0.2 }, { w: 0.94, h: 1.12, tilt: 0.1 },
+    { w: 1.08, h: 1, tilt: -0.35 }, { w: 1, h: 0.94, tilt: 0.35 }, { w: 0.9, h: 1.04, tilt: -0.1 }];
+
+  // How far a spot is from a hollow log (from the closest spot along it).
+  function fromLogAt(x, y, l) {
+    var lx = Math.max(l.x - l.len / 2, Math.min(l.x + l.len / 2, x));
+    return Math.sqrt((x - lx) * (x - lx) + (y - l.y) * (y - l.y));
+  }
+
+  // True if a little lantern may stand here: on the grass or the bridge, not on anything solid and far from the logs.
+  function lanternOk(x, y) {
+    return !isSolid(x, y) && LOGS.every(function (l) { return fromLogAt(x, y, l) >= L.logAway; });
+  }
+
+  // True if a way of points from a spot only goes over spots where a lantern may stand.
+  function wayOk(x, y, way) {
+    for (var i = 0; i < way.length; i++) {
+      var dx = way[i].x - x, dy = way[i].y - y, d = Math.sqrt(dx * dx + dy * dy);
+      for (var t = 0; t <= d; t += 6) {
+        if (!lanternOk(x + dx * t / d, y + dy * t / d)) return false;
+      }
+      x = way[i].x;
+      y = way[i].y;
+    }
+    return true;
+  }
+
+  // A random spot of the forest where a lantern may stand.
+  function lanternSpot() {
+    for (var i = 0; i < 200; i++) {
+      var x = between(70, W - 70), y = between(180, H - 40);
+      if (lanternOk(x, y)) return { x: x, y: y };
+    }
+    return { x: 300, y: 380 };
+  }
+
+  // Each lantern: where its feet are, the way it hops along, its hop now, what it does ("rest", "walk", "flee", "hide" or
+  // "back"), the mushroom it hides behind, and its happy hop after a tap.
+  var lanterns = LANTERNS.slice(0, L.count).map(function (one, i) {
+    var at = lanternSpot();
+    return { i: i, w: one.w, h: one.h, tilt: one.tilt, color: K.lanternColor[i], x: at.x, y: at.y, way: [], hop: null,
+      gap: 0, mode: "rest", rest: between(0.5, L.rest.max), restT: 0, look: 0, hide: null, hideT: 0, calm: 0, cheer: 0 };
+  });
+
+  // Where a lantern is now: along its hop, or behind its mushroom peeking out a little.
+  function lanternPos(l) {
+    if (l.mode === "hide") return { x: l.x + l.hide.side * (l.hide.m.sw / 2 - 1) * peekOf(l), y: l.y };
+    if (!l.hop) return { x: l.x, y: l.y };
+    var t = l.hop.t / l.hop.time;
+    return { x: l.hop.fx + (l.hop.tx - l.hop.fx) * t, y: l.hop.fy + (l.hop.ty - l.hop.fy) * t };
+  }
+
+  // How far a hiding lantern peeks out, from 0 to 1: every little while it peeks out a little and goes back.
+  function peekOf(l) {
+    var p = (l.hideT % 3.2) / 3.2;
+    return p < 0.45 ? 0 : p < 0.55 ? (p - 0.45) / 0.1 : p < 0.75 ? 1 : p < 0.85 ? (0.85 - p) / 0.1 : 0;
+  }
+
+  // How high a lantern is off the grass: along its hop, or its happy hop after a tap.
+  function lanternLift(l) {
+    if (l.cheer > 0) {
+      var c = L.cheer - l.cheer;
+      return c < 0.5 ? Math.sin(c / 0.5 * Math.PI) * 9 : 0;
+    }
+    if (!l.hop) return 0;
+    return Math.sin(l.hop.t / l.hop.time * Math.PI) * (l.mode === "flee" ? 4 : 5);
+  }
+
+  // How bright the light inside is: soft by day, strong at night, and it blinks twice after a tap.
+  function lanternLight(l) {
+    if (l.cheer > 0) {
+      var c = L.cheer - l.cheer;
+      if ((c > 0.2 && c < 0.38) || (c > 0.56 && c < 0.74)) return 0.05;
+      if (c > 0.12 && c < 0.85) return 1;
+    }
+    return 0.45 + 0.55 * Time.darkness();
+  }
+
+  // The little lantern at a spot (around its body), or null. One fully behind its mushroom is not.
+  function lanternAt(x, y) {
+    for (var i = lanterns.length - 1; i >= 0; i--) {
+      var l = lanterns[i];
+      if (l.mode === "hide" && peekOf(l) < 0.5) continue;
+      var at = lanternPos(l);
+      if (near(x, y, at.x, at.y - 11 - lanternLift(l), 12)) return l;
+    }
+    return null;
+  }
+
+  // A tap on a lantern: a happy hop and two blinks.
+  function cheer(l) {
+    l.cheer = L.cheer;
+  }
+
+  // Hop to a spot not too far: straight if nothing is in the way, else around (and over the bridge to cross the stream).
+  function wander(l) {
+    for (var i = 0; i < 8; i++) {
+      var a = between(0, Math.PI * 2), d = between(50, 180);
+      var tx = l.x + Math.cos(a) * d, ty = l.y + Math.sin(a) * d * 0.7;
+      if (!lanternOk(tx, ty)) continue;
+      var way = [{ x: tx, y: ty }];
+      if (!wayOk(l.x, l.y, way)) {
+        way = Path.find("enchanted", l.x, l.y, tx, ty);
+        var end = way[way.length - 1];
+        if (!end || Math.abs(end.x - tx) > 10 || Math.abs(end.y - ty) > 10 || !wayOk(l.x, l.y, way)) continue;
+      }
+      l.way = way;
+      l.mode = "walk";
+      return;
+    }
+    l.rest = between(0.5, 1.5);
+    l.restT = 0;
+  }
+
+  // Someone walking close: hop quickly to the front of the closest giant mushroom on its side of the stream (not the low
+  // one to rest on, nor the mushroom house), and behind it, a little to one side of the stem.
+  function flee(l) {
+    var side = l.x < streamX(l.y) ? -1 : 1;
+    var mine = MUSHROOMS.filter(function (m) { return (m.x < streamX(m.y) ? -1 : 1) === side; }).sort(function (a, b) {
+      return (a.x - l.x) * (a.x - l.x) + (a.y - l.y) * (a.y - l.y) - (b.x - l.x) * (b.x - l.x) - (b.y - l.y) * (b.y - l.y);
+    });
+    var pick = null, pickWay = null;
+    mine.some(function (m) {
+      var way = Path.find("enchanted", l.x, l.y, m.x, m.y + 20);
+      var end = way[way.length - 1] || { x: l.x, y: l.y };
+      if (Math.abs(end.x - m.x) > 12 || Math.abs(end.y - m.y - 20) > 12) return false;
+      if (!pick) {
+        pick = m;
+        pickWay = way;
+      }
+      if (!wayOk(l.x, l.y, way)) return false;
+      pick = m;
+      pickWay = way;
+      return true;
+    });
+    if (!pick) return;
+    var peek = Math.random() < 0.5 ? -1 : 1;
+    l.hide = { m: pick, side: peek };
+    l.way = pickWay.concat([{ x: pick.x + peek * 2, y: pick.y - 14 }]);
+    l.mode = "flee";
+  }
+
+  // True if Sofía or real.fixer walks close to a lantern.
+  function scared(l) {
+    return Sims.list().some(function (sim) {
+      return sim.place === "enchanted" && sim.path.length > 0 && near(sim.x, sim.y, l.x, l.y, L.scare);
+    });
+  }
+
+  // True if someone is close to the mushroom a lantern hides behind.
+  function anyoneClose(m) {
+    return Sims.list().some(function (sim) { return sim.place === "enchanted" && near(sim.x, sim.y, m.x, m.y, L.back); });
+  }
+
+  function updateLanterns(dt) {
+    lanterns.forEach(function (l) {
+      if (l.cheer > 0) {
+        l.cheer = Math.max(0, l.cheer - dt);
+        return;
+      }
+      if (l.mode !== "flee" && l.mode !== "hide" && scared(l)) {
+        if (l.hop) {
+          l.x = l.hop.tx;
+          l.y = l.hop.ty;
+          l.hop = null;
+        }
+        flee(l);
+      }
+      if (l.mode === "hide") {
+        l.hideT += dt;
+        l.calm = anyoneClose(l.hide.m) ? 0 : l.calm + dt;
+        if (l.calm < L.calm) return;
+        // Out again, to the front of the mushroom.
+        l.x = lanternPos(l).x;
+        l.way = [{ x: l.hide.m.x, y: l.hide.m.y + 20 }];
+        l.mode = "back";
+        return;
+      }
+      var S = l.mode === "flee" ? L.flee : L.hop;
+      if (l.hop) {
+        l.hop.t += dt;
+        if (l.hop.t < l.hop.time) return;
+        l.x = l.hop.tx;
+        l.y = l.hop.ty;
+        l.hop = null;
+        l.gap = S.gap;
+        return;
+      }
+      if (l.gap > 0) {
+        l.gap -= dt;
+        return;
+      }
+      if (l.way.length > 0) {
+        var to = l.way[0], dx = to.x - l.x, dy = to.y - l.y, d = Math.sqrt(dx * dx + dy * dy);
+        if (d <= S.far) l.way.shift();
+        var k = d <= S.far ? 1 : S.far / d;
+        l.hop = { fx: l.x, fy: l.y, tx: l.x + dx * k, ty: l.y + dy * k, t: 0, time: S.time };
+        if (Math.abs(dx) > 1) l.look = dx < 0 ? -1 : 1;
+        return;
+      }
+      if (l.mode === "flee") {
+        l.mode = "hide";
+        l.hideT = 0;
+        l.calm = 0;
+        return;
+      }
+      if (l.mode !== "rest") {
+        l.mode = "rest";
+        l.rest = between(L.rest.min, L.rest.max);
+        l.restT = 0;
+      }
+      // Standing: it looks to one side and the other, then hops on.
+      l.restT += dt;
+      l.look = l.restT < 0.4 ? l.look * 0.9 : Math.sin((l.restT - 0.4) * 2.6);
+      if (l.restT >= l.rest) wander(l);
+    });
+  }
+
+  // js/sims.js sends taps in the Bosque here only when someone is selected in it, and it would walk them there. So the
+  // little lanterns take their taps first: once every script is in, Sims.handleTap is wrapped, and a tap on a lantern
+  // (not on a character or a spirit, and not while the menu is open) makes it hop and blink, and goes no further.
+  window.addEventListener("DOMContentLoaded", function () {
+    var handleTap = Sims.handleTap;
+    Sims.handleTap = function (x, y, screenX, screenY) {
+      var free = Sims.viewPlace() === "enchanted" && !UI.isMenuOpen() && !Sims.simAt(x, y) && !spiritAt(x, y);
+      var l = free ? lanternAt(x, y) : null;
+      if (l) {
+        cheer(l);
+        return;
+      }
+      handleTap(x, y, screenX, screenY);
+    };
+  });
 
   // ---------- Drawing ----------
 
@@ -1250,6 +1501,93 @@ var Enchanted = (function () {
     ctx.restore();
   }
 
+  // ---------- Little lanterns drawing ----------
+
+  // The paper body of a lantern, round and a little uneven, as if drawn by hand.
+  function lanternBody(ctx, l, x, cy, rx, ry) {
+    var n = 14, pts = [];
+    for (var k = 0; k < n; k++) {
+      var a = k / n * Math.PI * 2, r = 1 + (hash(l.i + 40, k) - 0.5) * 0.12;
+      pts.push({ x: x + Math.cos(a) * rx * r, y: cy + Math.sin(a) * ry * r });
+    }
+    ctx.beginPath();
+    ctx.moveTo((pts[n - 1].x + pts[0].x) / 2, (pts[n - 1].y + pts[0].y) / 2);
+    for (var j = 0; j < n; j++) {
+      var p = pts[j], q = pts[(j + 1) % n];
+      ctx.quadraticCurveTo(p.x, p.y, (p.x + q.x) / 2, (p.y + q.y) / 2);
+    }
+    ctx.closePath();
+  }
+
+  // A little lantern standing with its feet at x, y: thin dark legs, a round paper body with soft stripes and a warm light
+  // inside, a lid with a tilted handle on top and two tiny black eyes. "night" leaves out its shadow (drawn over the tint).
+  function drawLantern(ctx, l, x, y, night) {
+    var rx = 5.6 * l.w, ry = 6 * l.h, lift = lanternLift(l), cy = y - 3.2 - ry - lift, light = lanternLight(l);
+    if (!night) ellipse(ctx, x, y + 0.5, rx * 0.9 * (1 - lift / 20), 1.8, "rgba(30, 50, 30, 0.3)");
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = K.lanternLid;
+    ctx.lineWidth = 1;
+    var leg = lift > 1 ? 1.8 : 3.4;
+    ctx.beginPath();
+    ctx.moveTo(x - 2, cy + ry - 0.5);
+    ctx.lineTo(x - 2.5, cy + ry + leg);
+    ctx.moveTo(x + 2, cy + ry - 0.5);
+    ctx.lineTo(x + 2.5, cy + ry + leg);
+    ctx.stroke();
+    lanternBody(ctx, l, x, cy, rx, ry);
+    ctx.fillStyle = l.color;
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    var g = ctx.createRadialGradient(x, cy + 1, 0.5, x, cy + 1, ry * (1.1 + 0.5 * light));
+    g.addColorStop(0, "rgba(255, 246, 205, " + light + ")");
+    g.addColorStop(1, "rgba(255, 246, 205, 0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(x - rx - 2, cy - ry - 2, rx * 2 + 4, ry * 2 + 4);
+    // Soft paper stripes.
+    ctx.strokeStyle = "rgba(90, 55, 40, 0.2)";
+    ctx.lineWidth = 0.8;
+    [-0.5, 0, 0.5].forEach(function (t) {
+      var half = rx * Math.sqrt(1 - t * t);
+      ctx.beginPath();
+      ctx.moveTo(x - half, cy + t * ry);
+      ctx.quadraticCurveTo(x, cy + t * ry + 1.4, x + half, cy + t * ry);
+      ctx.stroke();
+    });
+    ctx.restore();
+    lanternBody(ctx, l, x, cy, rx, ry);
+    ctx.strokeStyle = "rgba(70, 45, 35, 0.35)";
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+    fillRound(ctx, x - rx * 0.45, cy + ry - 1.2, rx * 0.9, 1.8, 0.9, K.lanternLid);
+    fillRound(ctx, x - rx * 0.55, cy - ry - 1.4, rx * 1.1, 2.4, 1.1, K.lanternLid);
+    ctx.translate(x, cy - ry - 1.2);
+    ctx.rotate(l.tilt);
+    ctx.strokeStyle = K.lanternLid;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(0, 0, 2.6, Math.PI * 1.05, Math.PI * 1.95);
+    ctx.stroke();
+    ctx.restore();
+    var ex = l.cheer > 0 ? 0 : l.look * 1.4;
+    circle(ctx, x - 1.9 + ex, cy + 0.4, 0.85, "#1E1E1E");
+    circle(ctx, x + 1.9 + ex, cy + 0.4, 0.85, "#1E1E1E");
+  }
+
+  function drawLanternHighlight(ctx, l) {
+    var at = lanternPos(l);
+    ctx.save();
+    ctx.shadowColor = C.cream;
+    ctx.shadowBlur = 10;
+    ctx.strokeStyle = C.sage;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(at.x, at.y - 10 - lanternLift(l), 13, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
   // ---------- Spirits and snakes drawing ----------
 
   // A forest spirit: a little ball of light with a soft glow, two eyes and a tiny smile.
@@ -1404,7 +1742,7 @@ var Enchanted = (function () {
     if (hover === "ring") drawGlow(ctx, { x: RING.x - RING.r - 6, y: RING.y - RING.r * 0.6 - 14, w: RING.r * 2 + 12, h: RING.r * 1.2 + 20 });
     drawRing(ctx);
     LOGS.forEach(function (l) { drawLog(ctx, l); });
-    // The mushrooms, the mushroom house and the trees: whoever is lower is drawn last.
+    // The mushrooms, the mushroom house, the trees and the little lanterns: whoever is lower is drawn last.
     var things = MUSHROOMS.map(function (m) { return { y: m.y, draw: function () { drawMushroom(ctx, m); } }; });
     things.push({ y: REST.y, draw: function () {
       if (hover === "rest") drawGlow(ctx, { x: REST.x - REST.rx, y: REST.y - REST.stem - REST.ry * 1.5, w: REST.rx * 2, h: REST.stem + REST.ry * 1.5 });
@@ -1415,12 +1753,20 @@ var Enchanted = (function () {
       drawHouse(ctx);
     } });
     BORDER.forEach(function (t, i) { things.push({ y: t.y, draw: function () { drawTallTree(ctx, t, i); } }); });
+    // The little lanterns among them, so one hiding behind a mushroom is hidden by it.
+    lanterns.forEach(function (l) {
+      var at = lanternPos(l);
+      things.push({ y: at.y, draw: function () {
+        if (hover === l) drawLanternHighlight(ctx, l);
+        drawLantern(ctx, l, at.x, at.y, false);
+      } });
+    });
     things.sort(function (a, b) { return a.y - b.y; }).forEach(function (one) { one.draw(); });
     drawLight(ctx);
     ctx.restore();
   }
 
-  // At night the giant mushrooms glow with a soft halo of their color (drawn over the night tint).
+  // At night the giant mushrooms and the little lanterns glow with a soft halo of their color (drawn over the night tint).
   function drawNightLights(ctx, dark) {
     if (dark <= 0) return;
     ctx.save();
@@ -1436,6 +1782,20 @@ var Enchanted = (function () {
       capPath(ctx, m.x, m.y - m.stem - 2, m);
       ctx.fillStyle = m.color;
       ctx.fill();
+    });
+    // The little lanterns shine strong, with a halo of their color; one behind its mushroom shows only its halo.
+    lanterns.forEach(function (l, i) {
+      var at = lanternPos(l), cy = at.y - 10 - lanternLift(l), light = lanternLight(l);
+      var pulse = 0.85 + 0.15 * Math.sin(clock * 2 + i * 1.7);
+      var g = ctx.createRadialGradient(at.x, cy, 2, at.x, cy, 34);
+      g.addColorStop(0, "rgba(255, 244, 205, 1)");
+      g.addColorStop(0.3, l.color);
+      g.addColorStop(1, "rgba(255, 255, 255, 0)");
+      ctx.globalAlpha = dark * 0.85 * pulse * light;
+      circle(ctx, at.x, cy, 34, g);
+      if (l.mode === "hide") return;
+      ctx.globalAlpha = dark;
+      drawLantern(ctx, l, at.x, at.y, true);
     });
     ctx.restore();
   }
@@ -1574,6 +1934,7 @@ var Enchanted = (function () {
       if (p.word && Math.abs(x - p.x) < 80 && Math.abs(y - (p.y - p.age / K.popTime * 40)) < 16) return p.word;
     }
     if (spiritAt(x, y)) return "spirit";
+    if (lanternAt(x, y)) return "littleLantern";
     for (var s = 0; s < snakes.length; s++) {
       var head = snakeHead(snakes[s]);
       if (head.out > 0.3 && near(x, y, head.x, head.y, 14)) return "snake";

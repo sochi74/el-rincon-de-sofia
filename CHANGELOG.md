@@ -46,6 +46,22 @@
 - Si los dos tocan la casita a la vez, el segundo dice "Ocupado" y tiene que volver a tocarla.
 - Si recargas mientras alguien visita la casita, la visita se pierde (las bellotas ya regaladas hoy sí se recuerdan).
 - Los espíritus del bosque pueden pasar por delante de la casita, como pasa con los otros hongos gigantes.
+- Los farolitos casi nunca cruzan el puentecito: pasean cerquita de donde están, así que cada uno se queda casi siempre de su lado del arroyo.
+- De noche, si un farolito pasa justo por detrás del borde del sombrero de un hongo, su lucecita se ve por encima del sombrero.
+- Al salir de su escondite, el farolito pasa saltando por el pie del hongo (no lo rodea).
+
+## 2026-10-26 · Extra: 🏮 Farolitos vivos y 🌠 Wishing stars
+- 🏮 Farolitos vivos en el Bosque encantado (criaturas mágicas: no se seleccionan, no se charla con ellos, no reciben regalos y no tienen Amistad): 6 farolitos de papel chiquitos (más bajitos que una bellotita), dos rosa coral, dos amarillo pastel y dos lila, con cuerpo redondeado de papel con rayitas suaves y bordes un poquito irregulares, colores mate, una tapita y una manijita arriba (inclinada distinto en cada uno), dos ojitos negros chiquitos y patitas finitas oscuras; cada uno un poquito más alto o más redondito.
+- Por dentro tienen una lucecita cálida: de día suave; de noche brilla fuerte con un halo de su color.
+- Pasean a saltitos: saltan un poquito, se detienen un ratito, miran a un lado y al otro y siguen. No pisan el arroyo (solo cruzan por el puentecito), no se acercan a los troncos de las víboras y no son obstáculo.
+- Tímidos: si Sofía o real.fixer camina cerca de uno, da saltitos rápidos hasta el hongo gigante más cercano de su lado del arroyo y se esconde detrás de su tronco; cada tanto se asoma un poquito, y cuando ya no hay nadie cerca durante un ratito vuelve a salir.
+- Al tocar uno (con o sin alguien seleccionado; nadie camina hacia él): da un saltito feliz y su luz parpadea dos veces. Brilla al pasar el mouse.
+- Pausa y Modo decorar los congelan. No se guardan: al cargar aparecen en lugares al azar del bosque.
+- 🌠 Extra desbloqueado (50 ⭐): Wishing stars. De 20:00 a 06:00, con cielo despejado (sin lluvia, niebla ni nieve), en la ciudad, la Pradera de flores, el Lago y el Bosque encantado, cada 20 a 60 segundos de juego cruza en diagonal por la parte de arriba una estrella fugaz: una estrellita blanca dorada con una cola de luz que se desvanece, en 1 o 2 segundos. 1 de cada 5 veces cruzan dos seguidas. Se dibujan por encima del mundo y por debajo de los carteles; dentro de la casa no se ven. Solo decoración: no se tocan y no se guardan. Pausa y Modo decorar las congelan.
+- Palabra nueva: Farolito · little lantern (LÍ-tel LÁN-tern), al pasar el mouse o mantener el dedo sobre un farolito. Cuenta para el 📖 Diario.
+- Revisión: el truco temporal de la prueba (reloj 10 veces más rápido y estrellas cada 3 a 6 segundos) se quitó.
+- Por dentro: js/sims.js no se podía tocar y solo manda los toques del Bosque cuando alguien está seleccionado ahí (y lo haría caminar), así que js/enchanted.js recibe primero los toques del juego y, si tocan un farolito, lo atiende ahí mismo. Las estrellas se dibujan desde js/weather.js en el mismo momento que la niebla (afuera, antes de los carteles), así que js/main.js no cambió.
+- Archivos: js/enchanted.js, js/weather.js, js/config.js y js/words.js. CLAUDE.md: los farolitos en la regla de las criaturas mágicas y en la línea de js/enchanted.js, y las estrellas fugaces en la línea de js/weather.js.
 
 ## 2026-10-26 · Extra: 🍄 Casita de hongo con bellotitas
 - 🏠 Casita de hongo en el Bosque encantado, abajo entre el círculo de hongos y el arroyo, lejos de los troncos de las víboras y sin tapar el senderito, el arroyo, el puentecito, el círculo ni los otros hongos: un hongo gigante (el más grande del bosque) con sombrero rojo con puntitos crema, tronco ancho color crema, una puertita redonda de madera con tablitas y perilla dorada, y una ventana redonda con marco de madera. Es obstáculo. Cartel "Casita de hongo" arriba del sombrero. Con nieve el sombrero se pone blanco. En Modo decorar no se mueve (nada se mueve en el Bosque).

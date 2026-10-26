@@ -175,6 +175,7 @@ var WORDS = {
   spiritFish: { es: "Pez espíritu", en: "spirit fish", say: "SPÍ-rit FISH" },
   mushroomHouse: { es: "Casita de hongo", en: "mushroom house", say: "MÁSH-rum JÁUS" },
   acorn: { es: "Bellota", en: "acorn", say: "ÉI-korn" },
+  littleLantern: { es: "Farolito", en: "little lantern", say: "LÍ-tel LÁN-tern" },
 
   // The sunflower field of the Pradera de flores (js/meadow.js)
   sunflower: { es: "Girasol", en: "sunflower", say: "SÁN-flau-er" }
