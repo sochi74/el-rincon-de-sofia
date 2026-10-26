@@ -1,7 +1,8 @@
 // Krohna, real.fixer's orange kitten. Only decoration: no needs, it cannot be selected and it changes nothing in the game.
-// It follows real.fixer a little behind, in the same place (house, city, Pradera or Lago), going around things with js/path.js.
-// When he goes through the door (or along the trail of the Pradera or the Lago), it walks to the same door (or the end of the
-// trail) and comes out on the other side a moment after him.
+// It follows real.fixer a little behind, in the same place (house, city, Pradera, Lago or Bosque encantado), going around
+// things with js/path.js. When he goes through the door (or along the trail of the Pradera, the Lago or the Bosque
+// encantado), it walks to the same door (or the end of the trail) and comes out on the other side a moment after him.
+// The snakes of the Bosque encantado never bite it.
 // When he stands still it sits by his side and wags its tail; when he sleeps in the Carpa it sleeps curled up in its bed
 // by the Carpa (js/city.js), wherever Modo decorar put it.
 // With Pausa it stays still.
@@ -52,7 +53,8 @@ var Pet = (function () {
     pet = { place: sim.place, x: spot.x, y: spot.y, path: [], facing: 1, clock: 0, step: 0, timer: 0, target: null, door: null };
   }
 
-  // The next place on the way to him: from the house, the Pradera or the Lago always the city, and from the city where he is.
+  // The next place on the way to him: from the house, the Pradera, the Lago or the Bosque encantado always the city, and
+  // from the city where he is.
   function nextPlace(from, to) {
     return from === "city" ? to : "city";
   }
@@ -93,7 +95,8 @@ var Pet = (function () {
 
   // He went through the door (or along the trail): the kitten walks to the same door and, a moment after him, comes out
   // on the other side (then it walks to him as always). If he comes back before that, it just stays with him.
-  // From the house to the Pradera or the Lago (or back, or from one to the other) it goes through the city on the way.
+  // From the house to the Pradera, the Lago or the Bosque encantado (or back, or from one to another) it goes through the
+  // city on the way.
   function followThroughDoor(sim, dt) {
     var next = nextPlace(pet.place, sim.place);
     if (pet.door === null) {
@@ -300,7 +303,7 @@ var Pet = (function () {
     return { es: "Krohna", en: WORDS.kitten.en, say: WORDS.kitten.say };
   }
 
-  // Where the kitten is ("house", "city", "meadow" or "lake"), for its meow.
+  // Where the kitten is ("house", "city", "meadow", "lake" or "enchanted"), for its meow.
   function place() {
     return pet ? pet.place : null;
   }

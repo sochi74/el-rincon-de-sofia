@@ -1,5 +1,6 @@
 // The backpack: one for the whole house, shared by Sofía and real.fixer. It keeps what they fish in the river
-// and gather in the forest (and the wild flowers of the Pradera, js/meadow.js, and what comes from the Lago, js/lake.js) and the dishes they cook (js/cooking.js), and sells it for magic coins. Flowers from the garden are still sold when harvested.
+// and gather in the forest (and the wild flowers of the Pradera, js/meadow.js, what comes from the Lago, js/lake.js, and the
+// fish of the stream of the Bosque encantado, js/enchanted.js) and the dishes they cook (js/cooking.js), and sells it for magic coins. Flowers from the garden are still sold when harvested.
 var Inventory = (function () {
   // Everything that can go in the backpack, in the order the backpack shows it: name, emoji and price in coins.
   var ITEMS = [
@@ -21,6 +22,10 @@ var Inventory = (function () {
     { id: "pearlFish", name: "Pez perla", emoji: "✨", price: 35 },
     { id: "shell", name: "Concha", emoji: "🐚", price: 5 },
     { id: "starfish", name: "Estrella de mar", emoji: "⭐", price: 8 },
+    // From the stream of the Bosque encantado (js/enchanted.js); the old boots are the same as the river's
+    { id: "leafFish", name: "Pez hoja", emoji: "🍃", price: 7 },
+    { id: "mushroomFish", name: "Pez hongo", emoji: "🍄", price: 12 },
+    { id: "spiritFish", name: "Pez espíritu", emoji: "✨", price: 40 },
     // Dishes
     { id: "fishMushroom", name: "Pescado con hongos", emoji: "🍛", price: 18 },
     { id: "crabSoup", name: "Sopa de cangrejo", emoji: "🦀", price: 25 },

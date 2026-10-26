@@ -1,7 +1,9 @@
-// Saves and loads the game in the browser: needs, where each character is (house, city, Pradera or Lago), stands and looks, friendship,
+// Saves and loads the game in the browser: needs, where each character is (house, city, Pradera, Lago or Bosque encantado),
+// stands and looks, friendship,
 // the day and hour of the game clock, the weather of the day (with its puddles, snow and snowman), the magic coins (the counter and the shiny coins on the ground), the garden plots,
 // the backpack (with its dishes) and the things in the forest, the wild flowers of the Pradera, the shells of the Lago and its
-// sandcastle, the zones of the Mapa del valle already found, how many gifts each one got today,
+// sandcastle, whether today's wish of the Bosque encantado was made and the band-aids of the snake bites,
+// the zones of the Mapa del valle already found, how many gifts each one got today,
 // where each neighbor is (and whether Vladi or Professor Hoot is inside his home) with its friendship toward each one,
 // and each one's goals: the goal it is on, how far it got, and so the decorations of the goals already met,
 // and where Modo decorar put each thing and which way it is turned (in the house and in the city),
@@ -18,7 +20,7 @@ var Save = (function () {
   function snapshot() {
     var data = { characters: {}, clock: Time.get(), weather: Weather.get(), coins: Coins.get(), garden: Garden.get(),
       inventory: Meadow.withPending(Gifts.withPending(Cooking.withPending(Inventory.get()))), forest: Gather.get(),
-      meadow: Meadow.get(), lake: Lake.get(), valley: ValleyMap.get(), gifts: Gifts.get(),
+      meadow: Meadow.get(), lake: Lake.get(), enchanted: Enchanted.get(), valley: ValleyMap.get(), gifts: Gifts.get(),
       neighbors: Neighbors.get(), goals: Goals.get(), lessons: Lessons.get(),
       layout: { house: House.getLayout(), city: City.getLayout() } };
     Sims.list().forEach(function (sim) {
@@ -90,9 +92,11 @@ var Save = (function () {
     // The forest first, so the coins can stay off its things.
     Gather.set(data.forest);
     Coins.set(data.coins);
-    // An old saved game keeps the wild flowers and the shells of a new game, and only knows the Ciudad.
+    // An old saved game keeps the wild flowers and the shells of a new game, has no wish made and no band-aids,
+    // and only knows the Ciudad.
     Meadow.set(data.meadow);
     Lake.set(data.lake);
+    Enchanted.set(data.enchanted);
     ValleyMap.set(data.valley);
     Garden.set(data.garden);
     Inventory.set(data.inventory);

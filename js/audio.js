@@ -2,8 +2,10 @@
 // Short effects (buttons, coins, garden, fishing, cooking, gifts, friendship and Krohna's meow),
 // soft place sounds (in the city the river, birds by day, crickets by night and the campfire; in the Pradera birds and
 // a soft buzz of bees by day and crickets by night; in the Lago soft little waves, birds by day and crickets by night;
+// in the Bosque encantado the stream, birds by day and crickets by night;
 // in the house the tele while someone watches it) and calm music that turns softer at night.
 // A soft chime when a zone of the Mapa del valle is found. In the Lago the ducks' soft "cuac" and Pacífica's short song.
+// In the Bosque encantado a soft tinkle while the spirits dance and a quiet "sss" when a snake peeks out.
 // The weather (js/weather.js): soft rain outside, softer and lower in the house like rain on the roof, and no birds
 // while it rains; with snow, the place sounds are a little softer.
 // Nothing sounds until "Jugar" is tapped. The 🔊 button goes 🔊 everything → 🎵 no music (effects only) → 🔇 silence,
@@ -171,6 +173,17 @@ var Sound = (function () {
         osc.start(t + d);
         osc.stop(t + d + 0.2);
       });
+    },
+    // The spirits dancing: a soft tinkle of little high bells.
+    chime: function (t) {
+      [88, 91, 95, 93].forEach(function (m, i) {
+        note(effectsBus, freqOf(m), t + i * 0.09, 0.45, "sine", 0.08);
+        note(effectsBus, freqOf(m + 12), t + i * 0.09, 0.15, "sine", 0.02);
+      });
+    },
+    // A snake peeking out: a quiet, short "sss".
+    hiss: function (t) {
+      hiss(effectsBus, t, 0.55, "highpass", 4500, 0.06, null, 0.7);
     },
     // Pacífica's song: a short, soft melody that floats up and down, with a little shimmer.
     song: function (t) {
@@ -435,8 +448,9 @@ var Sound = (function () {
 
   // Random sounds of the place, each with its own little timer.
   function ambience(dt, place, night) {
-    var city = place === "city", meadow = place === "meadow", lake = place === "lake", outside = city || meadow || lake;
-    glide("river", river.gain, city ? 0.55 : 0);
+    var city = place === "city", meadow = place === "meadow", lake = place === "lake", forest = place === "enchanted";
+    var outside = city || meadow || lake || forest;
+    glide("river", river.gain, city ? 0.55 : forest ? 0.3 : 0);
     glide("waves", waves.gain, lake ? 0.6 : 0);
     var wet = Weather.rainLevel();
     glide("rain", rain.gain, Math.round(wet * (outside ? K.rain.city : K.rain.house) * 100) / 100);
@@ -452,7 +466,7 @@ var Sound = (function () {
       tvVoice.gain.setTargetAtTime(Math.random() < 0.2 ? 0.05 : between(0.4, 1), t, 0.03);
       tvFilter.frequency.setTargetAtTime(between(600, 1600), t, 0.04);
     }
-    if (meadow || lake) {
+    if (meadow || lake || forest) {
       if (!night && wet === 0 && timers.bird <= 0) {
         timers.bird = between(1.5, 5);
         chirp(t);
