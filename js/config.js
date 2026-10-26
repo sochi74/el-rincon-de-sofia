@@ -467,6 +467,10 @@ var CONFIG = {
   // The snakes of the hollow logs peek out every "peek.min" to "peek.max" seconds; whoever stands still closer than
   // "bite.near" to a log for "bite.still" seconds gets bitten (a band-aid for "bite.bandAid" seconds of play), and that
   // snake waits "bite.rest" seconds before it may bite again.
+  // In the mushroom house live "acorns.count" little acorns: every "acorns.peek.min" to "acorns.peek.max" seconds (by night
+  // "acorns.nightSlow" times less often) one peeks out of the window or the door for "acorns.peek.time" seconds, and
+  // "acorns.two" of the times two peek at once. A visit at the door takes "acorns.visitTime" seconds; "acorns.giftChance"
+  // of the times an acorn gives a Bellota to the backpack, at most "acorns.perDay" a day of the game.
   enchanted: {
     edge: { x: 968, y: 470 },
     foot: { x: 940, y: 470 },
@@ -484,6 +488,14 @@ var CONFIG = {
     popTime: 1.8,
     peek: { min: 6, max: 14, time: 2.4 },
     bite: { near: 95, still: 8, rest: 20, bandAid: 30, shout: 1.8, hop: 0.45 },
+    acorns: { count: 5, peek: { min: 5, max: 15, time: 2.8 }, nightSlow: 2.5, two: 0.3, visitTime: 1.4, giftChance: 1 / 3,
+      perDay: 3 },
+    houseCap: "#D9544A",
+    houseTrunk: "#F5EBDD",
+    door: "#B07A4F",
+    acornCap: ["#7A5230", "#8E6640", "#5E3E24", "#9C7448", "#6B4628"],
+    acornBody: ["#D2A877", "#CFA270", "#D8B283", "#C99C68", "#D4AA7B"],
+    cheek: "#F2A7A0",
     grass: "#6E9A5E",
     grassDark: "#557D4A",
     grassLight: "#88B074",

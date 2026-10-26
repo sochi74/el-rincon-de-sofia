@@ -9,7 +9,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - Nombres de archivo en minúsculas; referencias con las mismas mayúsculas exactas.
 - Nunca usar "Sims", "The Sims", nombres o logos de EA, Simlish ni arte de EA.
 - Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi, Vladi y Professor Hoot (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad. El mundo tiene la ciudad y zonas alrededor a las que se llega caminando por sus bordes (por ahora la Pradera de flores, el Lago y el Bosque encantado).
-- Criaturas mágicas de las zonas: no son vecinos, no se seleccionan y no se charla con ellas. Por ahora: Pacífica, la sirena del Lago, y en el Bosque encantado los espíritus del bosque y las víboras de los troncos huecos.
+- Criaturas mágicas de las zonas: no son vecinos, no se seleccionan y no se charla con ellas. Por ahora: Pacífica, la sirena del Lago, y en el Bosque encantado los espíritus del bosque, las víboras de los troncos huecos y las bellotitas de la Casita de hongo.
 - Guardado (Hito 6): localStorage dentro de try/catch; el juego funciona aunque falle.
 - Repo público; GitHub Pages desde main, carpeta raíz.
 
@@ -47,7 +47,7 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/valleymap.js: el borde del valle (el senderito de arriba a la Pradera, el senderito de arena de la derecha al Lago, el senderito con hojitas de la izquierda al Bosque encantado y el cartel Próximamente de abajo) y el 🗺️ Mapa del valle
 - js/meadow.js: la Pradera de flores: dibujo, flores silvestres, columpio, manta de picnic, abejitas y campo de girasoles
 - js/lake.js: el Lago: dibujo, muelle y pesca, conchitas, castillo de arena, sillas, patitos y Pacífica
-- js/enchanted.js: el Bosque encantado: dibujo, hongos gigantes, hongo para descansar, círculo de hongos y deseo, arroyo con puentecito y pesca, espíritus del bosque, víboras de los troncos huecos y curitas
+- js/enchanted.js: el Bosque encantado: dibujo, hongos gigantes, hongo para descansar, círculo de hongos y deseo, arroyo con puentecito y pesca, espíritus del bosque, víboras de los troncos huecos y curitas, y la Casita de hongo con sus bellotitas
 - Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, lake, enchanted, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
 - Todo archivo nuevo se anota aquí.
 

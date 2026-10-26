@@ -16,11 +16,12 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🦊 Professor Hoot: zorro bibliotecario, el profe de inglés del valle; vive en un árbol hueco del bosque y enseña una palabra por día. "Every day, a new word!"
 - 🧜‍♀️ Pacífica: sirena del Lago, criatura mágica; de día canta en su roca.
 - ✨ Espíritus del bosque y 🐍 víboras: criaturas mágicas del Bosque encantado; los espíritus bailan contigo y las víboras traviesas muerden si te quedas quieta junto a su tronco.
+- 🌰 Bellotitas: cinco bellotas chiquitas, criaturas mágicas que viven en la Casita de hongo del Bosque encantado; se asoman por la ventana y la puerta y a veces regalan una bellota.
 
 ## Estado
-Hito 26 ✅
+Extra ✅ Casita de hongo
 
-## ⭐ Estrellas de inglés: 47
+## ⭐ Estrellas de inglés: 48
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -259,6 +260,8 @@ Hito 26 ✅
 - mushroom fish: pez hongo
 - spirit fish: pez espíritu
 - sunflower: girasol
+- mushroom house: casita de hongo
+- acorn: bellota
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -280,7 +283,7 @@ Hito 26 ✅
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - A veces pega el prompt en el chat del Modo Planear en vez de en Claude Code: recordarle con cariño que primero escriba claude, espere a que se abra y pegue ahí. Hacer el merge juntas después de la revisión, y confirmar con gh pr list.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 47
+- ⭐ Estrellas de inglés: 48
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -292,6 +295,7 @@ Hito 26 ✅
   - 40 ⭐: Pizza oven 🍕, construido en el Hito 23
   - 45 ⭐: Sunflower field 🌻, construido en el Hito 26 (un campo de girasoles altos en la Pradera de flores, solo decoración)
   - Próximo regalo: a las 50 ⭐
+- Último hecho: Extra 🍄 Casita de hongo con bellotitas, en el Bosque encantado.
 - Siguiente paso: Pack 4, Hito 27: ⛰️ Montaña y cueva (con el 🐉 dragoncito bebé tímido). Sofía todavía no diseñó sus detalles: diseñarlos con ella con botones (qué hay en la montaña y la cueva, cómo es el dragoncito, qué se puede hacer).
 - Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26); abajo queda el cartel Próximamente, para la Montaña.
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
