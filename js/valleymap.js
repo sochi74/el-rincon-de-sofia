@@ -5,11 +5,12 @@
 // (js/lake.js) the same way.
 // On the left edge, between the forest and Sofía's house, a little dirt trail with fallen leaves and the sign
 // "⬅️ Bosque encantado" goes to the Bosque encantado (js/enchanted.js) the same way.
-// On the bottom edge a small wooden sign says "Próximamente": a small obstacle that never moves.
-// The trails and their signs never move either, and Modo decorar never covers them (js/city.js asks here).
+// On the bottom edge, below the plaza, a little trail of flat stones with the sign "⬇️ Montaña" goes to the Montaña
+// (js/mountain.js) the same way.
+// The trails and their signs never move, and Modo decorar never covers them (js/city.js asks here).
 // The "🗺️ Mapa" button of the panel opens the Mapa del valle, an old parchment that fills up with the zones found:
-// the Ciudad in the middle, the Pradera at the top, the Lago at the right, the Bosque encantado at the left, and
-// "❓ Por descubrir" at the bottom,
+// the Ciudad in the middle, the Pradera at the top, the Lago at the right, the Bosque encantado at the left and the
+// Montaña at the bottom (each one "❓ Por descubrir" until someone goes there),
 // with 💗 and 🧢 where Sofía and real.fixer are. The first time one of them goes into a zone, it shows on the map with
 // "🗺️ ¡Zona descubierta! …". The zones found are saved with the game.
 var ValleyMap = (function () {
@@ -19,10 +20,10 @@ var ValleyMap = (function () {
 
   // The zones around the city that can be found (the city is always known).
   var ZONES = [{ id: "meadow", name: "Pradera de flores", emoji: "🌸" }, { id: "lake", name: "Lago", emoji: "🏖️" },
-    { id: "enchanted", name: "Bosque encantado", emoji: "🍄" }];
+    { id: "enchanted", name: "Bosque encantado", emoji: "🍄" }, { id: "mountain", name: "Montaña", emoji: "⛰️" }];
   var found = {};
 
-  // The trail under the mouse: "meadow", "lake", "enchanted" or null.
+  // The trail under the mouse: "meadow", "lake", "enchanted", "mountain" or null.
   var hover = null;
 
   function inBox(x, y, b) {
@@ -38,8 +39,7 @@ var ValleyMap = (function () {
   var SIGN_TEXT = "Pradera de flores ⬆️", SIGN_SIZE = 15;
   var LAKE_TEXT = "Lago ➡️";
   var FOREST_TEXT = "⬅️ Bosque encantado", FOREST_SIZE = 13;
-  var SOON_TEXT = "Próximamente", SOON_SIZE = 10;
-  var SOON = { w: 72, h: 24, post: 16 };
+  var MOUNTAIN_TEXT = "⬇️ Montaña", MOUNTAIN_SIZE = 13;
 
   function trailBox() {
     return { x: V.trail.x - V.trail.half - 10, y: 0, w: V.trail.half * 2 + 20, h: V.trail.bottom + 8 };
@@ -76,21 +76,27 @@ var ValleyMap = (function () {
     return forestBoard || { x: V.forestSign.x - 78, y: V.forestSign.y - 12, w: 156, h: 24 };
   }
 
-  // The board of each "Próximamente" sign, and its board with its post.
-  function soonBox(s) {
-    return { x: s.x - SOON.w / 2, y: s.y - SOON.h / 2, w: SOON.w, h: SOON.h };
+  // The stone trail to the Montaña, from where it starts below the plaza to the bottom edge, and its sign (measured like the
+  // others).
+  function mountainTrailBox() {
+    var t = V.mountainTrail;
+    return { x: t.x - t.half - 10, y: t.top - 8, w: t.half * 2 + 20, h: CONFIG.world.height - t.top + 8 };
   }
 
-  function soonWhole(s) {
-    return { x: s.x - SOON.w / 2, y: s.y - SOON.h / 2, w: SOON.w, h: SOON.h + SOON.post };
+  var mountainBoard = null;
+
+  function mountainSignBox() {
+    return mountainBoard || { x: V.mountainSign.x - 46, y: V.mountainSign.y - 12, w: 92, h: 24 };
   }
 
   // "meadow" if the spot is on the trail to the Pradera or its sign, "lake" if it is on the trail to the Lago or its sign,
-  // "enchanted" if it is on the trail to the Bosque encantado or its sign, else null (a tap there walks to that zone).
+  // "enchanted" if it is on the trail to the Bosque encantado or its sign, "mountain" if it is on the trail to the Montaña
+  // or its sign, else null (a tap there walks to that zone).
   function trailAt(x, y) {
     if (inBox(x, y, trailBox()) || inBox(x, y, grow(signBox(), 4))) return "meadow";
     if (inBox(x, y, lakeTrailBox()) || inBox(x, y, grow(lakeSignBox(), 4))) return "lake";
     if (inBox(x, y, forestTrailBox()) || inBox(x, y, grow(forestSignBox(), 4))) return "enchanted";
+    if (inBox(x, y, mountainTrailBox()) || inBox(x, y, grow(mountainSignBox(), 4))) return "mountain";
     return null;
   }
 
@@ -98,36 +104,27 @@ var ValleyMap = (function () {
     hover = which || null;
   }
 
-  // The "Próximamente" sign is solid (js/city.js).
-  function isSolid(x, y) {
-    return V.soon.some(function (s) { return inBox(x, y, grow(soonWhole(s), 4)); });
-  }
-
-  // True if the spot is "by" or closer to a trail, its sign or the "Próximamente" sign
-  // (the shiny coins, the forest things and the decorations stay off them).
+  // True if the spot is "by" or closer to a trail or its sign (the shiny coins, the forest things and the decorations stay
+  // off them).
   function isNear(x, y, by) {
     if (inBox(x, y, grow(trailBox(), by)) || inBox(x, y, grow(signBox(), by))) return true;
     if (inBox(x, y, grow(lakeTrailBox(), by)) || inBox(x, y, grow(lakeSignBox(), by))) return true;
     if (inBox(x, y, grow(forestTrailBox(), by)) || inBox(x, y, grow(forestSignBox(), by))) return true;
-    return V.soon.some(function (s) { return inBox(x, y, grow(soonWhole(s), by)); });
+    return inBox(x, y, grow(mountainTrailBox(), by)) || inBox(x, y, grow(mountainSignBox(), by));
   }
 
-  // What Modo decorar may not put things on (js/city.js): the trails, their signs and the "Próximamente" sign.
+  // What Modo decorar may not put things on (js/city.js): the trails and their signs.
   function boxes() {
     return [{ box: trailBox(), sign: false }, { box: signBox(), sign: true },
       { box: lakeTrailBox(), sign: false }, { box: lakeSignBox(), sign: true },
-      { box: forestTrailBox(), sign: false }, { box: forestSignBox(), sign: true }].concat(V.soon.map(function (s) {
-      return { box: soonWhole(s), sign: false };
-    }));
+      { box: forestTrailBox(), sign: false }, { box: forestSignBox(), sign: true },
+      { box: mountainTrailBox(), sign: false }, { box: mountainSignBox(), sign: true }];
   }
 
-  // The word at a spot of the city: "Pradera · meadow", "Lago · lake" or "Bosque encantado · enchanted forest" on a trail
-  // and its sign, "Próximamente · coming soon" on the other one.
+  // The word at a spot of the city: "Pradera · meadow", "Lago · lake", "Bosque encantado · enchanted forest" or
+  // "Montaña · mountain" on a trail and its sign.
   function wordAt(x, y) {
-    var trail = trailAt(x, y);
-    if (trail) return trail;
-    if (V.soon.some(function (s) { return inBox(x, y, soonWhole(s)); })) return "comingSoon";
-    return null;
+    return trailAt(x, y);
   }
 
   function roundRect(ctx, x, y, w, h, r) {
@@ -147,6 +144,7 @@ var ValleyMap = (function () {
     var t = V.trail;
     drawLakeTrail(ctx);
     drawForestTrail(ctx);
+    drawMountainTrail(ctx);
     ctx.save();
     if (hover === "meadow") {
       ctx.save();
@@ -267,6 +265,49 @@ var ValleyMap = (function () {
     ctx.restore();
   }
 
+  // The trail to the Montaña: a strip of worn grass from below the plaza to the bottom edge, with flat round stones to step
+  // on; it glows under the mouse.
+  function drawMountainTrail(ctx) {
+    var t = V.mountainTrail, H = CONFIG.world.height;
+    ctx.save();
+    if (hover === "mountain") {
+      ctx.save();
+      ctx.shadowColor = C.cream;
+      ctx.shadowBlur = 18;
+      var b = mountainTrailBox();
+      roundRect(ctx, b.x, b.y, b.w, b.h + 20, 20);
+      ctx.fillStyle = "rgba(245, 235, 221, 0.25)";
+      ctx.fill();
+      ctx.strokeStyle = C.sage;
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.fillStyle = M.dirtLight;
+    ctx.globalAlpha = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(t.x - t.half - 4, H + 4);
+    for (var y = H; y >= t.top + 14; y -= 20) ctx.lineTo(t.x - t.half + Math.sin(y * 0.07) * 3, y);
+    ctx.quadraticCurveTo(t.x, t.top - 10, t.x + t.half, t.top + 14);
+    for (var y2 = t.top + 14; y2 <= H; y2 += 20) ctx.lineTo(t.x + t.half + Math.sin(y2 * 0.05 + 1) * 3, y2);
+    ctx.lineTo(t.x + t.half + 4, H + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    // The stones, a little to one side and the other, like steps.
+    [[-4, 654, 10], [5, 674, 11], [-5, 695, 10], [4, 714, 11]].forEach(function (p) {
+      ctx.fillStyle = C.stone;
+      ctx.beginPath();
+      ctx.ellipse(t.x + p[0], p[1] + 1.5, p[2], p[2] * 0.62, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = C.stoneLight;
+      ctx.beginPath();
+      ctx.ellipse(t.x + p[0], p[1], p[2] - 1.5, p[2] * 0.62 - 1.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
   // A wooden sign: a board on a post, with its text in cream.
   function woodSign(ctx, text, cx, cy, size, post) {
     ctx.save();
@@ -303,9 +344,7 @@ var ValleyMap = (function () {
     signBoard = woodSign(ctx, SIGN_TEXT, V.sign.x, V.sign.y, SIGN_SIZE, 16);
     lakeBoard = woodSign(ctx, LAKE_TEXT, V.lakeSign.x, V.lakeSign.y, SIGN_SIZE, 14);
     forestBoard = woodSign(ctx, FOREST_TEXT, V.forestSign.x, V.forestSign.y, FOREST_SIZE, 2);
-    V.soon.forEach(function (s) {
-      woodSign(ctx, SOON_TEXT, s.x, s.y, SOON_SIZE, SOON.post);
-    });
+    mountainBoard = woodSign(ctx, MOUNTAIN_TEXT, V.mountainSign.x, V.mountainSign.y, MOUNTAIN_SIZE, 8);
   }
 
   // ---------- Zones found ----------
@@ -394,7 +433,8 @@ var ValleyMap = (function () {
 
   // The zone where each one is: in the house it is the Ciudad.
   function zoneOf(sim) {
-    return sim.place === "meadow" || sim.place === "lake" || sim.place === "enchanted" ? sim.place : "city";
+    return sim.place === "meadow" || sim.place === "lake" || sim.place === "enchanted" || sim.place === "mountain" ?
+      sim.place : "city";
   }
 
   function update(dt) {
@@ -486,7 +526,7 @@ var ValleyMap = (function () {
     meadow: { x: 115, y: 46, w: 90, h: 44 },
     enchanted: { x: 30, y: 104, w: 74, h: 50 },
     lake: { x: 216, y: 104, w: 74, h: 50 },
-    bottom: { x: 115, y: 168, w: 90, h: 40 }
+    mountain: { x: 115, y: 168, w: 90, h: 40 }
   };
 
   function drawMap(ctx) {
@@ -510,7 +550,7 @@ var ValleyMap = (function () {
     dots(ctx, c.x + c.w / 2, c.y, c.x + c.w / 2, BOXES.meadow.y + BOXES.meadow.h);
     dots(ctx, c.x, c.y + c.h / 2, BOXES.enchanted.x + BOXES.enchanted.w, c.y + c.h / 2);
     dots(ctx, c.x + c.w, c.y + c.h / 2, BOXES.lake.x, c.y + c.h / 2);
-    dots(ctx, c.x + c.w / 2, c.y + c.h, c.x + c.w / 2, BOXES.bottom.y);
+    dots(ctx, c.x + c.w / 2, c.y + c.h, c.x + c.w / 2, BOXES.mountain.y);
 
     // The Ciudad: the river, Sofía's little house and its name.
     handBox(ctx, c, 2, false);
@@ -595,10 +635,39 @@ var ValleyMap = (function () {
     } else {
       unknown(ctx, f, 4);
     }
-    unknown(ctx, BOXES.bottom, 6);
+    // The Montaña, once someone has been there: gray rocky peaks with snow on top over green mountain grass.
+    var n = BOXES.mountain;
+    if (found.mountain) {
+      ctx.fillStyle = "#A9C48C";
+      ctx.fillRect(n.x + 3, n.y + 3, n.w - 6, n.h - 6);
+      [[n.x + 34, 15, 22], [n.x + 56, 13, 26], [n.x + 76, 11, 18]].forEach(function (p) {
+        var top = n.y + n.h - 4 - p[2];
+        ctx.beginPath();
+        ctx.moveTo(p[0] - p[1], n.y + n.h - 4);
+        ctx.lineTo(p[0], top);
+        ctx.lineTo(p[0] + p[1], n.y + n.h - 4);
+        ctx.closePath();
+        ctx.fillStyle = "#9C978F";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(p[0] - p[1] * 0.38, top + p[2] * 0.38);
+        ctx.lineTo(p[0], top);
+        ctx.lineTo(p[0] + p[1] * 0.38, top + p[2] * 0.38);
+        ctx.closePath();
+        ctx.fillStyle = "#FBFCFF";
+        ctx.fill();
+      });
+      handBox(ctx, n, 6, false);
+      text(ctx, "⛰️", n.x + 12, n.y + 12, 12, false);
+      ctx.fillStyle = "rgba(244, 230, 196, 0.85)";
+      ctx.fillRect(n.x + 4, n.y + n.h - 15, 40, 12);
+      text(ctx, "Montaña", n.x + 24, n.y + n.h - 8, 9, true);
+    } else {
+      unknown(ctx, n, 6);
+    }
 
     // Where Sofía and real.fixer are: at the top right of their zone.
-    var slots = { city: 0, meadow: 0, lake: 0, enchanted: 0 };
+    var slots = { city: 0, meadow: 0, lake: 0, enchanted: 0, mountain: 0 };
     Sims.list().forEach(function (sim) {
       var zone = zoneOf(sim), b = BOXES[zone];
       var x = b.x + b.w - 9 - slots[zone] * 16;
@@ -642,9 +711,10 @@ var ValleyMap = (function () {
     lakeFoot: V.lakeFoot,
     forestEdge: V.forestEdge,
     forestFoot: V.forestFoot,
+    mountainEdge: V.mountainEdge,
+    mountainFoot: V.mountainFoot,
     trailAt: trailAt,
     setHover: setHover,
-    isSolid: isSolid,
     isNear: isNear,
     boxes: boxes,
     wordAt: wordAt,

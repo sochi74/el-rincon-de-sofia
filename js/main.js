@@ -22,6 +22,8 @@
   var hoveredLake = null;
   // In the Bosque encantado: a spirit, or "trail", "rest", "ring" or "water" when the mouse is over it, else null.
   var hoveredForest = null;
+  // In the Montaña: a goat, or "trail" when the mouse is over it, else null.
+  var hoveredMountain = null;
   // Last spot of the mouse on the screen, for the word tag (null when it is away or with a finger).
   var mouse = null;
 
@@ -113,7 +115,7 @@
     var s = view.scale * view.dpr;
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
     var place = Sims.viewPlace();
-    // Outside (the city, the Pradera, the Lago and the Bosque encantado) the weather of the day shows.
+    // Outside (the city, the Pradera, the Lago, the Bosque encantado and the Montaña) the weather of the day shows.
     var outside = place !== "house";
     if (place === "city") {
       City.draw(ctx, time, hoveredHouse, (hovered && hovered.id) || hoveredHome);
@@ -123,6 +125,8 @@
       Lake.draw(ctx);
     } else if (place === "enchanted") {
       Enchanted.draw(ctx);
+    } else if (place === "mountain") {
+      Mountain.draw(ctx);
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
@@ -139,6 +143,8 @@
       Lake.drawLabels(ctx);
     } else if (place === "enchanted") {
       Enchanted.drawLabels(ctx);
+    } else if (place === "mountain") {
+      Mountain.drawLabels(ctx);
     } else {
       House.drawLabels(ctx);
     }
@@ -149,6 +155,7 @@
     }
     if (place === "lake") Lake.drawTop(ctx);
     if (place === "enchanted") Enchanted.drawTop(ctx);
+    if (place === "mountain") Mountain.drawTop(ctx);
     Neighbors.drawTop(ctx, time);
     // Krohna is drawn among the characters (js/sims.js).
     Sims.draw(ctx, time);
@@ -158,6 +165,7 @@
     if (place === "meadow") Meadow.drawPops(ctx);
     if (place === "lake") Lake.drawPops(ctx);
     if (place === "enchanted") Enchanted.drawPops(ctx);
+    if (place === "mountain") Mountain.drawPops(ctx);
     Cooking.drawPops(ctx);
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
@@ -189,7 +197,7 @@
     ctx.fillStyle = mix("#FFFFFF", CONFIG.night.tint, dark);
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
-    // The Pradera and the Lago have nothing that glows at night; in the Bosque encantado the giant mushrooms do.
+    // The Pradera, the Lago and the Montaña have nothing that glows at night; in the Bosque encantado the giant mushrooms do.
     if (Sims.viewPlace() === "city") {
       City.drawNightLights(ctx, time, dark);
     } else if (Sims.viewPlace() === "house") {
@@ -215,6 +223,7 @@
     Meadow.update(dt);
     Lake.update(dt);
     Enchanted.update(dt);
+    Mountain.update(dt);
     Cooking.update(dt);
     Gifts.update(dt);
     Sims.update(dt);
@@ -402,6 +411,13 @@
       if (Pet.at(p.x, p.y)) return Pet.word();
       return Enchanted.wordAt(p.x, p.y);
     }
+    // In the Montaña the goats win over characters, like for taps.
+    if (Sims.viewPlace() === "mountain") {
+      if (Mountain.goatAt(p.x, p.y)) return Mountain.wordAt(p.x, p.y);
+      if (Sims.simAt(p.x, p.y)) return null;
+      if (Pet.at(p.x, p.y)) return Pet.word();
+      return Mountain.wordAt(p.x, p.y);
+    }
     // Garden plots and forest things win over characters, like for taps.
     if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
     if (inCity && Gather.thingAt(p.x, p.y)) return Gather.wordAt(p.x, p.y);
@@ -435,8 +451,8 @@
   // Light up the usable furniture, or in the city the house, tent, campfire, a neighbor's home, a garden plot, a forest thing
   // or a trail to the Pradera or the Lago, or in the Pradera a wild flower, the swing, the picnic blanket or the trail, or in
   // the Lago a shell, a beach chair, the sandcastle spot, Pacífica or the trail, or in the Bosque encantado a spirit, the low
-  // mushroom, the fairy ring or the trail, under the mouse (characters and neighbors in front win). The front door, the river,
-  // the lake, the stream and the neighbors get a pointer too.
+  // mushroom, the fairy ring or the trail, or in the Montaña a goat or the trail, under the mouse (characters and neighbors
+  // in front win). The front door, the river, the lake, the stream and the neighbors get a pointer too.
   // In Modo decorar only what can be moved lights up (js/decorate.js), and it follows the finger while it is dragged.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
@@ -450,10 +466,12 @@
       Meadow.setHover(null);
       Lake.setHover(null);
       Enchanted.setHover(null);
+      Mountain.setHover(null);
       ValleyMap.setHover(false);
       hoveredMeadow = null;
       hoveredLake = null;
       hoveredForest = null;
+      hoveredMountain = null;
       Decorate.move(p.x, p.y);
       canvas.style.cursor = Decorate.cursor();
       return;
@@ -500,6 +518,19 @@
     }
     Enchanted.setHover(null);
     hoveredForest = null;
+    if (Sims.viewPlace() === "mountain") {
+      var goat = Mountain.goatAt(p.x, p.y);
+      hovered = null;
+      hoveredHouse = false;
+      hoveredHome = null;
+      hoveredMountain = goat || (Sims.simAt(p.x, p.y) ? null : Mountain.usableAt(p.x, p.y));
+      Mountain.setHover(hoveredMountain);
+      ValleyMap.setHover(false);
+      canvas.style.cursor = hoveredMountain ? "pointer" : "";
+      return;
+    }
+    Mountain.setHover(null);
+    hoveredMountain = null;
     var neighbor = inCity && !Sims.simAt(p.x, p.y) && !!Neighbors.at(p.x, p.y);
     var free = !Sims.simAt(p.x, p.y) && !neighbor;
     hovered = free ? Objects.at(p.x, p.y, inCity ? "city" : "house") : null;
@@ -558,10 +589,12 @@
     Meadow.setHover(null);
     Lake.setHover(null);
     Enchanted.setHover(null);
+    Mountain.setHover(null);
     ValleyMap.setHover(false);
     hoveredMeadow = null;
     hoveredLake = null;
     hoveredForest = null;
+    hoveredMountain = null;
     Decorate.leave();
     mouse = null;
   });

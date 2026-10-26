@@ -1,4 +1,5 @@
-// Saves and loads the game in the browser: needs, where each character is (house, city, Pradera, Lago or Bosque encantado),
+// Saves and loads the game in the browser: needs, where each character is (house, city, Pradera, Lago, Bosque encantado or
+// Montaña),
 // stands and looks, friendship,
 // the day and hour of the game clock, the weather of the day (with its puddles, snow and snowman), the magic coins (the counter and the shiny coins on the ground), the garden plots,
 // the backpack (with its dishes) and the things in the forest, the wild flowers of the Pradera, the shells of the Lago and its

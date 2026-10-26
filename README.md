@@ -20,9 +20,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🏮 Farolitos vivos: seis farolitos de papel chiquitos (rosa coral, amarillo pastel y lila), criaturas mágicas del Bosque encantado; pasean a saltitos, son tímidos y se esconden detrás de los hongos gigantes, y de noche brillan fuerte.
 
 ## Estado
-Extra ✅ Farolitos vivos y Wishing stars
+Hito 27 ✅ Montaña
 
-## ⭐ Estrellas de inglés: 51
+## ⭐ Estrellas de inglés: 52
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -268,6 +268,22 @@ Extra ✅ Farolitos vivos y Wishing stars
 - please: por favor
 - peek: asomarse
 - okay: está bien
+- mountain: montaña
+- pine: pino
+- trail: sendero
+- lookout: mirador
+- bench: banco
+- nest: nido
+- feather: pluma
+- footprint: huella
+- mud: barro
+- leaf: hoja
+- goat: cabra
+- baby goat: cabrita
+- stone tower: torre de piedras
+- cave: cueva
+- shy: tímido
+- jump: saltar
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -289,7 +305,7 @@ Extra ✅ Farolitos vivos y Wishing stars
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - A veces pega el prompt en el chat del Modo Planear en vez de en Claude Code: recordarle con cariño que primero escriba claude, espere a que se abra y pegue ahí. Hacer el merge juntas después de la revisión, y confirmar con gh pr list.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 51
+- ⭐ Estrellas de inglés: 52
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -302,9 +318,9 @@ Extra ✅ Farolitos vivos y Wishing stars
   - 45 ⭐: Sunflower field 🌻, construido en el Hito 26 (un campo de girasoles altos en la Pradera de flores, solo decoración)
   - 50 ⭐: Wishing stars 🌠 (construido): estrellas fugaces de noche con cielo despejado en la ciudad, la Pradera, el Lago y el Bosque encantado
   - Próximo regalo: a las 55 ⭐
-- Último hecho: Extra 🏮 Farolitos vivos en el Bosque encantado y 🌠 Wishing stars (regalo de 50 ⭐).
-- Siguiente paso: Pack 4, Hito 27: ⛰️ Montaña y cueva (con el 🐉 dragoncito bebé tímido). Sofía todavía no diseñó sus detalles: diseñarlos con ella con botones (qué hay en la montaña y la cueva, cómo es el dragoncito, qué se puede hacer).
-- Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26); abajo queda el cartel Próximamente, para la Montaña.
+- Último hecho: Hito 27 ⛰️ Montaña (la parte de afuera): pinos, rocas con carita, mirador, banquito, torrecitas de piedras, barro con huellas, plumas, nido, pájaros cantores, hojas al viento, cabritas que se acarician y la entrada de la cueva todavía cerrada.
+- Siguiente paso: Hito 27b 💎 Cueva y dragoncito, ya diseñado por Sofía: por la entrada de la cueva de la Montaña se entra a una cueva oscurita donde los cristales de colores dan la luz y se pueden juntar para la 🎒 Mochila, murciélagos que duermen colgados del techo, gotitas que caen con un "plic", y un 🐉 dragoncito bebé verde menta que a veces escupe chispitas y de noche duerme en un nido de cristales.
+- Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26) y abajo la Montaña (Hito 27). Ya no queda ningún cartel Próximamente en la ciudad (en la Montaña, la cueva dice "Cueva · Próximamente").
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
 - Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza, que Sofía o real.fixer vayan solos a la Pradera y al Lago, usar las flores silvestres en recetas o como regalos favoritos, que los patitos caminen hasta la playa al atardecer, una pose de verdad acostada en la reposera, que Pacífica aparezca y se sumerja suavemente, una meta o un regalo especial para Pacífica.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
