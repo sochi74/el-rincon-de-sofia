@@ -12,7 +12,8 @@
 // 🐐 Goats: two big ones (white and light brown) and a baby that hops after its mother. They hop between the rocks, stand on
 // top of one now and then, and bleat ("beee"). At night they sleep together lying on the grass. The characters walk around
 // them. A tap on one walks the selected one beside it (the goat waits) to pet it (Diversión); one person per goat.
-// 🕳️ The entrance of a cave in a rock wall, with its little sign "Cueva · Próximamente": solid, and nobody goes in yet.
+// 🕳️ The entrance of the cave in a rock wall, with its little sign "Cueva": the wall is solid, and a tap on the mouth (or
+// its sign) walks the selected one into its mouth and into the Cueva (js/cave.js); coming out, it appears in front of it.
 // Day and night and the weather of the day show here too (js/weather.js), without puddles or snowman: with snow the pines
 // and rocks turn white. Modo decorar moves nothing here. The neighbors never come, and the shiny coins never appear here.
 // Pausa freezes it all. Nothing here is saved: the goats and the birds start at their spots.
@@ -80,8 +81,10 @@ var Mountain = (function () {
   var FEATHERS = [{ x: 376, y: 520, a: 0.5, c: 0 }, { x: 676, y: 286, a: -0.7, c: 1 }, { x: 208, y: 196, a: 2.2, c: 2 },
     { x: 846, y: 420, a: 1.1, c: 2 }];
   // The cave: its rock wall (as points), its dark round mouth and the little sign nailed on the wall.
-  var CAVE = { mouth: { x: 880, y: 614, w: 74, h: 66 }, box: { x: 772, y: 482, w: 228, h: 160 },
-    sign: { text: "Cueva · Próximamente", x: 880, y: 524, size: 11 } };
+  // Only the top of the wall is solid ("box"), so the characters can walk along its foot to the mouth.
+  var CAVE = { mouth: { x: 880, y: 644, w: 74, h: 72 }, box: { x: 772, y: 482, w: 228, h: 112 },
+    wall: { x: 772, y: 482, w: 228, h: 164 },
+    sign: { text: "Cueva", x: 880, y: 524, size: 13 } };
   var WALL = [[772, 646], [778, 560], [800, 514], [846, 488], [900, 480], [952, 490], [1004, 512], [1004, 646]];
 
   // Where the goats lie down to sleep at night (the first goat, the second one and the baby).
@@ -156,7 +159,7 @@ var Mountain = (function () {
   }
 
   // True if a character cannot stand here: off the map, on the snowy peaks, or on a pine, a rock, the lookout, the bench, a
-  // stone tower or the cave wall. Used by js/path.js.
+  // stone tower or the top of the cave wall (its foot is free, to walk to the mouth). Used by js/path.js.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (PINES.some(function (p) { return inBox(x, y, grow(pineBox(p), CLEAR / 2)); })) return true;
@@ -172,9 +175,18 @@ var Mountain = (function () {
     return { x: TRAIL.x - TRAIL.half - 10, y: 0, w: TRAIL.half * 2 + 20, h: TRAIL.bottom + 8 };
   }
 
-  // "trail" if the spot is on the trail back to the city, else null (the goats are apart: goatAt).
+  // The mouth of the cave, where a tap goes in.
+  function mouthBox() {
+    var m = CAVE.mouth;
+    return { x: m.x - m.w / 2, y: m.y - m.h, w: m.w, h: m.h };
+  }
+
+  // "trail" if the spot is on the trail back to the city, "cave" if it is on the mouth of the cave or its sign, else null
+  // (the goats are apart: goatAt).
   function usableAt(x, y) {
-    return inBox(x, y, trailBox()) ? "trail" : null;
+    if (inBox(x, y, trailBox())) return "trail";
+    if (inBox(x, y, mouthBox()) || inBox(x, y, grow(signBox(CAVE.sign), 4))) return "cave";
+    return null;
   }
 
   function setHover(what) {
@@ -1402,6 +1414,8 @@ var Mountain = (function () {
     things.push({ y: LOOKOUT.y, draw: function () { drawLookout(ctx); } });
     things.push({ y: BENCH.y, draw: function () { drawBench(ctx); } });
     things.push({ y: CAVE.mouth.y, draw: function () { drawCave(ctx); } });
+    // The mouth of the cave glows under the mouse, over the wall.
+    if (hover === "cave") things.push({ y: CAVE.mouth.y + 0.1, draw: function () { drawGlow(ctx, mouthBox()); } });
     goats.forEach(function (g) {
       var at = goatSpot(g);
       things.push({ y: at.y + 0.5, draw: function () {
@@ -1573,7 +1587,7 @@ var Mountain = (function () {
       w: CAVE.mouth.w, h: CAVE.mouth.h })) return "cave";
     if (inBox(x, y, lookoutBox())) return "lookout";
     if (ROCKS.some(function (r) { return inBox(x, y, rockBox(r)); })) return "rock";
-    if (inBox(x, y, CAVE.box) || PEAKS.some(function (p) { return y > H - p.h * 0.6 && Math.abs(x - p.x) < p.w * 0.5; })) return "rock";
+    if (inBox(x, y, CAVE.wall) || PEAKS.some(function (p) { return y > H - p.h * 0.6 && Math.abs(x - p.x) < p.w * 0.5; })) return "rock";
     for (var k = PINES.length - 1; k >= 0; k--) if (pineAt(PINES[k], k, x, y)) return "pine";
     for (var b = BORDER.length - 1; b >= 0; b--) if (pineAt(BORDER[b], b + 40, x, y)) return "pine";
     if (inBox(x, y, trailBox()) || inBox(x, y, signBox(SIGN))) return "mountain";
@@ -1584,6 +1598,8 @@ var Mountain = (function () {
   return {
     edge: K.edge,
     foot: K.foot,
+    caveDoor: K.caveDoor,
+    caveFoot: K.caveFoot,
     isWalkable: isWalkable,
     isSolid: isSolid,
     goatAt: goatAt,

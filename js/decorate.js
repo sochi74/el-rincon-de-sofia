@@ -7,7 +7,7 @@
 // touched keeps a soft border, and while dragging it glows green where it fits and red where it does not
 // (dropped in red, it goes back). It works in the place on screen: the house (js/house.js says what fits there)
 // or the city (js/city.js). In the Pradera de flores (js/meadow.js), the Lago (js/lake.js), the Bosque encantado
-// (js/enchanted.js) and the Montaña (js/mountain.js) nothing moves. With "Listo" everything goes on: whoever was left on something steps to the closest free spot.
+// (js/enchanted.js), the Montaña (js/mountain.js) and the Cueva (js/cave.js) nothing moves. With "Listo" everything goes on: whoever was left on something steps to the closest free spot.
 var Decorate = (function () {
   var GREEN = "#5FB35A", RED = "#E0533D";
   // How long "No cabe aquí" (or "No se puede girar") stays over the thing, in seconds.
@@ -36,6 +36,7 @@ var Decorate = (function () {
     if (place === "lake") return Lake;
     if (place === "enchanted") return Enchanted;
     if (place === "mountain") return Mountain;
+    if (place === "cave") return Cave;
     return place === "city" ? City : House;
   }
 

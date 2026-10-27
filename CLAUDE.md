@@ -8,8 +8,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - Funciona igual con doble clic en index.html (file://) y en GitHub Pages: <script src> clásicos en orden fijo, sin módulos ES, sin fetch, todos los datos dentro de archivos .js.
 - Nombres de archivo en minúsculas; referencias con las mismas mayúsculas exactas.
 - Nunca usar "Sims", "The Sims", nombres o logos de EA, Simlish ni arte de EA.
-- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi, Vladi y Professor Hoot (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad. El mundo tiene la ciudad y zonas alrededor a las que se llega caminando por sus bordes (por ahora la Pradera de flores, el Lago, el Bosque encantado y la Montaña).
-- Criaturas mágicas de las zonas: no son vecinos, no se seleccionan y no se charla con ellas. Por ahora: Pacífica, la sirena del Lago, y en el Bosque encantado los espíritus del bosque, las víboras de los troncos huecos, las bellotitas de la Casita de hongo y los farolitos vivos.
+- Personajes jugables: exactamente dos, Sofía y real.fixer. Vecinos: Lumi, Vladi y Professor Hoot (no se seleccionan). Solo la casa de Sofía tiene interior, con Cocina, Dormitorio, Sala y Baño; las casas de los vecinos se ven solo desde afuera en la ciudad. El mundo tiene la ciudad y zonas alrededor a las que se llega caminando por sus bordes (por ahora la Pradera de flores, el Lago, el Bosque encantado y la Montaña, con la Cueva dentro de la Montaña, a la que se entra por la boca de la cueva).
+- Criaturas mágicas de las zonas: no son vecinos, no se seleccionan y no se charla con ellas. Por ahora: Pacífica, la sirena del Lago, y en el Bosque encantado los espíritus del bosque, las víboras de los troncos huecos, las bellotitas de la Casita de hongo y los farolitos vivos, y en la Cueva Chispa, la dragona verde menta, y los murciélagos.
 - Guardado (Hito 6): localStorage dentro de try/catch; el juego funciona aunque falle.
 - Repo público; GitHub Pages desde main, carpeta raíz.
 
@@ -48,8 +48,9 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/meadow.js: la Pradera de flores: dibujo, flores silvestres, columpio, manta de picnic, abejitas y campo de girasoles
 - js/lake.js: el Lago: dibujo, muelle y pesca, conchitas, castillo de arena, sillas, patitos y Pacífica
 - js/enchanted.js: el Bosque encantado: dibujo, hongos gigantes, hongo para descansar, círculo de hongos y deseo, arroyo con puentecito y pesca, espíritus del bosque, víboras de los troncos huecos y curitas, la Casita de hongo con sus bellotitas y los farolitos vivos
-- js/mountain.js: la Montaña: dibujo, pinos que se mecen, rocas (dos con carita), mirador, banquito, torrecitas de piedras, barro con huellas, plumas, nido, pájaros cantores, hojas al viento, cabritas que se acarician y la entrada de la cueva (todavía cerrada)
-- Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, lake, enchanted, mountain, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
+- js/mountain.js: la Montaña: dibujo, pinos que se mecen, rocas (dos con carita), mirador, banquito, torrecitas de piedras, barro con huellas, plumas, nido, pájaros cantores, hojas al viento, cabritas que se acarician y la boca de la cueva, por donde se entra a la Cueva
+- js/cave.js: la Cueva: dibujo oscurito con la luz de los cristales, racimos de cristales, cristales para juntar, estalactitas, gotitas, murciélagos, la salida a la Montaña y Chispa, la dragona (paseo, vuelito, chispitas, fuego, sus tres reacciones y su nido de cristales)
+- Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, lake, enchanted, mountain, cave, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

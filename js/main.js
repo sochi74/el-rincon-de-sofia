@@ -24,6 +24,8 @@
   var hoveredForest = null;
   // In the Montaña: a goat, or "trail" when the mouse is over it, else null.
   var hoveredMountain = null;
+  // In the Cueva: a crystal, or "dragon" or "exit" when the mouse is over it, else null.
+  var hoveredCave = null;
   // Last spot of the mouse on the screen, for the word tag (null when it is away or with a finger).
   var mouse = null;
 
@@ -116,7 +118,8 @@
     ctx.setTransform(s, 0, 0, s, view.offsetX * view.dpr, view.offsetY * view.dpr);
     var place = Sims.viewPlace();
     // Outside (the city, the Pradera, the Lago, the Bosque encantado and the Montaña) the weather of the day shows.
-    var outside = place !== "house";
+    // Never in the Cueva, which is always dark (js/cave.js).
+    var outside = place !== "house" && place !== "cave";
     if (place === "city") {
       City.draw(ctx, time, hoveredHouse, (hovered && hovered.id) || hoveredHome);
     } else if (place === "meadow") {
@@ -127,6 +130,8 @@
       Enchanted.draw(ctx);
     } else if (place === "mountain") {
       Mountain.draw(ctx);
+    } else if (place === "cave") {
+      Cave.draw(ctx);
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
@@ -145,6 +150,8 @@
       Enchanted.drawLabels(ctx);
     } else if (place === "mountain") {
       Mountain.drawLabels(ctx);
+    } else if (place === "cave") {
+      Cave.drawLabels(ctx);
     } else {
       House.drawLabels(ctx);
     }
@@ -156,6 +163,7 @@
     if (place === "lake") Lake.drawTop(ctx);
     if (place === "enchanted") Enchanted.drawTop(ctx);
     if (place === "mountain") Mountain.drawTop(ctx);
+    if (place === "cave") Cave.drawTop(ctx);
     Neighbors.drawTop(ctx, time);
     // Krohna is drawn among the characters (js/sims.js).
     Sims.draw(ctx, time);
@@ -166,6 +174,7 @@
     if (place === "lake") Lake.drawPops(ctx);
     if (place === "enchanted") Enchanted.drawPops(ctx);
     if (place === "mountain") Mountain.drawPops(ctx);
+    if (place === "cave") Cave.drawPops(ctx);
     Cooking.drawPops(ctx);
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
@@ -188,9 +197,10 @@
 
   // Dusk, night and dawn: tint the whole world blue-violet, then light up what glows at night.
   // Characters are drawn afterwards, so they are always easy to see.
+  // The Cueva is always dark in its own way, by day and by night, so the night tint never comes in.
   function drawNight(time) {
     var dark = Time.darkness();
-    if (dark <= 0) return;
+    if (dark <= 0 || Sims.viewPlace() === "cave") return;
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = "multiply";
@@ -224,6 +234,7 @@
     Lake.update(dt);
     Enchanted.update(dt);
     Mountain.update(dt);
+    Cave.update(dt);
     Cooking.update(dt);
     Gifts.update(dt);
     Sims.update(dt);
@@ -418,6 +429,14 @@
       if (Pet.at(p.x, p.y)) return Pet.word();
       return Mountain.wordAt(p.x, p.y);
     }
+    // In the Cueva the crystals on the floor win over characters, like for taps.
+    if (Sims.viewPlace() === "cave") {
+      var crystal = Cave.crystalAt(p.x, p.y);
+      if (crystal) return crystal.kind;
+      if (Sims.simAt(p.x, p.y)) return null;
+      if (Pet.at(p.x, p.y)) return Pet.word();
+      return Cave.wordAt(p.x, p.y);
+    }
     // Garden plots and forest things win over characters, like for taps.
     if (inCity && Garden.plotAt(p.x, p.y) >= 0) return Garden.wordAt(p.x, p.y);
     if (inCity && Gather.thingAt(p.x, p.y)) return Gather.wordAt(p.x, p.y);
@@ -451,8 +470,8 @@
   // Light up the usable furniture, or in the city the house, tent, campfire, a neighbor's home, a garden plot, a forest thing
   // or a trail to the Pradera or the Lago, or in the Pradera a wild flower, the swing, the picnic blanket or the trail, or in
   // the Lago a shell, a beach chair, the sandcastle spot, Pacífica or the trail, or in the Bosque encantado a spirit, the low
-  // mushroom, the fairy ring or the trail, or in the Montaña a goat or the trail, under the mouse (characters and neighbors
-  // in front win). The front door, the river, the lake, the stream and the neighbors get a pointer too.
+  // mushroom, the fairy ring or the trail, or in the Montaña a goat, the mouth of the cave or the trail, or in the Cueva a
+  // crystal on the floor, Chispa or the way out, under the mouse (characters and neighbors in front win). The front door, the river, the lake, the stream and the neighbors get a pointer too.
   // In Modo decorar only what can be moved lights up (js/decorate.js), and it follows the finger while it is dragged.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
@@ -467,11 +486,13 @@
       Lake.setHover(null);
       Enchanted.setHover(null);
       Mountain.setHover(null);
+      Cave.setHover(null);
       ValleyMap.setHover(false);
       hoveredMeadow = null;
       hoveredLake = null;
       hoveredForest = null;
       hoveredMountain = null;
+      hoveredCave = null;
       Decorate.move(p.x, p.y);
       canvas.style.cursor = Decorate.cursor();
       return;
@@ -531,6 +552,20 @@
     }
     Mountain.setHover(null);
     hoveredMountain = null;
+    if (Sims.viewPlace() === "cave") {
+      var crystal = Cave.crystalAt(p.x, p.y);
+      hovered = null;
+      hoveredHouse = false;
+      hoveredHome = null;
+      var other = Sims.simAt(p.x, p.y);
+      hoveredCave = crystal || (other ? null : Cave.dragonAt(p.x, p.y) ? "dragon" : Cave.usableAt(p.x, p.y));
+      Cave.setHover(hoveredCave);
+      ValleyMap.setHover(false);
+      canvas.style.cursor = hoveredCave ? "pointer" : "";
+      return;
+    }
+    Cave.setHover(null);
+    hoveredCave = null;
     var neighbor = inCity && !Sims.simAt(p.x, p.y) && !!Neighbors.at(p.x, p.y);
     var free = !Sims.simAt(p.x, p.y) && !neighbor;
     hovered = free ? Objects.at(p.x, p.y, inCity ? "city" : "house") : null;
@@ -590,11 +625,13 @@
     Lake.setHover(null);
     Enchanted.setHover(null);
     Mountain.setHover(null);
+    Cave.setHover(null);
     ValleyMap.setHover(false);
     hoveredMeadow = null;
     hoveredLake = null;
     hoveredForest = null;
     hoveredMountain = null;
+    hoveredCave = null;
     Decorate.leave();
     mouse = null;
   });
