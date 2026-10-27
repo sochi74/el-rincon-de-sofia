@@ -21,9 +21,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🐉 Chispa: dragona joven verde menta, criatura mágica de la Cueva (más grande que Sofía, con alas grandes, púas y cuernos); de día pasea, escupe chispitas de colores y a veces lanza fuego, que ilumina la cueva con luz cálida un ratito, y de noche duerme en su nido de cristales. En la Cueva también duermen 🦇 cinco murciélagos colgados del techo.
 
 ## Estado
-Hito 28 ✅
+Hito 28b ✅ · Pack 4 completo
 
-## ⭐ Estrellas de inglés: 57
+## ⭐ Estrellas de inglés: 58
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -312,6 +312,11 @@ Hito 28 ✅
 - brave: valiente
 - shine: brillar
 - ready: listo
+- frog: rana
+- colorful frog: rana de colores
+- lily pad: nenúfar, la hoja redonda que flota en el agua
+- ribbit: croac, lo que dicen las ranas
+- splash: salpicadura
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -333,7 +338,7 @@ Hito 28 ✅
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - A veces pega el prompt en el chat del Modo Planear en vez de en Claude Code: recordarle con cariño que primero escriba claude, espere a que se abra y pegue ahí. Hacer el merge juntas después de la revisión, y confirmar con gh pr list.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 57
+- ⭐ Estrellas de inglés: 58
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -347,8 +352,8 @@ Hito 28 ✅
   - 50 ⭐: Wishing stars 🌠 (construido): estrellas fugaces de noche con cielo despejado en la ciudad, la Pradera, el Lago y el Bosque encantado
   - 55 ⭐: Dragon light 🔥 (construido): cuando Chispa lanza fuego, la Cueva se ilumina un ratito con luz cálida alrededor de ella
   - Próximo regalo: a las 60 ⭐
-- Último hecho: Hito 28 🧰 Tesoros escondidos: en cada zona del valle (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva) hay un cofrecito de madera con borde y cerradura dorados, medio escondido detrás de arbustos, flores, una roca, helechos, una piedra o cristales, que se delata con un brillito dorado cada 3 a 6 segundos. Se abre una sola vez ("Abriendo 🧰", rayitos dorados, fanfarria suave) y trae una decoración para la Sala (🕰️ Reloj de pared antiguo, 🌼 Cuadro de flores prensadas, 🐚 Lámpara de conchitas, 🍄 Lámpara de hongo, 🐐 Mantita de lana de cabra y 💎 Geoda gigante, que se mueven en Modo decorar) y una palabra secreta para el 📖 Diario (secret, lucky, pearl, magic, brave y shine). El 🗺️ Mapa muestra 🧰 o ✅ en cada zona y "🧰 Tesoros: N/6"; con el sexto sale "🏆 ¡Encontraste todos los tesoros del valle!". Sofía lo probó entero y quedó perfecto. Antes: Extra 🔥 Dragon light (regalo de 55 ⭐): cada vez que Chispa lanza fuego, sale una luz cálida naranja y dorada desde su fuego que aclara la oscuridad alrededor de ella, titila como una fogata, hace brillar un poquito más los cristales cercanos, la sigue si está volando y se apaga despacito. Antes: Hito 27b 💎 Cueva y dragona: por la boca de la cueva de la Montaña se entra a una cueva oscurita donde los cristales dan la luz y se juntan para la Mochila (azul, amatista, rosa y a veces dorado), con murciélagos, gotitas que hacen "plic" y 🐉 Chispa. En la prueba, Sofía pidió que Chispa fuera más grande, no tan tierna, no bebé, y que a veces lanzara fuego: ahora es una dragona joven (su palabra es "Chispa · dragon").
-- Siguiente paso: Hito 28b 🐸 Ranitas, ya diseñado por Sofía: ranitas verdes y alguna rara de colores, sentadas en hojas de nenúfar del Lago y del arroyo del Bosque encantado; cuando llueve salen y cantan "croac" en coro; al tocarlas saltan al agua con un "splash".
+- Último hecho: Hito 28b 🐸 Ranitas (con él se completa el Pack 4): en el Lago hay 5 hojas de nenúfar (dos con florcita rosada) y en el arroyo del Bosque encantado 3 hojitas, que se mecen con las ondas. Sin lluvia, de día, hay 2 ranitas en el Lago y 1 en el arroyo, que parpadean, giran un poquito y a veces croan solas; con lluvia sale una en cada hoja y cantan en coro (se les infla la burbuja de la garganta, salen notitas ♪ verdes y suena un "croac" detrás de otro, como una cancioncita); de noche duermen con los ojos cerrados. Cada día, en cada zona, 1 de cada 4 veces una es 🌈 rana de colores (turquesa con puntitos dorados y patas lila). Al tocarlas saltan al agua con un "splash" y vuelven a los 5 a 10 segundos. En la prueba Sofía pidió que el croac se oyera más fuerte, que las ranas parecieran ranas de verdad y no tiernas (ahora se ven desde arriba con patas largas, ojos saltones dorados y manchas) y que resaltaran más sobre las hojas (ranas verde claro con borde oscuro sobre hojas verde oscuro). Antes: Hito 28 🧰 Tesoros escondidos: en cada zona del valle (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva) hay un cofrecito de madera con borde y cerradura dorados, medio escondido detrás de arbustos, flores, una roca, helechos, una piedra o cristales, que se delata con un brillito dorado cada 3 a 6 segundos. Se abre una sola vez ("Abriendo 🧰", rayitos dorados, fanfarria suave) y trae una decoración para la Sala (🕰️ Reloj de pared antiguo, 🌼 Cuadro de flores prensadas, 🐚 Lámpara de conchitas, 🍄 Lámpara de hongo, 🐐 Mantita de lana de cabra y 💎 Geoda gigante, que se mueven en Modo decorar) y una palabra secreta para el 📖 Diario (secret, lucky, pearl, magic, brave y shine). El 🗺️ Mapa muestra 🧰 o ✅ en cada zona y "🧰 Tesoros: N/6"; con el sexto sale "🏆 ¡Encontraste todos los tesoros del valle!". Sofía lo probó entero y quedó perfecto.
+- Siguiente paso: 🧹 Pulido 5 (arreglar varios problemas conocidos de la lista de CHANGELOG.md) y después planear el Pack 5 con Sofía.
 - Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26) y abajo la Montaña (Hito 27). Ya no queda ningún cartel Próximamente en la ciudad (en la Montaña, la boca de la cueva lleva a la Cueva, Hito 27b).
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
 - Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza, que Sofía o real.fixer vayan solos a la Pradera y al Lago, usar las flores silvestres en recetas o como regalos favoritos, que los patitos caminen hasta la playa al atardecer, una pose de verdad acostada en la reposera, que Pacífica aparezca y se sumerja suavemente, una meta o un regalo especial para Pacífica, y (idea de Sofía en el Hito 28) un baúl en Modo decorar para guardar los muebles y decoraciones que no quiere usar por un tiempo y sacarlos cuando quiera.

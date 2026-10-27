@@ -218,7 +218,15 @@ var WORDS = {
   pressedFlowers: { es: "Flores prensadas", en: "pressed flowers", say: "PREST FLÁU-ers" },
   lamp: { es: "Lámpara", en: "lamp", say: "LAMP" },
   woolBlanket: { es: "Manta de lana", en: "wool blanket", say: "UÚL BLÁN-ket" },
-  geode: { es: "Geoda", en: "geode", say: "YÍ-oud" }
+  geode: { es: "Geoda", en: "geode", say: "YÍ-oud" },
+
+  // The little frogs of the Lago and the stream (js/frogs.js): the frogs, their lily pads, the notes of their chorus and
+  // the splash when one jumps into the water.
+  frog: { es: "Rana", en: "frog", say: "FROG" },
+  colorfulFrog: { es: "Rana de colores", en: "colorful frog", say: "KÁ-lor-ful FROG" },
+  lilyPad: { es: "Nenúfar", en: "lily pad", say: "LÍ-li PAD" },
+  ribbit: { es: "Croac", en: "ribbit", say: "RÍ-bit" },
+  splash: { es: "Salpicadura", en: "splash", say: "SPLASH" }
 };
 
 // The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).

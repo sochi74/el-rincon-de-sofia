@@ -13,6 +13,7 @@
 // of play she sings (colored notes float up and a soft song sounds if the Lago is on screen). She waves 👋 at whoever stands
 // at the tip of the pier or near the shore of her rock, and a tap on her makes her wave and sing right away.
 // From 18:00 to 08:00 she is under the water: only little bubbles come up by her rock.
+// 🐸 Lily pads float on the water with little frogs on them (js/frogs.js draws them here, over the water).
 // The pier, the rock, the chairs, the umbrella and the sandcastle spot are solid (js/path.js); the shells are not.
 // The pier can be walked on, out to its tip. Day and night and the weather of the day show here too (js/weather.js),
 // without puddles or snowman. Modo decorar moves nothing here. The neighbors never come, and the shiny coins never appear
@@ -1309,6 +1310,8 @@ var Lake = (function () {
     drawTrail(ctx);
     if (hover === "trail") drawGlow(ctx, trailBox());
     drawRock(ctx);
+    // The lily pads and the little frogs on them, on the water (js/frogs.js).
+    Frogs.draw(ctx, "lake");
     if (isMermaidUp()) {
       if (hover === "mermaid") drawGlow(ctx, mermaidBox());
       drawMermaid(ctx);
@@ -1518,6 +1521,7 @@ var Lake = (function () {
     setHover: setHover,
     tapShell: tapShell,
     tapWater: tapWater,
+    waterAt: waterAt,
     tapChair: tapChair,
     tapCastle: tapCastle,
     tapMermaid: tapMermaid,

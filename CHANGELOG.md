@@ -76,6 +76,25 @@
 - En una partida vieja, si en Modo decorar se había puesto algo justo donde ahora está el cofre de la Ciudad, ese algo vuelve a su lugar de siempre.
 - Los 🧰 y ✅ del 🗺️ Mapa son chiquitos (el de la Cueva va justo encima de su cajita).
 - Cuando una ventana (la Mochila, las Metas, el Diario o el Mapa) se abre arriba de la pantalla, se estira hasta abajo con un espacio vacío (no es nuevo de este hito: pasa porque su estilo la pega también abajo).
+- Las ranitas no se guardan: al cargar, también se vuelve a sortear si hoy hay rana de colores en cada zona (recargar puede hacerla aparecer o desaparecer).
+- Cuando a las 06:00 empieza un día con rana de colores, una de las ranitas que ya estaban cambia de color de golpe (mientras duermen).
+- Los patitos se dibujan encima de las hojas de nenúfar: cuando van nadando hacia la orilla pueden pasar muy cerquita de la hoja de abajo del Lago.
+- El corcho de la caña puede quedar flotando encima de una hoja de nenúfar (las hojas no cambian la pesca).
+- Si la noche llega mientras faltan ranitas (por ejemplo, alguna se fue al agua al terminar la lluvia), se quedan las que están hasta que amanece.
+
+## 2026-10-27 · Hito 28b: 🐸 Ranitas
+- 🍃 Hojas de nenúfar: en el Lago, 5 hojas redondas verde oscuro con su cortecito y nervaduras (2 con una florcita rosada), lejos del muelle, de la roca de Pacífica y del camino de los patos; en el arroyo del Bosque encantado, 3 hojitas más chiquitas, lejos del puentecito. Se mecen suavemente con las ondas. Son solo decoración: tocar el agua cerca de una hoja pesca como siempre.
+- 🐸 Ranitas (animalitos, como los patitos: no se seleccionan, no se charla con ellas, no reciben regalos y no tienen Amistad), vistas desde arriba como ranas de verdad: cuerpo angosto en el hocico y ancho atrás, patas traseras largas y dobladas con rayas y pies con membranas, patas de adelante finitas con dedos largos, ojos saltones dorados con la pupila acostada, dos rayitas claras y manchas oscuras en la espalda. Son verde claro con borde oscuro, para que resalten sobre las hojas. Cada una un poquito distinta (más grande o más chiquita, verde más claro u oscuro); las del arroyo son más chiquitas.
+- 🌈 Rana de colores: cada día del juego, en cada zona, 1 de cada 4 veces una de las ranitas es turquesa con puntitos dorados y patas lila.
+- ☀️ Sin lluvia, de día: 2 ranitas en el Lago y 1 en el arroyo; parpadean, a veces giran un poquito y cada 25 a 55 segundos una hace un "croac" solita.
+- 🌧️ Con lluvia: de a una van saliendo más, hasta una en cada hoja (5 y 3), y cantan en coro: una burbuja clarita se infla y se deshincha bajo el mentón, salen notitas ♪ verdes y suena un "croac" detrás de otro, como una cancioncita, con un descansito entre canción y canción (solo si la zona está en pantalla). Cuando para la lluvia, las que sobran saltan al agua de a una.
+- 🌙 De noche se quedan en su hoja con los ojos cerrados, sin cantar; si llueve mientras está oscuro (entre las 06:00 y las 07:00), cantan bajito.
+- 🦘 Al tocar una (con o sin alguien seleccionado; nadie camina hacia ella) estira las patas, salta al agua con un "splash" (gotitas y anillos en el agua) y desaparece; a los 5 a 10 segundos vuelve a una hoja libre con un saltito desde el agua. La ranita se lleva el puntero de la mano al pasar el mouse.
+- Pausa y Modo decorar las congelan. No se guardan: al cargar aparecen según el clima y la hora.
+- Sonido: el "croac" está hecho con código (dos pulsitos ásperos, "rib-bit", más grave en las ranas grandes) y el "splash" al caer al agua.
+- Palabras nuevas (al pasar el mouse o mantener el dedo; cuentan para el 📖 Diario): Rana · frog (FROG), Rana de colores · colorful frog (KÁ-lor-ful FROG), Nenúfar · lily pad (LÍ-li PAD), Croac · ribbit (RÍ-bit), sobre las notitas del coro, y Salpicadura · splash (SPLASH), sobre el splash.
+- Probado con Sofía en tres pruebas. En la prueba pidió que el croac se oyera más (estaba muy bajito y la lluvia lo tapaba), que las ranas se vieran como ranas de verdad y no tiernas, y que resaltaran más sobre las hojas. Los trucos temporales (lluvia a las 10:00, día de sol a las 18:30 y rana de colores siempre) se quitaron.
+- Archivo nuevo: js/frogs.js, en el orden de scripts después de treasure. Cambiaron: index.html, js/config.js, js/words.js, js/lake.js, js/enchanted.js, js/audio.js y js/main.js. CLAUDE.md: js/frogs.js en la estructura y en el orden de scripts.
 
 ## 2026-10-27 · Hito 28: 🧰 Tesoros escondidos
 - 🧰 Seis cofrecitos, uno por zona: un cofre de madera chiquito con bandas, borde y cerradura dorados, medio escondido según la zona: en la Ciudad detrás de unos arbustos (abajo a la izquierda, junto a la Casa de Sofía), en la Pradera detrás de un arbusto con florcitas (abajo a la derecha), en el Lago detrás de unas rocas (en el pasto de abajo a la derecha), en el Bosque encantado detrás de unos helechos con un hongito (arriba a la izquierda), en la Montaña detrás de una piedra gris (a la derecha, arriba de la pared de la cueva) y en la Cueva detrás de unos cristales lila y azules (a la izquierda). Son obstáculos, se llega caminando y no tapan nada importante. En la Cueva el cofre se ve oscurito, como todo allí.

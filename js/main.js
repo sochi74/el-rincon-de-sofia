@@ -164,6 +164,8 @@
     }
     if (place === "lake") Lake.drawTop(ctx);
     if (place === "enchanted") Enchanted.drawTop(ctx);
+    // The splashes and the green notes of the little frogs (js/frogs.js).
+    Frogs.drawTop(ctx, place);
     if (place === "mountain") Mountain.drawTop(ctx);
     if (place === "cave") Cave.drawTop(ctx);
     // The sparkle of a hidden chest and the light of one opening shine by night and in the Cueva too.
@@ -241,6 +243,7 @@
     Mountain.update(dt);
     Cave.update(dt);
     Treasure.update(dt);
+    Frogs.update(dt);
     Cooking.update(dt);
     Gifts.update(dt);
     Sims.update(dt);
@@ -282,6 +285,8 @@
       Decorate.down(p.x, p.y);
       if (Decorate.isDragging() && canvas.setPointerCapture) canvas.setPointerCapture(event.pointerId);
       canvas.style.cursor = Decorate.cursor();
+    } else if (!UI.isMenuOpen() && !Sims.simAt(p.x, p.y) && Frogs.tap(Sims.viewPlace(), p.x, p.y)) {
+      // A tap on a little frog makes it jump into the water, whoever is selected; nobody walks to it (js/frogs.js).
     } else {
       Sims.handleTap(p.x, p.y, event.clientX, event.clientY);
     }
@@ -416,11 +421,14 @@
       if (Pet.at(p.x, p.y)) return Pet.word();
       return Meadow.wordAt(p.x, p.y);
     }
-    // In the Lago the shells win over characters, like for taps.
+    // In the Lago the shells win over characters, like for taps. The little frogs and their lily pads, the notes of their
+    // chorus and their splashes come after the characters (js/frogs.js).
     if (Sims.viewPlace() === "lake") {
       var shell = Lake.shellAt(p.x, p.y);
       if (shell) return shell.kind;
       if (Sims.simAt(p.x, p.y)) return null;
+      var frogLake = Frogs.wordAt("lake", p.x, p.y);
+      if (frogLake) return frogLake;
       if (Pet.at(p.x, p.y)) return Pet.word();
       return Lake.wordAt(p.x, p.y);
     }
@@ -428,6 +436,8 @@
     if (Sims.viewPlace() === "enchanted") {
       if (Enchanted.spiritAt(p.x, p.y)) return "spirit";
       if (Sims.simAt(p.x, p.y)) return null;
+      var frogForest = Frogs.wordAt("enchanted", p.x, p.y);
+      if (frogForest) return frogForest;
       if (Pet.at(p.x, p.y)) return Pet.word();
       return Enchanted.wordAt(p.x, p.y);
     }
@@ -520,10 +530,10 @@
       hoveredHouse = false;
       hoveredHome = null;
       hoveredLake = shell || (Sims.simAt(p.x, p.y) ? null : Lake.usableAt(p.x, p.y));
-      // The water only gets a pointer; it does not light up.
+      // The water only gets a pointer; it does not light up. A little frog only gets a pointer too (js/frogs.js).
       Lake.setHover(hoveredLake === "water" ? null : hoveredLake);
       ValleyMap.setHover(false);
-      canvas.style.cursor = hoveredLake ? "pointer" : "";
+      canvas.style.cursor = hoveredLake || (!Sims.simAt(p.x, p.y) && Frogs.at("lake", p.x, p.y)) ? "pointer" : "";
       return;
     }
     Lake.setHover(null);
@@ -534,10 +544,10 @@
       hoveredHouse = false;
       hoveredHome = null;
       hoveredForest = spirit || (Sims.simAt(p.x, p.y) ? null : Enchanted.usableAt(p.x, p.y));
-      // The water only gets a pointer; it does not light up.
+      // The water only gets a pointer; it does not light up. A little frog only gets a pointer too (js/frogs.js).
       Enchanted.setHover(hoveredForest === "water" ? null : hoveredForest);
       ValleyMap.setHover(false);
-      canvas.style.cursor = hoveredForest ? "pointer" : "";
+      canvas.style.cursor = hoveredForest || (!Sims.simAt(p.x, p.y) && Frogs.at("enchanted", p.x, p.y)) ? "pointer" : "";
       return;
     }
     Enchanted.setHover(null);

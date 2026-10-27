@@ -11,6 +11,7 @@
 // ✨ Forest spirits, magical creatures (not neighbors: never selected, no chats, no gifts and no Amistad): little balls of
 // light with eyes and a tiny smile that float slowly up and down; 3 by day and 8 at night, shining more. A tap on one walks
 // the selected one next to it, and the spirit dances around it (Diversión). They never follow anyone.
+// 🐸 Three little lily pads float on the stream, with little frogs on them (js/frogs.js draws them here, over the water).
 // 🐍 Three hollow logs (solid), each with a little magic snake inside (magical creatures too) that now and then peeks out
 // and flicks its tongue. Whoever stands still by a log too long gets a little bite: a hop, a shout and a band-aid 🩹 on the
 // arm for a while (no need changes). Krohna is never bitten.
@@ -1737,6 +1738,8 @@ var Enchanted = (function () {
     Weather.drawSnowyGrass(ctx);
     drawBlueFlowers(ctx);
     drawStream(ctx);
+    // The little lily pads of the stream and the little frogs on them (js/frogs.js).
+    Frogs.draw(ctx, "enchanted");
     drawBridge(ctx);
     drawTrail(ctx);
     if (hover === "trail") drawGlow(ctx, trailBox());
@@ -1991,6 +1994,7 @@ var Enchanted = (function () {
     tapRest: tapRest,
     tapRing: tapRing,
     tapWater: tapWater,
+    streamX: streamX,
     tapSpirit: tapSpirit,
     cancel: cancel,
     isActive: isActive,

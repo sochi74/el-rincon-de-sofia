@@ -49,7 +49,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 23: 📱 Jugar en el celular. Que el juego se vea y se toque bien en pantallas chicas: panel como cajoncito abajo, botones grandes, mantener el dedo para ver la palabra y zoom con dos dedos. Con el Extra desbloqueado de 40 ⭐: Pizza oven 🍕 en la Cocina.
 - ✅ Extra: 🧹 Pulido 4
 
-### 🧭 Pack 4: Más allá del valle
+### 🧭 Pack 4: Más allá del valle ✅ completo
 - ✅ Hito 24: 🧭 Al borde del valle. Al caminar hasta un borde de la ciudad se pasa a la zona de al lado (como la puerta mágica). La primera zona nueva es 🌸 la Pradera de flores, con flores silvestres y colinas suaves. Llega el 🗺️ Mapa del valle, una ventanita que se va llenando con cada zona descubierta.
 - ✅ Hito 25: 🏖️ Lago con playita. Una zona con lago, arena, muelle y patos, donde vive una 🧜‍♀️ sirena (idea de Sofía: "sirena de playa").
 - ✅ Hito 26: 🍄 Bosque encantado. Por el borde izquierdo de la ciudad: hongos gigantes que brillan de noche, un hongo para descansar, un círculo de hongos para pedir un deseo, un arroyito con puentecito para pescar, ✨ espíritus del bosque que bailan contigo y 🐍 víboras traviesas en troncos huecos que muerden si te quedas quieta (idea de Sofía), con curita 🩹. Con el Extra desbloqueado de 45 ⭐: Sunflower field 🌻 en la Pradera.
@@ -59,7 +59,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 27b: 💎 Cueva y dragona. Por la boca de la cueva de la Montaña se entra a una cueva oscurita donde los cristales de colores dan la luz y se juntan para la Mochila (azul, amatista, rosa y a veces dorado), con murciélagos que duermen colgados del techo, gotitas que caen con un "plic" y 🐉 Chispa, una dragona joven verde menta (Sofía la quiso más grande y no bebé) que escupe chispitas, a veces lanza fuego, estornuda, mueve la cola, da vueltas en el aire y de noche duerme en su nido de cristales.
 - ✅ Extra: 🔥 Dragon light (regalo de 55 ⭐)
 - ✅ Hito 28: 🧰 Tesoros escondidos. Un cofrecito medio escondido en cada zona (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva), que se delata con un brillito dorado; cada uno se abre una sola vez y trae una decoración para la casa de Sofía (reloj de pared, cuadro de flores prensadas, lámpara de conchitas, lámpara de hongo, mantita de lana de cabra y geoda gigante) y una palabra secreta en inglés para el Diario, con el 🗺️ Mapa del tesoro.
-- ⬜ Hito 28b: 🐸 Ranitas. Ranitas verdes y alguna rara de colores, sentadas en hojas de nenúfar del Lago y del arroyo del Bosque encantado; cuando llueve salen y cantan "croac" en coro; al tocarlas saltan al agua con un "splash".
+- ✅ Hito 28b: 🐸 Ranitas. Hojas de nenúfar en el Lago y en el arroyo del Bosque encantado, con ranitas que se ven como ranas de verdad (y a veces una 🌈 rana de colores); con lluvia salen más y cantan "croac" en coro inflando la garganta, de noche duermen, y al tocarlas saltan al agua con un "splash" y vuelven al ratito.
 - ⬜ Extra: 🪨 Caminos que siguen. Los caminos de piedra siguen a la Casa de Sofía cuando se mueve en Modo decorar.
 
 ### 🌙 Algún día
