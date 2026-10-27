@@ -5,7 +5,8 @@
 // Once per day of the game; the words go in order (LESSON_WORDS in js/words.js), one per day he teaches, and start again
 // after the last one. The chalkboard by his hollow tree (js/city.js) shows the word of today.
 // The Diario keeps the words he taught ("🎓 Del profe") and the ones found by passing the mouse (or a finger) over things
-// ("🔍 Descubiertas"); the first time a word shows up, "📖 ¡Palabra nueva!" floats by the cursor.
+// ("🔍 Descubiertas"); the first time a word shows up, "📖 ¡Palabra nueva!" floats by the cursor. The secret words of the
+// hidden chests (js/treasure.js) go to "Descubiertas" too, with a 🧰 and their sentence.
 // The Diario is saved apart from the game, so "Reiniciar" does not forget it. Every use of localStorage is inside try/catch.
 // Pausa freezes the lesson (the question can still be answered).
 var Lessons = (function () {
@@ -21,6 +22,7 @@ var Lessons = (function () {
   var lesson = null;
 
   // The Diario: the English words Professor Hoot taught, and the words found, as { es, en, say }; the newest last.
+  // The secret words of the chests are found words with "secret": true (they stay even if Professor Hoot teaches them).
   var diary = { teacher: [], found: [] };
   // The English words already in it, to know fast whether a word is new.
   var known = {};
@@ -284,12 +286,12 @@ var Lessons = (function () {
     return String(en).toLowerCase();
   }
 
-  // A word Professor Hoot taught goes to the top of "Del profe" (and out of "Descubiertas").
+  // A word Professor Hoot taught goes to the top of "Del profe" (and out of "Descubiertas", unless it is a secret word).
   function learn(w) {
     var key = keyOf(w.en);
     diary.teacher = diary.teacher.filter(function (en) { return keyOf(en) !== key; });
     diary.teacher.push(w.en);
-    diary.found = diary.found.filter(function (f) { return keyOf(f.en) !== key; });
+    diary.found = diary.found.filter(function (f) { return f.secret || keyOf(f.en) !== key; });
     known[key] = true;
     saveDiary();
     diaryShown = null;
@@ -317,6 +319,18 @@ var Lessons = (function () {
     }, K.popTime * 1000);
   }
 
+  // The secret word of a chest that just opened goes to the top of "Descubiertas", with its 🧰 (if it was there already
+  // as a found word, it becomes the secret one).
+  function addSecret(w) {
+    var key = keyOf(w.en);
+    if (diary.found.some(function (f) { return f.secret && keyOf(f.en) === key; })) return;
+    diary.found = diary.found.filter(function (f) { return keyOf(f.en) !== key; });
+    diary.found.push({ es: w.es, en: w.en, say: w.say, secret: true });
+    known[key] = true;
+    saveDiary();
+    diaryShown = null;
+  }
+
   // Open or close the Diario; the backpack and the goals window close when it opens.
   function setDiaryOpen(open) {
     diaryPanel.hidden = !open;
@@ -339,7 +353,9 @@ var Lessons = (function () {
       return LESSON_WORDS.filter(function (w) { return w.en === en; })[0];
     }).filter(Boolean).reverse();
     var found = diary.found.slice().reverse();
-    diaryCount.textContent = "Palabras aprendidas: " + (taught.length + found.length);
+    // A secret word Professor Hoot taught too counts once.
+    var twice = found.filter(function (f) { return f.secret && diary.teacher.some(function (en) { return keyOf(en) === keyOf(f.en); }); });
+    diaryCount.textContent = "Palabras aprendidas: " + (taught.length + found.length - twice.length);
     diaryList.textContent = "";
     section("🎓 Del profe", taught, "Todavía no. ¡Visita a Professor Hoot en el bosque!", function (w, row) {
       var ex = document.createElement("div");
@@ -347,14 +363,22 @@ var Lessons = (function () {
       ex.textContent = "“" + w.example.text + "” (" + w.example.subtitle + ")";
       row.appendChild(ex);
     });
-    section("🔍 Descubiertas", found, "Todavía no. ¡Pasa el mouse por las cosas!", null);
+    section("🔍 Descubiertas", found, "Todavía no. ¡Pasa el mouse por las cosas!", function (w, row) {
+      var secret = w.secret ? Treasure.secretWord(w.en) : null;
+      if (!secret) return;
+      row.firstChild.appendChild(document.createTextNode(" 🧰"));
+      var ex = document.createElement("div");
+      ex.className = "diary-example";
+      ex.textContent = "“" + secret.example.text + "” (" + secret.example.subtitle + ")";
+      row.appendChild(ex);
+    }, false);
   }
 
-  function section(title, words, empty, extra) {
+  function section(title, words, empty, extra, teacher) {
     var head = document.createElement("div");
     head.className = "diary-section";
     head.textContent = title;
-    if (extra) UI.bindWord(head, "teacher");
+    if (teacher !== false) UI.bindWord(head, "teacher");
     diaryList.appendChild(head);
     if (words.length === 0) {
       var none = document.createElement("p");
@@ -425,15 +449,19 @@ var Lessons = (function () {
       if (Array.isArray(saved.found)) {
         diary.found = saved.found.filter(function (f) {
           return f && typeof f.es === "string" && typeof f.en === "string" && typeof f.say === "string";
-        }).map(asWord);
+        }).map(function (f) {
+          return f.secret === true && Treasure.secretWord(f.en) ? { es: f.es, en: f.en, say: f.say, secret: true } : asWord(f);
+        });
       }
     }
     diary.teacher.forEach(function (en) { known[keyOf(en)] = true; });
     var count = diary.found.length;
+    // Each word once (a secret word may also be one Professor Hoot taught).
+    var seen = {};
     diary.found = diary.found.filter(function (f) {
       var key = keyOf(f.en);
-      if (known[key]) return false;
-      known[key] = true;
+      if (seen[key] || (known[key] && !f.secret)) return false;
+      seen[key] = known[key] = true;
       return true;
     });
     if (renamed || diary.found.length !== count) saveDiary();
@@ -483,6 +511,7 @@ var Lessons = (function () {
     boardWord: boardWord,
     menuOption: menuOption,
     discover: discover,
+    addSecret: addSecret,
     covers: covers,
     closeDiary: function () { setDiaryOpen(false); },
     get: get,

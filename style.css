@@ -718,9 +718,10 @@ h1 {
   color: #9A8676;
 }
 
-/* The big "¡Meta cumplida!" sign, at the top in the middle (and "🗺️ ¡Zona descubierta!" the same way). */
+/* The big "¡Meta cumplida!" sign, at the top in the middle (and "🗺️ ¡Zona descubierta!" and "🧰 ¡Tesoro encontrado!" the same way). */
 #goal-sign,
-#zone-sign {
+#zone-sign,
+#treasure-sign {
   position: fixed;
   top: 18px;
   left: 50%;
@@ -741,8 +742,21 @@ h1 {
 }
 
 #goal-sign[hidden],
-#zone-sign[hidden] {
+#zone-sign[hidden],
+#treasure-sign[hidden],
+.treasure-word[hidden] {
   display: none;
+}
+
+/* The treasure sign has two lines: what was found, and below, smaller, the secret word. */
+#treasure-sign {
+  border-radius: 28px;
+}
+
+.treasure-word {
+  margin-top: 4px;
+  font-size: 0.8em;
+  color: #C8664A;
 }
 
 @keyframes goal-sign {
@@ -766,6 +780,13 @@ h1 {
   width: 100%;
   height: auto;
   aspect-ratio: 32 / 25;
+}
+
+/* "🧰 Tesoros: N/6", below the map. */
+.map-treasures {
+  margin-top: 4px;
+  font-weight: 700;
+  text-align: center;
 }
 
 /* The Diario de palabras: how many words, then "🎓 Del profe" and "🔍 Descubiertas", with a scroll when there are many. */
@@ -1010,7 +1031,8 @@ h1 {
 
 @media (max-width: 420px) {
   #goal-sign,
-  #zone-sign {
+  #zone-sign,
+  #treasure-sign {
     top: 70px;
     border-radius: 18px;
   }
@@ -1210,7 +1232,8 @@ html.small #decorate-ask {
 
 /* The "¡Meta cumplida!" sign goes below the round buttons, away from the drawer. */
 html.small #goal-sign,
-html.small #zone-sign {
+html.small #zone-sign,
+html.small #treasure-sign {
   top: 68px;
   max-width: calc(100vw - 16px);
   padding: 8px 16px;

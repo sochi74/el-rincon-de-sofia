@@ -135,6 +135,8 @@
     } else {
       House.draw(ctx, hovered && hovered.id);
     }
+    // The hidden chest of the zone, half behind its bushes, rock or crystals (js/treasure.js).
+    Treasure.draw(ctx, place);
     // The grayer sky of the rain and the rainbow, under the night tint and the signs (js/weather.js).
     if (outside) Weather.drawSky(ctx);
     drawNight(time);
@@ -164,6 +166,8 @@
     if (place === "enchanted") Enchanted.drawTop(ctx);
     if (place === "mountain") Mountain.drawTop(ctx);
     if (place === "cave") Cave.drawTop(ctx);
+    // The sparkle of a hidden chest and the light of one opening shine by night and in the Cueva too.
+    Treasure.drawTop(ctx, place);
     Neighbors.drawTop(ctx, time);
     // Krohna is drawn among the characters (js/sims.js).
     Sims.draw(ctx, time);
@@ -175,6 +179,7 @@
     if (place === "enchanted") Enchanted.drawPops(ctx);
     if (place === "mountain") Mountain.drawPops(ctx);
     if (place === "cave") Cave.drawPops(ctx);
+    Treasure.drawPops(ctx, place);
     Cooking.drawPops(ctx);
     Gifts.draw(ctx, time);
     Social.draw(ctx, time);
@@ -235,6 +240,7 @@
     Enchanted.update(dt);
     Mountain.update(dt);
     Cave.update(dt);
+    Treasure.update(dt);
     Cooking.update(dt);
     Gifts.update(dt);
     Sims.update(dt);
@@ -399,6 +405,9 @@
     var inCity = Sims.viewPlace() === "city";
     // A band-aid on someone's arm, wherever they are.
     if (Enchanted.bandAidAt(p.x, p.y)) return "bandAid";
+    // The hidden chest of a zone wins over characters, like for taps.
+    var chest = Treasure.wordAt(Sims.viewPlace(), p.x, p.y);
+    if (chest) return chest;
     // In the Pradera the wild flowers win over characters, like for taps.
     if (Sims.viewPlace() === "meadow") {
       var wild = Meadow.flowerAt(p.x, p.y);
@@ -471,32 +480,26 @@
   // or a trail to the Pradera or the Lago, or in the Pradera a wild flower, the swing, the picnic blanket or the trail, or in
   // the Lago a shell, a beach chair, the sandcastle spot, Pacífica or the trail, or in the Bosque encantado a spirit, the low
   // mushroom, the fairy ring or the trail, or in the Montaña a goat, the mouth of the cave or the trail, or in the Cueva a
-  // crystal on the floor, Chispa or the way out, under the mouse (characters and neighbors in front win). The front door, the river, the lake, the stream and the neighbors get a pointer too.
+  // crystal on the floor, Chispa or the way out, under the mouse (characters and neighbors in front win). The hidden chest
+  // of each zone lights up too, even with a character in front of it. The front door, the river, the lake, the stream and the neighbors get a pointer too.
   // In Modo decorar only what can be moved lights up (js/decorate.js), and it follows the finger while it is dragged.
   function handleHover(event) {
     mouse = event.pointerType === "touch" ? null : { clientX: event.clientX, clientY: event.clientY };
     var p = toWorld(event);
     if (Decorate.isOn()) {
-      hovered = null;
-      hoveredHouse = false;
-      hoveredHome = null;
-      Garden.setHover(-1);
-      Gather.setHover(null);
-      Meadow.setHover(null);
-      Lake.setHover(null);
-      Enchanted.setHover(null);
-      Mountain.setHover(null);
-      Cave.setHover(null);
-      ValleyMap.setHover(false);
-      hoveredMeadow = null;
-      hoveredLake = null;
-      hoveredForest = null;
-      hoveredMountain = null;
-      hoveredCave = null;
+      forgetHover();
       Decorate.move(p.x, p.y);
       canvas.style.cursor = Decorate.cursor();
       return;
     }
+    // The hidden chest of the zone on screen glows under the mouse, even with a character next to it.
+    if (Treasure.at(Sims.viewPlace(), p.x, p.y)) {
+      forgetHover();
+      Treasure.setHover(Sims.viewPlace());
+      canvas.style.cursor = "pointer";
+      return;
+    }
+    Treasure.setHover(null);
     var inCity = Sims.viewPlace() === "city";
     if (Sims.viewPlace() === "meadow") {
       var flower = Meadow.flowerAt(p.x, p.y);
@@ -583,6 +586,27 @@
     canvas.style.cursor = hovered || hoveredHouse || door || river || plot >= 0 || wild || talk || trail ? "pointer" : "";
   }
 
+  // Nothing lights up: in Modo decorar, when the mouse leaves, and over a hidden chest (then only the chest does).
+  function forgetHover() {
+    hovered = null;
+    hoveredHouse = false;
+    hoveredHome = null;
+    Garden.setHover(-1);
+    Gather.setHover(null);
+    Meadow.setHover(null);
+    Lake.setHover(null);
+    Enchanted.setHover(null);
+    Mountain.setHover(null);
+    Cave.setHover(null);
+    ValleyMap.setHover(false);
+    Treasure.setHover(null);
+    hoveredMeadow = null;
+    hoveredLake = null;
+    hoveredForest = null;
+    hoveredMountain = null;
+    hoveredCave = null;
+  }
+
   function startGame() {
     Sound.start();
     titleScreen.hidden = true;
@@ -601,6 +625,7 @@
   Goals.init();
   Lessons.init();
   ValleyMap.init();
+  Treasure.init();
   Decorate.init();
   Sims.init(UI.showSelected);
   Neighbors.init();
@@ -616,22 +641,7 @@
   document.addEventListener("gesturestart", function (event) { event.preventDefault(); });
   zoomButton.addEventListener("click", resetZoom);
   canvas.addEventListener("pointerleave", function () {
-    hovered = null;
-    hoveredHouse = false;
-    hoveredHome = null;
-    Garden.setHover(-1);
-    Gather.setHover(null);
-    Meadow.setHover(null);
-    Lake.setHover(null);
-    Enchanted.setHover(null);
-    Mountain.setHover(null);
-    Cave.setHover(null);
-    ValleyMap.setHover(false);
-    hoveredMeadow = null;
-    hoveredLake = null;
-    hoveredForest = null;
-    hoveredMountain = null;
-    hoveredCave = null;
+    forgetHover();
     Decorate.leave();
     mouse = null;
   });

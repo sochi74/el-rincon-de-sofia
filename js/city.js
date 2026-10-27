@@ -11,6 +11,8 @@
 // the sand trail on the right that goes to the Lago, the leafy dirt trail on the left that goes to the Bosque encantado and
 // the stone trail at the bottom that goes to the Montaña, with their signs.
 // Krohna's round bed sits by the tent too (always there), where the kitten sleeps while real.fixer sleeps in the tent.
+// The hidden chest of the city (js/treasure.js) sits at the bottom left, half behind its bushes: it never moves, nothing
+// may be put over it, and it can always be reached walking from the door of Sofía's house.
 // The guitar and the pot are solid: characters, neighbors and Krohna walk around them. Krohna's bed is only decoration.
 // Modo decorar (js/decorate.js) can move and turn the guitar, the pot and Krohna's bed to open grass. It can also move (never turn) Sofía's house, her garden, real.fixer's tent (with its
 // campfire, its log and Krohna's bed), the neighbors' homes, the fountain and each tree, to any free spot from where
@@ -31,6 +33,9 @@ var City = (function () {
   // The house and the plaza sit low on the map, so the panel never covers them.
   var HOUSE = { x: 90, y: 440, w: 190, h: 160 };
   var PLAZA = { x: 420, y: 560, r: 90 };
+  // The hidden chest with its bushes (js/treasure.js), and the spot beside it where a character opens it.
+  var CHEST = CONFIG.treasure.chests.city.box;
+  var CHEST_SIDE = { x: CHEST.x + CHEST.w + 22, y: CONFIG.treasure.chests.city.y - 6 };
   // Round trees of the forest, at the top left, as [x, y, radius]. The last one is the little tree that came back.
   // Modo decorar can move each one anywhere free, except Lumi's tree ("LUMI_TREE"), which goes with her treehouse.
   var TREES = [
@@ -156,13 +161,13 @@ var City = (function () {
 
   // True if a character cannot stand here: off the map, in the water, or on something solid
   // (the house, the fountain, the tent, the campfire, a tree, the garden fence, the rope ladder of the treehouse,
-  // Vladi's castle, Professor Hoot's hollow tree and its chalkboard, the snowman on snowy days, and the guitar and the pot
-  // once their goals are met). Used by js/path.js.
+  // Vladi's castle, Professor Hoot's hollow tree and its chalkboard, the snowman on snowy days, the hidden chest, and the
+  // guitar and the pot once their goals are met). Used by js/path.js.
   // Small things (coins, berries, mushrooms, crystals, the flowers in the plots, the log and Krohna's bed) are not solid.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (SOLID_DECOR.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), DECOR_CLEAR)); })) return true;
-    if (inBox(x, y, grow(HOUSE, CLEAR))) return true;
+    if (inBox(x, y, grow(HOUSE, CLEAR)) || inBox(x, y, grow(CHEST, CLEAR))) return true;
     if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + CLEAR)) return true;
     if (Weather.snowmanBlocks(x, y, CLEAR)) return true;
     if (inBox(x, y, grow(TENT, CLEAR)) || inBox(x, y, grow(FIRE, 10))) return true;
@@ -200,7 +205,7 @@ var City = (function () {
   function isOpenGround(x, y) {
     if (SMALL.some(function (id) { return isOn(id) && inBox(x, y, grow(boxOf(id), 10)); })) return false;
     if (!isWalkable(x, y) || areaAt(x, y) === "bridge") return false;
-    if (Garden.isGardenAt(x, y) || ValleyMap.isNear(x, y, 30)) return false;
+    if (Garden.isGardenAt(x, y) || ValleyMap.isNear(x, y, 30) || inBox(x, y, grow(CHEST, 30))) return false;
     if (Math.abs(x - riverX(y)) < RIVER.half + RIVER.bank + 20) return false;
     if (houseAt(x, y) || (x > HOUSE.x - 20 && x < HOUSE.x + HOUSE.w + 20 && y > HOUSE.y - 70)) return false;
     if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 20) || near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + 20)) return false;
@@ -1644,7 +1649,7 @@ var City = (function () {
     if (Math.abs(x - riverX(y)) < RIVER.half + 6) return false;
     if (Math.abs(x - riverX(BRIDGE.y)) <= RIVER.half + BRIDGE.reach && Math.abs(y - BRIDGE.y) <= BRIDGE.half + 14) return false;
     if (near(x, y, PLAZA.x, PLAZA.y, PLAZA.r + 4) || Garden.isGardenAt(x, y) || houseAt(x, y)) return false;
-    if (ValleyMap.isNear(x, y, 4)) return false;
+    if (ValleyMap.isNear(x, y, 4) || inBox(x, y, grow(CHEST, 4))) return false;
     if (near(x, y, FOUNTAIN_AT.x, FOUNTAIN_AT.y, FOUNTAIN + 4)) return false;
     if (neighborHomeAt(x, y) || inBox(x, y, grow(TREEHOUSE.ladder, 4))) return false;
     if ([TENT, FIRE, MOON_LANTERN, HEART, { x: SEAT.x - 30, y: SEAT.y - 16, w: 60, h: 32 }].some(function (b) {
@@ -1768,6 +1773,8 @@ var City = (function () {
     // The trails to the Pradera, the Lago, the Bosque encantado and the Montaña and their signs never move and are never
     // covered.
     ValleyMap.boxes().forEach(function (b) { hits.push({ s: b.box, withSign: true, overTree: b.sign }); });
+    // Nor is the hidden chest, not even by the crown of a tree.
+    hits.push({ s: grow(CHEST, 4), withSign: true });
     var feet = isTree ? mine.map(function (s) { return { cx: s.cx, cy: s.cy, r: s.r * TRUNK }; }) : mine;
     if (hits.some(function (h) {
       if ((h.home ? feet : mine).some(function (s) { return !(isTree && h.overTree) && touches(s, h.s); })) return true;
@@ -1788,8 +1795,8 @@ var City = (function () {
   }
 
   // True if, from the door of Sofía's house, a character can walk to the doors of every home, the garden plots,
-  // the tent, the campfire and its log, both banks of the river, the forest and the trails to the Pradera, the Lago, the
-  // Bosque encantado and the Montaña.
+  // the tent, the campfire and its log, both banks of the river, the forest, the trails to the Pradera, the Lago, the
+  // Bosque encantado and the Montaña, and the hidden chest.
   function canReachAll() {
     var N = CONFIG.neighbors;
     var r = Path.reach("city", doorSpot.x, doorSpot.y);
@@ -1797,7 +1804,7 @@ var City = (function () {
     var spots = [N.vladi.home, N.lumi.home, N.hoot.home, N.lumi.spots[5],
       { x: TENT.x + TENT.w / 2, y: TENT.y + TENT.h + 40 }, { x: FIRE.x + FIRE.w + 32, y: FIRE.y + 50 },
       { x: SEAT.x, y: SEAT.y + 34 }, ValleyMap.edge, ValleyMap.lakeEdge, ValleyMap.forestEdge,
-      ValleyMap.mountainEdge].concat(Garden.standSpots());
+      ValleyMap.mountainEdge, CHEST_SIDE].concat(Garden.standSpots());
     // Close enough counts: a character walks to the closest spot it can (like a plot right by the fence).
     if (!spots.every(function (p) { return r.any({ x: p.x - 10, y: p.y - 10, w: 20, h: 20 }); })) return false;
     var banks = [-1, 1].every(function (side) {
@@ -1858,6 +1865,14 @@ var City = (function () {
       }
       if (!isWalkable(s.x, s.y)) return;
       layout[id] = { x: s.x, y: s.y, dir: s.dir };
+    });
+    // A game saved before the hidden chest: whatever was moved over its spot goes back to its first spot.
+    var chest = grow(CHEST, 4);
+    MOVABLE.forEach(function (id) {
+      var covers = isBig(id) ? shapesOf(id).some(function (sh) { return touches(sh, chest); }) : overlap(boxOf(id), chest);
+      if (!covers) return;
+      layout[id] = isBig(id) ? { x: START[id].x, y: START[id].y, dir: 0 } : { x: DECOR[id].start.x, y: DECOR[id].start.y, dir: 0 };
+      if (isBig(id)) apply(id);
     });
   }
 

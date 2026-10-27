@@ -50,7 +50,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/enchanted.js: el Bosque encantado: dibujo, hongos gigantes, hongo para descansar, círculo de hongos y deseo, arroyo con puentecito y pesca, espíritus del bosque, víboras de los troncos huecos y curitas, la Casita de hongo con sus bellotitas y los farolitos vivos
 - js/mountain.js: la Montaña: dibujo, pinos que se mecen, rocas (dos con carita), mirador, banquito, torrecitas de piedras, barro con huellas, plumas, nido, pájaros cantores, hojas al viento, cabritas que se acarician y la boca de la cueva, por donde se entra a la Cueva
 - js/cave.js: la Cueva: dibujo oscurito con la luz de los cristales, racimos de cristales, cristales para juntar, estalactitas, gotitas, murciélagos, la salida a la Montaña y Chispa, la dragona (paseo, vuelito, chispitas, fuego, sus tres reacciones y su nido de cristales)
-- Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, lake, enchanted, mountain, cave, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
+- js/treasure.js: los tesoros escondidos: un cofrecito en cada zona (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva) con su brillito, abrirlo, su decoración para la casa de Sofía, la palabra secreta para el Diario, los carteles y la lluvia de estrellitas del sexto, y lo que usan el 🗺️ Mapa del tesoro y el guardado
+- Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, lake, enchanted, mountain, cave, treasure, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

@@ -208,7 +208,17 @@ var WORDS = {
   chispa: { es: "Chispa", en: "dragon", say: "DRÁ-gon", diary: "dragon" },
   dragon: { es: "Dragón", en: "dragon", say: "DRÁ-gon" },
   sparks: { es: "Chispitas", en: "sparks", say: "SPARKS" },
-  sneeze: { es: "Estornudo", en: "sneeze", say: "SNÍIZ" }
+  sneeze: { es: "Estornudo", en: "sneeze", say: "SNÍIZ" },
+
+  // The hidden treasures (js/treasure.js): the chests, the counter of the Mapa del valle, and the decorations they bring
+  // to Sofía's house (the shell lamp and the mushroom lamp both say "Lámpara · lamp").
+  chest: { es: "Cofre", en: "chest", say: "CHEST" },
+  treasure: { es: "Tesoro", en: "treasure", say: "TRÉ-sher" },
+  wallClock: { es: "Reloj de pared", en: "wall clock", say: "UÓL KLOK" },
+  pressedFlowers: { es: "Flores prensadas", en: "pressed flowers", say: "PREST FLÁU-ers" },
+  lamp: { es: "Lámpara", en: "lamp", say: "LAMP" },
+  woolBlanket: { es: "Manta de lana", en: "wool blanket", say: "UÚL BLÁN-ket" },
+  geode: { es: "Geoda", en: "geode", say: "YÍ-oud" }
 };
 
 // The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).

@@ -58,7 +58,8 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Hito 27: ⛰️ Montaña. Por el borde de abajo de la ciudad: pinos que se mecen, rocas (dos con carita), mirador, banquito, torrecitas de piedras, barro con huellas, plumas, un nido con huevitos, 🐦 pájaros cantores, hojas al viento, 🐐 cabritas que saltan entre las rocas y se pueden acariciar, y la entrada de una cueva todavía cerrada.
 - ✅ Hito 27b: 💎 Cueva y dragona. Por la boca de la cueva de la Montaña se entra a una cueva oscurita donde los cristales de colores dan la luz y se juntan para la Mochila (azul, amatista, rosa y a veces dorado), con murciélagos que duermen colgados del techo, gotitas que caen con un "plic" y 🐉 Chispa, una dragona joven verde menta (Sofía la quiso más grande y no bebé) que escupe chispitas, a veces lanza fuego, estornuda, mueve la cola, da vueltas en el aire y de noche duerme en su nido de cristales.
 - ✅ Extra: 🔥 Dragon light (regalo de 55 ⭐)
-- ⬜ Hito 28: 💎 Tesoros y ranitas. Cofres y sorpresas escondidos en lugares secretos de todas las zonas, y 🐸 ranitas que cantan cuando llueve.
+- ✅ Hito 28: 🧰 Tesoros escondidos. Un cofrecito medio escondido en cada zona (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva), que se delata con un brillito dorado; cada uno se abre una sola vez y trae una decoración para la casa de Sofía (reloj de pared, cuadro de flores prensadas, lámpara de conchitas, lámpara de hongo, mantita de lana de cabra y geoda gigante) y una palabra secreta en inglés para el Diario, con el 🗺️ Mapa del tesoro.
+- ⬜ Hito 28b: 🐸 Ranitas. Ranitas verdes y alguna rara de colores, sentadas en hojas de nenúfar del Lago y del arroyo del Bosque encantado; cuando llueve salen y cantan "croac" en coro; al tocarlas saltan al agua con un "splash".
 - ⬜ Extra: 🪨 Caminos que siguen. Los caminos de piedra siguen a la Casa de Sofía cuando se mueve en Modo decorar.
 
 ### 🌙 Algún día

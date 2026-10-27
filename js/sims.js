@@ -937,7 +937,7 @@ var Sims = (function () {
     var bubble = Enchanted.shoutFor(sim.data.id) || Social.bubbleFor(sim.data.id) || Gifts.bubbleFor(sim.data.id) || Objects.bubbleFor(sim.data.id) ||
       Garden.bubbleFor(sim.data.id) || Gather.bubbleFor(sim.data.id) || Cooking.bubbleFor(sim.data.id) ||
       Meadow.bubbleFor(sim.data.id) || Lake.bubbleFor(sim.data.id) || Enchanted.bubbleFor(sim.data.id) ||
-      Mountain.bubbleFor(sim.data.id) || Cave.bubbleFor(sim.data.id);
+      Mountain.bubbleFor(sim.data.id) || Cave.bubbleFor(sim.data.id) || Treasure.bubbleFor(sim.data.id);
     if (bubble && bubble.speech) {
       lift = drawSpeechBubble(ctx, head, time, bubble);
     } else if (bubble) {
@@ -1330,7 +1330,7 @@ var Sims = (function () {
     var id = sim.data.id;
     return sim.path.length === 0 && !Objects.isActive(id) && !Garden.isActive(id) && !Gather.isActive(id) && !Cooking.isActive(id) &&
       !Meadow.isActive(id) && !Lake.isActive(id) && !Enchanted.isActive(id) && !Mountain.isActive(id) && !Cave.isActive(id) &&
-      !Social.isInvolved(id) && !Gifts.isInvolved(id) && !Lessons.isInvolved(id);
+      !Treasure.isActive(id) && !Social.isInvolved(id) && !Gifts.isInvolved(id) && !Lessons.isInvolved(id);
   }
 
   // Try to fix the lowest need; true if it found something to do.
@@ -1383,7 +1383,7 @@ var Sims = (function () {
       var otherId = other.data.id;
       if (Objects.isActive(otherId) || Garden.isActive(otherId) || Gather.isActive(otherId) || Cooking.isActive(otherId) ||
         Meadow.isActive(otherId) || Lake.isActive(otherId) || Enchanted.isActive(otherId) || Mountain.isActive(otherId) ||
-        Cave.isActive(otherId) || Gifts.isInvolved(otherId)) return false;
+        Cave.isActive(otherId) || Treasure.isActive(otherId) || Gifts.isInvolved(otherId)) return false;
       Social.start(sim, other, "chat");
       return true;
     }
@@ -1592,7 +1592,8 @@ var Sims = (function () {
   // While the menu is open, a tap anywhere else only closes it.
   // In the city, garden plots and forest things win over characters, so a character working there never hides them
   // from taps; in the Pradera, the wild flowers do, in the Lago the shells, in the Bosque encantado the spirits, in the
-  // Montaña the goats, and in the Cueva the crystals.
+  // Montaña the goats, and in the Cueva the crystals. In every zone and in the city, so does the hidden chest
+  // (js/treasure.js): a tap on it walks there to open it.
   function handleTap(x, y, screenX, screenY) {
     var inCity = !!selected && selected.place === "city";
     var inMeadow = !!selected && selected.place === "meadow";
@@ -1603,6 +1604,8 @@ var Sims = (function () {
     var onPlot = (inCity && (Garden.plotAt(x, y) >= 0 || !!Gather.thingAt(x, y))) || (inMeadow && !!Meadow.flowerAt(x, y)) ||
       (inLake && !!Lake.shellAt(x, y)) || (inForest && !!Enchanted.spiritAt(x, y)) || (inMountain && !!Mountain.goatAt(x, y)) ||
       (inCave && !!Cave.crystalAt(x, y));
+    var onChest = !!selected && Treasure.at(selected.place, x, y);
+    if (onChest) onPlot = true;
     var sim = onPlot ? null : simAt(x, y);
     var neighbor = onPlot || sim || viewPlace() !== "city" ? null : Neighbors.at(x, y);
     var again = false;
@@ -1655,6 +1658,7 @@ var Sims = (function () {
       if (Enchanted.cancel(sim.data.id)) wasBusy = true;
       if (Mountain.cancel(sim.data.id)) wasBusy = true;
       if (Cave.cancel(sim.data.id)) wasBusy = true;
+      if (Treasure.cancel(sim.data.id)) wasBusy = true;
       if (Garden.cancel(sim.data.id) || wasBusy) sim.path = [];
       Social.cancel(sim.data.id);
       selected = sim;
@@ -1674,6 +1678,11 @@ var Sims = (function () {
     Enchanted.cancel(selected.data.id);
     Mountain.cancel(selected.data.id);
     Cave.cancel(selected.data.id);
+    Treasure.cancel(selected.data.id);
+    if (onChest) {
+      Treasure.tap(selected, selected.place);
+      return;
+    }
     if (inCave) {
       var crystal = Cave.crystalAt(x, y);
       if (crystal) {

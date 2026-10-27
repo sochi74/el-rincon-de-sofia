@@ -158,13 +158,14 @@ var Enchanted = (function () {
     return { x: l.x - l.len / 2, y: l.y - l.r, w: l.len, h: l.r * 2 };
   }
 
-  // True if a character cannot stand here: off the map, in the stream, or on a giant mushroom, the mushroom house or a
-  // hollow log. Used by js/path.js.
+  // True if a character cannot stand here: off the map, in the stream, or on a giant mushroom, the mushroom house, a
+  // hollow log or the hidden chest (js/treasure.js). Used by js/path.js.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (MUSHROOMS.some(function (m) { return inBox(x, y, grow(mushroomBox(m), CLEAR / 2)); })) return true;
     if (inBox(x, y, grow(mushroomBox(REST), CLEAR / 2))) return true;
     if (inBox(x, y, grow(mushroomBox(HOUSE), CLEAR / 2))) return true;
+    if (inBox(x, y, grow(CONFIG.treasure.chests.enchanted.box, CLEAR / 2))) return true;
     return LOGS.some(function (l) { return inBox(x, y, grow(logBox(l), 8)); });
   }
 

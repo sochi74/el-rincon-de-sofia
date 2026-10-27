@@ -4,7 +4,7 @@
 // a soft buzz of bees by day and crickets by night; in the Lago soft little waves, birds by day and crickets by night;
 // in the Bosque encantado the stream, birds by day and crickets by night; in the Montaña a soft wind and crickets by night;
 // in the house the tele while someone watches it) and calm music that turns softer at night.
-// A soft chime when a zone of the Mapa del valle is found. In the Lago the ducks' soft "cuac" and Pacífica's short song.
+// A soft chime when a zone of the Mapa del valle is found, and a soft fanfare when a hidden treasure chest opens. In the Lago the ducks' soft "cuac" and Pacífica's short song.
 // In the Bosque encantado a soft tinkle while the spirits dance and a quiet "sss" when a snake peeks out.
 // In the Montaña the goats' "beee" (higher for the baby) and the songbirds' short happy tunes by day.
 // In the Cueva a soft low echo all the time, the "plic" of the drops, a quiet tinkle of the crystals now and then (and when
@@ -156,6 +156,20 @@ var Sound = (function () {
       });
       note(effectsBus, freqOf(84), t + 0.39, 0.8, "triangle", 0.4);
       note(effectsBus, freqOf(88), t + 0.39, 0.8, "sine", 0.15);
+    },
+    // A soft fanfare for a treasure chest that opens: a little creak of the lid, a golden chime going up and a soft chord.
+    treasure: function (t) {
+      note(effectsBus, 180, t, 0.22, "triangle", 0.12, 260);
+      [72, 76, 79, 84].forEach(function (m, i) {
+        note(effectsBus, freqOf(m), t + 0.2 + i * 0.12, 0.5, "sine", 0.22);
+        note(effectsBus, freqOf(m + 12), t + 0.2 + i * 0.12, 0.25, "sine", 0.05);
+      });
+      [76, 79, 84].forEach(function (m) {
+        note(effectsBus, freqOf(m), t + 0.74, 1.1, "triangle", 0.16);
+      });
+      for (var i = 0; i < 5; i++) {
+        note(effectsBus, freqOf(SPARKLE_NOTES[i]), t + 0.85 + i * 0.07, 0.3, "sine", 0.1);
+      }
     },
     // A soft "cuac": a short nasal tone that drops a little, through a filter, twice.
     quack: function (t) {
