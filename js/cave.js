@@ -12,6 +12,9 @@
 // up and fade, and sometimes breathes fire out of her mouth (only for show: it burns nothing). At night she
 // sleeps curled up in her nest of crystals. A tap on her (whoever is selected, and nobody walks to her) makes her sneeze
 // sparks, wag her tail or fly up and spin; at night "Shhh". She is not solid.
+// 🔥 Dragon light: while she breathes fire, a big round warm light (orange and gold) comes out of her fire and lights
+// the cave around her (not all of it), flickering like a campfire, and the crystals near it shine a little more. It
+// follows her if she is flying, and when the fire ends it goes out slowly. Only for show; Pausa freezes it.
 // No weather and no shooting stars here, and the night tint never comes in: the cave looks the same by day and by night
 // (only the light at the way out changes). Modo decorar moves nothing here. The neighbors never come, and the shiny coins
 // never appear here. Pausa freezes it all. The crystals on the floor are saved; Chispa, the bats and the drops are not.
@@ -405,6 +408,39 @@ var Cave = (function () {
     }
   }
 
+  // The light of her fire: "level" goes from 0 (out) to 1 (all lit), and "burn" is how much it flickers.
+  var fireLight = { level: 0, burn: 0 };
+
+  // It comes in while she breathes fire, and goes out slowly when the fire ends.
+  function updateFireLight(dt) {
+    var L = D.light, burning = !!(dragon.act && dragon.act.kind === "fire");
+    if (burning) fireLight.level = Math.min(1, fireLight.level + dt / L.rise);
+    else fireLight.level = Math.max(0, fireLight.level - dt / L.fade);
+    fireLight.burn += ((burning ? 1 : 0) - fireLight.burn) * Math.min(1, dt * 3);
+  }
+
+  // Where the light is: just ahead of her mouth, where the flames are. It moves with her, flying too.
+  function fireLightSpot() {
+    var at = mouth();
+    return { x: at.x + dragon.dir * 50, y: at.y + 14 };
+  }
+
+  // How bright the light of her fire is right now, from 0 to about 1: it comes and goes softly, and flickers.
+  function fireLightPower() {
+    var l = fireLight.level;
+    if (l <= 0) return 0;
+    var flicker = Math.sin(clock * 11) * 0.09 + Math.sin(clock * 17.3 + 1.2) * 0.06 + Math.sin(clock * 29 + 2.5) * 0.04;
+    return l * l * (3 - 2 * l) * (1 + flicker * fireLight.burn);
+  }
+
+  // How much the light of her fire reaches a spot, from 0 to 1: for the crystals that shine more.
+  function fireLightAt(x, y) {
+    var power = fireLightPower();
+    if (!power) return 0;
+    var at = fireLightSpot();
+    return power * Math.max(0, 1 - dist(x, y, at.x, at.y) / D.light.reach);
+  }
+
   function updateFlames(dt) {
     flames.forEach(function (f) {
       f.age += dt;
@@ -551,6 +587,7 @@ var Cave = (function () {
     updateDragon(dt);
     updateSparks(dt);
     updateFlames(dt);
+    updateFireLight(dt);
     // The crystals tinkle softly now and then.
     tinkleIn -= dt;
     if (tinkleIn <= 0) {
@@ -671,11 +708,12 @@ var Cave = (function () {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
     CLUSTERS.forEach(function (c, i) {
-      halo(ctx, c.x, c.y - c.r * 0.4, c.r * 5, COLORS[c.color], 0.34 * twinkle(i));
+      var more = 1 + fireLightAt(c.x, c.y - c.r * 0.4) * 0.7;
+      halo(ctx, c.x, c.y - c.r * 0.4, c.r * 5, COLORS[c.color], 0.34 * twinkle(i) * more);
     });
     crystals.forEach(function (s, i) {
-      var gold = s.kind === "crystalGold";
-      halo(ctx, s.x, s.y - 6, gold ? 84 : 46, COLORS[kindOf(s.kind).color], (gold ? 0.5 : 0.28) * twinkle(i + 20));
+      var gold = s.kind === "crystalGold", more = 1 + fireLightAt(s.x, s.y - 6) * 0.7;
+      halo(ctx, s.x, s.y - 6, gold ? 84 : 46, COLORS[kindOf(s.kind).color], (gold ? 0.5 : 0.28) * twinkle(i + 20) * more);
     });
     halo(ctx, NEST.x, NEST.y, 130, K.amethyst, 0.24 * twinkle(40));
     halo(ctx, NEST.x, NEST.y, 86, K.blue, 0.14 * twinkle(41));
@@ -683,6 +721,24 @@ var Cave = (function () {
     var night = Time.darkness();
     var outside = night > 0.5 ? "#9AB0E6" : "#FFE2A8";
     halo(ctx, EXIT.x, H, 170, outside, 0.34 - night * 0.12);
+    // The warm light of Chispa's fire: big and orange, with gold in the middle.
+    var power = fireLightPower();
+    if (power > 0) {
+      var at = fireLightSpot();
+      halo(ctx, at.x, at.y, D.light.radius, K.fireOrange, 0.4 * power);
+      halo(ctx, at.x, at.y, D.light.radius * 0.5, K.fireGold, 0.3 * power);
+    }
+    ctx.restore();
+  }
+
+  // A soft touch of the warm light over what stands (Chispa, the clusters and the nest), so they look lit too.
+  function drawFireLightOver(ctx) {
+    var power = fireLightPower();
+    if (power <= 0) return;
+    var at = fireLightSpot();
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    halo(ctx, at.x, at.y, D.light.radius * 0.7, K.fireOrange, 0.12 * power);
     ctx.restore();
   }
 
@@ -784,7 +840,7 @@ var Cave = (function () {
 
   // A cluster of crystals: shards like little pointy columns, each with a light and a shady face, and a soft shine.
   function drawCluster(ctx, c, i) {
-    var color = COLORS[c.color], bright = twinkle(i);
+    var color = COLORS[c.color], bright = twinkle(i) + fireLightAt(c.x, c.y - c.r * 0.4) * 0.3;
     ctx.save();
     ctx.translate(c.x, c.y);
     ellipse(ctx, 0, 2, c.r * 1.05, c.r * 0.34, "rgba(15, 12, 20, 0.45)");
@@ -821,7 +877,7 @@ var Cave = (function () {
     ctx.closePath();
     ctx.fillStyle = "rgba(40, 20, 70, 0.22)";
     ctx.fill();
-    ctx.globalAlpha = 0.35 + bright * 0.5;
+    ctx.globalAlpha = Math.min(1, 0.35 + bright * 0.5);
     ctx.fillStyle = "#FFFFFF";
     ctx.beginPath();
     ctx.moveTo(-w * 0.6, -h * 0.2);
@@ -835,7 +891,8 @@ var Cave = (function () {
 
   // A crystal on the floor: three little shards of its color. The gold one has a twinkling star of light.
   function drawCrystal(ctx, s, i) {
-    var color = COLORS[kindOf(s.kind).color], bright = twinkle(i + 20), gold = s.kind === "crystalGold";
+    var color = COLORS[kindOf(s.kind).color], bright = twinkle(i + 20) + fireLightAt(s.x, s.y - 6) * 0.3;
+    var gold = s.kind === "crystalGold";
     ctx.save();
     ctx.translate(s.x, s.y);
     if (hover === s) {
@@ -1274,6 +1331,7 @@ var Cave = (function () {
       drawDragon(ctx);
     } });
     things.sort(function (a, b) { return a.y - b.y; }).forEach(function (one) { one.draw(); });
+    drawFireLightOver(ctx);
     // The drops falling.
     drops.forEach(function (d) {
       var at = dropSpot(d);

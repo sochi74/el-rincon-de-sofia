@@ -65,6 +65,15 @@
 - En la 🎒 Mochila los cristales de la Cueva se ven con un emoji de su color (🔷 azul, 🔮 amatista, 💖 rosa y 🌟 dorado), no dibujados como en el piso (la Mochila solo muestra emoji).
 - Frente a la boca de la cueva, en la Montaña, el personaje se para sobre la parte de abajo de la pared de roca (así puede llegar caminando hasta la boca).
 - Con nieve, los sonidos de la Cueva también se oyen un poquito más bajitos, como los de afuera.
+- La luz del fuego de Chispa es un círculo: también aclara un poquito las paredes de roca que quedan dentro de él (no se corta en las paredes), y no tiñe a Sofía ni a real.fixer, que se ven igual que siempre.
+
+## 2026-10-27 · Extra: 🔥 Dragon light (regalo de 55 ⭐)
+- 🔥 Cada vez que Chispa lanza fuego en la Cueva, sale desde su fuego una luz cálida, naranja con dorado en el medio: la oscuridad se aclara poco a poco alrededor de ella en un círculo grande (llega lejos, pero no a toda la cueva). Mientras dura el fuego titila suave como una fogata, y cuando termina se apaga despacito en un poco más de 1,5 segundos.
+- 💎 Los racimos de cristales y los cristales del piso que quedan cerca de la luz brillan un poquito más mientras dura.
+- 🐉 Si Chispa está volando cuando lanza fuego, la luz sale desde su fuego, arriba con ella, y la sigue.
+- Solo es para ver: no cambia nada del juego. Pausa y Modo decorar congelan la luz como está.
+- 📚 Revisión de biblias: ROADMAP.md, README.md y CLAUDE.md ya no dicen en ningún lado "dragoncito bebé" ni "tímido" para Chispa (coinciden con el juego: una dragona joven, grande, verde menta, que lanza fuego). No hizo falta corregir nada.
+- Probado con Sofía con un truco temporal (fuego cada 5 a 8 segundos y Chispa volando siempre), ya quitado.
 
 ## 2026-10-27 · Hito 27b: 💎 Cueva y dragona
 - 🕳️ Entrar y salir: en la Montaña, el cartelito de la pared de roca ahora dice "Cueva". Con Sofía o real.fixer seleccionado, tocar la boca de la cueva (o su cartelito) lo hace caminar hasta ella y entrar: aparece en la Cueva, junto a la salida de abajo. Tocar la salida lo devuelve a la Montaña, frente a la boca. Krohna sigue a real.fixer (por la Montaña). La boca brilla al pasar el mouse.
