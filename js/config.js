@@ -589,6 +589,9 @@ var CONFIG = {
   // spits sparks every "dragon.sparks.min" to "dragon.sparks.max" seconds of play, and breathes fire for "dragon.fire.time"
   // seconds every "dragon.fire.min" to "dragon.fire.max" seconds of play. She is awake from "dragon.wake" to
   // "dragon.sleep" (minutes of the game clock). The crystals tinkle softly every "tinkle.min" to "tinkle.max" seconds.
+  // 🔥 Dragon light: her fire lights the cave with a warm round light "dragon.light.radius" big, that comes in
+  // "dragon.light.rise" seconds and goes out slowly in "dragon.light.fade" seconds. Crystals closer than
+  // "dragon.light.reach" shine a little more while it lasts. Its colors are "fireOrange" and "fireGold".
   cave: {
     edge: { x: 500, y: 680 },
     foot: { x: 500, y: 636 },
@@ -603,6 +606,7 @@ var CONFIG = {
     tinkle: { min: 5, max: 11 },
     dragon: { walk: 30, fly: 46, flyChance: 0.35, rest: { min: 2, max: 5 }, sparks: { min: 60, max: 120 },
       fire: { min: 25, max: 50, time: 1.6 },
+      light: { radius: 380, rise: 0.45, fade: 1.6, reach: 300 },
       wake: 6 * 60, sleep: 20 * 60 },
     floor: "#38363E",
     floorDark: "#2C2B32",
@@ -620,6 +624,8 @@ var CONFIG = {
     mintDark: "#6CC8A3",
     belly: "#FFF3DA",
     hornColor: "#FFE6AE",
+    fireOrange: "#FF9440",
+    fireGold: "#FFD27A",
     sparkColors: ["#FFD45C", "#FF8F8F", "#8FDCF7", "#B8F5C8", "#E3B8F5"]
   },
 

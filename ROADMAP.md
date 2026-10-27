@@ -57,6 +57,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: 🏮 Farolitos vivos y 🌠 Wishing stars (regalo de 50 ⭐)
 - ✅ Hito 27: ⛰️ Montaña. Por el borde de abajo de la ciudad: pinos que se mecen, rocas (dos con carita), mirador, banquito, torrecitas de piedras, barro con huellas, plumas, un nido con huevitos, 🐦 pájaros cantores, hojas al viento, 🐐 cabritas que saltan entre las rocas y se pueden acariciar, y la entrada de una cueva todavía cerrada.
 - ✅ Hito 27b: 💎 Cueva y dragona. Por la boca de la cueva de la Montaña se entra a una cueva oscurita donde los cristales de colores dan la luz y se juntan para la Mochila (azul, amatista, rosa y a veces dorado), con murciélagos que duermen colgados del techo, gotitas que caen con un "plic" y 🐉 Chispa, una dragona joven verde menta (Sofía la quiso más grande y no bebé) que escupe chispitas, a veces lanza fuego, estornuda, mueve la cola, da vueltas en el aire y de noche duerme en su nido de cristales.
+- ✅ Extra: 🔥 Dragon light (regalo de 55 ⭐)
 - ⬜ Hito 28: 💎 Tesoros y ranitas. Cofres y sorpresas escondidos en lugares secretos de todas las zonas, y 🐸 ranitas que cantan cuando llueve.
 - ⬜ Extra: 🪨 Caminos que siguen. Los caminos de piedra siguen a la Casa de Sofía cuando se mueve en Modo decorar.
 
