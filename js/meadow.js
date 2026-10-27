@@ -109,11 +109,11 @@ var Meadow = (function () {
     return x >= MARGIN.side && x <= W - MARGIN.side && y >= MARGIN.top && y <= H - MARGIN.bottom;
   }
 
-  // True if a character cannot stand here: off the map, or on a tree, the beehive, the swing, the basket or the sunflower
-  // field. Used by js/path.js.
+  // True if a character cannot stand here: off the map, or on a tree, the beehive, the swing, the basket, the sunflower
+  // field or the hidden chest (js/treasure.js). Used by js/path.js.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
-    if (inBox(x, y, grow(FIELD, 8))) return true;
+    if (inBox(x, y, grow(FIELD, 8)) || inBox(x, y, grow(CONFIG.treasure.chests.meadow.box, CLEAR))) return true;
     if (near(x, y, BIG_TREE.x, BIG_TREE.y, BIG_TREE.r * 0.6 + CLEAR) || inBox(x, y, grow(BIG_TREE.trunk, CLEAR))) return true;
     if (near(x, y, SMALL_TREE.x, SMALL_TREE.y, SMALL_TREE.r * 0.6 + CLEAR) || inBox(x, y, grow(SMALL_TREE.trunk, CLEAR))) return true;
     if (inBox(x, y, grow(HIVE, 8)) || inBox(x, y, grow(SWING_BOX, 8))) return true;

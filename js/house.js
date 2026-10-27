@@ -4,11 +4,15 @@
 // Also the decorations: Sofía's painting easel in the Sala (always there), the pizza oven in the Cocina (always there,
 // with little flames, a peel with a pizza and smoke; at night it glows), and the ones her goals give (js/goals.js):
 // a vase with garden flowers on the floor of the Sala and colored bunting on the Cocina wall.
+// And the ones the hidden chests of the valley bring (js/treasure.js): an old wall clock with a golden pendulum (its hands
+// show the time of the game) and a frame of pressed flowers on the walls, and on the floor a lamp of little shells and a
+// mushroom lamp (both glow softly at night), a folded wool blanket (walked over, like the rug) and a giant geode with
+// twinkling crystals. Each one shows up in a free spot of the Sala (or the closest free spot of another room).
 // At night the Televisión gives a soft glow while someone watches it.
 // Also where characters may walk: inside the rooms, through the doorways, and never on the furniture.
 // Everything that Modo decorar moves (js/decorate.js) has its place and turn here: the furniture, the rug, the easel,
 // the pizza oven and the vase, the toilet and the plant on the floor of any room, and the poster, the bunting, the soap shelf and the towels
-// on any wall. Where each one is, where a character
+// on any wall, and the decorations of the chests. Where each one is, where a character
 // stands to use it and how it lies or sits on it all follow that place and turn.
 var House = (function () {
   var C = CONFIG.colors;
@@ -203,7 +207,7 @@ var House = (function () {
   // The rug is flat: characters walk over it and furniture can stand on it.
   // Wall things: "length" along the wall, "depth" out from it, "off" how far from the middle of the wall they start,
   // and "start" their wall at first ("side" says where the wall is from them, "line" where the wall is, "along" their middle).
-  // "unlock" is the goal (js/goals.js) that puts it in the house.
+  // "unlock" is the goal (js/goals.js) that puts it in the house; "treasure" says a hidden chest (js/treasure.js) puts it there.
   var DEFS = {
     fridge: { kind: "floor", w: 90, h: 80, start: { x: 115, y: 120 }, use: { x: 0, y: 80 }, label: { x: 0, y: 64 } },
     stove: { kind: "floor", w: 100, h: 70, start: { x: 290, y: 107 }, use: { x: -10, y: 93 }, label: { x: 0, y: 59 } },
@@ -227,13 +231,24 @@ var House = (function () {
     toilet: { kind: "floor", w: 50, h: 64, start: { x: 1180, y: 640 } },
     plant: { kind: "floor", w: 44, h: 62, start: { x: 994, y: 640 }, feet: { x: -18, y: 8, w: 36, h: 22 }, upright: true },
     shelf: { kind: "wall", length: 96, depth: 28, off: 2, start: { side: "bottom", line: 680, along: 1080 } },
-    towels: { kind: "wall", length: 84, depth: 30, off: 2, start: { side: "right", line: 1220, along: 520 } }
+    towels: { kind: "wall", length: 84, depth: 30, off: 2, start: { side: "right", line: 1220, along: 520 } },
+    // The decorations of the hidden chests, all in the Sala at first.
+    wallClock: { kind: "wall", length: 48, depth: 84, off: 8, start: { side: "top", line: 340, along: 182 }, treasure: true },
+    pressedFlowers: { kind: "wall", length: 64, depth: 50, off: 10, start: { side: "top", line: 340, along: 92 }, treasure: true },
+    shellLamp: { kind: "floor", w: 44, h: 76, start: { x: 262, y: 612 }, feet: { x: -16, y: 18, w: 32, h: 18 }, upright: true,
+      treasure: true },
+    mushroomLamp: { kind: "floor", w: 48, h: 64, start: { x: 440, y: 616 }, feet: { x: -18, y: 12, w: 36, h: 18 }, upright: true,
+      treasure: true },
+    woolBlanket: { kind: "rug", w: 92, h: 58, start: { x: 330, y: 500 }, treasure: true },
+    geode: { kind: "floor", w: 64, h: 50, start: { x: 352, y: 628 }, treasure: true }
   };
   // The order they are drawn in; the last one is on top, so it is picked first.
-  var ORDER = ["rug", "fridge", "stove", "bed", "tv", "sofa", "bathtub", "sink", "toilet", "plant", "vase", "easel",
-    "oven", "poster", "bunting", "shelf", "towels"];
+  var ORDER = ["rug", "woolBlanket", "fridge", "stove", "bed", "tv", "sofa", "bathtub", "sink", "toilet", "plant", "vase", "easel",
+    "oven", "geode", "shellLamp", "mushroomLamp", "poster", "bunting", "shelf", "towels", "pressedFlowers", "wallClock"];
+  // The decorations of the hidden chests.
+  var TREASURES = ORDER.filter(function (id) { return DEFS[id].treasure; });
   // The word of each thing when it is not the same as its id.
-  var WORD_OF = { shelf: "soap", towels: "towel", oven: "pizzaOven" };
+  var WORD_OF = { shelf: "soap", towels: "towel", oven: "pizzaOven", shellLamp: "lamp", mushroomLamp: "lamp" };
   // How far from its spot in front a character may stand to use a piece of furniture, when that spot is taken.
   var USE_REACH = 70;
   // In front of the front door, inside the Sala: nothing goes here, so the door can always be used.
@@ -241,18 +256,32 @@ var House = (function () {
 
   // Where each thing is now, by id: { x, y, dir } on the floor, { side, line, along } on a wall.
   var layout = {};
+  // Where each decoration of a chest showed up, by id: "Como al principio" puts it back there.
+  var appeared = {};
+
+  function firstSpot(id) {
+    var s = DEFS[id].start;
+    return DEFS[id].kind === "wall" ? { side: s.side, line: s.line, along: s.along } : { x: s.x, y: s.y, dir: 0 };
+  }
 
   function resetLayout() {
     solid = null;
     ORDER.forEach(function (id) {
-      var s = DEFS[id].start;
-      layout[id] = DEFS[id].kind === "wall" ? { side: s.side, line: s.line, along: s.along } : { x: s.x, y: s.y, dir: 0 };
+      layout[id] = appeared[id] ? copyPos(appeared[id]) : firstSpot(id);
     });
+  }
+
+  function copyPos(p) {
+    var out = {};
+    Object.keys(p).forEach(function (k) { out[k] = p[k]; });
+    return out;
   }
   resetLayout();
 
-  // True if the thing is in the house (the vase and the bunting only once their goal is met).
+  // True if the thing is in the house (the vase and the bunting only once their goal is met, the decorations of the
+  // chests once their chest is open).
   function isOn(id) {
+    if (DEFS[id].treasure) return Treasure.hasDecoration(id);
     var u = DEFS[id].unlock;
     return !u || Goals.isMet(u[0], u[1]);
   }
@@ -281,10 +310,10 @@ var House = (function () {
   // The walls a wall thing can hang on: each side of each room, seen from inside the room.
   var TRACKS = [];
   CONFIG.rooms.forEach(function (r) {
-    TRACKS.push({ side: "top", line: r.y, from: r.x, to: r.x + r.w });
-    TRACKS.push({ side: "bottom", line: r.y + r.h, from: r.x, to: r.x + r.w });
-    TRACKS.push({ side: "left", line: r.x, from: r.y, to: r.y + r.h });
-    TRACKS.push({ side: "right", line: r.x + r.w, from: r.y, to: r.y + r.h });
+    TRACKS.push({ side: "top", line: r.y, from: r.x, to: r.x + r.w, room: r.id });
+    TRACKS.push({ side: "bottom", line: r.y + r.h, from: r.x, to: r.x + r.w, room: r.id });
+    TRACKS.push({ side: "left", line: r.x, from: r.y, to: r.y + r.h, room: r.id });
+    TRACKS.push({ side: "right", line: r.x + r.w, from: r.y, to: r.y + r.h, room: r.id });
   });
 
   // The gaps in the walls, where nothing hangs: the doorways between rooms and the front door.
@@ -687,6 +716,274 @@ var House = (function () {
     fillRound(ctx, -5, -22, 10, 3, 1.5, "#5E9DBB");
     strokePath(ctx, "rgba(255, 253, 248, 0.7)", 1.6, [[-6, -10], [-5, -4]]);
     ctx.restore();
+  }
+
+  // ---------- Decorations of the hidden chests ----------
+
+  function dot(ctx, x, y, r, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // The old wall clock, its top against the wall: a wooden case with a round face whose hands show the time of the game,
+  // and below it a little window where the golden pendulum swings (it stands still with Pausa).
+  function drawWallClock(ctx, b) {
+    var cx = b.x + b.w / 2, top = b.y;
+    withShadow(ctx, function () {
+      fillRound(ctx, cx - 20, top + 4, 40, b.h - 6, 9, "#8A5534");
+    });
+    fillRound(ctx, cx - 17, top + 7, 34, b.h - 12, 7, C.wood);
+    fillRound(ctx, cx - 22, top + 2, 44, 8, 4, "#8A5534");
+    fillRound(ctx, cx - 22, top + b.h - 8, 44, 7, 3, "#8A5534");
+    // The pendulum, behind its glass.
+    var win = { x: cx - 11, y: top + 40, w: 22, h: b.h - 52 };
+    fillRound(ctx, win.x, win.y, win.w, win.h, 5, "#5E3A24");
+    var swing = Math.sin(ovenClock * 2.6) * 0.32, len = win.h - 12;
+    var bx = cx + Math.sin(swing) * len, by = win.y + 3 + Math.cos(swing) * len;
+    strokePath(ctx, "#E2B44B", 1.6, [[cx, win.y + 3], [bx, by]]);
+    dot(ctx, bx, by, 5, "#F2C230");
+    dot(ctx, bx - 1.5, by - 1.5, 1.6, "#FFE58A");
+    ctx.fillStyle = "rgba(200, 230, 245, 0.18)";
+    roundRect(ctx, win.x, win.y, win.w, win.h, 5);
+    ctx.fill();
+    // The face, with its golden ring, twelve little marks and the hands.
+    var fy = top + 23;
+    dot(ctx, cx, fy, 14, "#E2B44B");
+    dot(ctx, cx, fy, 12, "#FBF4EA");
+    ctx.strokeStyle = C.darkBrown;
+    for (var i = 0; i < 12; i++) {
+      var a = i * Math.PI / 6;
+      ctx.lineWidth = i % 3 === 0 ? 1.6 : 0.8;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.sin(a) * 9, fy - Math.cos(a) * 9);
+      ctx.lineTo(cx + Math.sin(a) * 11, fy - Math.cos(a) * 11);
+      ctx.stroke();
+    }
+    var minute = Time.get().minute;
+    var hour = (minute / 60) % 12 / 12 * Math.PI * 2, min = (minute % 60) / 60 * Math.PI * 2;
+    strokePath(ctx, C.darkBrown, 2, [[cx, fy], [cx + Math.sin(hour) * 6, fy - Math.cos(hour) * 6]]);
+    strokePath(ctx, C.darkBrown, 1.3, [[cx, fy], [cx + Math.sin(min) * 9, fy - Math.cos(min) * 9]]);
+    dot(ctx, cx, fy, 1.6, "#B8862E");
+  }
+
+  // A wooden frame with pressed flowers flattened on cream paper: daisies, poppies and sprigs of lavender.
+  function drawPressedFlowers(ctx, b) {
+    withShadow(ctx, function () {
+      fillRound(ctx, b.x, b.y, b.w, b.h, 4, "#9A6A42");
+    });
+    fillRound(ctx, b.x + 5, b.y + 5, b.w - 10, b.h - 10, 2, "#F8F0DE");
+    var x0 = b.x + 5, y0 = b.y + 5, h = b.h - 10;
+    // Stems first.
+    [[12, 0.15], [24, -0.1], [38, 0.08], [48, -0.2]].forEach(function (st) {
+      strokePath(ctx, "#8FA88A", 1.2, [[x0 + st[0], y0 + h - 4], [x0 + st[0] + st[1] * 30, y0 + 12]]);
+    });
+    // Lavender sprigs: little purple dots up the stem.
+    [[24, -0.1], [48, -0.2]].forEach(function (st) {
+      for (var k = 0; k < 6; k++) {
+        var t = k / 6;
+        dot(ctx, x0 + st[0] + st[1] * 30 * (1 - t * 0.2) + (k % 2 ? 1.6 : -1.6), y0 + 12 + t * 12, 1.7, "#A88BD0");
+      }
+    });
+    // A daisy and a poppy, flat, with their petals all around.
+    [[x0 + 12 + 4.5, y0 + 12, "#FFFDF8", "#F2C230", 3.4], [x0 + 38 + 2.4, y0 + 13, C.terracotta, "#4A3428", 3.8]].forEach(function (f) {
+      for (var i = 0; i < 6; i++) {
+        var a = i * Math.PI / 3;
+        dot(ctx, f[0] + Math.cos(a) * f[4], f[1] + Math.sin(a) * f[4], f[4] * 0.75, f[2]);
+      }
+      dot(ctx, f[0], f[1], 2, f[3]);
+    });
+    // Two little leaves.
+    ctx.fillStyle = "#A9BFA4";
+    ctx.beginPath();
+    ctx.ellipse(x0 + 30, y0 + h - 10, 5, 2, -0.6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x0 + 18, y0 + h - 8, 4, 1.8, 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // A standing lamp with a shade made of little shells (pink, cream and peach) on a thin wooden pole.
+  function drawShellLamp(ctx, b) {
+    var cx = b.x + b.w / 2, base = b.y + b.h - 4;
+    ctx.fillStyle = "rgba(74, 52, 40, 0.22)";
+    ctx.beginPath();
+    ctx.ellipse(cx, base, 14, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    fillRound(ctx, cx - 11, base - 6, 22, 6, 3, "#8A5534");
+    strokePath(ctx, C.wood, 3, [[cx, base - 5], [cx, b.y + 30]]);
+    withShadow(ctx, function () {
+      ctx.fillStyle = "#F6E7D0";
+      ctx.beginPath();
+      ctx.moveTo(cx - 10, b.y + 6);
+      ctx.lineTo(cx + 10, b.y + 6);
+      ctx.lineTo(cx + 20, b.y + 32);
+      ctx.lineTo(cx - 20, b.y + 32);
+      ctx.closePath();
+      ctx.fill();
+    });
+    var colors = ["#F4B6C2", "#FFF3DA", "#F7C9A8"];
+    [[b.y + 30, 5, 6.5], [b.y + 21, 4, 5.5], [b.y + 12, 3, 4.5]].forEach(function (row, r) {
+      for (var i = 0; i < row[1]; i++) {
+        var x = cx + (i - (row[1] - 1) / 2) * row[2] * 1.45;
+        shell(ctx, x, row[0], row[2], colors[(i + r) % 3]);
+      }
+    });
+  }
+
+  // A little fan-shaped shell with its ridges.
+  function shell(ctx, x, y, r, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.arc(x, y, r, Math.PI * 1.1, Math.PI * 1.9);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(160, 110, 90, 0.5)";
+    ctx.lineWidth = 0.7;
+    [-0.6, -0.2, 0.2, 0.6].forEach(function (a) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + Math.sin(a) * r * 0.9, y - Math.cos(a) * r * 0.9);
+      ctx.stroke();
+    });
+  }
+
+  // A red mushroom lamp with cream dots on its cap and a fat cream stem.
+  function drawMushroomLamp(ctx, b) {
+    var cx = b.x + b.w / 2, base = b.y + b.h - 4;
+    ctx.fillStyle = "rgba(74, 52, 40, 0.22)";
+    ctx.beginPath();
+    ctx.ellipse(cx, base, 16, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    withShadow(ctx, function () {
+      fillRound(ctx, cx - 8, b.y + 26, 16, base - b.y - 26, 6, "#FFF3DA");
+    });
+    ctx.fillStyle = "#EAD9C4";
+    ctx.fillRect(cx + 2, b.y + 30, 3, base - b.y - 36);
+    withShadow(ctx, function () {
+      ctx.fillStyle = C.terracotta;
+      ctx.beginPath();
+      ctx.moveTo(cx - 24, b.y + 30);
+      ctx.quadraticCurveTo(cx - 24, b.y + 2, cx, b.y + 2);
+      ctx.quadraticCurveTo(cx + 24, b.y + 2, cx + 24, b.y + 30);
+      ctx.closePath();
+      ctx.fill();
+    });
+    [[-13, 20, 3.5], [-2, 10, 3], [10, 17, 4], [16, 27, 2.5], [-18, 28, 2.2], [1, 24, 2.6]].forEach(function (d) {
+      dot(ctx, cx + d[0], b.y + d[1], d[2], "#FFF3DA");
+    });
+  }
+
+  // A folded wool blanket, white with light brown stripes and little fringes at both ends.
+  function drawWoolBlanket(ctx, b) {
+    ctx.save();
+    ctx.fillStyle = "rgba(74, 52, 40, 0.18)";
+    roundRect(ctx, b.x + 2, b.y + 4, b.w, b.h, 8);
+    ctx.fill();
+    fillRound(ctx, b.x + 8, b.y, b.w - 16, b.h, 7, "#FBF6EC");
+    ctx.save();
+    roundRect(ctx, b.x + 8, b.y, b.w - 16, b.h, 7);
+    ctx.clip();
+    ["#D9BC98", "#C9A37A"].forEach(function (color, k) {
+      [b.x + 22 + k * 4, b.x + b.w / 2 - 2 + k * 4, b.x + b.w - 30 + k * 4].forEach(function (x) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, b.y, 3, b.h);
+      });
+    });
+    // The fold.
+    ctx.fillStyle = "rgba(160, 130, 100, 0.25)";
+    ctx.fillRect(b.x + 8, b.y + b.h * 0.55, b.w - 16, 2);
+    ctx.restore();
+    ctx.strokeStyle = "#D9BC98";
+    ctx.lineWidth = 1.4;
+    [b.x + 8, b.x + b.w - 8].forEach(function (x, side) {
+      for (var y = b.y + 5; y < b.y + b.h - 3; y += 5) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + (side ? 6 : -6), y + 1);
+        ctx.stroke();
+      }
+    });
+    ctx.restore();
+  }
+
+  // A giant geode broken in half: a rough stone outside and, inside, lilac and blue crystals that twinkle.
+  function drawGeode(ctx, b) {
+    var cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    withShadow(ctx, function () {
+      ctx.fillStyle = "#8C8277";
+      ctx.beginPath();
+      for (var i = 0; i < 12; i++) {
+        var a = i * Math.PI / 6, r = 1 + Math.sin(i * 2.7) * 0.06;
+        ctx.lineTo(cx + Math.cos(a) * b.w / 2 * r, cy + Math.sin(a) * b.h / 2 * r);
+      }
+      ctx.closePath();
+      ctx.fill();
+    });
+    ctx.fillStyle = "#CFC6BA";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, b.w / 2 - 6, b.h / 2 - 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#4E3F66";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, b.w / 2 - 10, b.h / 2 - 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Crystals all around the hollow, pointing to its middle.
+    var colors = ["#B98CEB", "#8FDCF7", "#D7B8F5", "#A9E7FA"];
+    for (var k = 0; k < 14; k++) {
+      var a = k * Math.PI * 2 / 14;
+      var ox = cx + Math.cos(a) * (b.w / 2 - 11), oy = cy + Math.sin(a) * (b.h / 2 - 10);
+      var tx = cx + Math.cos(a) * 5, ty = cy + Math.sin(a) * 3;
+      var nx = -Math.sin(a) * 3.2, ny = Math.cos(a) * 3.2;
+      ctx.fillStyle = colors[k % 4];
+      ctx.beginPath();
+      ctx.moveTo(ox + nx, oy + ny);
+      ctx.lineTo(ox + (tx - ox) * 0.75, oy + (ty - oy) * 0.75);
+      ctx.lineTo(ox - nx, oy - ny);
+      ctx.closePath();
+      ctx.fill();
+    }
+    // A few twinkles come and go.
+    for (var t = 0; t < 4; t++) {
+      var glow = Math.max(0, Math.sin(ovenClock * 1.7 + t * 1.9));
+      if (glow <= 0.05) continue;
+      var tw = { x: cx + [-10, 9, -3, 13][t], y: cy + [-4, 5, 7, -6][t] };
+      ctx.fillStyle = "rgba(255, 255, 255, " + glow + ")";
+      ctx.beginPath();
+      ctx.moveTo(tw.x, tw.y - 4 * glow);
+      ctx.lineTo(tw.x + 1, tw.y);
+      ctx.lineTo(tw.x, tw.y + 4 * glow);
+      ctx.lineTo(tw.x - 1, tw.y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(tw.x - 4 * glow, tw.y);
+      ctx.lineTo(tw.x, tw.y + 1);
+      ctx.lineTo(tw.x + 4 * glow, tw.y);
+      ctx.lineTo(tw.x, tw.y - 1);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  // At night the shell lamp and the mushroom lamp give a soft warm light.
+  function drawLampLights(ctx, dark) {
+    [["shellLamp", -18, "255, 222, 170", 70], ["mushroomLamp", -16, "255, 170, 140", 64]].forEach(function (l) {
+      if (!isOn(l[0])) return;
+      var p = layout[l[0]];
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      var g = ctx.createRadialGradient(p.x, p.y + l[1], 0, p.x, p.y + l[1], l[3]);
+      g.addColorStop(0, "rgba(" + l[2] + ", " + 0.55 * dark + ")");
+      g.addColorStop(1, "rgba(" + l[2] + ", 0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y + l[1], l[3], 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
   }
 
   // ---------- Pizza oven ----------
@@ -1328,6 +1625,7 @@ var House = (function () {
     CONFIG.rooms.forEach(function (room) { drawFloor(ctx, room); });
 
     drawTurned(ctx, "rug", function (b) { drawRug(ctx, b); });
+    if (isOn("woolBlanket")) drawTurned(ctx, "woolBlanket", function (b) { drawWoolBlanket(ctx, b); });
 
     drawWalls(ctx);
     // Rain, fog or snow seen through the windows (js/weather.js).
@@ -1336,6 +1634,8 @@ var House = (function () {
     if (isOn("bunting")) drawBunting(ctx);
     drawShelf(ctx);
     drawTowels(ctx);
+    if (isOn("pressedFlowers")) drawOnWall(ctx, "pressedFlowers", function (b) { drawPressedFlowers(ctx, b); });
+    if (isOn("wallClock")) drawOnWall(ctx, "wallClock", function (b) { drawWallClock(ctx, b); });
 
     CONFIG.furniture.forEach(function (f) {
       drawTurned(ctx, f.id, function (b) { DRAWERS[f.id](ctx, b); });
@@ -1346,6 +1646,9 @@ var House = (function () {
     if (isOn("vase")) drawTurned(ctx, "vase", function (b) { drawVase(ctx, b, layout.vase.dir); });
     drawTurned(ctx, "easel", function (b) { drawEasel(ctx, b, layout.easel.dir); });
     drawTurned(ctx, "oven", function () { drawOven(ctx, ovenClock); });
+    if (isOn("geode")) drawTurned(ctx, "geode", function (b) { drawGeode(ctx, b); });
+    if (isOn("shellLamp")) drawTurned(ctx, "shellLamp", function (b) { drawShellLamp(ctx, b); });
+    if (isOn("mushroomLamp")) drawTurned(ctx, "mushroomLamp", function (b) { drawMushroomLamp(ctx, b); });
     drawOvenSmoke(ctx);
   }
 
@@ -1370,10 +1673,11 @@ var House = (function () {
     });
   }
 
-  // Drawn over the darkened house: the warm glow of the pizza oven, and a soft light from the TV screen while someone
-  // is watching it. "dark" goes from 0 (day) to 1 (night).
+  // Drawn over the darkened house: the warm glow of the pizza oven and of the shell and mushroom lamps, and a soft light
+  // from the TV screen while someone is watching it. "dark" goes from 0 (day) to 1 (night).
   function drawNightLights(ctx, time, dark) {
     drawOvenLight(ctx, dark);
+    drawLampLights(ctx, dark);
     if (!Objects.isWatchingTv()) return;
     // The light flickers a tiny bit, like a show is on.
     var flicker = 0.9 + Math.sin(time * 4.1) * 0.05 + Math.sin(time * 9.7) * 0.05;
@@ -1413,6 +1717,10 @@ var House = (function () {
     if (inBox(x, y, boxOf("easel"))) return "easel";
     if (isOn("vase") && inBox(x, y, boxOf("vase"))) return "vase";
     if (isOn("bunting") && inBox(x, y, boxOf("bunting"))) return "bunting";
+    for (var t = TREASURES.length - 1; t >= 0; t--) {
+      var mine = TREASURES[t];
+      if (DEFS[mine].kind !== "rug" && isOn(mine) && inBox(x, y, boxOf(mine))) return WORD_OF[mine] || mine;
+    }
     var deco = ["oven", "shelf", "towels", "plant", "toilet"];
     for (var d = 0; d < deco.length; d++) {
       if (inBox(x, y, boxOf(deco[d]))) return WORD_OF[deco[d]] || deco[d];
@@ -1426,6 +1734,7 @@ var House = (function () {
       }
       return id;
     }
+    if (isOn("woolBlanket") && inBox(x, y, boxOf("woolBlanket"))) return "woolBlanket";
     if (inBox(x, y, boxOf("rug"))) return "rug";
     if (doorAt(x, y)) return "door";
     for (var j = 0; j < CONFIG.rooms.length; j++) {
@@ -1465,13 +1774,14 @@ var House = (function () {
     return { x: r.x + m.side, y: r.y + m.top, w: r.w - m.side * 2, h: r.h - m.top - m.bottom };
   }).concat(CONFIG.doorways.map(doorPassage));
 
-  // The boxes feet do not go into, worked out again after something moves or the vase arrives.
+  // The boxes feet do not go into, worked out again after something moves, or the vase or a decoration of a chest arrives.
   var solid = null;
 
   function solidBoxes() {
-    var vase = isOn("vase");
-    if (!solid || solid.vase !== vase) {
-      solid = { vase: vase, boxes: present().filter(function (id) { return DEFS[id].kind === "floor"; }).map(function (id) {
+    var here = present();
+    var key = here.join(",");
+    if (!solid || solid.key !== key) {
+      solid = { key: key, boxes: here.filter(function (id) { return DEFS[id].kind === "floor"; }).map(function (id) {
         return keepClear(feetOf(id));
       }) };
     }
@@ -1479,7 +1789,7 @@ var House = (function () {
   }
 
   // True if a character cannot stand here: outside the rooms (walls are only crossed at the doorways),
-  // on a piece of furniture, the easel or the vase. Used by js/path.js.
+  // on a piece of furniture, the easel, the vase, the lamps or the geode. Used by js/path.js.
   function isSolid(x, y) {
     if (!WALK.some(function (b) { return inBox(x, y, b); })) return true;
     return solidBoxes().some(function (b) { return inBox(x, y, b); });
@@ -1612,16 +1922,24 @@ var House = (function () {
   }
 
   // When the vase or the bunting arrives (its goal is met) and something was moved to its spot,
-  // it goes to the closest good spot instead. True if one arrived, so whoever stands there steps aside.
+  // it goes to the closest good spot instead. A decoration of a chest arrives at its spot in the Sala, or else at a free
+  // spot of the Sala, or else at the closest free spot of another room, and is remembered there for "Como al principio".
+  // True if one arrived, so whoever stands there steps aside.
   var wasOn = {};
 
   function settle() {
     var arrived = false;
-    ["vase", "bunting"].forEach(function (id) {
+    ["vase", "bunting"].concat(TREASURES).forEach(function (id) {
       var on = isOn(id);
       if (on && wasOn[id] === false) {
         arrived = true;
-        if (!fits(id)) findSpot(id);
+        if (DEFS[id].treasure) {
+          setPos(id, firstSpot(id));
+          if (!fits(id)) findSpot(id, "living");
+          appeared[id] = getPos(id);
+        } else if (!fits(id)) {
+          findSpot(id);
+        }
         Path.reset();
       }
       wasOn[id] = on;
@@ -1629,7 +1947,22 @@ var House = (function () {
     return arrived;
   }
 
-  function findSpot(id) {
+  // The room a spot of a thing is in (for a wall thing, the room its wall faces), or null.
+  function roomOfSpot(id, s) {
+    if (DEFS[id].kind === "wall") {
+      var track = TRACKS.filter(function (t) {
+        return t.side === s.side && t.line === s.line && s.along >= t.from && s.along <= t.to;
+      })[0];
+      return track ? track.room : null;
+    }
+    var r = CONFIG.rooms.filter(function (room) {
+      return s.x >= room.x && s.x <= room.x + room.w && s.y >= room.y && s.y <= room.y + room.h;
+    })[0];
+    return r ? r.id : null;
+  }
+
+  // Move a thing to the closest spot where it fits; with "prefer" (a room), any spot of that room comes first.
+  function findSpot(id, prefer) {
     var d = DEFS[id], keep = getPos(id), spots = [];
     if (d.kind === "wall") {
       TRACKS.forEach(function (t) {
@@ -1646,7 +1979,9 @@ var House = (function () {
       var b = boxOf(id), dx = b.x + b.w / 2 - mx, dy = b.y + b.h / 2 - my;
       return dx * dx + dy * dy;
     }
-    spots.forEach(function (s) { s.away = away(s); });
+    spots.forEach(function (s) {
+      s.away = away(s) + (prefer && roomOfSpot(id, s) !== prefer ? 1e9 : 0);
+    });
     spots.sort(function (a, b) { return a.away - b.away; });
     for (var i = 0; i < spots.length; i++) {
       var s = spots[i];
@@ -1666,6 +2001,8 @@ var House = (function () {
   function getLayout() {
     var out = {};
     ORDER.forEach(function (id) { out[id] = getPos(id); });
+    out.appeared = {};
+    Object.keys(appeared).forEach(function (id) { out.appeared[id] = copyPos(appeared[id]); });
     return out;
   }
 
@@ -1673,6 +2010,18 @@ var House = (function () {
   function setLayout(saved) {
     if (!saved || typeof saved !== "object") return;
     solid = null;
+    // Where the decorations of the chests showed up (an old saved game has none).
+    var first = saved.appeared && typeof saved.appeared === "object" ? saved.appeared : {};
+    TREASURES.forEach(function (id) {
+      var s = first[id];
+      if (!s || typeof s !== "object") return;
+      if (DEFS[id].kind === "wall") {
+        var known = TRACKS.some(function (t) { return t.side === s.side && t.line === s.line; });
+        if (known && isNumber(s.along)) appeared[id] = { side: s.side, line: s.line, along: s.along };
+      } else if (isNumber(s.x) && isNumber(s.y) && [0, 1, 2, 3].indexOf(s.dir) >= 0) {
+        appeared[id] = { x: s.x, y: s.y, dir: s.dir };
+      }
+    });
     ORDER.forEach(function (id) {
       var s = saved[id], d = DEFS[id];
       if (!s || typeof s !== "object" || !isNumber(s.along !== undefined ? s.along : s.x)) return;
@@ -1738,8 +2087,14 @@ var House = (function () {
     setPos: setPos,
     fits: fits,
     settle: settle,
+    // "Como al principio": every thing to its first spot, and each decoration of a chest to where it showed up
+    // (if something else is back there now, to the closest free spot, the Sala first).
     resetLayout: function () {
       resetLayout();
+      Path.reset();
+      TREASURES.forEach(function (id) {
+        if (isOn(id) && !fits(id)) findSpot(id, "living");
+      });
       Path.reset();
     },
     getLayout: getLayout,

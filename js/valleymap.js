@@ -14,6 +14,8 @@
 // Montaña once someone has gone in,
 // with 💗 and 🧢 where Sofía and real.fixer are. The first time one of them goes into a zone, it shows on the map with
 // "🗺️ ¡Zona descubierta! …". The zones found are saved with the game.
+// 🧰 Mapa del tesoro: each zone found (and the Ciudad) shows a little 🧰 while its hidden chest (js/treasure.js) is closed,
+// and a ✅ once it is open; below the map, "🧰 Tesoros: N/6" ("Tesoro · treasure" next to the mouse).
 var ValleyMap = (function () {
   var C = CONFIG.colors;
   var V = CONFIG.valley;
@@ -372,7 +374,7 @@ var ValleyMap = (function () {
 
   // ---------- The Mapa del valle ----------
 
-  var button, panel, canvas, shownKey = null;
+  var button, panel, canvas, treasures, shownKey = null;
   // The size of the map drawing, in its own units (the canvas is twice as big, so it looks sharp).
   var MW = 320, MH = 250;
 
@@ -410,8 +412,16 @@ var ValleyMap = (function () {
     canvas.id = "map-canvas";
     canvas.width = MW * 2;
     canvas.height = MH * 2;
+    treasures = document.createElement("div");
+    treasures.className = "map-treasures";
+    UI.bindWord(treasures, "treasure");
+    // With a finger, a touch on it shows the word for a moment.
+    treasures.addEventListener("pointerdown", function (event) {
+      if (event.pointerType === "touch") UI.showWord("treasure", event.clientX, event.clientY, CONFIG.wordTag.touchSeconds);
+    });
     panel.appendChild(top);
     panel.appendChild(canvas);
+    panel.appendChild(treasures);
     document.body.appendChild(panel);
 
     discoverSign = document.createElement("div");
@@ -450,10 +460,11 @@ var ValleyMap = (function () {
 
   // Redraw only when something on it changes.
   function render() {
-    var key = Object.keys(found).join(",") + "|" + Sims.list().map(zoneOf).join(",");
+    var key = Object.keys(found).join(",") + "|" + Sims.list().map(zoneOf).join(",") + "|" + Treasure.count();
     if (key === shownKey) return;
     shownKey = key;
     drawMap(canvas.getContext("2d"));
+    treasures.textContent = "🧰 Tesoros: " + Treasure.count() + "/" + Treasure.total;
   }
 
   // A number from 0 to 1 that always comes out the same for the same "i" and "k".
@@ -687,6 +698,16 @@ var ValleyMap = (function () {
     } else {
       unknown(ctx, n, 6);
     }
+
+    // The hidden chests: a little 🧰 on each zone found while its chest is closed, a ✅ once it is open (by the emoji of
+    // the zone; in the Ciudad at its bottom right, in the Lago under its water, and for the Cueva just over its box).
+    var marks = { city: [c.x + c.w - 10, c.y + c.h - 10, 10], meadow: [m.x + 30, m.y + 13, 10], lake: [l.x + l.w - 10, l.y + l.h - 9, 10],
+      enchanted: [f.x + 28, f.y + 12, 10], mountain: [n.x + 30, n.y + 12, 10], cave: [BOXES.cave.x + 4, BOXES.cave.y - 5, 8] };
+    Object.keys(marks).forEach(function (zone) {
+      if (zone !== "city" && !found[zone]) return;
+      var mk = marks[zone];
+      text(ctx, Treasure.isOpen(zone) ? "✅" : "🧰", mk[0], mk[1], mk[2], false);
+    });
 
     // Where Sofía and real.fixer are: at the top right of their zone (in the Cueva, smaller, next to its 💎).
     var slots = { city: 0, meadow: 0, lake: 0, enchanted: 0, mountain: 0, cave: 0 };

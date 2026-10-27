@@ -159,13 +159,15 @@ var Mountain = (function () {
   }
 
   // True if a character cannot stand here: off the map, on the snowy peaks, or on a pine, a rock, the lookout, the bench, a
-  // stone tower or the top of the cave wall (its foot is free, to walk to the mouth). Used by js/path.js.
+  // stone tower, the hidden chest (js/treasure.js) or the top of the cave wall (its foot is free, to walk to the mouth).
+  // Used by js/path.js.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (PINES.some(function (p) { return inBox(x, y, grow(pineBox(p), CLEAR / 2)); })) return true;
     if (ROCKS.some(function (r) { return inBox(x, y, grow(rockBox(r), CLEAR / 2)); })) return true;
     if (CAIRNS.some(function (c) { return inBox(x, y, grow(cairnBox(c), CLEAR / 2)); })) return true;
     if (inBox(x, y, grow(lookoutBox(), CLEAR / 2)) || inBox(x, y, grow(benchBox(), CLEAR / 2))) return true;
+    if (inBox(x, y, grow(CONFIG.treasure.chests.mountain.box, CLEAR / 2))) return true;
     return inBox(x, y, grow(CAVE.box, CLEAR / 2));
   }
 

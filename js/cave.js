@@ -128,10 +128,12 @@ var Cave = (function () {
     return Math.abs(x - EXIT.x) <= EXIT.half && y > FLOOR.bottom && y <= EXIT.bottom;
   }
 
-  // True if a character cannot stand here: off the floor or on a cluster of crystals. Used by js/path.js.
-  // Chispa, her nest, the puddles and the crystals on the floor are not solid.
+  // True if a character cannot stand here: off the floor, on a cluster of crystals or on the hidden chest (js/treasure.js).
+  // Used by js/path.js. Chispa, her nest, the puddles and the crystals on the floor are not solid.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
+    var chest = CONFIG.treasure.chests.cave.box;
+    if (inBox(x, y, { x: chest.x - CLEAR, y: chest.y - CLEAR, w: chest.w + CLEAR * 2, h: chest.h + CLEAR * 2 })) return true;
     return CLUSTERS.some(function (c) { return near(x, y, c.x, c.y - c.r * 0.3, c.r + CLEAR / 2); });
   }
 

@@ -134,12 +134,12 @@ var Lake = (function () {
     return !inOval(x, y, WATER, SHORE) || onPier(x, y);
   }
 
-  // True if a character cannot stand here: off the map, in the water, or on a chair, the umbrella or the sandcastle spot.
-  // Used by js/path.js.
+  // True if a character cannot stand here: off the map, in the water, or on a chair, the umbrella, the sandcastle spot or
+  // the hidden chest (js/treasure.js). Used by js/path.js.
   function isSolid(x, y) {
     if (!isWalkable(x, y)) return true;
     if (CHAIRS.some(function (c) { return inBox(x, y, grow(c, 8)); })) return true;
-    if (inBox(x, y, grow(UMBRELLA.pole, CLEAR))) return true;
+    if (inBox(x, y, grow(UMBRELLA.pole, CLEAR)) || inBox(x, y, grow(CONFIG.treasure.chests.lake.box, CLEAR))) return true;
     return near(x, y, CASTLE.x, CASTLE.y, CASTLE.r + CLEAR);
   }
 

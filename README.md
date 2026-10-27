@@ -21,9 +21,9 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - 🐉 Chispa: dragona joven verde menta, criatura mágica de la Cueva (más grande que Sofía, con alas grandes, púas y cuernos); de día pasea, escupe chispitas de colores y a veces lanza fuego, que ilumina la cueva con luz cálida un ratito, y de noche duerme en su nido de cristales. En la Cueva también duermen 🦇 cinco murciélagos colgados del techo.
 
 ## Estado
-Extra ✅ Dragon light
+Hito 28 ✅
 
-## ⭐ Estrellas de inglés: 55
+## ⭐ Estrellas de inglés: 57
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -299,6 +299,19 @@ Extra ✅ Dragon light
 - fire: fuego
 - light: luz
 - warm: tibio
+- chest: cofre
+- wall clock: reloj de pared
+- pressed flowers: flores prensadas
+- lamp: lámpara
+- wool blanket: manta de lana
+- geode: geoda
+- secret: secreto
+- lucky: con suerte
+- pearl: perla
+- magic: magia
+- brave: valiente
+- shine: brillar
+- ready: listo
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -320,7 +333,7 @@ Extra ✅ Dragon light
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - A veces pega el prompt en el chat del Modo Planear en vez de en Claude Code: recordarle con cariño que primero escriba claude, espere a que se abra y pegue ahí. Hacer el merge juntas después de la revisión, y confirmar con gh pr list.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 55
+- ⭐ Estrellas de inglés: 57
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -334,11 +347,11 @@ Extra ✅ Dragon light
   - 50 ⭐: Wishing stars 🌠 (construido): estrellas fugaces de noche con cielo despejado en la ciudad, la Pradera, el Lago y el Bosque encantado
   - 55 ⭐: Dragon light 🔥 (construido): cuando Chispa lanza fuego, la Cueva se ilumina un ratito con luz cálida alrededor de ella
   - Próximo regalo: a las 60 ⭐
-- Último hecho: Extra 🔥 Dragon light (regalo de 55 ⭐): cada vez que Chispa lanza fuego, sale una luz cálida naranja y dorada desde su fuego que aclara la oscuridad alrededor de ella, titila como una fogata, hace brillar un poquito más los cristales cercanos, la sigue si está volando y se apaga despacito. Antes: Hito 27b 💎 Cueva y dragona: por la boca de la cueva de la Montaña se entra a una cueva oscurita donde los cristales dan la luz y se juntan para la Mochila (azul, amatista, rosa y a veces dorado), con murciélagos, gotitas que hacen "plic" y 🐉 Chispa. En la prueba, Sofía pidió que Chispa fuera más grande, no tan tierna, no bebé, y que a veces lanzara fuego: ahora es una dragona joven (su palabra es "Chispa · dragon").
-- Siguiente paso: Hito 28 💎 Tesoros y ranitas: cofres y sorpresas escondidos en lugares secretos de todas las zonas, y 🐸 ranitas que cantan cuando llueve. Los detalles (qué tesoros, dónde, qué hacen las ranitas) están por diseñar con Sofía.
+- Último hecho: Hito 28 🧰 Tesoros escondidos: en cada zona del valle (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva) hay un cofrecito de madera con borde y cerradura dorados, medio escondido detrás de arbustos, flores, una roca, helechos, una piedra o cristales, que se delata con un brillito dorado cada 3 a 6 segundos. Se abre una sola vez ("Abriendo 🧰", rayitos dorados, fanfarria suave) y trae una decoración para la Sala (🕰️ Reloj de pared antiguo, 🌼 Cuadro de flores prensadas, 🐚 Lámpara de conchitas, 🍄 Lámpara de hongo, 🐐 Mantita de lana de cabra y 💎 Geoda gigante, que se mueven en Modo decorar) y una palabra secreta para el 📖 Diario (secret, lucky, pearl, magic, brave y shine). El 🗺️ Mapa muestra 🧰 o ✅ en cada zona y "🧰 Tesoros: N/6"; con el sexto sale "🏆 ¡Encontraste todos los tesoros del valle!". Sofía lo probó entero y quedó perfecto. Antes: Extra 🔥 Dragon light (regalo de 55 ⭐): cada vez que Chispa lanza fuego, sale una luz cálida naranja y dorada desde su fuego que aclara la oscuridad alrededor de ella, titila como una fogata, hace brillar un poquito más los cristales cercanos, la sigue si está volando y se apaga despacito. Antes: Hito 27b 💎 Cueva y dragona: por la boca de la cueva de la Montaña se entra a una cueva oscurita donde los cristales dan la luz y se juntan para la Mochila (azul, amatista, rosa y a veces dorado), con murciélagos, gotitas que hacen "plic" y 🐉 Chispa. En la prueba, Sofía pidió que Chispa fuera más grande, no tan tierna, no bebé, y que a veces lanzara fuego: ahora es una dragona joven (su palabra es "Chispa · dragon").
+- Siguiente paso: Hito 28b 🐸 Ranitas, ya diseñado por Sofía: ranitas verdes y alguna rara de colores, sentadas en hojas de nenúfar del Lago y del arroyo del Bosque encantado; cuando llueve salen y cantan "croac" en coro; al tocarlas saltan al agua con un "splash".
 - Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26) y abajo la Montaña (Hito 27). Ya no queda ningún cartel Próximamente en la ciudad (en la Montaña, la boca de la cueva lleva a la Cueva, Hito 27b).
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
-- Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza, que Sofía o real.fixer vayan solos a la Pradera y al Lago, usar las flores silvestres en recetas o como regalos favoritos, que los patitos caminen hasta la playa al atardecer, una pose de verdad acostada en la reposera, que Pacífica aparezca y se sumerja suavemente, una meta o un regalo especial para Pacífica.
+- Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza, que Sofía o real.fixer vayan solos a la Pradera y al Lago, usar las flores silvestres en recetas o como regalos favoritos, que los patitos caminen hasta la playa al atardecer, una pose de verdad acostada en la reposera, que Pacífica aparezca y se sumerja suavemente, una meta o un regalo especial para Pacífica, y (idea de Sofía en el Hito 28) un baúl en Modo decorar para guardar los muebles y decoraciones que no quiere usar por un tiempo y sacarlos cuando quiera.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.
 - Cambio de regla fija (Extra 🛁 Baño): la casa de Sofía ahora tiene Cocina, Dormitorio, Sala y Baño.
 - Cambio de regla fija (Hito 18): Sofía cambió la regla de los personajes para que lleguen los vecinos. Siguen siendo dos jugables (Sofía y real.fixer); Lumi y Vladi son vecinos que no se seleccionan, y solo la casa de Sofía tiene interior.

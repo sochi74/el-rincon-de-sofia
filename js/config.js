@@ -629,6 +629,35 @@ var CONFIG = {
     sparkColors: ["#FFD45C", "#FF8F8F", "#8FDCF7", "#B8F5C8", "#E3B8F5"]
   },
 
+  // The hidden treasure chests (js/treasure.js), one in each zone of the valley. "x", "y" is the middle of the bottom of
+  // the chest, "cover" what half hides it, and "box" the chest with its cover, where nobody walks (the zones and js/city.js
+  // ask here). Opening one takes "openTime" seconds; "Ocupado" stays "busyTime" seconds; the lid opens and the decoration
+  // floats up for "anim" seconds. A little golden sparkle twinkles by a closed chest every "sparkle.min" to
+  // "sparkle.max" seconds, for "sparkle.time" seconds. The sign stays "signTime" seconds, and the one for the sixth "allTime".
+  treasure: {
+    openTime: 3,
+    busyTime: 1.5,
+    popTime: 1.8,
+    anim: 2.8,
+    sparkle: { min: 3, max: 6, time: 0.9 },
+    signTime: 4.5,
+    allTime: 4.5,
+    wood: "#A8693F",
+    woodDark: "#7A4A2C",
+    woodLight: "#C98C5C",
+    gold: "#F2C230",
+    goldLight: "#FFE58A",
+    goldDark: "#B8862E",
+    chests: {
+      city: { x: 80, y: 652, cover: "bush", box: { x: 52, y: 622, w: 56, h: 34 } },
+      meadow: { x: 930, y: 640, cover: "flowers", box: { x: 902, y: 610, w: 56, h: 34 } },
+      lake: { x: 928, y: 668, cover: "rock", box: { x: 900, y: 638, w: 56, h: 34 } },
+      enchanted: { x: 165, y: 196, cover: "ferns", box: { x: 137, y: 166, w: 56, h: 34 } },
+      mountain: { x: 905, y: 470, cover: "stone", box: { x: 877, y: 440, w: 56, h: 34 } },
+      cave: { x: 120, y: 410, cover: "crystals", box: { x: 92, y: 380, w: 56, h: 34 } }
+    }
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   // "menuKey" remembers whether the panel was open or closed. "diaryKey" keeps the Diario de palabras apart from the game,
   // so "Reiniciar" never forgets it.
