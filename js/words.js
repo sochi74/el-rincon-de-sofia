@@ -194,7 +194,21 @@ var WORDS = {
   goat: { es: "Cabra", en: "goat", say: "GÓUT" },
   babyGoat: { es: "Cabrita", en: "baby goat", say: "BÉI-bi GÓUT" },
   stoneTower: { es: "Torre de piedras", en: "stone tower", say: "STÓUN TÁU-er" },
-  cave: { es: "Cueva", en: "cave", say: "KÉIV" }
+  cave: { es: "Cueva", en: "cave", say: "KÉIV" },
+
+  // The Cueva (js/cave.js). Its rock walls say "Roca · rock" (above, from the Lago).
+  bat: { es: "Murciélago", en: "bat", say: "BAT" },
+  drop: { es: "Gota", en: "drop", say: "DROP" },
+  stalactite: { es: "Estalactita", en: "stalactite", say: "sta-LÁK-tait" },
+  crystalBlue: { es: "Cristal azul", en: "blue crystal", say: "BLÚU KRÍS-tal" },
+  crystalAmethyst: { es: "Cristal amatista", en: "amethyst", say: "Á-me-zist" },
+  crystalPink: { es: "Cristal rosa", en: "pink crystal", say: "PINK KRÍS-tal" },
+  crystalGold: { es: "Cristal dorado", en: "gold crystal", say: "GÓULD KRÍS-tal" },
+  crystalNest: { es: "Nido de cristales", en: "crystal nest", say: "KRÍS-tal NEST" },
+  chispa: { es: "Chispa", en: "dragon", say: "DRÁ-gon", diary: "dragon" },
+  dragon: { es: "Dragón", en: "dragon", say: "DRÁ-gon" },
+  sparks: { es: "Chispitas", en: "sparks", say: "SPARKS" },
+  sneeze: { es: "Estornudo", en: "sneeze", say: "SNÍIZ" }
 };
 
 // The words Professor Hoot teaches, one per day of the game, in this order (after the last one they start again).

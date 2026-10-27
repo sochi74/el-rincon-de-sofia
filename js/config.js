@@ -575,7 +575,52 @@ var CONFIG = {
     mudLight: "#A3815F",
     egg: "#BFE3F2",
     birdColors: ["#E0533D", "#4F8FD9", "#F2C341"],
-    featherColors: ["#E0533D", "#4F8FD9", "#F2C341"]
+    featherColors: ["#E0533D", "#4F8FD9", "#F2C341"],
+    // The mouth of the cave (js/cave.js): a character walks to "caveDoor" to go in, and coming out it appears at "caveFoot".
+    caveDoor: { x: 880, y: 628 },
+    caveFoot: { x: 880, y: 608 }
+  },
+
+  // The Cueva (js/cave.js), a map as big as the city, always dark: the crystals give the light. Its way out is at the bottom:
+  // a character walks to "edge" to go back to the Montaña and arrives at "foot". There are "min" to "max" crystals on the
+  // floor; a new one appears "regrow.min" to "regrow.max" seconds of play after one is gathered, "gatherTime" seconds each.
+  // A drop falls from a stalactite every "drip.min" to "drip.max" seconds; a bat stretches every "stretch.min" to
+  // "stretch.max" seconds. Chispa walks at "dragon.walk" (flying low at "dragon.fly"), rests "dragon.rest" seconds, and
+  // spits sparks every "dragon.sparks.min" to "dragon.sparks.max" seconds of play, and breathes fire for "dragon.fire.time"
+  // seconds every "dragon.fire.min" to "dragon.fire.max" seconds of play. She is awake from "dragon.wake" to
+  // "dragon.sleep" (minutes of the game clock). The crystals tinkle softly every "tinkle.min" to "tinkle.max" seconds.
+  cave: {
+    edge: { x: 500, y: 680 },
+    foot: { x: 500, y: 636 },
+    gatherTime: 2,
+    busyTime: 1.5,
+    popTime: 1.8,
+    min: 3,
+    max: 5,
+    regrow: { min: 45, max: 90 },
+    drip: { min: 2.5, max: 7 },
+    stretch: { min: 5, max: 12, time: 1.8 },
+    tinkle: { min: 5, max: 11 },
+    dragon: { walk: 30, fly: 46, flyChance: 0.35, rest: { min: 2, max: 5 }, sparks: { min: 60, max: 120 },
+      fire: { min: 25, max: 50, time: 1.6 },
+      wake: 6 * 60, sleep: 20 * 60 },
+    floor: "#38363E",
+    floorDark: "#2C2B32",
+    floorLight: "#45434C",
+    rock: "#2A282F",
+    rockLight: "#45424C",
+    rockDark: "#1A181E",
+    blue: "#8FDCF7",
+    amethyst: "#B98CEB",
+    pink: "#F7A6CF",
+    gold: "#FFD45C",
+    bat: "#5B4E6B",
+    batDark: "#3F354C",
+    mint: "#9FE5C6",
+    mintDark: "#6CC8A3",
+    belly: "#FFF3DA",
+    hornColor: "#FFE6AE",
+    sparkColors: ["#FFD45C", "#FF8F8F", "#8FDCF7", "#B8F5C8", "#E3B8F5"]
   },
 
   // Autosave: how often, in seconds, and the name of the save in the browser.

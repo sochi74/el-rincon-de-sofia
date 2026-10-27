@@ -7,6 +7,8 @@
 // A soft chime when a zone of the Mapa del valle is found. In the Lago the ducks' soft "cuac" and Pacífica's short song.
 // In the Bosque encantado a soft tinkle while the spirits dance and a quiet "sss" when a snake peeks out.
 // In the Montaña the goats' "beee" (higher for the baby) and the songbirds' short happy tunes by day.
+// In the Cueva a soft low echo all the time, the "plic" of the drops, a quiet tinkle of the crystals now and then (and when
+// one is gathered), Chispa's "¡achís!" and the "fuuu" of her fire. No rain, no birds and no crickets in there.
 // The weather (js/weather.js): soft rain outside, softer and lower in the house like rain on the roof, and no birds
 // while it rains; with snow, the place sounds are a little softer.
 // Nothing sounds until "Jugar" is tapped. The 🔊 button goes 🔊 everything → 🎵 no music (effects only) → 🔇 silence,
@@ -22,7 +24,7 @@ var Sound = (function () {
 
   var ac = null;
   var master, effectsBus, ambienceBus, musicBus, noise;
-  var river, waves, wind, tv, tvVoice, tvFilter, rain, rainFilter;
+  var river, waves, wind, echo, tv, tvVoice, tvFilter, rain, rainFilter;
   var mode = loadMode();
   // The last volume asked of each group, so each one is only changed when it needs to.
   var levels = {};
@@ -211,6 +213,38 @@ var Sound = (function () {
         at += i % 2 ? 0.11 : 0.08;
       });
     },
+    // A drop in the Cueva: a short "plic" that jumps up, and two softer ones after it, like its echo.
+    drip: function (t) {
+      [[0, 0.16], [0.18, 0.06], [0.36, 0.025]].forEach(function (e) {
+        var f = between(1100, 1400);
+        note(effectsBus, f, t + e[0], 0.09, "sine", e[1], f * 2.2);
+      });
+    },
+    // The crystals: a few very soft high bells, here and there.
+    tinkle: function (t) {
+      for (var i = 0; i < 3; i++) {
+        var m = SPARKLE_NOTES[Math.floor(Math.random() * SPARKLE_NOTES.length)] + 12;
+        note(effectsBus, freqOf(m), t + i * between(0.12, 0.3), 0.9, "sine", 0.035);
+      }
+    },
+    // Gathering a crystal: a clear little chime going up.
+    crystal: function (t) {
+      [91, 95, 98].forEach(function (m, i) {
+        note(effectsBus, freqOf(m), t + i * 0.07, 0.6, "sine", 0.12);
+      });
+    },
+    // Chispa's sneeze: a little "a-" going up, then a quick "chís" of noise, and a few sparkly notes.
+    sneeze: function (t) {
+      note(effectsBus, 620, t, 0.35, "triangle", 0.12, 900);
+      hiss(effectsBus, t + 0.36, 0.22, "highpass", 3800, 0.35, null, 0.8);
+      note(effectsBus, 1300, t + 0.36, 0.1, "square", 0.04, 700);
+      for (var i = 0; i < 5; i++) note(effectsBus, freqOf(SPARKLE_NOTES[i]), t + 0.45 + i * 0.05, 0.3, "sine", 0.08);
+    },
+    // Chispa's fire: a soft "fuuu" of low noise that opens and closes, with a few little crackles.
+    fire: function (t) {
+      hiss(effectsBus, t, 1.4, "bandpass", 380, 0.32, 1200, 0.7);
+      for (var i = 0; i < 6; i++) hiss(effectsBus, t + 0.1 + Math.random() * 1.1, 0.03, "bandpass", between(1500, 3500), 0.18, null, 1.5);
+    },
     // A small, soft "miau": the pitch goes up and down through a filter that opens and closes like a mouth.
     meow: function (t) {
       var osc = ac.createOscillator(), filter = ac.createBiquadFilter(), gain = ac.createGain();
@@ -299,6 +333,7 @@ var Sound = (function () {
       river = loopRiver();
       waves = loopWaves();
       wind = loopWind();
+      echo = loopEcho();
       loopTv();
       loopRain();
       apply();
@@ -409,6 +444,34 @@ var Sound = (function () {
     src.start();
     gust.start();
     blow.start();
+    return gain;
+  }
+
+  // The Cueva: very low, soft noise that swells and fades slowly, like the hollow sound of a big cave.
+  function loopEcho() {
+    var src = ac.createBufferSource();
+    src.buffer = noise;
+    src.loop = true;
+    var filter = ac.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 220;
+    filter.Q.value = 2;
+    var swell = ac.createGain();
+    swell.gain.value = 0.6;
+    var slow = ac.createOscillator();
+    slow.frequency.value = 0.05;
+    var depth = ac.createGain();
+    depth.gain.value = 0.35;
+    slow.connect(depth);
+    depth.connect(swell.gain);
+    var gain = ac.createGain();
+    gain.gain.value = 0;
+    src.connect(filter);
+    filter.connect(swell);
+    swell.connect(gain);
+    gain.connect(ambienceBus);
+    src.start();
+    slow.start();
     return gain;
   }
 
@@ -531,12 +594,14 @@ var Sound = (function () {
   // Random sounds of the place, each with its own little timer.
   function ambience(dt, place, night) {
     var city = place === "city", meadow = place === "meadow", lake = place === "lake", forest = place === "enchanted";
-    var mountain = place === "mountain";
+    var mountain = place === "mountain", cave = place === "cave";
     var outside = city || meadow || lake || forest || mountain;
     glide("river", river.gain, city ? 0.55 : forest ? 0.3 : 0);
     glide("waves", waves.gain, lake ? 0.6 : 0);
     glide("wind", wind.gain, mountain ? 0.5 : 0);
-    var wet = Weather.rainLevel();
+    glide("echo", echo.gain, cave ? 0.9 : 0);
+    // In the Cueva the rain is never heard.
+    var wet = cave ? 0 : Weather.rainLevel();
     glide("rain", rain.gain, Math.round(wet * (outside ? K.rain.city : K.rain.house) * 100) / 100);
     glide("rainTone", rainFilter.frequency, outside ? 5000 : 900);
     var watching = place === "house" && Objects.isWatchingTv();
@@ -565,6 +630,8 @@ var Sound = (function () {
       }
       return;
     }
+    // In the Cueva the drops and the crystals make their own sounds (js/cave.js).
+    if (cave) return;
     // In the Montaña the songbirds sing their own tunes (js/mountain.js); at night the crickets.
     if (mountain) {
       if (night && timers.cricket <= 0) {

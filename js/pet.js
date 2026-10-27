@@ -1,7 +1,8 @@
 // Krohna, real.fixer's orange kitten. Only decoration: no needs, it cannot be selected and it changes nothing in the game.
-// It follows real.fixer a little behind, in the same place (house, city, Pradera, Lago, Bosque encantado or Montaña), going
-// around things with js/path.js. When he goes through the door (or along the trail of the Pradera, the Lago, the Bosque
-// encantado or the Montaña), it walks to the same door (or the end of the trail) and comes out on the other side a moment after him.
+// It follows real.fixer a little behind, in the same place (house, city, Pradera, Lago, Bosque encantado, Montaña or Cueva),
+// going around things with js/path.js. When he goes through the door (or along the trail of the Pradera, the Lago, the Bosque
+// encantado or the Montaña, or through the mouth of the cave), it walks to the same door (or the end of the trail) and comes
+// out on the other side a moment after him.
 // The snakes of the Bosque encantado never bite it.
 // When he stands still it sits by his side and wags its tail; when he sleeps in the Carpa it sleeps curled up in its bed
 // by the Carpa (js/city.js), wherever Modo decorar put it.
@@ -54,8 +55,10 @@ var Pet = (function () {
   }
 
   // The next place on the way to him: from the house, the Pradera, the Lago, the Bosque encantado or the Montaña always the
-  // city, and from the city where he is.
+  // city, and from the city where he is. The Cueva is inside the Montaña: the way in and out goes through the Montaña.
   function nextPlace(from, to) {
+    if (from === "cave") return "mountain";
+    if (to === "cave") return from === "mountain" ? "cave" : from === "city" ? "mountain" : "city";
     return from === "city" ? to : "city";
   }
 
@@ -303,7 +306,7 @@ var Pet = (function () {
     return { es: "Krohna", en: WORDS.kitten.en, say: WORDS.kitten.say };
   }
 
-  // Where the kitten is ("house", "city", "meadow", "lake", "enchanted" or "mountain"), for its meow.
+  // Where the kitten is ("house", "city", "meadow", "lake", "enchanted", "mountain" or "cave"), for its meow.
   function place() {
     return pet ? pet.place : null;
   }

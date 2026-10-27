@@ -18,11 +18,12 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✨ Espíritus del bosque y 🐍 víboras: criaturas mágicas del Bosque encantado; los espíritus bailan contigo y las víboras traviesas muerden si te quedas quieta junto a su tronco.
 - 🌰 Bellotitas: cinco bellotas chiquitas, criaturas mágicas que viven en la Casita de hongo del Bosque encantado; se asoman por la ventana y la puerta y a veces regalan una bellota.
 - 🏮 Farolitos vivos: seis farolitos de papel chiquitos (rosa coral, amarillo pastel y lila), criaturas mágicas del Bosque encantado; pasean a saltitos, son tímidos y se esconden detrás de los hongos gigantes, y de noche brillan fuerte.
+- 🐉 Chispa: dragona joven verde menta, criatura mágica de la Cueva (más grande que Sofía, con alas grandes, púas y cuernos); de día pasea, escupe chispitas de colores y a veces lanza fuego, y de noche duerme en su nido de cristales. En la Cueva también duermen 🦇 cinco murciélagos colgados del techo.
 
 ## Estado
-Hito 27 ✅ Montaña
+Hito 27b ✅ Cueva y dragona
 
-## ⭐ Estrellas de inglés: 52
+## ⭐ Estrellas de inglés: 54
 
 ## Mis palabras nuevas
 - Plan mode / Build mode: Modo Planear / Modo Construir (arquitecto y ejecutor)
@@ -284,6 +285,17 @@ Hito 27 ✅ Montaña
 - cave: cueva
 - shy: tímido
 - jump: saltar
+- bat: murciélago
+- drop: gota
+- stalactite: estalactita
+- blue crystal: cristal azul
+- amethyst: amatista
+- pink crystal: cristal rosa
+- gold crystal: cristal dorado
+- crystal nest: nido de cristales
+- sparks: chispitas (spark: chispa)
+- sneeze: estornudo
+- today: hoy
 
 ## Para el Modo Planear (continuación)
 - Quiénes: Sofía es la dueña del juego y decide todo. Robert (real.fixer) le dio las instrucciones del arquitecto (su archivo de instrucciones), pero no está presente en las sesiones. Las decisiones grandes se hablan con Robert.
@@ -305,7 +317,7 @@ Hito 27 ✅ Montaña
   - A veces pega comandos de la terminal en el chat del Modo Planear; recordarle con cariño que van en la terminal.
   - A veces pega el prompt en el chat del Modo Planear en vez de en Claude Code: recordarle con cariño que primero escriba claude, espere a que se abra y pegue ahí. Hacer el merge juntas después de la revisión, y confirmar con gh pr list.
   - Revisión honesta de cada informe. Cuando se acumulan problemas conocidos, se ofrece un hito de pulido.
-- ⭐ Estrellas de inglés: 52
+- ⭐ Estrellas de inglés: 54
 - Regalos desbloqueados con estrellas (uno nuevo cada 5 ⭐):
   - 5 ⭐: Sofía dice "Time for a nap!"
   - 10 ⭐: póster "That's what she said!" en la Sala
@@ -318,9 +330,9 @@ Hito 27 ✅ Montaña
   - 45 ⭐: Sunflower field 🌻, construido en el Hito 26 (un campo de girasoles altos en la Pradera de flores, solo decoración)
   - 50 ⭐: Wishing stars 🌠 (construido): estrellas fugaces de noche con cielo despejado en la ciudad, la Pradera, el Lago y el Bosque encantado
   - Próximo regalo: a las 55 ⭐
-- Último hecho: Hito 27 ⛰️ Montaña (la parte de afuera): pinos, rocas con carita, mirador, banquito, torrecitas de piedras, barro con huellas, plumas, nido, pájaros cantores, hojas al viento, cabritas que se acarician y la entrada de la cueva todavía cerrada.
-- Siguiente paso: Hito 27b 💎 Cueva y dragoncito, ya diseñado por Sofía: por la entrada de la cueva de la Montaña se entra a una cueva oscurita donde los cristales de colores dan la luz y se pueden juntar para la 🎒 Mochila, murciélagos que duermen colgados del techo, gotitas que caen con un "plic", y un 🐉 dragoncito bebé verde menta que a veces escupe chispitas y de noche duerme en un nido de cristales.
-- Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26) y abajo la Montaña (Hito 27). Ya no queda ningún cartel Próximamente en la ciudad (en la Montaña, la cueva dice "Cueva · Próximamente").
+- Último hecho: Hito 27b 💎 Cueva y dragona: por la boca de la cueva de la Montaña se entra a una cueva oscurita donde los cristales dan la luz y se juntan para la Mochila (azul, amatista, rosa y a veces dorado), con murciélagos, gotitas que hacen "plic" y 🐉 Chispa. En la prueba, Sofía pidió que Chispa fuera más grande, no tan tierna, no bebé, y que a veces lanzara fuego: ahora es una dragona joven (su palabra es "Chispa · dragon").
+- Siguiente paso: Hito 28 💎 Tesoros y ranitas: cofres y sorpresas escondidos en lugares secretos de todas las zonas, y 🐸 ranitas que cantan cuando llueve. Los detalles (qué tesoros, dónde, qué hacen las ranitas) están por diseñar con Sofía.
+- Bordes de la ciudad: arriba la Pradera de flores (Hito 24), derecha el Lago (Hito 25), izquierda el Bosque encantado (Hito 26) y abajo la Montaña (Hito 27). Ya no queda ningún cartel Próximamente en la ciudad (en la Montaña, la boca de la cueva lleva a la Cueva, Hito 27b).
 - Pendiente: crear con un hito una skill de hito para Claude Code dentro del repo (.claude/skills) para acortar los prompts, y registrarla en CLAUDE.md.
 - Ideas guardadas para después: metas para Professor Hoot, repasar el Diario con un mini quiz, que el libre albedrío use el Baño, que en lugares angostos uno retroceda para dejar pasar al otro, usar el horno de pizza para cocinar pizza, que Sofía o real.fixer vayan solos a la Pradera y al Lago, usar las flores silvestres en recetas o como regalos favoritos, que los patitos caminen hasta la playa al atardecer, una pose de verdad acostada en la reposera, que Pacífica aparezca y se sumerja suavemente, una meta o un regalo especial para Pacífica.
 - Cambio de regla fija (Hito 22): Sofía cambió la regla de los vecinos para sumar a Professor Hoot. Ahora son Lumi, Vladi y Professor Hoot; siguen siendo dos jugables.

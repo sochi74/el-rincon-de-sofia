@@ -1,6 +1,6 @@
 // The backpack: one for the whole house, shared by Sofía and real.fixer. It keeps what they fish in the river
 // and gather in the forest (and the wild flowers of the Pradera, js/meadow.js, what comes from the Lago, js/lake.js, and the
-// fish of the stream of the Bosque encantado, js/enchanted.js) and the dishes they cook (js/cooking.js), and sells it for magic coins. Flowers from the garden are still sold when harvested.
+// fish of the stream of the Bosque encantado, js/enchanted.js, and the crystals of the Cueva, js/cave.js) and the dishes they cook (js/cooking.js), and sells it for magic coins. Flowers from the garden are still sold when harvested.
 var Inventory = (function () {
   // Everything that can go in the backpack, in the order the backpack shows it: name, emoji and price in coins.
   var ITEMS = [
@@ -28,6 +28,11 @@ var Inventory = (function () {
     { id: "spiritFish", name: "Pez espíritu", emoji: "✨", price: 40 },
     // What the little acorns of the mushroom house give (js/enchanted.js)
     { id: "acorn", name: "Bellota", emoji: "🌰", price: 4 },
+    // The crystals of the floor of the Cueva (js/cave.js), each one with an emoji of its color
+    { id: "crystalBlue", name: "Cristal azul", emoji: "🔷", price: 10 },
+    { id: "crystalAmethyst", name: "Cristal amatista", emoji: "🔮", price: 14 },
+    { id: "crystalPink", name: "Cristal rosa", emoji: "💖", price: 18 },
+    { id: "crystalGold", name: "Cristal dorado", emoji: "🌟", price: 60 },
     // Dishes
     { id: "fishMushroom", name: "Pescado con hongos", emoji: "🍛", price: 18 },
     { id: "crabSoup", name: "Sopa de cangrejo", emoji: "🦀", price: 25 },

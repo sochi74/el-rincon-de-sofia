@@ -10,7 +10,8 @@
 // The trails and their signs never move, and Modo decorar never covers them (js/city.js asks here).
 // The "🗺️ Mapa" button of the panel opens the Mapa del valle, an old parchment that fills up with the zones found:
 // the Ciudad in the middle, the Pradera at the top, the Lago at the right, the Bosque encantado at the left and the
-// Montaña at the bottom (each one "❓ Por descubrir" until someone goes there),
+// Montaña at the bottom (each one "❓ Por descubrir" until someone goes there), and the Cueva as a little 💎 inside the
+// Montaña once someone has gone in,
 // with 💗 and 🧢 where Sofía and real.fixer are. The first time one of them goes into a zone, it shows on the map with
 // "🗺️ ¡Zona descubierta! …". The zones found are saved with the game.
 var ValleyMap = (function () {
@@ -20,7 +21,8 @@ var ValleyMap = (function () {
 
   // The zones around the city that can be found (the city is always known).
   var ZONES = [{ id: "meadow", name: "Pradera de flores", emoji: "🌸" }, { id: "lake", name: "Lago", emoji: "🏖️" },
-    { id: "enchanted", name: "Bosque encantado", emoji: "🍄" }, { id: "mountain", name: "Montaña", emoji: "⛰️" }];
+    { id: "enchanted", name: "Bosque encantado", emoji: "🍄" }, { id: "mountain", name: "Montaña", emoji: "⛰️" },
+    { id: "cave", name: "Cueva", emoji: "💎" }];
   var found = {};
 
   // The trail under the mouse: "meadow", "lake", "enchanted", "mountain" or null.
@@ -433,8 +435,8 @@ var ValleyMap = (function () {
 
   // The zone where each one is: in the house it is the Ciudad.
   function zoneOf(sim) {
-    return sim.place === "meadow" || sim.place === "lake" || sim.place === "enchanted" || sim.place === "mountain" ?
-      sim.place : "city";
+    return sim.place === "meadow" || sim.place === "lake" || sim.place === "enchanted" || sim.place === "mountain" ||
+      sim.place === "cave" ? sim.place : "city";
   }
 
   function update(dt) {
@@ -526,7 +528,9 @@ var ValleyMap = (function () {
     meadow: { x: 115, y: 46, w: 90, h: 44 },
     enchanted: { x: 30, y: 104, w: 74, h: 50 },
     lake: { x: 216, y: 104, w: 74, h: 50 },
-    mountain: { x: 115, y: 168, w: 90, h: 40 }
+    mountain: { x: 115, y: 168, w: 90, h: 40 },
+    // The Cueva, small, inside the Montaña.
+    cave: { x: 160, y: 189, w: 42, h: 16 }
   };
 
   function drawMap(ctx) {
@@ -662,14 +666,37 @@ var ValleyMap = (function () {
       ctx.fillStyle = "rgba(244, 230, 196, 0.85)";
       ctx.fillRect(n.x + 4, n.y + n.h - 15, 40, 12);
       text(ctx, "Montaña", n.x + 24, n.y + n.h - 8, 9, true);
+      // The Cueva, once someone has gone in: a little dark rounded box with a 💎.
+      var cv = BOXES.cave;
+      if (found.cave) {
+        ctx.fillStyle = "#3B3A41";
+        ctx.beginPath();
+        ctx.moveTo(cv.x + 4, cv.y + cv.h);
+        ctx.lineTo(cv.x + 4, cv.y + 6);
+        ctx.quadraticCurveTo(cv.x + 4, cv.y, cv.x + 10, cv.y);
+        ctx.lineTo(cv.x + cv.w - 6, cv.y);
+        ctx.quadraticCurveTo(cv.x + cv.w, cv.y, cv.x + cv.w, cv.y + 6);
+        ctx.lineTo(cv.x + cv.w, cv.y + cv.h);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#7A5636";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        text(ctx, "💎", cv.x + 12, cv.y + cv.h / 2 + 1, 9, false);
+      }
     } else {
       unknown(ctx, n, 6);
     }
 
-    // Where Sofía and real.fixer are: at the top right of their zone.
-    var slots = { city: 0, meadow: 0, lake: 0, enchanted: 0, mountain: 0 };
+    // Where Sofía and real.fixer are: at the top right of their zone (in the Cueva, smaller, next to its 💎).
+    var slots = { city: 0, meadow: 0, lake: 0, enchanted: 0, mountain: 0, cave: 0 };
     Sims.list().forEach(function (sim) {
       var zone = zoneOf(sim), b = BOXES[zone];
+      if (zone === "cave") {
+        text(ctx, CONFIG.characterLooks[sim.data.id].icon, b.x + b.w - 7 - slots.cave * 11, b.y + b.h / 2 + 1, 9, false);
+        slots.cave += 1;
+        return;
+      }
       var x = b.x + b.w - 9 - slots[zone] * 16;
       slots[zone] += 1;
       text(ctx, CONFIG.characterLooks[sim.data.id].icon, x, b.y + 10, 12, false);
