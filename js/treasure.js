@@ -546,6 +546,43 @@ var Treasure = (function () {
     ctx.restore();
   }
 
+  // The outline of the chest and of what hides it, as a few shapes around its bottom middle (each one adds its own path).
+  function outline(kind, lid) {
+    var shapes = [function (ctx) { ctx.beginPath(); ctx.rect(-20, lid > 0 ? -50 : -38, 40, lid > 0 ? 51 : 39); }];
+    var circles = {
+      bush: [[-17, -7, 15], [-2, -2, 11], [17, -1, 9], [-22, -14, 6]],
+      flowers: [[-17, -7, 15], [-2, -2, 11], [17, -1, 9], [-24, -15, 5]],
+      rock: [[-18, -9, 14], [-27, -4, 6], [19, -4, 8]],
+      stone: [[-18, -9, 14], [-27, -4, 6], [19, -4, 8]],
+      ferns: [[-24, -12, 15], [-36, -6, 7], [16, -10, 12], [26, -6, 7]],
+      crystals: [[-20, -14, 10], [-12, -20, 10], [-4, -12, 9], [17, -10, 8], [22, -6, 6]]
+    }[kind] || [];
+    circles.forEach(function (c) {
+      shapes.push(function (ctx) { ctx.beginPath(); ctx.arc(c[0], c[1], c[2], 0, Math.PI * 2); });
+    });
+    return shapes;
+  }
+
+  // Draws "fn" (someone with its feet at x, y, drawn after the chest) so that the chest of the zone and what hides it
+  // cover it when it stands behind them, as if they were drawn in order with the characters (js/sims.js).
+  function drawBehind(ctx, place, x, y, fn) {
+    var s = spotOf(place);
+    if (!s || y >= s.y || Math.abs(x - s.x) > 90 || s.y - y > 140) {
+      fn();
+      return;
+    }
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    outline(s.cover, lidOf(place)).forEach(function (shape) {
+      shape(ctx);
+      ctx.rect(-2000, -2000, 4000, 4000);
+      ctx.clip("evenodd");
+    });
+    ctx.translate(-s.x, -s.y);
+    fn();
+    ctx.restore();
+  }
+
   // A soft round light.
   function halo(ctx, x, y, r, color, strength) {
     var g = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -724,6 +761,7 @@ var Treasure = (function () {
     bubbleFor: bubbleFor,
     update: update,
     draw: draw,
+    drawBehind: drawBehind,
     drawTop: drawTop,
     drawPops: drawPops,
     wordAt: wordAt,

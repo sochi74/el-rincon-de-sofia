@@ -60,6 +60,7 @@ Visión: un mundo de fantasía mágico y relajante, visto desde arriba, para con
 - ✅ Extra: 🔥 Dragon light (regalo de 55 ⭐)
 - ✅ Hito 28: 🧰 Tesoros escondidos. Un cofrecito medio escondido en cada zona (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva), que se delata con un brillito dorado; cada uno se abre una sola vez y trae una decoración para la casa de Sofía (reloj de pared, cuadro de flores prensadas, lámpara de conchitas, lámpara de hongo, mantita de lana de cabra y geoda gigante) y una palabra secreta en inglés para el Diario, con el 🗺️ Mapa del tesoro.
 - ✅ Hito 28b: 🐸 Ranitas. Hojas de nenúfar en el Lago y en el arroyo del Bosque encantado, con ranitas que se ven como ranas de verdad (y a veces una 🌈 rana de colores); con lluvia salen más y cantan "croac" en coro inflando la garganta, de noche duermen, y al tocarlas saltan al agua con un "splash" y vuelven al ratito.
+- ✅ Extra: 🧹 Pulido 5
 - ⬜ Extra: 🪨 Caminos que siguen. Los caminos de piedra siguen a la Casa de Sofía cuando se mueve en Modo decorar.
 
 ### 🌙 Algún día

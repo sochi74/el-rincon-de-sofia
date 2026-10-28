@@ -14,8 +14,8 @@
 // them. A tap on one walks the selected one beside it (the goat waits) to pet it (Diversión); one person per goat.
 // 🕳️ The entrance of the cave in a rock wall, with its little sign "Cueva": the wall is solid, and a tap on the mouth (or
 // its sign) walks the selected one into its mouth and into the Cueva (js/cave.js); coming out, it appears in front of it.
-// Day and night and the weather of the day show here too (js/weather.js), without puddles or snowman: with snow the pines
-// and rocks turn white. Modo decorar moves nothing here. The neighbors never come, and the shiny coins never appear here.
+// Day and night and the weather of the day show here too (js/weather.js), without puddles or snowman: with snow the pines,
+// the rocks, the grass and the dirt trails turn white. Modo decorar moves nothing here. The neighbors never come, and the shiny coins never appear here.
 // Pausa freezes it all. Nothing here is saved: the goats and the birds start at their spots.
 var Mountain = (function () {
   var C = CONFIG.colors;
@@ -240,7 +240,7 @@ var Mountain = (function () {
   ];
   var goats = GOATS.map(function (g, i) {
     return { i: i, look: g, x: g.start.x, y: g.start.y, lift: 0, rock: -1, dir: i === 1 ? -1 : 1, way: [], up: -1,
-      hop: null, wait: between(0.5, 2), mode: "rest", held: null, cheer: 0, goingToBed: false };
+      hop: null, wait: between(0.5, 2), mode: "rest", held: null, cheer: 0, goingToBed: false, rush: false };
   });
   var bleatIn = between(K.bleat.min, K.bleat.max);
 
@@ -332,9 +332,15 @@ var Mountain = (function () {
     g.way = Path.find("mountain", g.x, g.y, x, y);
   }
 
+  // How a goat hops: the big ones, the baby, and the baby hurrying after its mother.
+  function hopsOf(g) {
+    if (!g.look.baby) return K.hop;
+    return g.rush ? K.babyRush : K.baby;
+  }
+
   // One hop, from where the goat is to "to" ({ x, y, lift }); "big" for the hops up and down a rock.
   function startHop(g, to, big) {
-    var H2 = g.look.baby ? K.baby : K.hop;
+    var H2 = hopsOf(g);
     var from = { x: g.x, y: g.y, lift: g.lift };
     if (Math.abs(to.x - from.x) > 2) g.dir = to.x > from.x ? 1 : -1;
     g.hop = { from: from, to: to, t: 0, time: H2.time * (big ? 1.3 : 1), high: big ? H2.high + 16 : H2.high };
@@ -343,7 +349,7 @@ var Mountain = (function () {
 
   // The next hop along the way: at most "far" world units, following its points.
   function nextHop(g) {
-    var H2 = g.look.baby ? K.baby : K.hop;
+    var H2 = hopsOf(g);
     var left = H2.far, at = { x: g.x, y: g.y };
     while (g.way.length && left > 0) {
       var p = g.way[0], d = dist(at.x, at.y, p.x, p.y);
@@ -367,7 +373,7 @@ var Mountain = (function () {
     g.lift = to.lift;
     g.hop = null;
     g.mode = "rest";
-    var H2 = g.look.baby ? K.baby : K.hop;
+    var H2 = hopsOf(g);
     if (g.way.length) {
       g.wait = H2.gap;
       return;
@@ -428,22 +434,25 @@ var Mountain = (function () {
     }
     g.wait -= dt;
     if (g.wait > 0) return;
+    // By day the baby never stays far from its mother: if she moved on, it changes its way after every hop, and when she
+    // is far it hurries with quick little hops.
+    if (g.look.baby && !night) {
+      var want = babySpot(g), away = dist(g.x, g.y, want.x, want.y), end = g.way[g.way.length - 1];
+      g.rush = away > K.follow * 2;
+      if (away > K.follow && (!end || dist(end.x, end.y, want.x, want.y) > K.follow / 2)) {
+        var spot = Path.free("mountain", want.x, want.y);
+        g.way = Path.find("mountain", g.x, g.y, spot.x, spot.y);
+      }
+      if (g.way.length) nextHop(g);
+      else g.wait = between(0.3, 0.8);
+      return;
+    }
+    g.rush = false;
     if (g.way.length) {
       nextHop(g);
       return;
     }
     if (night) return;
-    if (g.look.baby) {
-      var want = babySpot(g);
-      if (dist(g.x, g.y, want.x, want.y) > K.follow) {
-        var spot = Path.free("mountain", want.x, want.y);
-        g.way = Path.find("mountain", g.x, g.y, spot.x, spot.y);
-        if (g.way.length) nextHop(g);
-      } else {
-        g.wait = between(0.3, 0.8);
-      }
-      return;
-    }
     pickWay(g);
     if (g.mode !== "hop") {
       if (g.way.length) nextHop(g);
@@ -1394,9 +1403,10 @@ var Mountain = (function () {
     roundRect(ctx, 0, 0, W, H, 40);
     ctx.clip();
     drawGround(ctx);
-    Weather.drawSnowyGrass(ctx);
     drawTrails(ctx);
     drawTrail(ctx);
+    // With snow, the grass and the dirt trails turn white little by little.
+    Weather.drawSnowyGrass(ctx);
     if (hover === "trail") drawGlow(ctx, { x: trailBox().x, y: -20, w: trailBox().w, h: trailBox().h + 10 });
     drawMud(ctx);
     FEATHERS.forEach(function (f) { drawFeather(ctx, f); });

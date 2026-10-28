@@ -646,12 +646,14 @@ var UI = (function () {
   // Open the goals window in a corner where it covers the least of the Carpa, the Fogata and
   // the selected one, and never the panel or the round buttons when it can help it: first the bottom right,
   // then the bottom left, the top right and the top left. It stays put while it is open.
+  // At the top it is only as tall as what is inside it: at most down to the bottom of the screen, with a scroll.
   function placeWindow(el) {
     var W = window.innerWidth, H = window.innerHeight, m = 16;
-    el.style.left = el.style.top = "";
+    el.style.left = el.style.top = el.style.maxHeight = "";
     el.style.right = m + "px";
     el.style.bottom = m + "px";
     var w = el.offsetWidth, h = el.offsetHeight;
+    var tallest = parseFloat(window.getComputedStyle(el).maxHeight);
     var left = reservedLeft() + m;
     var buttons = [menuToggle, soundToggle].map(rectOf);
     var under = buttons.concat(panelOpen ? [rectOf(panel)] : []);
@@ -681,8 +683,9 @@ var UI = (function () {
     var c = best.c;
     el.style.right = c.right ? m + "px" : "";
     el.style.left = c.right ? "" : c.x + "px";
-    el.style.bottom = c.bottom ? m + "px" : "";
+    el.style.bottom = c.bottom ? m + "px" : "auto";
     el.style.top = c.bottom ? "" : c.y + "px";
+    if (!c.bottom) el.style.maxHeight = Math.max(80, Math.min(isFinite(tallest) ? tallest : Infinity, H - c.y - m)) + "px";
   }
 
   // The "¡Meta cumplida!" sign: at the top in the middle of the room the panel leaves; on narrower screens with the panel

@@ -6,13 +6,15 @@
 // 🐚 Shells and starfish on the sand, gathered like the wild flowers of the Pradera.
 // 🏰 A spot of smooth sand with a bucket and a little shovel to build a sandcastle (it stays until it starts to rain or until
 // 06:00 the next day). ☀️ Two striped beach chairs with an umbrella between them, to lie in the sun.
-// 🦆 A mother duck and her 3 ducklings swim around the lake in a row and now and then walk along the shore; at night they
-// sleep together on the shore. Only decoration: on the shore the characters walk around them (js/sims.js).
+// 🦆 A mother duck and her 3 ducklings swim around the lake in a row and now and then walk along the shore; at dusk they
+// swim to the beach, walk out in a row and lie down to sleep together on the shore, and at dawn they get up and walk in a
+// row back to the water. Only decoration: on the shore the characters walk around them (js/sims.js).
 // 🧜‍♀️ Pacífica, the mermaid, a magical creature (not a neighbor: never selected, no chats, no gifts and no Amistad).
 // From 08:00 to 18:00 she sits on her rock near the pier, moves her tail and now and then combs her hair; every 1 to 2 minutes
 // of play she sings (colored notes float up and a soft song sounds if the Lago is on screen). She waves 👋 at whoever stands
 // at the tip of the pier or near the shore of her rock, and a tap on her makes her wave and sing right away.
-// From 18:00 to 08:00 she is under the water: only little bubbles come up by her rock.
+// From 18:00 to 08:00 she is under the water: only little bubbles come up by her rock. At 08:00 she comes up slowly out of
+// the water beside her rock, with bubbles, and sits; at 18:00 she slides off the rock and goes slowly under the water.
 // 🐸 Lily pads float on the water with little frogs on them (js/frogs.js draws them here, over the water).
 // The pier, the rock, the chairs, the umbrella and the sandcastle spot are solid (js/path.js); the shells are not.
 // The pier can be walked on, out to its tip. Day and night and the weather of the day show here too (js/weather.js),
@@ -90,9 +92,10 @@ var Lake = (function () {
   var clock = 0;
 
   // Pacífica: seconds until she sings again, seconds left of singing and of waving, her notes going up,
-  // whether each character was near her a moment ago, and her blinking.
+  // whether each character was near her a moment ago, her blinking, and how far out of the water she is ("show",
+  // 0 under the water to 1 sitting on her rock; null until the first update).
   var mermaid = { singIn: between(K.mermaid.sing.min, K.mermaid.sing.max), singing: 0, waving: 0, noteIn: 0, notes: [],
-    near: {}, blink: 0, blinkWait: 3 };
+    near: {}, blink: 0, blinkWait: 3, show: null };
   var quackIn = between(K.quack.min, K.quack.max);
 
   function between(min, max) {
@@ -220,7 +223,7 @@ var Lake = (function () {
   }
 
   function mermaidAt(x, y) {
-    return isMermaidUp() && inBox(x, y, mermaidBox());
+    return isMermaidUp() && mermaid.show >= 1 && inBox(x, y, mermaidBox());
   }
 
   // "trail", "chair0", "chair1", "castle", "mermaid" or "water" for what can be used at a spot, or null
@@ -439,6 +442,7 @@ var Lake = (function () {
     wasRaining = raining;
 
     updateMermaid(dt, paused);
+    updateFamily();
     if (paused) return;
 
     // The ducks quack now and then by day.
@@ -502,6 +506,9 @@ var Lake = (function () {
 
   function updateMermaid(dt, paused) {
     var up = isMermaidUp();
+    // She comes up and goes under slowly; if the Lago is not on screen, she is already where she should be.
+    if (mermaid.show === null || Sims.viewPlace() !== "lake") mermaid.show = up ? 1 : 0;
+    else if (!paused) mermaid.show = Math.max(0, Math.min(1, mermaid.show + (up ? dt : -dt) / K.mermaid.rise));
     // Who just came near her gets a wave.
     Sims.list().forEach(function (sim) {
       var by = up && isByRock(sim);
@@ -569,19 +576,109 @@ var Lake = (function () {
     return WALK[0];
   }
 
+  // The family's part of the day: "day" swims and walks the usual way ("from" is when that started), "bed" goes from
+  // where the mother was at "at" to the nest, "sleep" sleeps there, and "wake" walks from the nest back to the water
+  // from "at". The ducklings go the same way as the mother, each one DUCK_GAP seconds behind the one before it.
+  var family = { mode: null, from: 0, at: 0, way: [], length: 0 };
+  // Where each one lies at the nest, around the spot where the way ends (just above the nest).
+  var SLEEP_SPOTS = [[0, 0], [-15, 9], [15, 9], [0, 14]];
+  var NEST_WAY_END = { x: NEST.x, y: NEST.y - 12 };
+  var SETTLE = 0.6;
+
+  function wayLength(way) {
+    var length = 0;
+    for (var i = 1; i < way.length; i++) length += Math.sqrt(Math.pow(way[i].x - way[i - 1].x, 2) + Math.pow(way[i].y - way[i - 1].y, 2));
+    return length;
+  }
+
+  // The spot "d" world units along a way.
+  function along(way, d) {
+    for (var i = 1; i < way.length; i++) {
+      var dx = way[i].x - way[i - 1].x, dy = way[i].y - way[i - 1].y, l = Math.sqrt(dx * dx + dy * dy);
+      if (d <= l) return { x: way[i - 1].x + dx * d / (l || 1), y: way[i - 1].y + dy * d / (l || 1) };
+      d -= l;
+    }
+    return { x: way[way.length - 1].x, y: way[way.length - 1].y };
+  }
+
+  // At dusk: from where the mother is, swim to the beach if they are on the water, walk out along the shore and to the nest.
+  function goToBed() {
+    var t = clock - family.from;
+    var period = SWIM_TIME + WALK_TIME, swimming = ((t % period) + period) % period < SWIM_TIME;
+    family.way = [duckWay(t)].concat(swimming ? [WALK[0], WALK[1], WALK[2]] : []).concat([NEST_WAY_END]);
+    family.length = wayLength(family.way);
+    family.at = clock;
+    family.mode = "bed";
+  }
+
+  // At dawn: get up and walk in a row from the nest along the shore to the water, where the swimming starts again.
+  function wakeUp() {
+    family.way = [NEST_WAY_END, WALK[2], WALK[1], WALK[0]];
+    family.length = wayLength(family.way);
+    family.at = clock;
+    family.mode = "wake";
+  }
+
+  // When the night comes or goes. Not on screen: the ducks are already asleep at the nest, or already swimming.
+  function updateFamily() {
+    var night = Time.darkness() > 0.55, here = Sims.viewPlace() === "lake";
+    if (family.mode === null) {
+      family.mode = night ? "sleep" : "day";
+      family.from = clock;
+      return;
+    }
+    var walkTime = family.length / K.duckWalk, lastDone = clock - DUCKLINGS * DUCK_GAP - family.at;
+    if (family.mode === "bed" && lastDone > walkTime + SETTLE) family.mode = "sleep";
+    if (family.mode === "wake" && lastDone > walkTime) {
+      family.mode = "day";
+      family.from = family.at + walkTime;
+    }
+    if (night && (family.mode === "day" || family.mode === "wake")) {
+      if (here && family.mode === "day") goToBed();
+      else family.mode = "sleep";
+    }
+    if (!night && (family.mode === "sleep" || family.mode === "bed")) {
+      if (here && family.mode === "sleep") wakeUp();
+      else {
+        family.mode = "day";
+        family.from = clock;
+      }
+    }
+  }
+
+  // Where one duck is at "t" seconds of its own: { x, y, swim, sleep }.
+  function duckSpot(i, t) {
+    var f = family, spot = SLEEP_SPOTS[i], walkTime = f.length / K.duckWalk;
+    var asleep = { x: NEST.x + spot[0], y: NEST.y + spot[1], sleep: true };
+    if (f.mode === "sleep" || (f.mode === "wake" && t < f.at)) return asleep;
+    if (f.mode === "day" || (f.mode === "bed" && t < f.at)) return duckWay(t - f.from);
+    var e = t - f.at, p;
+    if (f.mode === "bed") {
+      if (e < walkTime) return along(f.way, e * K.duckWalk);
+      // At the end of the way, it waddles a little to its own spot and lies down.
+      var k = smooth((e - walkTime) / SETTLE);
+      if (k >= 1) return asleep;
+      return { x: NEST_WAY_END.x + (asleep.x - NEST_WAY_END.x) * k, y: NEST_WAY_END.y + (asleep.y - NEST_WAY_END.y) * k };
+    }
+    if (e >= walkTime) return duckWay(t - f.at - walkTime);
+    // It gets up from its own spot and joins the way.
+    p = along(f.way, e * K.duckWalk);
+    var u = 1 - smooth(e / SETTLE);
+    return { x: p.x + (asleep.x - NEST_WAY_END.x) * u, y: p.y + (asleep.y - NEST_WAY_END.y) * u };
+  }
+
   // Each duck: the mother first and the ducklings behind her on the same way. At night they sleep together at the nest.
   // { x, y, dir: 1 right or -1 left, swim: true on the water, sleep, little }
   function ducks() {
     var out = [];
-    var night = Time.darkness() > 0.55;
     for (var i = 0; i <= DUCKLINGS; i++) {
-      if (night) {
-        var spots = [[0, 0], [-15, 9], [15, 9], [0, 14]];
-        out.push({ x: NEST.x + spots[i][0], y: NEST.y + spots[i][1], dir: i % 2 ? -1 : 1, swim: false, sleep: true, little: i > 0 });
+      var t = clock - i * DUCK_GAP;
+      var p = duckSpot(i, t);
+      if (p.sleep) {
+        out.push({ x: p.x, y: p.y, dir: i % 2 ? -1 : 1, swim: false, sleep: true, little: i > 0 });
         continue;
       }
-      var t = clock - i * DUCK_GAP;
-      var p = duckWay(t), q = duckWay(t + 0.15);
+      var q = duckSpot(i, t + 0.15);
       var swim = waterAt(p.x, p.y + 4);
       out.push({ x: p.x, y: p.y, dir: q.x >= p.x ? 1 : -1, swim: swim, sleep: false, little: i > 0 });
     }
@@ -1113,8 +1210,16 @@ var Lake = (function () {
     var fin = Math.sin(clock * 2.2) * 0.35;
     var comb = (clock % 14) > 9 && (clock % 14) < 12.5 && mermaid.waving <= 0;
     var skin = "#F6D9C6";
+    // Coming up or going under: beside the rock and lower, fading, with the water hiding what is under it.
+    var out = smooth(mermaid.show), rise = smooth(mermaid.show / 0.6);
     ctx.save();
-    ctx.translate(x, y);
+    if (out < 1) {
+      ctx.globalAlpha = Math.min(1, mermaid.show * 1.8);
+      ctx.beginPath();
+      ctx.rect(0, 0, W, ROCK.y + 14 + out * 30);
+      ctx.clip();
+    }
+    ctx.translate(x + (1 - out) * 30, y + (1 - rise) * 40);
     // The tail: from the hips, curling down to the right into the water, with its fin.
     ctx.save();
     var tg = ctx.createLinearGradient(-6, 0, 44, 18);
@@ -1267,7 +1372,7 @@ var Lake = (function () {
     ctx.restore();
   }
 
-  // At night, only little bubbles come up from the water by the rock.
+  // At night, and while she comes up or goes under, little bubbles come up from the water by the rock.
   function drawBubbles(ctx) {
     for (var i = 0; i < 5; i++) {
       var t = (clock * 0.5 + i / 5) % 1;
@@ -1312,7 +1417,7 @@ var Lake = (function () {
     drawRock(ctx);
     // The lily pads and the little frogs on them, on the water (js/frogs.js).
     Frogs.draw(ctx, "lake");
-    if (isMermaidUp()) {
+    if (mermaid.show > 0) {
       if (hover === "mermaid") drawGlow(ctx, mermaidBox());
       drawMermaid(ctx);
     }
@@ -1396,8 +1501,8 @@ var Lake = (function () {
   // After the night tint, before the characters: the rods of whoever is fishing, Pacífica's notes and her 👋,
   // and at night her bubbles and the "z" of the sleeping ducks, so they are seen in the dark.
   function drawTop(ctx) {
-    if (!isMermaidUp()) drawBubbles(ctx);
-    if (Time.darkness() > 0.55) drawDuckZ(ctx);
+    if (mermaid.show < 1) drawBubbles(ctx);
+    if (family.mode === "sleep") drawDuckZ(ctx);
     Object.keys(current).forEach(function (id) {
       var a = current[id];
       if (a.kind === "fish" && a.phase === "doing") drawRod(ctx, a);

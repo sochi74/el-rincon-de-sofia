@@ -29,36 +29,28 @@
 - En lugares angostos (una puerta, el puente), si alguien se queda parado o dos se encuentran de frente, después de esperar un momento uno pasa por encima del otro, porque no hay lugar para rodearlo.
 - Cuando Professor Hoot vuelve a aparecer junto a su puerta, puede quedar encima de alguien que esté parado justo ahí.
 - Si alguien está parado justo donde aparece la Guitarra o la Olla al cumplir la meta, se queda ahí hasta que camine.
-- Si alguien está parado justo al pie de un senderito (en la ciudad, en la Pradera, en el Lago o en la Montaña), quien llega por ahí aparece encima de él hasta que camine.
 - Nadie va solo a la Pradera ni al Lago: el libre albedrío no los usa (solo vuelve a la ciudad cuando le falta algo).
 - Lumi, Vladi y Professor Hoot nunca van a la Pradera ni al Lago, así que no se puede charlar con ellos ahí.
 - En el Lago, al tomar sol el personaje se ve acostado desde arriba como en la Cama (de frente, con los ojos cerrados), así que parece un poco parado sobre la silla.
 - Del lado derecho del Lago no hay orilla para caminar (el agua llega casi al borde del mapa): si tocas el agua de ese lado, el personaje va a pescar a la orilla más cercana a la que puede llegar (arriba o abajo a la derecha).
-- Los patitos aparecen de golpe dormidos en la playa cuando se hace de noche (y en el agua cuando amanece), y Pacífica aparece y se sumerge de golpe a las 08:00 y a las 18:00.
 - Si un castillo de arena se construye mientras llueve, se queda hasta las 06:00 del día siguiente (la lluvia solo lo borra cuando empieza a llover).
 - Nadie va solo al Bosque encantado: el libre albedrío no lo usa (solo vuelve a la ciudad cuando le falta algo). Lumi, Vladi y Professor Hoot tampoco van.
 - En la ciudad el cartel "⬅️ Bosque encantado" es más chiquito que los otros, porque hay poco lugar entre el bosque y el cartel de la Casa de Sofía.
 - La curita 🩹 no se ve mientras el personaje está acostado en la Cama, en la Bañera o en la Carpa (los brazos no se ven), pero sigue contando su tiempo.
 - Si alguien se queda quieto junto a un tronco mientras hace algo (por ejemplo, charlando), igual lo pueden morder.
-- Los espíritus del bosque flotan por encima de todo, así que a veces pasan por delante de un hongo gigante o de un árbol.
 - Si recargas mientras alguien pesca, descansa, pide un deseo o juega con un espíritu, esa acción se pierde (el deseo no cuenta).
 - En la 🎒 Mochila la Bellota no muestra su palabra al pasar el mouse (ninguna cosa de la Mochila la muestra todavía); "Bellota · acorn" se ve sobre las bellotitas que se asoman y sobre el "+1 🌰" que sube.
 - Si los dos tocan la casita a la vez, el segundo dice "Ocupado" y tiene que volver a tocarla.
 - Si recargas mientras alguien visita la casita, la visita se pierde (las bellotas ya regaladas hoy sí se recuerdan).
-- Los espíritus del bosque pueden pasar por delante de la casita, como pasa con los otros hongos gigantes.
 - Los farolitos casi nunca cruzan el puentecito: pasean cerquita de donde están, así que cada uno se queda casi siempre de su lado del arroyo.
-- De noche, si un farolito pasa justo por detrás del borde del sombrero de un hongo, su lucecita se ve por encima del sombrero.
 - Al salir de su escondite, el farolito pasa saltando por el pie del hongo (no lo rodea).
 - Nadie va solo a la Montaña: el libre albedrío no la usa (solo vuelve a la ciudad cuando le falta algo). Lumi, Vladi y Professor Hoot tampoco van.
 - Las cabritas y los pajaritos no se guardan: al cargar empiezan en sus lugares de siempre (de noche, ya dormidos en su camita de pasto).
 - Si la noche llega mientras miras la Montaña, las cabritas van saltando a su camita; si llega mientras estás en otro lugar, al volver ya están dormidas.
-- La cabrita bebé a veces se queda un poquito atrás cuando su mamá salta lejos, y después la alcanza a saltitos.
 - Si acaricias una cabrita que está arriba de una roca, el personaje se para al lado de la roca (abajo).
 - Los pajaritos que vuelan de un pino a otro pasan por encima de todo, y la "z" de los pajaritos dormidos se ve aunque estén detrás de un pino.
-- Con nieve, los senderos de tierra de la Montaña no se ponen blancos.
 - En una partida vieja, si en Modo decorar se había puesto algo justo debajo de la Plaza, donde ahora empieza el senderito de piedras, se queda ahí (no se puede volver a poner, pero tampoco se mueve solo).
 - Nadie va solo a la Cueva: el libre albedrío no la usa (solo sale a la Montaña y vuelve a la ciudad cuando le falta algo). Lumi, Vladi y Professor Hoot tampoco van.
-- Chispa es grande y no es obstáculo: a veces pasa por encima de un racimo de cristales o de un cristal del piso. Si está encima de un cristal del piso, tocar ahí junta el cristal; para tocarla a ella, toca otra parte de su cuerpo.
 - Chispa, los murciélagos y las gotitas no se guardan: al cargar, Chispa empieza cerca de su nido (de noche, ya dormida en él).
 - Si la noche llega mientras miras la Cueva, Chispa camina hasta su nido; si llega mientras estás en otro lugar, al volver ya está dormida.
 - El fuego y las chispitas de Chispa son solo para ver: no queman ni cambian nada, y el fuego no tiene palabra al pasar el mouse.
@@ -66,21 +58,32 @@
 - Frente a la boca de la cueva, en la Montaña, el personaje se para sobre la parte de abajo de la pared de roca (así puede llegar caminando hasta la boca).
 - Con nieve, los sonidos de la Cueva también se oyen un poquito más bajitos, como los de afuera.
 - La luz del fuego de Chispa es un círculo: también aclara un poquito las paredes de roca que quedan dentro de él (no se corta en las paredes), y no tiñe a Sofía ni a real.fixer, que se ven igual que siempre.
-
-- Los cofres se dibujan siempre debajo de los personajes: si alguien pasa justo por detrás de un cofre, se ve por encima de él.
 - Si recargas mientras alguien abre un cofre, la apertura se pierde y el cofre sigue cerrado (hay que volver a tocarlo).
 - La decoración que sube flotando del cofre es su emoji (🕰️ 🌼 🐚 🍄 🐐 💎), no el dibujo que después aparece en la casa.
 - En la Cueva, la luz del fuego de Chispa no ilumina el cofre (se ve oscurito igual).
 - En la Ciudad, un día de lluvia uno de los charcos se forma justo junto al cofre y se asoma un poquito por debajo de sus arbustos.
 - "brave" es palabra secreta y también palabra del día de Professor Hoot: si salen las dos, aparece en "🎓 Del profe" y en "🔍 Descubiertas" (con 🧰), pero cuenta una sola vez.
 - En una partida vieja, si en Modo decorar se había puesto algo justo donde ahora está el cofre de la Ciudad, ese algo vuelve a su lugar de siempre.
-- Los 🧰 y ✅ del 🗺️ Mapa son chiquitos (el de la Cueva va justo encima de su cajita).
-- Cuando una ventana (la Mochila, las Metas, el Diario o el Mapa) se abre arriba de la pantalla, se estira hasta abajo con un espacio vacío (no es nuevo de este hito: pasa porque su estilo la pega también abajo).
 - Las ranitas no se guardan: al cargar, también se vuelve a sortear si hoy hay rana de colores en cada zona (recargar puede hacerla aparecer o desaparecer).
 - Cuando a las 06:00 empieza un día con rana de colores, una de las ranitas que ya estaban cambia de color de golpe (mientras duermen).
 - Los patitos se dibujan encima de las hojas de nenúfar: cuando van nadando hacia la orilla pueden pasar muy cerquita de la hoja de abajo del Lago.
 - El corcho de la caña puede quedar flotando encima de una hoja de nenúfar (las hojas no cambian la pesca).
 - Si la noche llega mientras faltan ranitas (por ejemplo, alguna se fue al agua al terminar la lluvia), se quedan las que están hasta que amanece.
+- Chispa no es obstáculo para Sofía y real.fixer: si alguien se para justo donde ella va caminando, ella pasa por encima.
+- Los cofres tapan a Sofía, real.fixer, Krohna y los vecinos cuando están detrás, pero no a los animalitos de las zonas (por ejemplo, una cabrita justo delante del cofre de la Montaña se ve detrás de él).
+
+## 2026-10-28 · Extra: 🧹 Pulido 5
+- 🐉 Chispa no se encima: tiene su propio camino, más ancho porque es grande, que rodea los racimos de cristales, el cofre de la Cueva y los cristales del piso. Nunca se detiene encima de ninguno (tampoco para lanzar fuego), y si aparece un cristal nuevo en su camino lo rodea. Cuando vuela bajito puede pasar por encima, pero siempre aterriza en un lugar libre. Los cristales nuevos no aparecen debajo de ella, donde va ni en su nido. Tocar un cristal del piso siempre lo junta y tocar a Chispa siempre la toca.
+- 🧜‍♀️ Pacífica suave: a las 08:00 sube del agua despacito junto a su roca, con burbujitas, y en 1,6 segundos se acomoda sentada; a las 18:00 se baja de la roca y se sumerge despacito, dejando burbujitas. Solo se la puede tocar cuando ya está sentada.
+- 🦆 Patitos en fila: al anochecer la mamá pato nada hasta la playa, sale caminando por la orilla hasta el nido y se acuesta; los patitos la siguen en fila y se acomodan a su lado. Al amanecer se levantan y caminan en fila hasta el agua, y empiezan a nadar. Si el Lago no está en pantalla en ese momento, aparecen directamente dormidos o nadando. La "z" sale cuando ya están todos dormidos.
+- 🏮 Luces en su lugar: en el Bosque encantado, los farolitos, los espíritus y sus lucecitas quedan tapados por los hongos gigantes, la Casita de hongo y los árboles que tienen delante (según su altura en la pantalla, como los personajes), de día y de noche.
+- 🐐 Cabrita bebé cerquita: después de cada saltito vuelve a mirar dónde está su mamá; si la mamá saltó lejos, la alcanza enseguida con saltitos rápidos y vuelve a seguirla de cerca.
+- 🪟 Ventanitas cortas: las Metas, el Diario y el Mapa, cuando se abren arriba de la pantalla, solo son tan altos como lo que tienen adentro; si no cabe, llegan como máximo hasta abajo y se deslizan con scroll. En el celular siguen cabiendo. (La 🎒 Mochila siempre se abre abajo a la derecha, como prefirió Sofía.)
+- 🧰 Cofres bien dibujados: si alguien está detrás de un cofre, el cofre (y lo que lo esconde) lo tapa. En el 🗺️ Mapa los 🧰 y ✅ son más grandes, sobre un circulito de papel, sin tapar los nombres de las zonas.
+- 🚶 Senderitos libres: al llegar a una zona por un senderito o por la boca de la cueva (o al volver a la ciudad), si alguien está parado donde se aparece, se aparece en el lugar libre más cercano.
+- ❄️ Nieve en la Montaña: con nieve, los senderos de tierra también se ponen blancos poco a poco, como el pasto, y vuelven a verse normales cuando la nieve se va.
+- Archivos: js/config.js, js/cave.js, js/path.js, js/lake.js, js/enchanted.js, js/mountain.js, js/treasure.js, js/sims.js, js/valleymap.js y js/ui.js.
+- Probado con Sofía: Chispa, cabrita bebé, senderos con nieve, Pacífica, patitos, luces del Bosque, ventanitas, Mapa, cofres y llegar a un lugar ocupado. Los trucos temporales para probar ya se quitaron.
 
 ## 2026-10-27 · Hito 28b: 🐸 Ranitas
 - 🍃 Hojas de nenúfar: en el Lago, 5 hojas redondas verde oscuro con su cortecito y nervaduras (2 con una florcita rosada), lejos del muelle, de la roca de Pacífica y del camino de los patos; en el arroyo del Bosque encantado, 3 hojitas más chiquitas, lejos del puentecito. Se mecen suavemente con las ondas. Son solo decoración: tocar el agua cerca de una hoja pesca como siempre.

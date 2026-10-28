@@ -699,14 +699,23 @@ var ValleyMap = (function () {
       unknown(ctx, n, 6);
     }
 
-    // The hidden chests: a little 🧰 on each zone found while its chest is closed, a ✅ once it is open (by the emoji of
-    // the zone; in the Ciudad at its bottom right, in the Lago under its water, and for the Cueva just over its box).
-    var marks = { city: [c.x + c.w - 10, c.y + c.h - 10, 10], meadow: [m.x + 30, m.y + 13, 10], lake: [l.x + l.w - 10, l.y + l.h - 9, 10],
-      enchanted: [f.x + 28, f.y + 12, 10], mountain: [n.x + 30, n.y + 12, 10], cave: [BOXES.cave.x + 4, BOXES.cave.y - 5, 8] };
+    // The hidden chests: a 🧰 on each zone found while its chest is closed, a ✅ once it is open, on a little round of
+    // paper so they read well (by the emoji of the zone; in the Ciudad at its bottom right, in the Lago under its water, and
+    // for the Cueva just over its box), never over the names of the zones.
+    var marks = { city: [c.x + c.w - 12, c.y + c.h - 12, 15], meadow: [m.x + 33, m.y + 13, 14],
+      lake: [l.x + l.w - 11, l.y + l.h - 10, 14], enchanted: [f.x + 31, f.y + 12, 14], mountain: [n.x + 32, n.y + 12, 13],
+      cave: [BOXES.cave.x + 7, BOXES.cave.y - 9, 12] };
     Object.keys(marks).forEach(function (zone) {
       if (zone !== "city" && !found[zone]) return;
       var mk = marks[zone];
-      text(ctx, Treasure.isOpen(zone) ? "✅" : "🧰", mk[0], mk[1], mk[2], false);
+      ctx.beginPath();
+      ctx.arc(mk[0], mk[1], mk[2] * 0.72, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(248, 238, 212, 0.92)";
+      ctx.fill();
+      ctx.strokeStyle = "#A9824C";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      text(ctx, Treasure.isOpen(zone) ? "✅" : "🧰", mk[0], mk[1] + 0.5, mk[2], false);
     });
 
     // Where Sofía and real.fixer are: at the top right of their zone (in the Cueva, smaller, next to its 💎).
