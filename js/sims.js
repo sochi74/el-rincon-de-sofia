@@ -973,16 +973,20 @@ var Sims = (function () {
     var view = viewPlace();
     // Everyone on screen, neighbors and Krohna too: whoever is lower on screen is drawn last, so they appear in front.
     var all = sims.filter(function (s) { return s.place === view; }).map(function (sim) {
-      return { y: drawnAt(sim).y, draw: function () { drawSim(ctx, sim, time); } };
+      var at = drawnAt(sim);
+      return { x: at.x, y: at.y, draw: function () { drawSim(ctx, sim, time); } };
     });
     var kitten = Pet.shownAt();
-    if (kitten) all.push({ y: kitten.y, draw: function () { Pet.draw(ctx); } });
+    if (kitten) all.push({ x: kitten.x, y: kitten.y, draw: function () { Pet.draw(ctx); } });
     if (view === "city") {
       Neighbors.visible().forEach(function (n) {
-        all.push({ y: n.y, draw: function () { Neighbors.drawOne(ctx, n, time); } });
+        all.push({ x: n.x, y: n.y, draw: function () { Neighbors.drawOne(ctx, n, time); } });
       });
     }
-    all.sort(function (a, b) { return a.y - b.y; }).forEach(function (one) { one.draw(); });
+    // Whoever stands behind the hidden chest of the zone is covered by it (js/treasure.js).
+    all.sort(function (a, b) { return a.y - b.y; }).forEach(function (one) {
+      Treasure.drawBehind(ctx, view, one.x, one.y, one.draw);
+    });
   }
 
   // ---------- Walking ----------
@@ -1250,12 +1254,22 @@ var Sims = (function () {
 
   // At the door or the end of the trail: come out on the other side. Going into the Pradera, the Lago, the Bosque
   // encantado, the Montaña or the Cueva the first time, it shows on the Mapa del valle (js/valleymap.js).
+  // Coming by a trail or the mouth of the cave (into a zone or back to the city), if someone stands where it comes out,
+  // it comes out at the closest free spot instead.
   function goThrough(sim) {
-    var spot = arriveSpot(sim.goal, sim.place);
+    var from = sim.place, spot = arriveSpot(sim.goal, from);
     sim.place = sim.goal;
     sim.x = spot.x;
     sim.y = spot.y;
     sim.goal = null;
+    if (isZone(from) || isZone(sim.place)) {
+      var people = othersOf(sim).filter(function (o) { return o.who !== DUCK; });
+      if (people.some(function (o) { return apart(o, spot.x, spot.y) < SPACE; })) {
+        var free = Path.clearOf(sim.place, spot.x, spot.y, spot.x, spot.y, people);
+        sim.x = free.x;
+        sim.y = free.y;
+      }
+    }
     if (isZone(sim.place)) ValleyMap.visit(sim.place);
   }
 

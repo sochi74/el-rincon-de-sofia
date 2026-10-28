@@ -431,8 +431,10 @@ var CONFIG = {
   // Building a sandcastle takes "castleTime" seconds and gives "castleFun" Diversión; lying in a beach chair takes
   // "sunTime" seconds and gives "sunEnergy" Energía and "sunFun" Diversión. "Ocupado" stays "busyTime" seconds.
   // Pacífica, the mermaid, is on her rock from "mermaid.from" to "mermaid.to" (minutes after midnight) and sings every
-  // "sing.min" to "sing.max" seconds of play; she waves at whoever is closer than "wave" to her rock.
-  // The ducks quack every "quack.min" to "quack.max" seconds.
+  // "sing.min" to "sing.max" seconds of play; she waves at whoever is closer than "wave" to her rock. She comes up out of
+  // the water (and goes back under it) slowly, in "mermaid.rise" seconds.
+  // The ducks quack every "quack.min" to "quack.max" seconds. At dusk and at dawn they walk in a row between the water and
+  // their nest at "duckWalk" world units a second.
   lake: {
     edge: { x: 32, y: 470 },
     foot: { x: 60, y: 470 },
@@ -450,8 +452,9 @@ var CONFIG = {
     sunFun: 15,
     busyTime: 1.5,
     popTime: 1.8,
-    mermaid: { from: 480, to: 1080, sing: { min: 60, max: 120 }, singTime: 4, wave: 170, waveTime: 2.2 },
+    mermaid: { from: 480, to: 1080, sing: { min: 60, max: 120 }, singTime: 4, wave: 170, waveTime: 2.2, rise: 1.6 },
     quack: { min: 12, max: 30 },
+    duckWalk: 26,
     sand: "#EBD3A6",
     sandLight: "#F4E3C2",
     sandDark: "#D4B585",
@@ -535,7 +538,8 @@ var CONFIG = {
   // stays "busyTime" seconds. The goats bleat every "bleat.min" to "bleat.max" seconds of play.
   // A goat hop takes "hop.time" seconds and goes "hop.far" world units, "hop.high" up, with "hop.gap" seconds between hops
   // (the baby's are "baby"). They stop for "rest" seconds on the grass and "perch" seconds on top of a rock; "onRock" of the
-  // times they go up a rock. The baby stays within "follow" of its mother.
+  // times they go up a rock. The baby stays within "follow" of its mother; farther than "follow" twice, it catches up with
+  // quick little hops ("babyRush").
   // The songbirds hop to another branch every "birds.hop.min" to "birds.hop.max" seconds; "birds.fly" of the times they fly to
   // another pine. By day each one sings every "birds.sing.min" to "birds.sing.max" seconds.
   // A gust of wind lifts "gust.leaves" leaves every "gust.min" to "gust.max" seconds.
@@ -549,6 +553,7 @@ var CONFIG = {
     bleat: { min: 15, max: 35 },
     hop: { time: 0.42, far: 26, high: 12, gap: 0.22 },
     baby: { time: 0.3, far: 18, high: 9, gap: 0.12 },
+    babyRush: { time: 0.2, far: 30, high: 7, gap: 0.03 },
     rest: { min: 2, max: 5 },
     perch: { min: 4, max: 9 },
     onRock: 0.45,

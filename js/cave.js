@@ -137,6 +137,39 @@ var Cave = (function () {
     return CLUSTERS.some(function (c) { return near(x, y, c.x, c.y - c.r * 0.3, c.r + CLEAR / 2); });
   }
 
+  // ---------- Where Chispa can go ----------
+
+  // Chispa is big: her feet stay in the middle of the floor, and well away from the clusters, the chest and the crystals on
+  // the floor, so she walks around them and never stops on top of one (js/path.js uses this for her, as the place "dragon").
+  var ROAM = { left: 120, right: W - 120, top: 236, bottom: 616 };
+
+  // True if her feet at x, y would cover something standing at cx, cy: "half" to each side, "above" and "below" it.
+  function covers(x, y, cx, cy, half, above, below) {
+    return Math.abs(x - cx) < half && y > cy - above && y < cy + below;
+  }
+
+  // True if her feet at x, y would cover a crystal on the floor at cx, cy.
+  function coversCrystal(x, y, cx, cy) {
+    return covers(x, y, cx, cy, 70, 16, 90);
+  }
+
+  function isDragonSolid(x, y) {
+    if (x < ROAM.left || x > ROAM.right || y < ROAM.top || y > ROAM.bottom) return true;
+    var b = CONFIG.treasure.chests.cave.box;
+    if (covers(x, y, b.x + b.w / 2, b.y + b.h, b.w / 2 + 66, b.h + 14, 70)) return true;
+    if (CLUSTERS.some(function (c) { return covers(x, y, c.x, c.y, c.r + 60, c.r * 0.5 + 14, 70); })) return true;
+    return crystals.some(function (s) { return coversCrystal(x, y, s.x, s.y); });
+  }
+
+  // The crystals on the floor changed: her squares are worked out again, and if a new one is on her way she goes around it.
+  function crystalsChanged() {
+    Path.reset("dragon");
+    var walking = (dragon.mode === "walk" && !dragon.flying) || dragon.mode === "bed";
+    if (!walking || !dragon.way.length) return;
+    var end = dragon.way[dragon.way.length - 1];
+    dragon.way = Path.find("dragon", dragon.x, dragon.y, end.x, end.y);
+  }
+
   // ---------- What can be tapped ----------
 
   function exitBox() {
@@ -183,11 +216,15 @@ var Cave = (function () {
     return !(Math.abs(x - EXIT.x) < 70 && y > 580);
   }
 
-  // A random free spot of the floor, away from the other crystals, or null.
+  // A random free spot of the floor, away from the other crystals, or null. Never under Chispa, where she is going, or
+  // where she sleeps.
   function randomSpot() {
+    var end = dragon.way[dragon.way.length - 1];
     for (var i = 0; i < 80; i++) {
       var x = between(96, W - 96), y = between(228, 626);
       if (!isCrystalSpot(x, y)) continue;
+      if (coversCrystal(dragon.x, dragon.y, x, y) || coversCrystal(NEST.x, NEST.y + 2, x, y)) continue;
+      if (end && coversCrystal(end.x, end.y, x, y)) continue;
       var tooClose = crystals.some(function (s) { return Math.abs(s.x - x) < 60 && Math.abs(s.y - y) < 60; });
       if (!tooClose) return { x: x, y: y };
     }
@@ -279,6 +316,7 @@ var Cave = (function () {
       var at = crystals.indexOf(a.crystal);
       if (at < 0) return;
       crystals.splice(at, 1);
+      Path.reset("dragon");
       if (hover === a.crystal) hover = null;
       Inventory.add(a.crystal.kind, 1);
       popOver(a.sim, "+1 " + Inventory.item(a.crystal.kind).emoji, a.crystal.kind);
@@ -468,11 +506,12 @@ var Cave = (function () {
     if (kind === "wag") popAt(dragon.x, dragon.y - 70 * SIZE, "💚", "chispa", true);
   }
 
-  // Chispa goes somewhere new on the floor: walking, or now and then flying low.
+  // Chispa goes somewhere new and free on the floor: walking around everything, or now and then flying low (then she
+  // may pass over a cluster or a crystal, but she lands on a free spot).
   function pickWalk() {
-    var to = Path.free("cave", between(130, W - 130), between(250, 600));
-    dragon.way = Path.find("cave", dragon.x, dragon.y, to.x, to.y);
+    var to = Path.free("dragon", between(ROAM.left, ROAM.right), between(ROAM.top, ROAM.bottom));
     dragon.flying = Math.random() < D.flyChance;
+    dragon.way = Path.find(dragon.flying ? "cave" : "dragon", dragon.x, dragon.y, to.x, to.y);
     dragon.mode = "walk";
   }
 
@@ -527,7 +566,7 @@ var Cave = (function () {
       if (dragon.mode !== "bed") {
         dragon.mode = "bed";
         dragon.flying = false;
-        dragon.way = Path.find("cave", dragon.x, dragon.y, NEST.x, NEST.y + 2);
+        dragon.way = Path.find("dragon", dragon.x, dragon.y, NEST.x, NEST.y + 2);
       }
       stepDragon(dt, D.walk);
       if (!dragon.way.length) {
@@ -565,8 +604,9 @@ var Cave = (function () {
       dragon.wait = between(D.rest.min, D.rest.max);
       return;
     }
+    // Resting on a spot that is not free (like after loading a game), she goes somewhere free right away.
     dragon.wait -= dt;
-    if (dragon.wait <= 0) pickWalk();
+    if (dragon.wait <= 0 || isDragonSolid(dragon.x, dragon.y)) pickWalk();
   }
 
   // ---------- Update ----------
@@ -605,6 +645,8 @@ var Cave = (function () {
         regrow[i] = -1;
       } else if (!spawn()) {
         regrow[i] = 5;
+      } else {
+        crystalsChanged();
       }
     }
   }
@@ -1482,6 +1524,7 @@ var Cave = (function () {
       return Math.max(0.1, Math.min(K.regrow.max, r));
     }).slice(0, K.max - crystals.length);
     while (crystals.length + regrow.length < K.min) regrow.push(between(K.regrow.min, K.regrow.max));
+    Path.reset("dragon");
   }
 
   // A new game starts with 3 to 5 crystals.
@@ -1514,6 +1557,7 @@ var Cave = (function () {
     wordAt: wordAt,
     get: get,
     set: set,
+    isDragonSolid: isDragonSolid,
     // Modo decorar moves nothing in the Cueva (js/decorate.js).
     movableAt: function () { return null; },
     canTurn: function () { return false; }

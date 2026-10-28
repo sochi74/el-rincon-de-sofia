@@ -4,6 +4,7 @@
 // The way found over the squares is then straightened and its corners are rounded, so the walk looks smooth.
 // Modo decorar (js/decorate.js) moves things, so the squares are worked out again after every move.
 // Characters also go around each other (js/sims.js): then the squares around the others count as solid for a moment.
+// Chispa, the dragon of the Cueva, is big and has squares of her own: the place "dragon" (Cave.isDragonSolid).
 var Path = (function () {
   // Size of a square, in world units. The grid is big enough for the city and for the house (which is wider).
   var CELL = 6;
@@ -19,9 +20,10 @@ var Path = (function () {
   // Free (1) or solid (0) squares of each place, worked out the first time they are needed after a change.
   var grids = {};
 
-  // Something solid moved: work the squares out again the next time.
-  function reset() {
-    grids = {};
+  // Something solid moved: work the squares out again the next time (only the ones of "place", if it is given).
+  function reset(place) {
+    if (place) delete grids[place];
+    else grids = {};
   }
 
   function isSolid(place, x, y) {
@@ -30,6 +32,7 @@ var Path = (function () {
     if (place === "enchanted") return Enchanted.isSolid(x, y);
     if (place === "mountain") return Mountain.isSolid(x, y);
     if (place === "cave") return Cave.isSolid(x, y);
+    if (place === "dragon") return Cave.isDragonSolid(x, y);
     return place === "city" ? City.isSolid(x, y) : House.isSolid(x, y);
   }
 

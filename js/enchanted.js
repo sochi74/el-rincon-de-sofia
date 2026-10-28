@@ -1503,6 +1503,44 @@ var Enchanted = (function () {
     ctx.restore();
   }
 
+  // ---------- What stands in front of a light ----------
+
+  // The giant mushrooms, the mushroom house and the trees, as { y, box, shapes }: "y" is where they go in the drawing order,
+  // "box" what they cover and "shapes" their outline (each one adds its own path), to hide what is behind them.
+  function standing() {
+    var out = MUSHROOMS.concat([REST, HOUSE]).map(function (m) {
+      var cy = m.y - m.stem, half = m.sw / 2 + 8;
+      return { y: m.y, box: { x: m.x - m.rx, y: cy - 2 - m.ry * 1.5, w: m.rx * 2, h: m.stem + m.ry * 1.5 + 2 }, shapes: [
+        function (ctx) { capPath(ctx, m.x, cy - 2, m); },
+        function (ctx) { ctx.beginPath(); ctx.rect(m.x - half, cy, half * 2, m.stem); }
+      ] };
+    });
+    BORDER.forEach(function (t) {
+      out.push({ y: t.y, box: { x: t.x - t.r - 4, y: t.y - t.r, w: t.r * 2 + 8, h: t.r * 1.8 }, shapes: [
+        function (ctx) { ctx.beginPath(); ctx.arc(t.x, t.y, t.r + 1, 0, Math.PI * 2); },
+        function (ctx) { ctx.beginPath(); ctx.rect(t.x - 7, t.y + t.r * 0.2, 14, t.r * 0.6); }
+      ] });
+    });
+    return out;
+  }
+
+  // Draws "fn" (a light whose feet are at "y", inside "box") so that the mushrooms, the house and the trees lower than it
+  // hide it, as in the drawing order: used for what is drawn over the night tint (the spirits and the lanterns' light).
+  function behind(ctx, y, box, fn) {
+    ctx.save();
+    standing().forEach(function (o) {
+      var b = o.box;
+      if (o.y <= y || b.x > box.x + box.w || b.x + b.w < box.x || b.y > box.y + box.h || b.y + b.h < box.y) return;
+      o.shapes.forEach(function (shape) {
+        shape(ctx);
+        ctx.rect(-W, -H, W * 3, H * 3);
+        ctx.clip("evenodd");
+      });
+    });
+    fn();
+    ctx.restore();
+  }
+
   // ---------- Little lanterns drawing ----------
 
   // The paper body of a lantern, round and a little uneven, as if drawn by hand.
@@ -1787,19 +1825,22 @@ var Enchanted = (function () {
       ctx.fillStyle = m.color;
       ctx.fill();
     });
-    // The little lanterns shine strong, with a halo of their color; one behind its mushroom shows only its halo.
+    // The little lanterns shine strong, with a halo of their color; one behind its mushroom is hidden by it, halo and all.
     lanterns.forEach(function (l, i) {
       var at = lanternPos(l), cy = at.y - 10 - lanternLift(l), light = lanternLight(l);
       var pulse = 0.85 + 0.15 * Math.sin(clock * 2 + i * 1.7);
-      var g = ctx.createRadialGradient(at.x, cy, 2, at.x, cy, 34);
-      g.addColorStop(0, "rgba(255, 244, 205, 1)");
-      g.addColorStop(0.3, l.color);
-      g.addColorStop(1, "rgba(255, 255, 255, 0)");
-      ctx.globalAlpha = dark * 0.85 * pulse * light;
-      circle(ctx, at.x, cy, 34, g);
-      if (l.mode === "hide") return;
-      ctx.globalAlpha = dark;
-      drawLantern(ctx, l, at.x, at.y, true);
+      // A mushroom, the house or a tree in front hides the lantern and its light too.
+      behind(ctx, at.y, { x: at.x - 34, y: cy - 34, w: 68, h: at.y - cy + 34 }, function () {
+        var g = ctx.createRadialGradient(at.x, cy, 2, at.x, cy, 34);
+        g.addColorStop(0, "rgba(255, 244, 205, 1)");
+        g.addColorStop(0.3, l.color);
+        g.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.globalAlpha = dark * 0.85 * pulse * light;
+        circle(ctx, at.x, cy, 34, g);
+        if (l.mode === "hide") return;
+        ctx.globalAlpha = dark;
+        drawLantern(ctx, l, at.x, at.y, true);
+      });
     });
     ctx.restore();
   }
@@ -1901,9 +1942,13 @@ var Enchanted = (function () {
       ctx.fill();
       ctx.restore();
     });
+    // The spirits, hidden by the mushrooms, the house and the trees in front of them.
     spirits.forEach(function (s) {
-      if (s === hover) drawSpiritHighlight(ctx, s);
-      drawSpirit(ctx, s, dark);
+      var top = s.y - lift(s) - 36;
+      behind(ctx, s.y, { x: s.x - 36, y: top, w: 72, h: s.y + 4 - top }, function () {
+        if (s === hover) drawSpiritHighlight(ctx, s);
+        drawSpirit(ctx, s, dark);
+      });
     });
   }
 
