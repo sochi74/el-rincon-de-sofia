@@ -51,7 +51,8 @@ El Rincón de Sofía: un juego de vida acogedor con nombre y arte propios. Una c
 - js/mountain.js: la Montaña: dibujo, pinos que se mecen, rocas (dos con carita), mirador, banquito, torrecitas de piedras, barro con huellas, plumas, nido, pájaros cantores, hojas al viento, cabritas que se acarician y la boca de la cueva, por donde se entra a la Cueva
 - js/cave.js: la Cueva: dibujo oscurito con la luz de los cristales, racimos de cristales, cristales para juntar, estalactitas, gotitas, murciélagos, la salida a la Montaña y Chispa, la dragona (paseo, vuelito, chispitas, fuego, sus tres reacciones y su nido de cristales)
 - js/treasure.js: los tesoros escondidos: un cofrecito en cada zona (Ciudad, Pradera, Lago, Bosque encantado, Montaña y Cueva) con su brillito, abrirlo, su decoración para la casa de Sofía, la palabra secreta para el Diario, los carteles y la lluvia de estrellitas del sexto, y lo que usan el 🗺️ Mapa del tesoro y el guardado
-- Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, lake, enchanted, mountain, cave, treasure, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
+- js/frogs.js: las ranitas y las hojas de nenúfar del Lago y del arroyo del Bosque encantado: dibujo, la rana de colores, el coro con lluvia, dormir de noche y saltar al agua al tocarlas
+- Orden de scripts: config, words, characters, time, weather, house, city, valleymap, meadow, lake, enchanted, mountain, cave, treasure, frogs, coins, garden, inventory, gather, cooking, path, sims, neighbors, needs, objects, social, gifts, goals, lessons, pet, audio, decorate, ui, save, main
 - Todo archivo nuevo se anota aquí.
 
 ## Convenciones

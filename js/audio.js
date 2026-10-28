@@ -5,6 +5,8 @@
 // in the Bosque encantado the stream, birds by day and crickets by night; in the Montaña a soft wind and crickets by night;
 // in the house the tele while someone watches it) and calm music that turns softer at night.
 // A soft chime when a zone of the Mapa del valle is found, and a soft fanfare when a hidden treasure chest opens. In the Lago the ducks' soft "cuac" and Pacífica's short song.
+// In the Lago and the stream of the Bosque encantado the little frogs' "croac" (one after the other in a chorus when it
+// rains, softer at night) and the "splash" when one jumps into the water.
 // In the Bosque encantado a soft tinkle while the spirits dance and a quiet "sss" when a snake peeks out.
 // In the Montaña the goats' "beee" (higher for the baby) and the songbirds' short happy tunes by day.
 // In the Cueva a soft low echo all the time, the "plic" of the drops, a quiet tinkle of the crystals now and then (and when
@@ -320,6 +322,43 @@ var Sound = (function () {
   // Play an effect only if it happens where the screen is.
   function playAt(place, name) {
     if (place === Sims.viewPlace()) play(name);
+  }
+
+  // A little frog's "croac" (js/frogs.js), only if its place is on screen: two quick croaky pulses, "rib-bit", the second
+  // a little higher, through a filter. "up" is how many semitones higher it goes (the chorus sings a little song this way,
+  // and smaller frogs croak higher); "soft" makes it quieter, at night.
+  function croak(place, up, soft) {
+    if (!ac || mode === "mute" || place !== Sims.viewPlace()) return;
+    var t = ac.currentTime + 0.01, base = 190 * Math.pow(2, up / 12), volume = soft ? 0.1 : 0.25;
+    [[0, 0.12, 1], [0.16, 0.16, 1.12]].forEach(function (p) {
+      var start = t + p[0], end = start + p[1], f = base * p[2];
+      var osc = ac.createOscillator(), filter = ac.createBiquadFilter(), shake = ac.createGain(), gain = ac.createGain();
+      var lfo = ac.createOscillator(), depth = ac.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(f, start);
+      osc.frequency.linearRampToValueAtTime(f * 0.88, end);
+      filter.type = "bandpass";
+      filter.Q.value = 1.2;
+      filter.frequency.value = f * 4;
+      // A quick shake of the volume makes it croaky.
+      lfo.type = "square";
+      lfo.frequency.value = 32;
+      shake.gain.value = 0.5;
+      depth.gain.value = 0.5;
+      lfo.connect(depth);
+      depth.connect(shake.gain);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, end);
+      osc.connect(filter);
+      filter.connect(shake);
+      shake.connect(gain);
+      gain.connect(effectsBus);
+      osc.start(start);
+      lfo.start(start);
+      osc.stop(end + 0.05);
+      lfo.stop(end + 0.05);
+    });
   }
 
   // ---------- Start ----------
@@ -797,6 +836,7 @@ var Sound = (function () {
     update: update,
     play: play,
     playAt: playAt,
+    croak: croak,
     nextMode: nextMode,
     mode: function () { return mode; },
     icon: function () { return ICONS[mode]; },

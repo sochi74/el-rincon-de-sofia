@@ -658,6 +658,61 @@ var CONFIG = {
     }
   },
 
+  // The little frogs and their lily pads (js/frogs.js), in the Lago and in the stream of the Bosque encantado.
+  // "pads" are the lily pads: in the Lago their middle and size ("r"), and "flower" for the two with a pink flower; in the
+  // stream only their height "y" (they float in the middle of the stream there, "dx" to a side) and size. "scale" is how
+  // big the frogs of the place are. Without rain "day" frogs sit on the pads; with rain one on each pad.
+  // Each game day, in each place, one frog is a colorful one with chance "colorful". A frog that is tapped comes back after
+  // "back.min" to "back.max" seconds; when the rain starts or ends, one comes or goes every "change.min" to "change.max".
+  // Without rain one croaks alone every "croak.min" to "croak.max" seconds by day. With rain they sing in chorus: the
+  // "song" steps (seconds until the next croak, and how many semitones up), then a rest of "rest.min" to "rest.max" seconds.
+  // A frog blinks every "blink.min" to "blink.max" seconds and turns a little every "turn.min" to "turn.max".
+  // Each look has its "green" and the light "belly" color of the two ridges on its back; "spots" are its dark blotches.
+  frogs: {
+    lake: {
+      scale: 1.1,
+      day: 2,
+      pads: [
+        { x: 500, y: 300, r: 30, flower: true },
+        { x: 785, y: 282, r: 28 },
+        { x: 895, y: 345, r: 29, flower: true },
+        { x: 455, y: 525, r: 28 },
+        { x: 592, y: 535, r: 27 }
+      ]
+    },
+    enchanted: {
+      scale: 0.72,
+      day: 1,
+      pads: [{ y: 196, dx: -2, r: 18 }, { y: 452, dx: 2, r: 17 }, { y: 600, dx: -1, r: 18 }]
+    },
+    colorful: 0.25,
+    back: { min: 5, max: 10 },
+    change: { min: 1.5, max: 4 },
+    croak: { min: 25, max: 55 },
+    song: [[0.36, 0], [0.36, 4], [0.72, 7], [0.36, 4], [0.36, 0], [0.72, 2], [0.26, 4], [0.26, 5], [0.26, 7], [0.9, 0]],
+    rest: { min: 2.5, max: 5 },
+    blink: { min: 2.5, max: 6 },
+    turn: { min: 4, max: 9 },
+    jumpTime: 0.55,
+    hopTime: 0.4,
+    splashTime: 1.3,
+    green: ["#9DBF4E", "#8DB443", "#AECB5E", "#86AA3E", "#98BB4A"],
+    belly: ["#E2EBA8", "#D8E49A", "#ECF2B8", "#D2DE92", "#DEE8A2"],
+    spots: "rgba(55, 70, 20, 0.6)",
+    throat: "#E8EDCF",
+    eye: "#D8A93A",
+    colorBody: "#3FC9C0",
+    colorBelly: "#B8F0E6",
+    colorDots: "#F2C230",
+    colorLegs: "#C9A8E8",
+    pad: "#3E7A44",
+    padDark: "#2C5A31",
+    padLight: "#5C9A5E",
+    flower: "#F2A9C0",
+    flowerLight: "#FFD9E4",
+    note: "#4FA84A"
+  },
+
   // Autosave: how often, in seconds, and the name of the save in the browser.
   // "menuKey" remembers whether the panel was open or closed. "diaryKey" keeps the Diario de palabras apart from the game,
   // so "Reiniciar" never forgets it.
